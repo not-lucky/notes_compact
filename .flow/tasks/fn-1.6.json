@@ -1,16 +1,26 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-19T14:49:06.081258Z",
   "created_at": "2026-01-19T05:29:40.529972Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "6d179014d44d8d6ffeaf0b168c01ee35e2db0503"
+    ],
+    "prs": [],
+    "tests": [
+      "find . -name '*.md' | wc -l",
+      "grep -r '](./' 04-linked-lists/"
+    ]
+  },
   "id": "fn-1.6",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.6.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Chapter 04: Linked Lists (8-10 files)",
-  "updated_at": "2026-01-19T06:09:28.474451Z"
+  "updated_at": "2026-01-19T14:58:59.692418Z"
 }
