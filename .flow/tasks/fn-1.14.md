@@ -20,9 +20,20 @@ Create Chapter 12: Greedy Algorithms with 8-10 files:
 - [ ] Proof techniques explained
 - [ ] 8-10 markdown files created
 ## Done summary
-TBD
+- Created Chapter 12: Greedy Algorithms with 9 comprehensive markdown files
+- Covered greedy vs DP decision making, proof techniques (greedy stays ahead, exchange argument, contradiction)
+- Implemented 8 core topics: greedy basics, interval scheduling, merge intervals, meeting rooms, jump game, gas station, candy distribution, partition labels
+- Each file follows the interview-focused template with prerequisites, complexity tables, edge cases, practice problems
 
+## Why
+- Completes the Greedy Algorithms chapter as specified in fn-1.14
+- Follows established chapter patterns from other completed chapters
+
+## Verification
+- All 9 markdown files created and verified
+- Internal links checked and valid
+- Cross-chapter prerequisite links verified
 ## Evidence
-- Commits:
-- Tests:
+- Commits: d1643a24fbc6bb55ecb3c5990bf385a3c4a74427
+- Tests: file count verified: 9 files
 - PRs:
