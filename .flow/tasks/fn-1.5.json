@@ -1,16 +1,26 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-19T09:43:54.378100Z",
   "created_at": "2026-01-19T05:28:35.758310Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "47db8d7831cbb6e81ecdd3b02356dd54a845daae"
+    ],
+    "prs": [],
+    "tests": [
+      "find . -name '*.md' | wc -l",
+      "ls -la 03-hashmaps-sets/"
+    ]
+  },
   "id": "fn-1.5",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.5.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Chapter 03: HashMaps & Sets (8-10 files)",
-  "updated_at": "2026-01-19T06:09:28.318152Z"
+  "updated_at": "2026-01-19T09:55:47.914627Z"
 }
