@@ -1,0 +1,357 @@
+# Implement Queue Using Stacks
+
+> **Prerequisites:** [01-stack-basics](./01-stack-basics.md), [02-queue-basics](./02-queue-basics.md)
+
+## Interview Context
+
+This problem is a **classic design question** at FANG+ companies because:
+
+1. **Amortized analysis**: The optimal solution has O(1) amortized operations
+2. **Lazy evaluation**: Demonstrates deferred computation pattern
+3. **Real-world relevance**: Many systems use this pattern (e.g., message queues)
+4. **Follow-up rich**: Leads to discussions about worst-case vs amortized complexity
+
+Interviewers use this to assess your understanding of amortized analysis and lazy data structures.
+
+---
+
+## The Problem
+
+Implement a queue using only stack operations:
+- `push(x)` — Push element x to the back of queue
+- `pop()` — Remove and return the front element
+- `peek()` — Get the front element
+- `empty()` — Return whether the queue is empty
+
+**Constraint**: Only use `push`, `pop`, `top`, `empty` operations on stacks.
+
+---
+
+## Approach Comparison
+
+| Approach | push | pop | peek | Space |
+|----------|------|-----|------|-------|
+| Two stacks (push costly) | O(n) | O(1) | O(1) | O(n) |
+| Two stacks (pop costly) | O(1) | O(n) | O(n) | O(n) |
+| Two stacks (amortized) | O(1) | O(1)* | O(1)* | O(n) |
+
+*Amortized O(1)
+
+---
+
+## Solution 1: Two Stacks Amortized (Optimal)
+
+```python
+class MyQueue:
+    """
+    Queue using two stacks with O(1) amortized operations.
+
+    Idea: Use input stack for push, output stack for pop.
+    Only transfer when output is empty.
+
+    Time: push O(1), pop/peek O(1) amortized
+    Space: O(n)
+    """
+    def __init__(self):
+        self.input_stack = []   # For push operations
+        self.output_stack = []  # For pop/peek operations
+
+    def push(self, x: int) -> None:
+        self.input_stack.append(x)
+
+    def pop(self) -> int:
+        self._transfer_if_needed()
+        return self.output_stack.pop()
+
+    def peek(self) -> int:
+        self._transfer_if_needed()
+        return self.output_stack[-1]
+
+    def empty(self) -> bool:
+        return len(self.input_stack) == 0 and len(self.output_stack) == 0
+
+    def _transfer_if_needed(self) -> None:
+        """Transfer from input to output only when output is empty."""
+        if not self.output_stack:
+            while self.input_stack:
+                self.output_stack.append(self.input_stack.pop())
+
+
+# Walkthrough:
+# push(1): input=[1], output=[]
+# push(2): input=[1,2], output=[]
+# peek():  output empty → transfer → input=[], output=[2,1]
+#          return output[-1] = 1
+# push(3): input=[3], output=[2,1]
+# pop():   output not empty → return output.pop() = 1
+#          input=[3], output=[2]
+# pop():   return 2, output=[]
+# pop():   output empty → transfer → input=[], output=[3]
+#          return 3
+```
+
+### Visual Representation
+
+```
+push(1), push(2), push(3):
+
+  input_stack     output_stack
+  ┌───┐
+  │ 3 │ ←top      (empty)
+  ├───┤
+  │ 2 │
+  ├───┤
+  │ 1 │
+  └───┘
+
+pop() - transfer first:
+
+  input_stack     output_stack
+                  ┌───┐
+  (empty)         │ 1 │ ←top (front of queue)
+                  ├───┤
+                  │ 2 │
+                  ├───┤
+                  │ 3 │
+                  └───┘
+
+  return 1
+
+push(4), then pop():
+
+  input_stack     output_stack
+  ┌───┐           ┌───┐
+  │ 4 │           │ 2 │ ←top
+  └───┘           ├───┤
+                  │ 3 │
+                  └───┘
+
+  return 2 (no transfer needed, output not empty)
+```
+
+---
+
+## Amortized Analysis
+
+Why is pop/peek O(1) amortized?
+
+```
+Consider n push operations followed by n pop operations:
+
+Push phase (n operations):
+- Each push is O(1)
+- Total: O(n)
+
+Pop phase (n operations):
+- First pop: Transfer n elements O(n) + pop O(1)
+- Remaining n-1 pops: Each is O(1)
+- Total: O(n) + O(n-1) = O(n)
+
+Total for 2n operations: O(n) + O(n) = O(2n)
+Amortized per operation: O(1)
+
+Key insight: Each element is pushed to input_stack once (O(1)),
+transferred to output_stack once (O(1) per element),
+and popped from output_stack once (O(1)).
+Total: O(3) per element = O(1) amortized.
+```
+
+---
+
+## Solution 2: Push Costly
+
+```python
+class MyQueue:
+    """
+    Queue using two stacks, costly push.
+
+    Time: push O(n), pop O(1), peek O(1)
+    Space: O(n)
+    """
+    def __init__(self):
+        self.s1 = []  # Main stack (newest at bottom)
+        self.s2 = []  # Helper stack
+
+    def push(self, x: int) -> None:
+        # Move all to s2
+        while self.s1:
+            self.s2.append(self.s1.pop())
+
+        # Push new element (will be at bottom of s1)
+        self.s1.append(x)
+
+        # Move all back
+        while self.s2:
+            self.s1.append(self.s2.pop())
+
+    def pop(self) -> int:
+        return self.s1.pop()
+
+    def peek(self) -> int:
+        return self.s1[-1]
+
+    def empty(self) -> bool:
+        return len(self.s1) == 0
+```
+
+---
+
+## Solution 3: Pop Costly
+
+```python
+class MyQueue:
+    """
+    Queue using two stacks, costly pop/peek.
+
+    Time: push O(1), pop O(n), peek O(n)
+    Space: O(n)
+    """
+    def __init__(self):
+        self.s1 = []  # For push
+        self.s2 = []  # For pop/peek
+
+    def push(self, x: int) -> None:
+        self.s1.append(x)
+
+    def pop(self) -> int:
+        # Move all to s2
+        while self.s1:
+            self.s2.append(self.s1.pop())
+
+        result = self.s2.pop()
+
+        # Move all back
+        while self.s2:
+            self.s1.append(self.s2.pop())
+
+        return result
+
+    def peek(self) -> int:
+        while self.s1:
+            self.s2.append(self.s1.pop())
+
+        result = self.s2[-1]
+
+        while self.s2:
+            self.s1.append(self.s2.pop())
+
+        return result
+
+    def empty(self) -> bool:
+        return len(self.s1) == 0
+```
+
+---
+
+## Why Amortized Solution is Best
+
+```
+Scenario: n push, then n pop (interleaved or sequential)
+
+Approach           | Total Operations | Amortized per op
+-------------------|------------------|------------------
+Push costly        | O(n²)            | O(n) push, O(1) pop
+Pop costly         | O(n²)            | O(1) push, O(n) pop
+Amortized (lazy)   | O(n)             | O(1) push, O(1) pop*
+
+*amortized
+
+The lazy transfer approach wins because:
+1. We only transfer when necessary (output empty)
+2. Each element is transferred at most once
+3. We exploit the fact that consecutive pops don't need transfer
+```
+
+---
+
+## Real-World Applications
+
+1. **Message Queue Implementations**: Some internal implementations use similar patterns
+2. **Undo/Redo Stacks**: Browser history can use this pattern
+3. **Task Scheduling**: Converting LIFO to FIFO processing
+4. **Interview Question Foundation**: Understanding leads to harder problems
+
+---
+
+## Edge Cases
+
+```python
+# 1. Empty queue
+q = MyQueue()
+print(q.empty())  # True
+
+# 2. Single element
+q.push(1)
+print(q.peek())   # 1
+print(q.pop())    # 1
+print(q.empty())  # True
+
+# 3. Interleaved operations
+q.push(1)
+q.push(2)
+q.pop()           # 1
+q.push(3)
+q.peek()          # 2
+q.pop()           # 2
+q.pop()           # 3
+
+# 4. Multiple pops after pushes
+for i in range(1000):
+    q.push(i)
+for i in range(1000):
+    assert q.pop() == i  # FIFO order preserved
+```
+
+---
+
+## Follow-up Questions
+
+### Q: What's the worst-case for a single pop?
+A: O(n) when output stack is empty and we need to transfer. But amortized is O(1).
+
+### Q: Can we guarantee O(1) worst-case?
+A: Not with two simple stacks. Would need more complex structures (e.g., reversing during idle time).
+
+### Q: How does this compare to deque?
+A: `collections.deque` is O(1) worst-case for both ends. This is useful when you only have stack primitives available.
+
+---
+
+## Comparison with Stack Using Queues
+
+| Aspect | Queue using Stacks | Stack using Queues |
+|--------|-------------------|-------------------|
+| Best solution | Amortized O(1) both | O(n) push or pop |
+| Key insight | Lazy transfer | Must rotate |
+| Can achieve O(1) amortized? | Yes | No |
+
+The queue using stacks has a better solution because:
+- Two stacks can naturally reverse order (LIFO + LIFO = FIFO)
+- We can delay the reversal until needed (lazy evaluation)
+
+---
+
+## Practice Problems
+
+| # | Problem | Difficulty | Key Concept |
+|---|---------|------------|-------------|
+| 1 | Implement Queue using Stacks | Easy | Core problem |
+| 2 | Implement Stack using Queues | Easy | Reverse direction |
+| 3 | Design Circular Deque | Medium | Both ends |
+| 4 | Design Hit Counter | Medium | Queue-like with time |
+
+---
+
+## Key Takeaways
+
+1. **Amortized O(1)**: The lazy transfer approach achieves optimal performance
+2. **Two stacks reverse order**: LIFO + LIFO = FIFO (stack reversal)
+3. **Lazy evaluation wins**: Only transfer when output is empty
+4. **Each element moves 3 times**: Push to input (1), transfer to output (2), pop from output (3)
+5. **Worst-case vs amortized**: Single pop can be O(n), but amortized is O(1)
+
+---
+
+## Next: [09-expression-evaluation.md](./09-expression-evaluation.md)
+
+Learn how to evaluate expressions using stacks.
