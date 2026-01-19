@@ -1,16 +1,30 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-19T16:08:35.849516Z",
   "created_at": "2026-01-19T05:29:40.857584Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "acceptance_criteria": {
+      "bfs_dfs_templates": true,
+      "cycle_detection_both_types": true,
+      "dijkstra_covered": true,
+      "file_count_18_to_22": true,
+      "graph_representations_explained": true,
+      "grid_island_problems": true,
+      "topological_sort_with_apps": true
+    },
+    "commit": "635150b",
+    "files_created": 19,
+    "tests_passed": true
+  },
   "id": "fn-1.10",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.10.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Chapter 08: Graphs (18-22 files)",
-  "updated_at": "2026-01-19T06:12:19.292900Z"
+  "updated_at": "2026-01-19T16:26:10.166983Z"
 }
