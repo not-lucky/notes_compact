@@ -21,9 +21,23 @@ Create Chapter 07: Heaps & Priority Queues with 8-10 files:
 - [ ] Median from stream (two heaps)
 - [ ] 8-10 markdown files created
 ## Done summary
-TBD
+## Done Summary
 
+**What changed:**
+- Created 9 markdown files for Chapter 07: Heaps & Priority Queues
+- Covered heap fundamentals, Python heapq module, and 6 common interview patterns
+- Included code examples, complexity analysis, and practice problems for each section
+
+**Why:**
+- Heaps are essential for efficiency-focused FANG+ interview questions
+- Patterns like Top-K, merge K sorted, and two-heap median are frequently tested
+- Content follows established chapter structure with interview context
+
+**Verification:**
+- 9 files created (README + 8 sections)
+- Cross-chapter links validated
+- Quick commands verified file structure
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 7641c4ad353b897bea4e5ef61ec65ae2cfd15ca0
+- Tests: find . -name 'README.md' | wc -l, for dir in */; do echo "$dir: $(find "$dir" -name '*.md' | wc -l)"; done
 - PRs:
