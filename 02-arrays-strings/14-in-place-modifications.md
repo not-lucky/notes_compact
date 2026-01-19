@@ -343,10 +343,13 @@ def rearrange_alternating(arr: list[int]) -> None:
 def segregate_negatives(arr: list[int]) -> None:
     """
     Move all negatives to front, positives to back.
-    Maintains relative order.
+    Maintains relative order (stable).
 
-    Time: O(n)
+    Time: O(n²) - due to shifting elements
     Space: O(1)
+
+    Note: This is the stable but slower approach.
+    For O(n) without order preservation, see below.
     """
     write_idx = 0
 

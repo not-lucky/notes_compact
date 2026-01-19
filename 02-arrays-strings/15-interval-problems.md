@@ -272,8 +272,9 @@ def remove_covered_intervals(intervals: list[list[int]]) -> int:
     Space: O(1)
 
     Example:
-    [[1,4], [3,6], [2,8]] → 2 ([1,4] covered by [2,8]... wait no)
-    Actually: [[1,4], [2,8]] remain, [3,6] is not covered
+    [[1,4], [2,3], [3,6]] → 2
+    Explanation: [2,3] is covered by [1,4], so we remove it.
+    Remaining: [[1,4], [3,6]]
     """
     # Sort by start ascending, then by end descending
     intervals.sort(key=lambda x: (x[0], -x[1]))
