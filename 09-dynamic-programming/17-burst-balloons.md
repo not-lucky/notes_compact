@@ -1,0 +1,367 @@
+# Burst Balloons
+
+> **Prerequisites:** [16-matrix-chain](./16-matrix-chain.md)
+
+## Interview Context
+
+Burst Balloons is a FANG+ hard problem because:
+
+1. **Reverse thinking**: Consider last burst, not first
+2. **Interval DP mastery**: Non-obvious state definition
+3. **Tricky boundaries**: Virtual balloons at ends
+4. **Matrix chain connection**: Similar structure
+
+---
+
+## Problem Statement
+
+Given n balloons with numbers, burst them to maximize coins.
+Bursting balloon i gives `nums[i-1] * nums[i] * nums[i+1]` coins.
+
+```
+Input: nums = [3, 1, 5, 8]
+Output: 167
+
+Explanation:
+nums = [3,1,5,8] → [3,5,8] → [3,8] → [8] → []
+coins = 3*1*5 + 3*5*8 + 1*3*8 + 1*8*1 = 15 + 120 + 24 + 8 = 167
+```
+
+---
+
+## Key Insight: Think Backwards
+
+**Wrong approach**: Which balloon to burst first?
+- After bursting, neighbors change, making DP hard
+
+**Correct approach**: Which balloon to burst LAST in a range?
+- If k is last burst in range [i,j], neighbors are fixed as i-1 and j+1
+
+---
+
+## Solution
+
+```python
+def max_coins(nums: list[int]) -> int:
+    """
+    Maximum coins from bursting all balloons.
+
+    Key insight: Consider which balloon is burst LAST in each range.
+    Add virtual 1s at boundaries.
+
+    State: dp[i][j] = max coins from bursting all balloons in (i,j) exclusive
+    Recurrence: dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i]*nums[k]*nums[j])
+                for k in (i+1, j-1)
+
+    Time: O(n³)
+    Space: O(n²)
+    """
+    # Add virtual 1s at boundaries
+    nums = [1] + nums + [1]
+    n = len(nums)
+
+    dp = [[0] * n for _ in range(n)]
+
+    # Fill by increasing length
+    for length in range(2, n):  # length between i and j
+        for i in range(n - length):
+            j = i + length
+
+            for k in range(i + 1, j):  # k is last to burst
+                coins = nums[i] * nums[k] * nums[j]
+                total = dp[i][k] + dp[k][j] + coins
+                dp[i][j] = max(dp[i][j], total)
+
+    return dp[0][n - 1]
+```
+
+---
+
+## Visual Walkthrough
+
+```
+nums = [3, 1, 5, 8]
+With boundaries: [1, 3, 1, 5, 8, 1]
+Indices:          0  1  2  3  4  5
+
+dp[i][j] = max coins bursting all in (i, j) exclusive
+
+Length 2 (no balloons between): all dp = 0
+
+Length 3 (one balloon between):
+dp[0][2]: burst 1 last → 1*3*1 = 3
+dp[1][3]: burst 2 last → 3*1*5 = 15
+dp[2][4]: burst 3 last → 1*5*8 = 40
+dp[3][5]: burst 4 last → 5*8*1 = 40
+
+Length 4 (two balloons between):
+dp[0][3]: k=1 → dp[0][1] + dp[1][3] + 1*3*5 = 0 + 15 + 15 = 30
+         k=2 → dp[0][2] + dp[2][3] + 1*1*5 = 3 + 0 + 5 = 8
+         max = 30
+
+dp[1][4]: k=2 → dp[1][2] + dp[2][4] + 3*1*8 = 0 + 40 + 24 = 64
+         k=3 → dp[1][3] + dp[3][4] + 3*5*8 = 15 + 0 + 120 = 135
+         max = 135
+
+...
+
+dp[0][5]: Check all k from 1 to 4
+         Eventually max = 167
+```
+
+---
+
+## Memoization Version
+
+```python
+from functools import lru_cache
+
+def max_coins_memo(nums: list[int]) -> int:
+    """
+    Top-down memoized version.
+    """
+    nums = [1] + nums + [1]
+    n = len(nums)
+
+    @lru_cache(maxsize=None)
+    def dp(left: int, right: int) -> int:
+        # No balloons between left and right
+        if left + 1 == right:
+            return 0
+
+        max_coins = 0
+        for k in range(left + 1, right):
+            coins = nums[left] * nums[k] * nums[right]
+            total = dp(left, k) + dp(k, right) + coins
+            max_coins = max(max_coins, total)
+
+        return max_coins
+
+    return dp(0, n - 1)
+```
+
+---
+
+## Understanding the State
+
+```
+dp[i][j] represents bursting ALL balloons strictly between i and j.
+Balloons at positions i and j are NOT burst.
+
+When we burst k last:
+- All balloons in (i, k) already burst → dp[i][k]
+- All balloons in (k, j) already burst → dp[k][j]
+- Now k is alone between i and j → nums[i] * nums[k] * nums[j]
+
+Why this works:
+- Since k is last, its neighbors at burst time are i and j
+- Not the original neighbors (they're already burst)
+```
+
+---
+
+## Common Variation: Minimum Cost
+
+```python
+def min_cost_burst(nums: list[int]) -> int:
+    """
+    Minimum cost to burst all balloons.
+    """
+    nums = [1] + nums + [1]
+    n = len(nums)
+
+    dp = [[0] * n for _ in range(n)]
+
+    for length in range(2, n):
+        for i in range(n - length):
+            j = i + length
+            dp[i][j] = float('inf')
+
+            for k in range(i + 1, j):
+                cost = nums[i] * nums[k] * nums[j]
+                total = dp[i][k] + dp[k][j] + cost
+                dp[i][j] = min(dp[i][j], total)
+
+    return dp[0][n - 1]
+```
+
+---
+
+## Related: Minimum Score Triangulation
+
+```python
+def min_score_triangulation(values: list[int]) -> int:
+    """
+    Triangulate polygon with minimum total score.
+    Score of triangle = product of vertices.
+
+    Time: O(n³)
+    Space: O(n²)
+    """
+    n = len(values)
+    dp = [[0] * n for _ in range(n)]
+
+    for length in range(2, n):
+        for i in range(n - length):
+            j = i + length
+            dp[i][j] = float('inf')
+
+            for k in range(i + 1, j):
+                score = values[i] * values[k] * values[j]
+                total = dp[i][k] + dp[k][j] + score
+                dp[i][j] = min(dp[i][j], total)
+
+    return dp[0][n - 1]
+```
+
+---
+
+## Related: Remove Boxes
+
+```python
+def remove_boxes(boxes: list[int]) -> int:
+    """
+    Remove consecutive same-color boxes for points.
+    Points = (count of consecutive)²
+
+    State: dp[i][j][k] = max points for boxes[i..j] with k
+           same boxes attached to left of i
+
+    Time: O(n⁴)
+    Space: O(n³)
+    """
+    n = len(boxes)
+    memo = {}
+
+    def dp(i: int, j: int, k: int) -> int:
+        if i > j:
+            return 0
+
+        if (i, j, k) in memo:
+            return memo[(i, j, k)]
+
+        # Skip same colored boxes at start
+        while i < j and boxes[i] == boxes[i + 1]:
+            i += 1
+            k += 1
+
+        # Remove boxes[i] with k attached
+        result = (k + 1) ** 2 + dp(i + 1, j, 0)
+
+        # Try to find same color later and remove together
+        for m in range(i + 1, j + 1):
+            if boxes[m] == boxes[i]:
+                # Remove boxes[i+1..m-1] first, then combine
+                result = max(result, dp(i + 1, m - 1, 0) + dp(m, j, k + 1))
+
+        memo[(i, j, k)] = result
+        return result
+
+    return dp(0, n - 1, 0)
+```
+
+---
+
+## Comparison with Matrix Chain
+
+| Aspect | Matrix Chain | Burst Balloons |
+|--------|--------------|----------------|
+| State meaning | Cost to multiply | Coins from bursting |
+| Split point k | Where to split multiply | Last balloon to burst |
+| Merge cost | p[i-1] × p[k] × p[j] | nums[i] × nums[k] × nums[j] |
+| Boundaries | Dimensions array | Virtual 1s at ends |
+
+---
+
+## Edge Cases
+
+```python
+# 1. Single balloon
+nums = [5]
+# Return 1 * 5 * 1 = 5
+
+# 2. Two balloons
+nums = [3, 5]
+# Burst 3 last: 1*3*1 + 1*5*3 = 3 + 15 = 18
+# Burst 5 last: 1*5*1 + 3*1*5 = 5 + 15 = 20
+# Return 20
+
+# 3. All same values
+nums = [1, 1, 1]
+# Any order gives same result
+```
+
+---
+
+## Common Mistakes
+
+```python
+# WRONG: Not adding boundary 1s
+nums = [3, 1, 5, 8]
+# Bursting edge balloon: 3 * 1 * ? → what's the neighbor?
+
+# CORRECT: Add virtual 1s
+nums = [1, 3, 1, 5, 8, 1]
+
+
+# WRONG: Thinking about first burst, not last
+# If we burst i first, neighbors change and DP breaks
+
+# CORRECT: Think about last burst
+# When k is last in range, neighbors are fixed
+
+
+# WRONG: dp[i][j] includes i and j
+for k in range(i, j + 1):  # Wrong range!
+
+# CORRECT: dp[i][j] excludes i and j, k is strictly between
+for k in range(i + 1, j):
+```
+
+---
+
+## Complexity
+
+| Metric | Value |
+|--------|-------|
+| Time | O(n³) |
+| Space | O(n²) |
+| States | O(n²) |
+| Transitions | O(n) per state |
+
+---
+
+## Interview Tips
+
+1. **Explain the insight**: "Consider last balloon burst"
+2. **Add boundaries first**: Mention virtual 1s immediately
+3. **Define state clearly**: What dp[i][j] means
+4. **Walk through example**: Show understanding
+5. **Know related problems**: Matrix chain, triangulation
+
+---
+
+## Practice Problems
+
+| # | Problem | Difficulty | Similar Pattern |
+|---|---------|------------|-----------------|
+| 1 | Burst Balloons | Hard | Core problem |
+| 2 | Min Score Triangulation | Medium | Same structure |
+| 3 | Remove Boxes | Hard | 3D state |
+| 4 | Strange Printer | Hard | Similar |
+
+---
+
+## Key Takeaways
+
+1. **Think backwards**: Last burst, not first
+2. **Add virtual boundaries**: Simplifies edge cases
+3. **Interval DP**: dp[i][j] for ranges
+4. **k is last burst**: Neighbors fixed as i, j
+5. **Same as matrix chain**: Just different meaning
+
+---
+
+## Next: [18-dp-on-strings.md](./18-dp-on-strings.md)
+
+Advanced string DP problems.
