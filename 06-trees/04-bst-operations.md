@@ -1,0 +1,512 @@
+# BST Operations
+
+> **Prerequisites:** [01-tree-basics](./01-tree-basics.md)
+
+## Interview Context
+
+BST operations are fundamental because:
+
+1. **Core data structure**: BSTs are basis for many advanced structures (AVL, Red-Black trees)
+2. **Efficient search**: O(log n) operations in balanced trees
+3. **High frequency**: Search, insert, delete are common interview problems
+4. **Recursive thinking**: Clean recursive solutions demonstrate mastery
+
+Interviewers use BST problems to test your understanding of the BST property and tree manipulation.
+
+---
+
+## Core Concept: BST Property
+
+A Binary Search Tree maintains this invariant for every node:
+- All values in **left subtree < node value**
+- All values in **right subtree > node value**
+
+```
+Valid BST:          Invalid BST:
+      5                  5
+     / \                / \
+    3   7              3   7
+   / \   \            / \   \
+  1   4   9          1   6   9  ← 6 > 5 but in left subtree
+```
+
+---
+
+## BST Search
+
+### Recursive Search
+
+```python
+def search_bst(root: TreeNode, val: int) -> TreeNode:
+    """
+    Search for value in BST.
+
+    LeetCode 700: Search in a Binary Search Tree
+
+    Time: O(h) - h is height, O(log n) balanced, O(n) skewed
+    Space: O(h) - recursion stack
+    """
+    if not root or root.val == val:
+        return root
+
+    if val < root.val:
+        return search_bst(root.left, val)
+    else:
+        return search_bst(root.right, val)
+```
+
+### Iterative Search
+
+```python
+def search_bst_iterative(root: TreeNode, val: int) -> TreeNode:
+    """
+    Iterative BST search - O(1) space.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    while root and root.val != val:
+        if val < root.val:
+            root = root.left
+        else:
+            root = root.right
+
+    return root
+```
+
+---
+
+## BST Insert
+
+### Recursive Insert
+
+```python
+def insert_into_bst(root: TreeNode, val: int) -> TreeNode:
+    """
+    Insert value into BST, return root.
+
+    LeetCode 701: Insert into a Binary Search Tree
+
+    Time: O(h)
+    Space: O(h)
+    """
+    if not root:
+        return TreeNode(val)
+
+    if val < root.val:
+        root.left = insert_into_bst(root.left, val)
+    else:
+        root.right = insert_into_bst(root.right, val)
+
+    return root
+```
+
+### Iterative Insert
+
+```python
+def insert_into_bst_iterative(root: TreeNode, val: int) -> TreeNode:
+    """
+    Iterative BST insert - O(1) space.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    new_node = TreeNode(val)
+
+    if not root:
+        return new_node
+
+    current = root
+    while True:
+        if val < current.val:
+            if not current.left:
+                current.left = new_node
+                break
+            current = current.left
+        else:
+            if not current.right:
+                current.right = new_node
+                break
+            current = current.right
+
+    return root
+```
+
+### Visual Walkthrough: Insert 6
+
+```
+Before:          After:
+      5              5
+     / \            / \
+    3   7          3   7
+       / \            / \
+      6   9          6   9
+
+Insert 6:
+1. 6 > 5 → go right
+2. 6 < 7 → go left
+3. 7.left is null → insert here
+```
+
+---
+
+## BST Delete
+
+This is the most complex BST operation with three cases.
+
+### Three Cases for Deletion
+
+```
+Case 1: Node is leaf (no children)
+  → Simply remove it
+
+      5                 5
+     / \               / \
+    3   7    delete   3   7
+   /     \   3.left     \
+  1       9   →          9
+
+Case 2: Node has one child
+  → Replace node with its child
+
+      5                 5
+     / \               / \
+    3   7    delete   1   7
+   /     \   3          \
+  1       9   →          9
+
+Case 3: Node has two children
+  → Replace with inorder successor (or predecessor)
+  → Then delete the successor
+
+      5                 6
+     / \               / \
+    3   7    delete   3   7
+       / \   5           \
+      6   9   →           9
+```
+
+### Implementation
+
+```python
+def delete_node(root: TreeNode, key: int) -> TreeNode:
+    """
+    Delete node with given key from BST.
+
+    LeetCode 450: Delete Node in a BST
+
+    Time: O(h)
+    Space: O(h)
+    """
+    if not root:
+        return None
+
+    if key < root.val:
+        root.left = delete_node(root.left, key)
+    elif key > root.val:
+        root.right = delete_node(root.right, key)
+    else:
+        # Found the node to delete
+
+        # Case 1 & 2: No left child
+        if not root.left:
+            return root.right
+
+        # Case 2: No right child
+        if not root.right:
+            return root.left
+
+        # Case 3: Two children
+        # Find inorder successor (smallest in right subtree)
+        successor = find_min(root.right)
+        root.val = successor.val
+        root.right = delete_node(root.right, successor.val)
+
+    return root
+
+
+def find_min(node: TreeNode) -> TreeNode:
+    """Find minimum value node (leftmost)."""
+    while node.left:
+        node = node.left
+    return node
+```
+
+### Alternative: Use Predecessor Instead
+
+```python
+def delete_node_predecessor(root: TreeNode, key: int) -> TreeNode:
+    """Delete using inorder predecessor (largest in left subtree)."""
+    if not root:
+        return None
+
+    if key < root.val:
+        root.left = delete_node_predecessor(root.left, key)
+    elif key > root.val:
+        root.right = delete_node_predecessor(root.right, key)
+    else:
+        if not root.left:
+            return root.right
+        if not root.right:
+            return root.left
+
+        # Find predecessor (rightmost in left subtree)
+        predecessor = root.left
+        while predecessor.right:
+            predecessor = predecessor.right
+
+        root.val = predecessor.val
+        root.left = delete_node_predecessor(root.left, predecessor.val)
+
+    return root
+```
+
+---
+
+## Find Min and Max
+
+```python
+def find_minimum(root: TreeNode) -> int:
+    """
+    Find minimum value in BST.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    if not root:
+        return None
+
+    while root.left:
+        root = root.left
+    return root.val
+
+
+def find_maximum(root: TreeNode) -> int:
+    """
+    Find maximum value in BST.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    if not root:
+        return None
+
+    while root.right:
+        root = root.right
+    return root.val
+```
+
+---
+
+## Find Floor and Ceiling
+
+```python
+def floor(root: TreeNode, key: int) -> int:
+    """
+    Find largest value <= key.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    floor_val = None
+
+    while root:
+        if root.val == key:
+            return key
+        elif root.val < key:
+            floor_val = root.val  # Potential floor
+            root = root.right
+        else:
+            root = root.left
+
+    return floor_val
+
+
+def ceiling(root: TreeNode, key: int) -> int:
+    """
+    Find smallest value >= key.
+
+    Time: O(h)
+    Space: O(1)
+    """
+    ceil_val = None
+
+    while root:
+        if root.val == key:
+            return key
+        elif root.val > key:
+            ceil_val = root.val  # Potential ceiling
+            root = root.left
+        else:
+            root = root.right
+
+    return ceil_val
+```
+
+---
+
+## Inorder Successor and Predecessor
+
+```python
+def inorder_successor(root: TreeNode, p: TreeNode) -> TreeNode:
+    """
+    Find inorder successor of node p.
+
+    LeetCode 285: Inorder Successor in BST
+
+    Time: O(h)
+    Space: O(1)
+    """
+    successor = None
+
+    while root:
+        if p.val < root.val:
+            successor = root  # Potential successor
+            root = root.left
+        else:
+            root = root.right
+
+    return successor
+
+
+def inorder_predecessor(root: TreeNode, p: TreeNode) -> TreeNode:
+    """Find inorder predecessor of node p."""
+    predecessor = None
+
+    while root:
+        if p.val > root.val:
+            predecessor = root  # Potential predecessor
+            root = root.right
+        else:
+            root = root.left
+
+    return predecessor
+```
+
+---
+
+## Complexity Analysis
+
+| Operation | Average | Worst (Skewed) | Space |
+|-----------|---------|----------------|-------|
+| Search | O(log n) | O(n) | O(1) iter / O(h) rec |
+| Insert | O(log n) | O(n) | O(1) iter / O(h) rec |
+| Delete | O(log n) | O(n) | O(h) |
+| Min/Max | O(log n) | O(n) | O(1) |
+| Successor | O(log n) | O(n) | O(1) |
+
+Key insight: Performance degrades to O(n) if tree becomes skewed. Self-balancing trees (AVL, Red-Black) maintain O(log n).
+
+---
+
+## Common Variations
+
+### 1. Count Nodes in Range
+
+```python
+def count_in_range(root: TreeNode, low: int, high: int) -> int:
+    """Count nodes with values in [low, high]."""
+    if not root:
+        return 0
+
+    if root.val < low:
+        return count_in_range(root.right, low, high)
+    if root.val > high:
+        return count_in_range(root.left, low, high)
+
+    # root.val in range
+    return (1 +
+            count_in_range(root.left, low, high) +
+            count_in_range(root.right, low, high))
+```
+
+### 2. Range Sum BST
+
+```python
+def range_sum_bst(root: TreeNode, low: int, high: int) -> int:
+    """
+    Sum of values in [low, high].
+
+    LeetCode 938: Range Sum of BST
+
+    Time: O(n) worst, O(log n + k) average where k is nodes in range
+    Space: O(h)
+    """
+    if not root:
+        return 0
+
+    if root.val < low:
+        return range_sum_bst(root.right, low, high)
+    if root.val > high:
+        return range_sum_bst(root.left, low, high)
+
+    return (root.val +
+            range_sum_bst(root.left, low, high) +
+            range_sum_bst(root.right, low, high))
+```
+
+---
+
+## Edge Cases
+
+```python
+# 1. Empty tree
+root = None
+# → Search returns None, Insert creates root
+
+# 2. Single node
+root = TreeNode(5)
+delete_node(root, 5)  # Returns None
+
+# 3. Delete root with two children
+#      5
+#     / \
+#    3   7
+# delete 5 → successor is 7, or predecessor is 3
+
+# 4. Value not found
+search_bst(root, 100)  # Returns None
+
+# 5. Duplicate handling
+# Standard BST: no duplicates, or put in right subtree
+```
+
+---
+
+## Interview Tips
+
+1. **Know all three operations**: Search, insert, delete must be second nature
+2. **Understand delete cases**: Three cases - practice drawing them
+3. **Iterative for space**: Use iterative versions when O(1) space needed
+4. **Successor/predecessor**: Common follow-up questions
+5. **Discuss balance**: Mention that balanced trees give O(log n) guarantee
+
+---
+
+## Practice Problems
+
+| # | Problem | Difficulty | Key Concept |
+|---|---------|------------|-------------|
+| 1 | Search in a Binary Search Tree | Easy | Basic search |
+| 2 | Insert into a Binary Search Tree | Medium | Basic insert |
+| 3 | Delete Node in a BST | Medium | Delete with cases |
+| 4 | Inorder Successor in BST | Medium | Successor finding |
+| 5 | Range Sum of BST | Easy | Range query |
+| 6 | Closest Binary Search Tree Value | Easy | Floor/ceiling |
+| 7 | Trim a Binary Search Tree | Medium | Range pruning |
+
+---
+
+## Key Takeaways
+
+1. **BST property**: Left < Root < Right at every node
+2. **O(log n) when balanced**: Operations degrade to O(n) if skewed
+3. **Delete is hardest**: Three cases based on number of children
+4. **Successor/predecessor**: Key for delete and range queries
+5. **Iterative saves space**: When O(1) space is required
+
+---
+
+## Next: [05-validate-bst](./05-validate-bst.md)
+
+Learn how to validate if a tree is a valid BST.
