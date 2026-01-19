@@ -1,0 +1,413 @@
+# Anagram Problems
+
+> **Prerequisites:** [09-string-basics.md](./09-string-basics.md)
+
+## Interview Context
+
+Anagram problems test your ability to:
+
+- Use hash tables effectively
+- Understand character frequency counting
+- Apply sliding window techniques
+- Recognize when sorting helps
+
+These problems are very common at FANG+ (especially "Group Anagrams" and "Find All Anagrams").
+
+---
+
+## What is an Anagram?
+
+Two strings are anagrams if they contain the same characters with the same frequencies.
+
+```
+"listen" and "silent" → Anagrams ✓
+"rat" and "tar" → Anagrams ✓
+"hello" and "world" → Not anagrams ✗
+```
+
+---
+
+## Template: Valid Anagram
+
+```python
+def is_anagram(s: str, t: str) -> bool:
+    """
+    Check if two strings are anagrams.
+
+    Time: O(n)
+    Space: O(1) - at most 26 characters for lowercase
+
+    Example:
+    "anagram", "nagaram" → True
+    "rat", "car" → False
+    """
+    if len(s) != len(t):
+        return False
+
+    from collections import Counter
+    return Counter(s) == Counter(t)
+```
+
+### Using Array (Faster for Lowercase Letters)
+
+```python
+def is_anagram_array(s: str, t: str) -> bool:
+    """
+    Using array for lowercase letters only.
+
+    Time: O(n)
+    Space: O(26) = O(1)
+    """
+    if len(s) != len(t):
+        return False
+
+    count = [0] * 26
+
+    for c in s:
+        count[ord(c) - ord('a')] += 1
+
+    for c in t:
+        count[ord(c) - ord('a')] -= 1
+        if count[ord(c) - ord('a')] < 0:
+            return False
+
+    return True
+```
+
+### Using Sorting
+
+```python
+def is_anagram_sort(s: str, t: str) -> bool:
+    """
+    Sort and compare.
+
+    Time: O(n log n)
+    Space: O(n) - for sorted strings
+    """
+    return sorted(s) == sorted(t)
+```
+
+---
+
+## Template: Group Anagrams
+
+```python
+def group_anagrams(strs: list[str]) -> list[list[str]]:
+    """
+    Group words that are anagrams of each other.
+
+    Time: O(n × k log k) where n = number of strings, k = max string length
+    Space: O(n × k)
+
+    Example:
+    ["eat", "tea", "tan", "ate", "nat", "bat"]
+    → [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
+    """
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+
+    for s in strs:
+        # Use sorted string as key
+        key = tuple(sorted(s))
+        groups[key].append(s)
+
+    return list(groups.values())
+```
+
+### Using Character Count as Key
+
+```python
+def group_anagrams_count(strs: list[str]) -> list[list[str]]:
+    """
+    Using character count tuple as key.
+
+    Time: O(n × k) - no sorting!
+    Space: O(n × k)
+    """
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+
+    for s in strs:
+        # Count characters and use as key
+        count = [0] * 26
+        for c in s:
+            count[ord(c) - ord('a')] += 1
+        key = tuple(count)
+        groups[key].append(s)
+
+    return list(groups.values())
+```
+
+---
+
+## Template: Find All Anagrams in a String
+
+```python
+def find_anagrams(s: str, p: str) -> list[int]:
+    """
+    Find all start indices of p's anagrams in s.
+
+    Time: O(n) where n = len(s)
+    Space: O(1) - constant 26 characters
+
+    Example:
+    s = "cbaebabacd", p = "abc"
+    → [0, 6]  (substrings "cba" and "bac")
+    """
+    if len(p) > len(s):
+        return []
+
+    result = []
+    p_count = [0] * 26
+    window_count = [0] * 26
+
+    # Build pattern count
+    for c in p:
+        p_count[ord(c) - ord('a')] += 1
+
+    k = len(p)
+
+    for i in range(len(s)):
+        # Add character to window
+        window_count[ord(s[i]) - ord('a')] += 1
+
+        # Remove character leaving window
+        if i >= k:
+            window_count[ord(s[i - k]) - ord('a')] -= 1
+
+        # Check if window is anagram
+        if i >= k - 1 and window_count == p_count:
+            result.append(i - k + 1)
+
+    return result
+```
+
+### Optimized: Track Matches Instead of Full Comparison
+
+```python
+def find_anagrams_optimized(s: str, p: str) -> list[int]:
+    """
+    Track number of matching character counts.
+
+    Time: O(n)
+    Space: O(1)
+    """
+    if len(p) > len(s):
+        return []
+
+    from collections import Counter
+
+    p_count = Counter(p)
+    window_count = Counter()
+
+    result = []
+    matches = 0  # Number of characters with matching counts
+    k = len(p)
+
+    for i in range(len(s)):
+        # Add character
+        c = s[i]
+        if c in p_count:
+            if window_count[c] == p_count[c]:
+                matches -= 1
+            window_count[c] += 1
+            if window_count[c] == p_count[c]:
+                matches += 1
+
+        # Remove character leaving window
+        if i >= k:
+            c = s[i - k]
+            if c in p_count:
+                if window_count[c] == p_count[c]:
+                    matches -= 1
+                window_count[c] -= 1
+                if window_count[c] == p_count[c]:
+                    matches += 1
+
+        # Check if all characters match
+        if matches == len(p_count):
+            result.append(i - k + 1)
+
+    return result
+```
+
+---
+
+## Template: Permutation in String
+
+```python
+def check_inclusion(s1: str, s2: str) -> bool:
+    """
+    Check if s1's permutation is a substring of s2.
+    (Same as checking if any anagram of s1 exists in s2)
+
+    Time: O(n)
+    Space: O(1)
+
+    Example:
+    s1 = "ab", s2 = "eidbaooo" → True ("ba" is substring)
+    s1 = "ab", s2 = "eidboaoo" → False
+    """
+    if len(s1) > len(s2):
+        return False
+
+    s1_count = [0] * 26
+    window_count = [0] * 26
+
+    for c in s1:
+        s1_count[ord(c) - ord('a')] += 1
+
+    k = len(s1)
+
+    for i in range(len(s2)):
+        window_count[ord(s2[i]) - ord('a')] += 1
+
+        if i >= k:
+            window_count[ord(s2[i - k]) - ord('a')] -= 1
+
+        if window_count == s1_count:
+            return True
+
+    return False
+```
+
+---
+
+## Template: Minimum Window Containing Anagram
+
+```python
+def min_window_anagram(s: str, p: str) -> str:
+    """
+    Find minimum window in s that contains an anagram of p.
+    (This is essentially same as p itself when found)
+
+    Note: For this problem, window must be exactly len(p).
+    """
+    anagram_indices = find_anagrams(s, p)
+    if anagram_indices:
+        return s[anagram_indices[0]:anagram_indices[0] + len(p)]
+    return ""
+```
+
+---
+
+## Template: Anagram Substring Count
+
+```python
+def count_anagram_substrings(s: str, p: str) -> int:
+    """
+    Count how many substrings of s are anagrams of p.
+
+    Time: O(n)
+    Space: O(1)
+    """
+    return len(find_anagrams(s, p))
+```
+
+---
+
+## Template: Scramble String Check
+
+```python
+def is_scramble(s1: str, s2: str) -> bool:
+    """
+    Check if s2 is a scrambled version of s1.
+    (Can recursively swap non-empty substrings)
+
+    This is more complex than anagram - uses DP/memoization.
+
+    Time: O(n⁴)
+    Space: O(n³)
+    """
+    from functools import lru_cache
+
+    if len(s1) != len(s2):
+        return False
+
+    @lru_cache(maxsize=None)
+    def helper(str1: str, str2: str) -> bool:
+        if str1 == str2:
+            return True
+        if sorted(str1) != sorted(str2):
+            return False
+
+        n = len(str1)
+        for i in range(1, n):
+            # No swap: left with left, right with right
+            if helper(str1[:i], str2[:i]) and helper(str1[i:], str2[i:]):
+                return True
+            # Swap: left with right, right with left
+            if helper(str1[:i], str2[n-i:]) and helper(str1[i:], str2[:n-i]):
+                return True
+
+        return False
+
+    return helper(s1, s2)
+```
+
+---
+
+## Common Patterns Summary
+
+| Problem Type | Technique | Key |
+|--------------|-----------|-----|
+| Check if anagram | Counter/Array | Compare counts |
+| Group anagrams | HashMap | Sorted string or count tuple as key |
+| Find anagram in string | Sliding window | Fixed size window |
+| Multiple anagram search | Sliding window | Track matches |
+
+---
+
+## Edge Cases
+
+```python
+# Empty strings
+"", "" → True (both are empty anagrams)
+"a", "" → False (different lengths)
+
+# Single character
+"a", "a" → True
+"a", "b" → False
+
+# Same string
+"hello", "hello" → True
+
+# Different lengths
+Any strings with different lengths → False
+
+# Unicode/special characters
+Handle based on problem constraints
+Usually limited to lowercase a-z in interviews
+```
+
+---
+
+## Practice Problems
+
+| # | Problem | Difficulty | Key Technique |
+|---|---------|------------|---------------|
+| 1 | Valid Anagram | Easy | Character count |
+| 2 | Group Anagrams | Medium | HashMap with key |
+| 3 | Find All Anagrams in a String | Medium | Sliding window |
+| 4 | Permutation in String | Medium | Sliding window |
+| 5 | Minimum Number of Steps to Make Anagram | Medium | Count difference |
+| 6 | Smallest Range Covering K Lists | Hard | Uses anagram concepts |
+| 7 | Scramble String | Hard | DP with memoization |
+
+---
+
+## Key Takeaways
+
+1. **Character count is the essence** of anagram checking
+2. **Use array `[0]*26`** for lowercase letters (faster than dict)
+3. **Sorted string or count tuple** as key for grouping
+4. **Sliding window** for finding anagrams in text
+5. **Track match count** for optimization over full comparison
+
+---
+
+## Next: [12-palindrome-strings.md](./12-palindrome-strings.md)
+
+Learn palindrome checking, expansion, and construction techniques.
