@@ -1,16 +1,26 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-19T07:45:38.201447Z",
   "created_at": "2026-01-19T05:28:35.506241Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "2d270795b9fc54eff26b822be144b500db4d2fd0"
+    ],
+    "prs": [],
+    "tests": [
+      "find . -name 'README.md' | wc -l (22 files)",
+      "directory existence verification (all 21 dirs exist)"
+    ]
+  },
   "id": "fn-1.2",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.2.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create root README.md with study plan and learning roadmaps",
-  "updated_at": "2026-01-19T06:06:11.696985Z"
+  "updated_at": "2026-01-19T07:48:31.394966Z"
 }
