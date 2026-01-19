@@ -1,16 +1,26 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-19T17:45:01.013018Z",
   "created_at": "2026-01-19T05:30:30.230153Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "d21e97a3c2ee6fb95b1c17a56a0ee53d79f05929"
+    ],
+    "prs": [],
+    "tests": [
+      "find . -name 'README.md' | wc -l",
+      "for dir in */; do echo \"$dir: $(find \"$dir\" -name '*.md' | wc -l)\"; done"
+    ]
+  },
   "id": "fn-1.13",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.13.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Chapter 11: Recursion & Backtracking (10-12 files)",
-  "updated_at": "2026-01-19T06:15:09.983697Z"
+  "updated_at": "2026-01-19T17:55:06.357301Z"
 }

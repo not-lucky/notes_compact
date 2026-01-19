@@ -22,9 +22,18 @@ Create Chapter 11: Recursion & Backtracking with 10-12 files:
 - [ ] Grid-based backtracking
 - [ ] 10-12 markdown files created
 ## Done summary
-TBD
+- Created Chapter 11: Recursion & Backtracking with 11 markdown files
+- Covered recursion fundamentals, subsets, permutations, combinations
+- Included classic problems: N-Queens, Sudoku, Word Search, Generate Parentheses
+- Each section follows interview-focused template with complexity analysis
 
+- Addresses core backtracking patterns needed for FANG+ interviews
+- Consistent format with other completed chapters
+
+- Verified file structure: 11 files in chapter directory
+- Quick commands passed: file counts match expectations
+- All acceptance criteria met
 ## Evidence
-- Commits:
-- Tests:
+- Commits: d21e97a3c2ee6fb95b1c17a56a0ee53d79f05929
+- Tests: find . -name 'README.md' | wc -l, for dir in */; do echo "$dir: $(find "$dir" -name '*.md' | wc -l)"; done
 - PRs:
