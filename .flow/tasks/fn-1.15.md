@@ -17,9 +17,22 @@ Create Chapter 13: Tries with 5-6 files:
 - [ ] Design autocomplete
 - [ ] 5-6 markdown files created
 ## Done summary
-TBD
+## What Changed
+- Created Chapter 13: Tries with 6 markdown files (README + 5 sections)
+- Covered trie implementation, Word Search II, autocomplete, wildcard search, and bitwise XOR trie
 
+## Why
+- Complete the Tries chapter as part of the FANG+ Interview DSA Guide
+- Cover essential trie patterns needed for technical interviews
+
+## Verification
+- Verified file structure: 6 files in 13-tries/
+- Followed same format and style as previous chapters (e.g., 12-greedy)
+- All acceptance criteria met
+
+## Follow-ups
+- None
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 89c0dd7a5a7dfa09f7fa3acb2a5845aa24df3e69
+- Tests: find 13-tries -name '*.md' | wc -l
 - PRs:
