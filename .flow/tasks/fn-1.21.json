@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-19T06:04:03.649426Z",
+  "depends_on": [
+    "fn-1.1"
+  ],
+  "epic": "fn-1",
+  "id": "fn-1.21",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1.21.md",
+  "status": "todo",
+  "title": "Create Appendix B: Problem Patterns Guide (3-4 files)",
+  "updated_at": "2026-01-19T06:18:36.831966Z"
+}

@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-19T05:32:26.556705Z",
+  "depends_on": [
+    "fn-1.1"
+  ],
+  "epic": "fn-1",
+  "id": "fn-1.18",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1.18.md",
+  "status": "todo",
+  "title": "Create Chapter 16: Math for Interviews (6-8 files)",
+  "updated_at": "2026-01-19T06:16:39.555499Z"
+}

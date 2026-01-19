@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-19T05:30:30.067070Z",
+  "depends_on": [
+    "fn-1.1"
+  ],
+  "epic": "fn-1",
+  "id": "fn-1.11",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1.11.md",
+  "status": "todo",
+  "title": "Create Chapter 09: Dynamic Programming (18-22 files)",
+  "updated_at": "2026-01-19T06:13:37.572892Z"
+}

@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-19T06:04:03.720801Z",
+  "depends_on": [
+    "fn-1.1"
+  ],
+  "epic": "fn-1",
+  "id": "fn-1.22",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1.22.md",
+  "status": "todo",
+  "title": "Create Appendix C: Company-Specific Patterns (3-4 files)",
+  "updated_at": "2026-01-19T06:18:36.989208Z"
+}
