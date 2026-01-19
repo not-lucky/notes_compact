@@ -336,6 +336,15 @@ def swimInWater(grid: list[list[int]]) -> int:
 
 ## Complexity Analysis
 
+| Operation | Naive | Union by Rank Only | Path Compression Only | Both Optimizations |
+|-----------|-------|-------------------|----------------------|-------------------|
+| Find | O(n) | O(log n) | O(log n)* | O(α(n))* |
+| Union | O(n) | O(log n) | O(log n)* | O(α(n))* |
+| Connected | O(n) | O(log n) | O(log n)* | O(α(n))* |
+| Space | O(n) | O(n) | O(n) | O(n) |
+
+*Amortized. α(n) = inverse Ackermann function ≈ O(1) for practical inputs.
+
 ### Height Bound with Union by Rank
 
 ```
@@ -394,6 +403,16 @@ For all practical purposes: O(1) per operation
    # Rank: only +1 when equal ranks
    # Size: always add sizes
    ```
+
+---
+
+## Edge Cases
+
+1. **Single element**: Rank stays 0, element is its own root
+2. **All elements same set**: Final rank ≤ log₂(n)
+3. **Already same root**: union(x, y) when find(x) == find(y) returns False
+4. **Duplicate unions**: No effect, rank doesn't increase incorrectly
+5. **Large n**: Rank values stay small (max ~30 for n = 10^9)
 
 ---
 
