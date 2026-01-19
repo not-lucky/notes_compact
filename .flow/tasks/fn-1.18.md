@@ -18,9 +18,19 @@ Create Chapter 16: Math for Interviews with 6-8 files:
 - [ ] Random sampling covered
 - [ ] 6-8 markdown files created
 ## Done summary
-TBD
+- Created Chapter 16: Math for Interviews with 7 comprehensive markdown files
+- Covered GCD/LCM, prime numbers, modular arithmetic, random sampling, sqrt problems, and number properties
+- All sections include interview context, implementations, practice problems, and edge cases
 
+**Why:**
+- Completes the math chapter as specified in the task
+- Follows established chapter structure and formatting patterns
+
+**Verification:**
+- 7 files created (README.md + 6 sections)
+- Internal and external links verified and fixed
+- Consistent with other chapters in format and depth
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 5a12f1c8703fdc3e7e019b81d0b8d37fe3f226aa
+- Tests: file structure verification
 - PRs:
