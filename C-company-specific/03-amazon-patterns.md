@@ -6,6 +6,61 @@ Amazon interviews are unique because they blend technical skills with Leadership
 
 ---
 
+## Building Intuition
+
+### Why Amazon Interviews Are Different
+
+Amazon is the only FANG company that explicitly evaluates you against a defined set of behavioral principles in every round. While other companies assess culture fit implicitly, Amazon makes it explicit with their 16 Leadership Principles.
+
+**The key insight**: At Amazon, how you frame your technical decisions matters as much as the decisions themselves. An engineer who says "I optimized this for scalability" is good; one who says "I thought about our customers who need fast page loads, so I optimized for scalability" is better.
+
+### What Leadership Principles Really Test
+
+LPs aren't arbitrary corporate values—they encode what Amazon believes makes effective employees:
+- **Customer Obsession**: Do you think from the user's perspective?
+- **Ownership**: Do you take responsibility beyond your job description?
+- **Bias for Action**: Do you act decisively with incomplete information?
+- **Dive Deep**: Do you understand your systems at a detailed level?
+
+Interviewers evaluate whether you naturally think this way, not whether you can recite the principles.
+
+### Mental Model: The LP Lens
+
+Think of LPs as lenses for viewing any situation:
+
+| Situation | Without LP Lens | With LP Lens |
+|-----------|----------------|--------------|
+| Fixed a bug | "I found and fixed the bug" | "I dove deep into the logs, found the root cause affecting customer checkout, and fixed it" |
+| Made a decision | "I decided to use Redis" | "I owned the caching decision, chose Redis for our customer latency requirements" |
+| Shipped fast | "I delivered on time" | "I had a bias for action—shipped MVP in 2 weeks despite incomplete specs" |
+
+### Why the Bar Raiser Matters
+
+The Bar Raiser is Amazon's quality control mechanism. They're from a different team, have no stake in hiring you, and can veto any hire. They exist to prevent "lowering the bar" during hiring surges. Expect deeper behavioral probing from them.
+
+---
+
+## When NOT to Use Amazon-Specific Strategies
+
+### Don't Force LP Integration
+
+1. **Don't shoehorn LPs**: If your answer doesn't naturally demonstrate an LP, don't force it. Interviewers can tell when you're artificially inserting "customer obsession" into every sentence.
+
+2. **Don't forget the technical**: LP integration is important, but you still need to solve the coding problem. Don't spend so much time on behavioral framing that you run out of coding time.
+
+3. **Don't use generic STAR stories**: "Tell me about a time you showed ownership" should get a specific, detailed story—not a vague answer that could apply to anyone.
+
+4. **Don't memorize LP definitions**: Know the principles conceptually, but don't recite their definitions verbatim. That sounds rehearsed.
+
+### Common Amazon Interview Mistakes
+
+- **"We" instead of "I"**: Amazon wants to know what *you* did, not what your team did. Use "I" throughout your STAR stories.
+- **No quantified results**: "It was successful" is weak. "We reduced latency by 40%, improving customer satisfaction scores by 15%" is strong.
+- **Ignoring the Bar Raiser**: Treating the Bar Raiser interview casually is dangerous. They often ask the hardest behavioral questions.
+- **Separate tech and behavioral**: At Amazon, technical decisions should demonstrate LPs naturally.
+
+---
+
 ## Interview Structure
 
 ### Typical Process

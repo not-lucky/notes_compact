@@ -6,6 +6,64 @@ Meta (Facebook) interviews emphasize velocity and working solutions. Their "move
 
 ---
 
+## Building Intuition
+
+### Why Meta Interviews Are Faster-Paced
+
+Meta's culture is built around shipping quickly and iterating based on real-world feedback. This philosophy permeates their interviews: they care more about "does it work?" than "is it perfect?"
+
+**The key insight**: At Meta, a working solution delivered quickly is valued over a perfect solution delivered slowly. This doesn't mean they accept bad code—it means they want to see your ability to prioritize, execute, and improve.
+
+### What Two Problems Per Round Really Tests
+
+Having two problems in 45 minutes isn't just about speed—it tests:
+1. **Time management**: Can you allocate time appropriately?
+2. **Context switching**: Can you reset and tackle a new problem?
+3. **Knowing when to stop**: Do you know when "good enough" is good enough?
+4. **Performing under pressure**: Can you think clearly when rushed?
+
+These are exactly the skills needed in a fast-moving product organization.
+
+### Mental Model: The Ship-Iterate Cycle
+
+Meta thinks in cycles:
+1. Ship something that works
+2. Measure how it performs
+3. Iterate based on data
+4. Repeat
+
+In interviews, demonstrate this mindset:
+- Get a working solution first
+- Acknowledge limitations
+- Discuss how you'd improve with more time
+
+### Why Product Sense Matters at Meta
+
+Meta is a product company. System design interviews test not just technical architecture but whether you understand *why* users need certain features. "How would this affect user experience?" is as important as "How would this scale?"
+
+---
+
+## When NOT to Use Meta-Specific Strategies
+
+### Don't Sacrifice Quality for Speed
+
+1. **Don't submit buggy code**: "Working code first" doesn't mean "any code." Your solution should actually work. A buggy fast solution is worse than a correct slower one.
+
+2. **Don't skip testing entirely**: Quick testing is different from no testing. A 30-second trace-through catches obvious bugs.
+
+3. **Don't ignore optimization discussion**: Even if you don't optimize fully, discussing how you *would* optimize shows understanding.
+
+4. **Don't neglect problem 2**: If you're slow on problem 1, don't give up on problem 2. Even partial progress on both is better than perfect on one.
+
+### Common Meta Interview Mistakes
+
+- **Over-optimizing problem 1**: Spending 35 minutes perfecting problem 1 leaves 10 minutes for problem 2.
+- **No structure**: Moving fast doesn't mean chaotic. Have a brief plan before coding.
+- **Ignoring the interviewer**: Meta interviews are still collaborative. If they suggest something, consider it.
+- **Not practicing speed**: Two problems in 45 minutes requires practice. You can't wing this pace.
+
+---
+
 ## Interview Structure
 
 ### Typical Process

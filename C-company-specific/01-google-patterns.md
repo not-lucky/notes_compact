@@ -6,6 +6,62 @@ Google's interview process is known for its algorithmic rigor. They want to see 
 
 ---
 
+## Building Intuition
+
+### Why Google Interviews Feel Different
+
+Google pioneered the modern tech interview. Their style—deep algorithmic problems, emphasis on complexity analysis, structured communication—has become the industry standard, but Google does it more intensely than anyone else.
+
+**The key insight**: Google optimizes for avoiding false positives (hiring someone who can't do the job) over false negatives (rejecting someone who could). This means they'd rather pass on a good candidate than hire a mediocre one. You need to be obviously good, not just adequate.
+
+### What Interviewers Actually Evaluate
+
+Google interviewers score you on:
+1. **Analytical skills**: How you break down problems
+2. **Coding skills**: Clean, working code
+3. **Communication**: Can they understand your thinking?
+4. **Googleyness**: Would you be good to work with?
+
+The first three are table stakes. Googleyness is the differentiator—it's why two candidates with similar technical skills get different outcomes.
+
+### Mental Model: The Collaborative Colleague Test
+
+Interviewers ask themselves: "Would I want to work with this person?"
+
+This means:
+- When you explain your approach, they imagine hearing this in a design discussion
+- When you take feedback, they imagine giving you a code review
+- When you handle a hard problem, they imagine you on-call at 2 AM
+
+Your goal is to demonstrate that working with you would be pleasant and productive.
+
+### Why Optimal Solutions Matter at Google
+
+Google systems serve billions of users. An O(n²) solution that works fine in an interview could cost millions at scale. When interviewers push for optimal solutions, they're testing whether you think about scalability instinctively.
+
+---
+
+## When NOT to Use Google-Specific Strategies
+
+### Don't Over-Optimize for Google's Style
+
+1. **Don't be too slow**: Spending 15 minutes on clarification is too much. 3-5 minutes, then get buy-in and code.
+
+2. **Don't ignore partial credit**: If you can't find the optimal solution, a working brute-force solution with clear analysis is still valuable. Don't freeze trying to find the perfect approach.
+
+3. **Don't be robotic**: "I'll now state my assumptions" repeated for each problem sounds rehearsed. Be natural in your communication.
+
+4. **Don't hide confusion**: If you don't understand the problem, asking clarifying questions is better than solving the wrong problem optimally.
+
+### Common Google Interview Mistakes
+
+- **Silent thinking**: Google wants to hear your thought process. Thinking silently for 5 minutes is a red flag.
+- **Giving up on optimization**: Even if you can't find O(n), discussing why O(n²) is suboptimal shows understanding.
+- **Defensive about feedback**: When an interviewer hints that something is wrong, thank them and adapt.
+- **Skipping complexity analysis**: Always state time AND space complexity before and after coding.
+
+---
+
 ## Interview Structure
 
 ### Typical Process

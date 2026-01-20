@@ -6,6 +6,74 @@ Microsoft and Apple share some interview characteristics—both value depth, pol
 
 ---
 
+## Building Intuition
+
+### Why Microsoft and Apple Are Covered Together
+
+These two companies represent opposite poles of a spectrum:
+- **Microsoft**: Openly collaborative, growth-oriented, feedback-embracing
+- **Apple**: Privately polished, detail-obsessed, ambiguity-tolerant
+
+Understanding both helps you calibrate your approach based on the signals you get during the interview.
+
+### What "Growth Mindset" Really Means at Microsoft
+
+Satya Nadella transformed Microsoft's culture from "know-it-all" to "learn-it-all." In interviews, this translates to:
+- **Asking for help is strength, not weakness**
+- **Admitting mistakes shows self-awareness**
+- **Learning from failure demonstrates resilience**
+- **Taking hints shows you can collaborate**
+
+Microsoft interviewers deliberately give hints to see how you respond. Refusing hints is a negative signal.
+
+### What "Polish" Really Means at Apple
+
+Apple's "it just works" philosophy extends to hiring. They want engineers who:
+- **Handle every edge case**: "What if the input is null?" should already be answered
+- **Write clean code naturally**: Not just functional—aesthetically organized
+- **Think about users**: Even in backend problems, "how does this affect the user?" matters
+- **Tolerate ambiguity**: You won't always know what you're building. Can you proceed anyway?
+
+### Mental Model: The Two Cultures
+
+| Aspect | Microsoft | Apple |
+|--------|-----------|-------|
+| When stuck | "Can you give me a hint?" | Think harder, explore systematically |
+| When wrong | "Thanks for catching that" | Silently correct, move on |
+| When done | Discuss what you'd improve | Make sure nothing is missing |
+| Core signal | "I can learn and grow" | "I produce polished work" |
+
+---
+
+## When NOT to Use Microsoft/Apple Strategies
+
+### Microsoft Pitfalls
+
+1. **Don't over-rely on hints**: Asking for hints on everything makes you look dependent. Use hints strategically for genuinely stuck moments.
+
+2. **Don't fake failure stories**: "Tell me about a failure" requires genuine introspection. A humble-brag ("My failure was caring too much") is transparent.
+
+3. **Don't abandon structure**: Collaborative doesn't mean chaotic. Have a plan before coding.
+
+4. **Don't forget OOP**: Microsoft loves object-oriented design problems. Know your design patterns.
+
+### Apple Pitfalls
+
+1. **Don't rush**: Apple values quality. Taking 40 minutes for a complete, polished solution beats 25 minutes for a buggy one.
+
+2. **Don't show frustration with ambiguity**: "I don't know what team I'd be on" is not a valid objection at Apple. They're testing whether you can handle secrecy.
+
+3. **Don't skip edge cases**: Apple interviewers notice when you don't handle null, empty arrays, or boundary conditions.
+
+4. **Don't expect collaboration**: Apple interviews are more independent. The interviewer may not give many hints.
+
+### Common Mistakes at Both
+
+- **Microsoft**: Refusing hints, being defensive about mistakes, not showing learning orientation
+- **Apple**: Sloppy code, unhandled edge cases, visible frustration with ambiguous requirements
+
+---
+
 # Microsoft Interview Patterns
 
 ## Interview Structure
