@@ -18,6 +18,38 @@ Output: 3
 Explanation: "wke" is the answer (not "pwke" - must be contiguous substring).
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The sliding window maintains an invariant: all characters in the window `[left, right]` are unique. We expand `right` to explore new characters. When we encounter a character that already exists in the window, we shrink from `left` until the duplicate is removed.
+
+The hash map optimization stores the last index where each character was seen. When we find a duplicate, instead of incrementing `left` one by one, we can jump `left` directly to one past the previous occurrence of the duplicate character. This ensures each character is processed at most twice (once when entering the window, once when determining where to jump `left`).
+
+The window never shrinks unnecessarily. We only shrink when forced to by a duplicate, and we shrink exactly as much as needed. This greedy expansion, minimal shrinkage strategy is optimal.
+
+### How to Discover This
+
+Sliding window is the go-to technique for "longest/shortest contiguous substring/subarray satisfying some property." The property here is "all unique characters."
+
+Think in terms of the invariant: what must be true about the window? How do we restore the invariant when it is violated? Here, the invariant is uniqueness; violation is a duplicate; restoration is shrinking until the duplicate is gone.
+
+### Pattern Recognition
+
+This is the **Sliding Window with Invariant** pattern. It appears in:
+- Longest substring without repeating (this problem)
+- Longest substring with at most k distinct characters
+- Minimum window substring
+- Longest repeating character replacement
+- Any problem asking for optimal contiguous segment with a constraint
+
+## When NOT to Use
+
+- **When the constraint is not about contiguity**: Sliding window only works for contiguous substrings/subarrays. For subsequences, you need DP or other techniques.
+- **When the invariant cannot be restored monotonically**: Sliding window assumes that shrinking the window from one side can restore the invariant. If violations require more complex repairs, the technique breaks down.
+- **When you need all qualifying substrings, not just the longest**: Sliding window finds the optimal one. Enumerating all requires different approaches.
+- **When the "window" is not a simple range**: If valid substrings can have gaps or complex structure, sliding window does not apply.
+
 ## Approach
 
 ### Sliding Window with Hash Set

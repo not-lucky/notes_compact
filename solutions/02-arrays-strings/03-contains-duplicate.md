@@ -13,6 +13,37 @@ Input: nums = [1, 2, 3, 4]
 Output: false
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The fundamental question is: "Have I seen this element before?" A hash set is purpose-built for exactly this question, providing O(1) average-case lookup and insertion.
+
+As we iterate through the array, we check if the current element exists in our set of previously seen elements. If yes, we have found a duplicate. If no, we add it to the set and continue. The set grows as we scan, but we can return early the moment we find a duplicate.
+
+The alternative approaches trade off different resources. Sorting brings duplicates adjacent to each other (making detection O(1) per element after O(n log n) preprocessing), while brute force uses no extra space but O(n) time per element.
+
+### How to Discover This
+
+Whenever a problem asks "does X exist in a collection?" and you need to answer this question many times, a hash set should be your first thought. The set gives you O(1) membership testing at the cost of O(n) space.
+
+For duplicate detection specifically, also consider: would sorting help? If so, is modifying the input allowed? These questions help you choose between hash set and sorting approaches.
+
+### Pattern Recognition
+
+This is the **Membership Testing** pattern using hash sets. It appears in:
+- Duplicate detection (this problem)
+- Finding intersections or differences between arrays
+- Checking if elements satisfy some property across a collection
+- Cycle detection in linked lists (Floyd's uses O(1) space, hash set uses O(n))
+
+## When NOT to Use
+
+- **When space is severely constrained**: Sorting uses O(1) extra space (or O(log n) for the call stack) and still solves the problem in O(n log n) time.
+- **When you need to count duplicates, not just detect them**: Use a hash map (Counter) instead of a set to track frequencies.
+- **When the input is already sorted**: Simply check adjacent elements in O(n) time with O(1) space.
+- **When elements are bounded integers in a small range**: You might be able to use the array itself as a hash set by marking visited indices (e.g., negating values), achieving O(1) space.
+
 ## Approach
 
 ### Method 1: Hash Set (Optimal)

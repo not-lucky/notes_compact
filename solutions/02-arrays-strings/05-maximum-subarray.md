@@ -13,6 +13,38 @@ Output: 6
 Explanation: Subarray [4, -1, 2, 1] has the largest sum = 6.
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Kadane's algorithm is based on a simple observation: at each position, you have exactly two choices. Either extend the current subarray by including this element, or start a fresh subarray beginning at this element. The decision is easy: if the previous subarray sum is negative, it can only hurt you, so start fresh. If it is positive (or zero), it can only help (or not hurt), so extend.
+
+Mathematically, `current_sum = max(num, current_sum + num)`. If `current_sum` before adding `num` is negative, then `num > current_sum + num`, so we start fresh. Otherwise, we extend.
+
+The global maximum is tracked separately because the best subarray might end somewhere in the middle of the array, not at the end. After processing each element, we check if we have a new global best.
+
+### How to Discover This
+
+When asked for the "best contiguous subsequence," consider: what is the best answer ending at each position? This is a form of dynamic programming where `dp[i]` = "best subarray sum ending exactly at index `i`".
+
+The recurrence `dp[i] = max(nums[i], dp[i-1] + nums[i])` follows naturally: either the best subarray ending at `i` includes previous elements (extend), or it is just `nums[i]` itself (start fresh). Kadane's is just this DP with space optimized from O(n) to O(1).
+
+### Pattern Recognition
+
+This is **Kadane's Algorithm**, a special case of the **Optimal Substructure** DP pattern. It appears in:
+- Maximum subarray sum (this problem)
+- Maximum product subarray (track both max and min due to sign flipping)
+- Best time to buy and sell stock (equivalent formulation)
+- Circular array variants (combine with min subarray)
+- Any problem asking for optimal contiguous segment
+
+## When NOT to Use
+
+- **When the subarray has size constraints**: If you need exactly `k` elements or at least `k` elements, Kadane's needs modification or a sliding window approach.
+- **When you need the actual subarray, not just the sum**: Kadane's can be extended to track indices, but the basic version only returns the value.
+- **When there are additional constraints on elements**: If only certain elements can be included (e.g., no two adjacent), you need a different DP formulation.
+- **When the problem involves products instead of sums**: Maximum product subarray requires tracking both max and min products because negatives can flip signs.
+
 ## Approach
 
 ### Kadane's Algorithm

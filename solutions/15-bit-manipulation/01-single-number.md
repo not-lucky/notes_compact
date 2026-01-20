@@ -15,6 +15,34 @@ Input: nums = [4, 1, 2, 1, 2]
 Output: 4
 ```
 
+## Building Intuition
+
+### Why This Works
+
+XOR has three magical properties that make this work: (1) XORing a number with itself gives 0 (`a ^ a = 0`), (2) XORing with 0 gives the original number (`a ^ 0 = a`), and (3) XOR is commutative and associative, so order doesn't matter. When you XOR all numbers together, every pair of identical numbers cancels to 0, leaving only the singleton.
+
+Think of XOR as "toggle bits." Each bit in the result tracks whether that bit appeared an odd or even number of times across all numbers. Pairs contribute an even count, so they cancel. The single number contributes an odd count for its set bits, so those survive.
+
+The beauty is that you don't need to know which numbers are pairs ahead of time. The mathematical properties guarantee that pairs annihilate regardless of their positions in the array. It's like having a room where every person who enters shakes hands with everyone, and people who shake hands an even number of times become invisible.
+
+### How to Discover This
+
+When you see "appears twice except one" with O(1) space constraint, XOR is the answer. The constraint rules out hash maps (O(n) space) and sorting (O(n log n) time if space-constrained). XOR's self-inverse property (`a ^ a = 0`) is tailor-made for canceling pairs.
+
+### Pattern Recognition
+
+This is the **XOR for Finding Unique Elements** pattern. Recognize it when:
+- Elements appear in pairs except for one or two
+- O(1) space is required
+- You don't need to know which elements are paired
+
+## When NOT to Use
+
+- **When elements appear more than twice (e.g., 3 times)**: XOR only cancels pairs. Use bit counting for "k times" variants.
+- **When there are multiple unique elements**: Single XOR gives you a^b, not a and b separately. Use the "find differing bit" trick for two unique elements.
+- **When you need to know which elements are duplicates**: XOR only finds the unique one, not the duplicates.
+- **When the array is empty or all elements are unique**: XOR won't help; the problem structure doesn't apply.
+
 ## Approach
 
 ### Key Insight: XOR Properties

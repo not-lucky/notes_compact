@@ -16,6 +16,31 @@ Input:      3
 Output: 3
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The maximum depth of a tree is defined recursively: it's 1 (for the current node) plus the maximum depth of its deepest subtree. An empty tree has depth 0 (base case). This recursive definition directly translates to code: `return 1 + max(depth(left), depth(right))`.
+
+The beauty of this approach is that we don't need to track paths or maintain state - each subtree independently reports its depth, and we combine them at each level. Information flows up from leaves (which report depth 1) through internal nodes (which add 1 and take the max) to the root.
+
+BFS offers an alternative intuition: depth is just the number of levels. Process the tree level by level, counting how many levels exist before the queue empties.
+
+### How to Discover This
+
+For tree measurement problems (depth, size, sum), think recursively: "How does the answer for the whole tree relate to answers for the subtrees?" Often it's a simple combination: max (for depth/height), plus (for size/sum), and/or (for boolean properties).
+
+### Pattern Recognition
+
+This is the **Recursive Tree Aggregation** pattern. Compute a value for each subtree and combine them at the parent. It works for depth, node count, sum, diameter, balance checking, and many other tree metrics.
+
+## When NOT to Use
+
+- **When you only need to know if depth exceeds a threshold**: Early termination can avoid exploring the entire tree. Check depth during traversal and stop when threshold is exceeded.
+- **When tracking the path to the deepest node**: This approach only returns the count; you'd need to track the actual path separately.
+- **When the tree is represented as an array (complete binary tree)**: For a complete binary tree in array form, depth is simply floor(log2(n)) + 1 - no traversal needed.
+- **When depth is frequently queried on a static tree**: Cache the depth values instead of recomputing; or augment each node with its depth during construction.
+
 ## Approach
 
 ### Recursive DFS

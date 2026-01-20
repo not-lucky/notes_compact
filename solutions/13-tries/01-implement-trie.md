@@ -19,6 +19,34 @@ trie.insert("app");
 trie.search("app");     // true
 ```
 
+## Building Intuition
+
+### Why This Works
+
+A trie exploits the structure of strings: they're sequences of characters, and prefixes are shared. Instead of storing "apple", "application", and "apply" as three separate strings, a trie stores them as a tree where the path "a-p-p-l" is shared. Each node represents a character position, and the path from root to any node spells out a prefix.
+
+The `is_end` flag distinguishes complete words from mere prefixes. The path "a-p-p" exists in our trie, but only "app" (if inserted) would have `is_end = True`. This is why `search("app")` returns False until "app" is explicitly inserted, while `startsWith("app")` returns True as soon as any word with that prefix exists.
+
+The time complexity O(m) for all operations (where m is word/prefix length) is trie's superpower. Compare to storing words in a list: search would be O(n*m) where n is the number of words. Or a hash set: exact search is O(m), but prefix search requires checking all words. Tries give O(m) for both exact and prefix search.
+
+### How to Discover This
+
+When you see "prefix matching" or "autocomplete" or "words sharing common prefixes," think trie. The key question is: "Do I need to efficiently answer queries about prefixes?" If yes, tries are likely optimal. If you only need exact match, a hash set suffices.
+
+### Pattern Recognition
+
+This is the **Trie / Prefix Tree** pattern. Recognize it when:
+- Prefix-based operations are required (startsWith, autocomplete)
+- Many strings share common prefixes
+- You need to efficiently store and search a dictionary of words
+
+## When NOT to Use
+
+- **When only exact match is needed**: A hash set is simpler and equally efficient for exact lookups.
+- **When the alphabet is very large**: With Unicode strings (100,000+ possible characters), the children map per node becomes expensive. Consider compressed tries or ternary search trees.
+- **When words don't share prefixes**: The trie degenerates into n separate chains with no space savings.
+- **When memory is extremely constrained**: Tries can use more memory than a simple hash set due to node overhead.
+
 ## Approach
 
 ### Structure

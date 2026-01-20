@@ -13,6 +13,39 @@ Output: 5
 Explanation: Buy on day 2 (price=1), sell on day 5 (price=6). Profit = 6-1 = 5.
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The key insight is that profit depends on two things: the buy price and the sell price. Since we must buy before we sell, as we scan forward through time, we only care about the minimum price we have seen so far (the best possible buy point for any future sell).
+
+At each day, we ask: "If I sold today, what is the maximum profit I could make?" The answer is simply today's price minus the minimum price seen so far. We track the global maximum of this value across all days.
+
+This works because we are decomposing a two-variable optimization (choose buy day AND sell day) into a single-variable scan. By maintaining the running minimum, we have already solved "what is the best buy day for any sell day up to now?" implicitly.
+
+### How to Discover This
+
+When you see a problem involving pairs where one must come before the other (buy before sell, start before end), consider: can I maintain a running aggregate (min, max, sum) that captures the best choice for the first element?
+
+The pattern of "for each position, what is the best result ending/starting here?" is extremely common. It leads to Kadane's algorithm, prefix sums, and many DP solutions.
+
+### Pattern Recognition
+
+This is the **Running Minimum/Maximum** pattern, closely related to **Kadane's Algorithm**. The stock problem is actually equivalent to finding the maximum subarray sum of daily price changes (differences between consecutive days).
+
+You will see this pattern in:
+- Maximum subarray problems
+- Best time to buy/sell variants
+- Finding maximum difference with order constraint
+- Prefix/suffix optimization problems
+
+## When NOT to Use
+
+- **When multiple transactions are allowed**: The simple min-tracking approach assumes one buy and one sell. For multiple transactions, you need DP or state machines.
+- **When there is a cooldown or transaction fee**: These add state dependencies that require explicit DP formulation.
+- **When you need the actual days, not just the profit**: You would need to track the indices of min and max, not just their values.
+- **When prices can go negative**: The algorithm still works, but make sure your understanding of "profit" accounts for this (selling at -5 after buying at -10 is still a profit of 5).
+
 ## Approach
 
 ### Key Insight

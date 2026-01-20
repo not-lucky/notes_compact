@@ -12,6 +12,31 @@ Input: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
 Output: [["bat"], ["nat", "tan"], ["ate", "eat", "tea"]]
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The fundamental insight is that anagrams are strings with identical character compositions - they contain exactly the same letters in exactly the same quantities, just arranged differently. This means if we can find a way to represent this "character composition" in a canonical form, all anagrams will map to the same representation.
+
+Sorting provides one such canonical form: when you sort the characters of any anagram, you get the same result. "eat", "tea", and "ate" all become "aet" when sorted. This sorted string acts as a fingerprint that uniquely identifies the anagram group. Similarly, a character frequency count (how many a's, b's, c's, etc.) provides another canonical representation - all anagrams have identical frequency distributions.
+
+The hash map then becomes our grouping mechanism. We use the canonical form as a key, and as we iterate through strings, we simply append each one to the list associated with its key. Strings that are anagrams will naturally end up in the same list because they share the same key.
+
+### How to Discover This
+
+When you see a grouping problem, immediately think: "What property do items in the same group share?" For anagrams, the shared property is character composition. Once you identify this, the next question is: "How can I represent this shared property as a hash map key?" This leads to either sorting (simple but slower) or character counting (slightly more complex but faster for long strings).
+
+### Pattern Recognition
+
+This is the **Canonical Form Hashing** pattern. Whenever you need to group items by some equivalence relationship (anagrams, rotations, permutations), find a canonical representation that's identical for all equivalent items and use it as a hash map key.
+
+## When NOT to Use
+
+- **When order matters**: If you need to preserve the relative ordering between anagram groups or need the first occurrence to define the group, you may need additional tracking.
+- **When memory is extremely constrained**: Hash maps require O(n*k) space; if you can't afford this, consider sorting the entire array with a custom comparator (though this changes time complexity).
+- **When strings contain Unicode or mixed character sets**: The character-count approach using a 26-element array only works for lowercase ASCII; for general Unicode, use a Counter/dictionary instead.
+- **When you need streaming/online processing**: This approach requires all strings upfront; for streaming, you'd need a different data structure like a trie or database.
+
 ## Approach
 
 ### Key Insight

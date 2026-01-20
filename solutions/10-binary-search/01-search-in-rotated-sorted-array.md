@@ -17,6 +17,34 @@ Input: nums = [4, 5, 6, 7, 0, 1, 2], target = 3
 Output: -1
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The critical insight is that even though the array is rotated, **at least one half is always sorted**. A rotated sorted array is really two sorted subarrays stitched together, with the "pivot" (minimum element) at the junction. When you pick any midpoint, you split the array into two halves, and at most one of them contains the pivot - the other must be perfectly sorted.
+
+How do we identify the sorted half? Compare the leftmost element to the middle. If `nums[left] <= nums[mid]`, the left half is sorted (no pivot there). Otherwise, the right half is sorted. Once you know which half is sorted, you can definitively say whether the target is in that sorted half by checking if it falls within the range. If it does, search there; if not, search the other half.
+
+This maintains the O(log n) property of binary search because we eliminate half the search space each iteration, just like regular binary search. We're just smarter about which half to eliminate.
+
+### How to Discover This
+
+When you see "sorted array with a twist," ask: "What property of sorted arrays still holds partially?" Here, it's that one half is always sorted. Draw the array as a rotated line graph (like a mountain with a cliff) to visualize this. The sorted half appears as an upward slope; the other half contains the "cliff" (pivot).
+
+### Pattern Recognition
+
+This is the **Modified Binary Search** pattern. Recognize it when:
+- The array has some sorted structure (fully, partially, or rotated)
+- You need O(log n) time complexity
+- Simple binary search doesn't directly apply, but you can identify "which half to search" with extra comparisons
+
+## When NOT to Use
+
+- **When duplicates are present**: With duplicates, you can't always determine the sorted half (e.g., [1,1,1,0,1]). Worst case degrades to O(n).
+- **When the array is fully unsorted**: No structure to exploit; you're stuck with O(n) linear search.
+- **When finding the rotation point, not a target**: Use the "find minimum" variant instead.
+- **When the rotation point is not a single pivot**: If the array is shuffled in a more complex way, this technique doesn't apply.
+
 ## Approach
 
 ### Key Insight

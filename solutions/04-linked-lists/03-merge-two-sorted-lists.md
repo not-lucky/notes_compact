@@ -10,6 +10,31 @@ Input: list1 = [1, 2, 4], list2 = [1, 3, 4]
 Output: [1, 1, 2, 3, 4, 4]
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Since both lists are already sorted, the smallest element overall must be one of the two heads. By comparing heads and taking the smaller one, we're guaranteed to build the result in sorted order. After taking an element, we simply advance that list's pointer and repeat.
+
+The dummy node is a powerful simplification technique. Without it, we'd need special logic to initialize the head of the result list. With a dummy, every node (including the first real one) is handled by the same code: `current.next = smaller_node`. At the end, we just return `dummy.next` to skip the dummy itself.
+
+The "attach remaining" step at the end is efficient because we're just linking to an already-sorted tail. When one list is exhausted, everything remaining in the other list is (a) larger than everything we've added and (b) already sorted, so we can attach the entire remainder in O(1).
+
+### How to Discover This
+
+When merging sorted sequences, the two-pointer comparison approach is fundamental - it's the "merge" in merge sort. The dummy node trick should become automatic whenever you're building a linked list and don't want special-case logic for the first node. Ask yourself: "Would a fake head node simplify my code?" Usually, yes.
+
+### Pattern Recognition
+
+This is the **Two-Pointer Merge** pattern with the **Dummy Node Technique**. The merge pattern extends to merging K sorted lists (using a heap for efficient minimum finding), merge sort on linked lists, and any problem involving combining sorted sequences.
+
+## When NOT to Use
+
+- **When lists are unsorted**: You'd need to sort them first, making the overall complexity O(n log n) anyway; might as well use a different approach.
+- **When you need to preserve the original lists**: This approach reuses existing nodes; if you need the originals intact, create new nodes instead.
+- **When one list is vastly larger than the other**: If list2 has 1 element and list1 has 1 million, finding the insertion point with binary search might be more efficient than linear scanning.
+- **When working with arrays instead of linked lists**: Array merging requires O(n+m) extra space because you can't relink; consider in-place merge techniques or different data structures.
+
 ## Approach
 
 ### Iterative with Dummy Node

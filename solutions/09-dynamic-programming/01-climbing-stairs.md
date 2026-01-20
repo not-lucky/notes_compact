@@ -16,6 +16,34 @@ Input: n = 5
 Output: 8
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The key insight is recognizing that the last step you take must be either 1 or 2 stairs. If you're on step n, you could only have arrived from step n-1 (by taking 1 step) or step n-2 (by taking 2 steps). These are the only two possibilities, and they're mutually exclusive. Therefore, the total ways to reach step n equals the sum of ways to reach step n-1 and step n-2.
+
+This is exactly the Fibonacci sequence! The problem has **optimal substructure** (the answer depends on smaller subproblems) and **overlapping subproblems** (the same subproblems are solved multiple times in naive recursion). These two properties scream "dynamic programming."
+
+The reason we only need two variables (not an array) is that we only ever look back two steps. Once we've computed the answer for step k, we no longer care about steps 1 through k-2. This "sliding window" optimization reduces space from O(n) to O(1).
+
+### How to Discover This
+
+Ask yourself: "What was the last action I took?" This question reveals the recurrence relation. For climbing stairs: "Did I take a 1-step or a 2-step to get here?" For other DP problems, the last action might be "which item did I include?" or "which character did I match?" The recurrence falls out naturally from enumerating possibilities for the last action.
+
+### Pattern Recognition
+
+This is the **Linear DP with Constant Lookback** pattern (specifically Fibonacci-style). Recognize it when:
+- The answer for state i depends only on a fixed number of previous states
+- There's no "choice" involved, just summing possibilities
+- You can reduce space to O(1) since you only need recent states
+
+## When NOT to Use
+
+- **When the number of step sizes is large or variable**: With k different step sizes, you need O(k) lookback, not O(1).
+- **When there are constraints on sequences**: For example, "can't take two 2-steps in a row" requires tracking additional state.
+- **When you need to enumerate actual paths, not just count**: You'd need to store all paths, which is exponential.
+- **When n is astronomically large**: Even O(n) might be too slow; use matrix exponentiation for O(log n) time.
+
 ## Approach
 
 ### Key Insight

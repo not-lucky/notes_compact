@@ -13,6 +13,31 @@ Input: nums = [1], k = 1
 Output: [1]
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The problem breaks into two phases: counting frequencies (O(n) with hash map), then finding the top k by frequency. The heap approach maintains a min-heap of size k - by keeping only k elements and evicting the smallest whenever we exceed k, the heap eventually contains exactly the k largest.
+
+Bucket sort exploits a key constraint: frequencies are bounded by n (a number can appear at most n times). We create n+1 buckets, place each number in the bucket matching its frequency, then collect from highest bucket down until we have k elements. This achieves O(n) time because bucket operations are O(1).
+
+Quickselect partitions elements so that the k most frequent end up on one side, without fully sorting. It's like quicksort but only recursing on the side containing the k-th position.
+
+### How to Discover This
+
+When you see "top k" or "k largest/smallest," think heaps (O(n log k)) or quickselect (O(n) average). When frequencies are involved, consider bucket sort if the frequency range is bounded. The choice depends on constraints: heap for guaranteed O(n log k), bucket for O(n) when frequencies are bounded, quickselect for average O(n) with worse worst case.
+
+### Pattern Recognition
+
+This is the **Top K Selection** pattern. Count occurrences with a hash map, then select top k using either: (1) min-heap of size k, (2) bucket sort when range is bounded, or (3) quickselect for average O(n). The same pattern solves "k closest points," "k most frequent words," and similar problems.
+
+## When NOT to Use
+
+- **When k equals n (return all elements sorted)**: Full sorting is cleaner than heap/quickselect; just sort the unique elements by frequency.
+- **When frequencies are unbounded or unknown**: Bucket sort requires knowing the maximum frequency; use heap or quickselect instead.
+- **When you need stable ordering among equal-frequency elements**: Heaps and quickselect don't preserve insertion order; additional bookkeeping is needed.
+- **When the data is streaming and k changes dynamically**: A single query structure doesn't adapt well; consider data structures designed for dynamic top-k tracking.
+
 ## Approach
 
 ### Method 1: Heap

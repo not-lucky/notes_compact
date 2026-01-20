@@ -17,6 +17,31 @@ Input: head = [1], pos = -1 (no cycle)
 Output: false
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Imagine two runners on a circular track: one runs twice as fast as the other. No matter where they start, the faster runner will eventually lap the slower one - they will meet. This is the essence of Floyd's algorithm. In a linked list with a cycle, the fast pointer (moving 2 steps) will eventually catch up to the slow pointer (moving 1 step) because the fast pointer gains exactly one position per iteration.
+
+Why exactly one position? If slow is at position S and fast is at position F within the cycle, after one iteration slow is at S+1 and fast is at F+2. The gap changes from (F-S) to (F+2)-(S+1) = (F-S)+1. But in a cycle, this means fast is getting closer to "lapping" slow by one position each time. They must meet within C iterations (where C is cycle length).
+
+If there's no cycle, fast will simply reach the end (null) before any meeting can occur. The beauty is that this requires only O(1) space - no hash set needed to track visited nodes.
+
+### How to Discover This
+
+When you see "detect cycle" with O(1) space constraint, Floyd's algorithm should be your go-to. The intuition comes from physics: relative motion. In the cycle, think of slow as stationary and fast as moving at speed 1 toward it - they must collide. This same pattern applies to finding duplicates in arrays, detecting cycles in mathematical sequences (like Happy Number), and more.
+
+### Pattern Recognition
+
+This is the **Fast and Slow Pointer** (Tortoise and Hare) pattern. Beyond cycle detection, it's used for finding the middle of a list, detecting the start of a cycle (with phase 2), and any problem where you need to find a "meeting point" or convergence without extra space.
+
+## When NOT to Use
+
+- **When you need to track all visited nodes anyway**: If you need to know all nodes in the cycle or mark visited nodes for other purposes, a hash set is more versatile.
+- **When the list structure might change during traversal**: Floyd's algorithm assumes the list is static; concurrent modifications could cause incorrect results.
+- **When you can modify the list nodes**: If you can add a "visited" flag to nodes, a simple traversal with marking is more intuitive (though it modifies the list).
+- **When working with structures other than linked lists**: Floyd's algorithm requires sequential access with a "next" operation; it doesn't directly apply to graphs with multiple outgoing edges.
+
 ## Approach
 
 ### Floyd's Cycle Detection (Tortoise and Hare)

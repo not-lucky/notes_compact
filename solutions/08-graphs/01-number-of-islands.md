@@ -17,6 +17,34 @@ Input: grid = [
 Output: 3
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The core insight is that counting islands is really a problem of counting **connected components** in a graph. Each land cell ('1') is a node, and edges exist between horizontally or vertically adjacent land cells. When you find an unvisited land cell, you've discovered a new island - and by flooding (marking) all connected land cells, you ensure you never count the same island twice.
+
+The flood fill technique works because it exploits the transitive nature of connectivity. If cell A is connected to cell B, and B is connected to C, then A, B, and C all belong to the same island. By starting at any cell and following all connections, we visit every cell in that island exactly once. Marking cells as visited (by changing '1' to '0') is the key - it prevents both infinite loops and double-counting.
+
+Think of it like exploring a dark cave with a can of paint. When you enter a new room, you paint it. If you ever encounter a painted room, you know you've already been there and can turn back. Each time you need to enter an unpainted room from the main hallway (the grid scan), you've found a new cave system.
+
+### How to Discover This
+
+When you see a grid problem asking to count distinct groups, immediately think: "This is connected components." The question becomes: how do I define connectivity (4-directional vs 8-directional), and how do I mark visited cells? DFS/BFS are natural choices for exploring connectivity, and the "mark as visited" pattern prevents revisiting. If the interviewer says you can't modify the grid, use a separate visited set instead.
+
+### Pattern Recognition
+
+This is the **Grid Connected Components** pattern. Recognize it when you see:
+- A 2D grid with two types of cells (land/water, 0/1, etc.)
+- "Count the number of..." or "Find all groups of..."
+- Connectivity defined by adjacent cells
+
+## When NOT to Use
+
+- **When you need to preserve the original grid**: This approach modifies the input. Use a separate visited set if modification is forbidden.
+- **When connectivity is diagonal (8-directional)**: The basic version only handles 4-directional. You'd need to add diagonal directions to the exploration.
+- **When counting requires additional constraints**: For example, "count islands larger than size k" needs a modified approach that tracks size during DFS.
+- **When the grid is extremely large**: Deep recursion in DFS can cause stack overflow. Use BFS or iterative DFS with an explicit stack for very large grids.
+
 ## Approach
 
 ### DFS Flood Fill

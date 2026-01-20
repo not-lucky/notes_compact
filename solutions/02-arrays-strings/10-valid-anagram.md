@@ -15,6 +15,38 @@ Input: s = "rat", t = "car"
 Output: false
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Two strings are anagrams if and only if they contain exactly the same characters with exactly the same frequencies. This is precisely what character counting measures.
+
+We count the frequency of each character in both strings and compare. If the frequency distributions are identical, the strings are anagrams. The hash map (or array for fixed charset) gives O(1) lookup and update for each character.
+
+An optimization is to use a single counter: increment for characters in `s`, decrement for characters in `t`. At the end, all counts should be zero. This halves the constant factor and allows early termination if we ever decrement a count below zero.
+
+### How to Discover This
+
+When a problem involves comparing "contents regardless of order," think about frequency counting. Anagrams, permutations, and multiset equality all reduce to comparing frequency distributions.
+
+The choice between hash map and array depends on the character set. For lowercase English letters, a 26-element array is fastest. For Unicode, you must use a hash map.
+
+### Pattern Recognition
+
+This is the **Frequency Counting** pattern. It appears in:
+- Valid anagram (this problem)
+- Group anagrams (use frequency signature as hash key)
+- Find all anagrams in string (sliding window with frequency comparison)
+- Permutation in string (same as finding an anagram)
+- Ransom note, first unique character, and many other character-counting problems
+
+## When NOT to Use
+
+- **When order matters**: Anagram checking ignores order. If order is significant (e.g., checking equality or prefix matching), frequency counting is not enough.
+- **When you need to find the anagram, not just verify**: Frequency counting tells you whether an anagram exists; it does not tell you where. For finding positions, use sliding window.
+- **When the strings are very long and memory is limited**: Sorting uses O(1) extra space (in-place sort) and still works, though at O(n log n) time cost.
+- **When the character set is unbounded or unknown**: You must use a hash map instead of an array, which has slightly more overhead.
+
 ## Approach
 
 ### Method 1: Hash Map / Counter

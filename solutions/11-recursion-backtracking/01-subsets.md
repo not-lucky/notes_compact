@@ -12,6 +12,34 @@ Input: nums = [1, 2, 3]
 Output: [[], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]]
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Every subset is the result of making n binary decisions: for each element, either include it or exclude it. With 3 elements, you have 2^3 = 8 possible combinations of include/exclude decisions, which is exactly why there are 2^n subsets. The backtracking approach systematically explores this binary decision tree.
+
+The key insight for the backtracking implementation is the "start" parameter. By only considering elements from index `start` onward, we ensure each subset is generated exactly once and in a canonical order. Without this, you'd generate [1,2] and [2,1] as separate subsets. The `start` parameter says: "once you've decided on element i, only consider elements after i for the rest of this subset."
+
+The iterative approach reveals the same structure differently: for each new element, every existing subset spawns a new subset containing that element. Starting from [[]], adding element 1 gives [[], [1]]. Adding element 2 gives [[], [1], [2], [1,2]]. This doubling at each step is why we get 2^n subsets.
+
+### How to Discover This
+
+For any "generate all combinations" problem, think about what decisions you're making. For subsets: include or exclude each element. For permutations: which element comes next. The backtracking template is: (1) add current state to result, (2) for each remaining choice, make the choice, recurse, and undo the choice. The recursion tree mirrors the decision space.
+
+### Pattern Recognition
+
+This is the **Subset Generation / Power Set** pattern. Recognize it when:
+- You need ALL possible subsets/combinations
+- Order within subsets doesn't matter (unlike permutations)
+- There are no constraints beyond "choose any subset of elements"
+
+## When NOT to Use
+
+- **When you need permutations (order matters)**: Use the permutation pattern instead, which swaps elements rather than using a start index.
+- **When there are constraints on valid subsets**: You might need pruning to avoid generating invalid subsets.
+- **When you only need to count subsets, not enumerate them**: Just compute 2^n; no need to generate.
+- **When the array has duplicates**: Use Subsets II pattern with sorting and skip logic to avoid duplicate subsets.
+
 ## Approach
 
 ### Method 1: Backtracking

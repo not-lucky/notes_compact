@@ -21,6 +21,34 @@ Input: coins = [1], amount = 0
 Output: 0
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The insight is to think about the **last coin** you use. To make amount X, the last coin must be one of your denominations - say, coin C. That means before adding C, you had amount X-C, which you made optimally with some number of coins. So `dp[X] = dp[X-C] + 1`. Since you don't know which coin is best for the last position, try all of them and take the minimum.
+
+This is **Unbounded Knapsack**: you can use each coin infinitely many times, and you're minimizing the count (not maximizing value). The DP array builds from amount 0 upward, ensuring that when you compute dp[X], all values dp[X-coin] are already known (since X-coin < X for positive coins).
+
+The key to understanding why greedy fails: with coins [1, 3, 4] and amount 6, greedy picks 4+1+1 (3 coins), but optimal is 3+3 (2 coins). DP exhaustively considers all paths, guaranteeing optimality.
+
+### How to Discover This
+
+When you see "minimum number of..." with unlimited supply, think Unbounded Knapsack. The recurrence template is: `dp[amount] = min(dp[amount - coin] + 1)` for all coins. The "+1" represents using one coin; the recursive call solves the remaining amount optimally. Initialize dp[0] = 0 (zero coins to make zero amount) and everything else to infinity.
+
+### Pattern Recognition
+
+This is the **Unbounded Knapsack / Coin Change** pattern. Recognize it when:
+- You have a set of items that can be reused infinitely
+- You want to reach a target sum/value
+- You're optimizing (min/max) or counting ways
+
+## When NOT to Use
+
+- **When each coin can only be used once**: That's 0/1 Knapsack, requiring a different DP approach (iterate coins outer, amount inner, in reverse).
+- **When the amount is extremely large**: O(amount x coins) might be too slow. Consider BFS or meet-in-the-middle techniques.
+- **When coins have associated costs different from "1 per coin"**: You'd minimize total cost, not count.
+- **When order matters in the combination**: Coin Change counts combinations (1+2 = 2+1), not permutations. For permutations, iterate amounts before coins.
+
 ## Approach
 
 ### Key Insight

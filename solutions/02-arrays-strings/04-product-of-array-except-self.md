@@ -20,6 +20,37 @@ Explanation:
 - answer[3] = 1 * 2 * 3 = 6
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The product of all elements except `nums[i]` can be decomposed into two parts: the product of everything to the left of `i`, and the product of everything to the right of `i`. These two products are independent and can be computed separately.
+
+The prefix product at position `i` captures "the product of all elements before `i`". The suffix product captures "the product of all elements after `i`". Multiplying these together gives exactly what we need: the product of all elements except the one at position `i`.
+
+This decomposition avoids division entirely. Division would be problematic anyway: it fails with zeros and the problem explicitly forbids it. The prefix/suffix approach handles zeros naturally because they just propagate through the products.
+
+### How to Discover This
+
+When you cannot use an operation (here, division), ask: "What information can I precompute that lets me answer the query differently?" The prefix/suffix pattern emerges when the answer at position `i` depends on elements on both sides.
+
+Think of it as splitting the problem: "What do I know about the left side?" and "What do I know about the right side?" If you can answer both in O(1) with precomputation, you can solve the overall problem in O(n).
+
+### Pattern Recognition
+
+This is the **Prefix/Suffix Decomposition** pattern. It appears in:
+- Trapping Rain Water (max height from left and right)
+- Product of Array Except Self (this problem)
+- Range sum/product queries with preprocessing
+- Problems where the answer at position `i` depends on aggregates from both directions
+
+## When NOT to Use
+
+- **When division is allowed and there are no zeros**: Simply compute total product, then divide by each element. This is simpler and uses O(1) extra space (just the total).
+- **When the operation is not associative**: Prefix/suffix decomposition relies on being able to combine partial results. It does not work for operations like median or mode.
+- **When you need a single query, not all positions**: If you only need the product-except-self for one specific index, computing prefix and suffix arrays is overkill.
+- **When the array is very large and memory is limited**: The O(1) space version exists (using the output array for prefix, then a running suffix), but if even the output array is too large, you have a fundamental problem.
+
 ## Approach
 
 ### Why Not Division?

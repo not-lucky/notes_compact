@@ -15,6 +15,31 @@ Input:      4               Output:     4
        1   3 6   9                 9   6 3   1
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Inverting a tree means creating its mirror image. At every node, what was on the left should now be on the right, and vice versa. The recursive insight is beautiful: to invert a tree, just swap the children of the root, then invert each subtree. The base case (null node) requires no action.
+
+This works because the inversion property is compositional - a tree is inverted if and only if (1) its left and right children are swapped, AND (2) both subtrees are themselves inverted. By handling the swap locally and delegating the subtree inversion to recursion, we cover all nodes.
+
+Whether you swap before recursing (preorder) or after (postorder), the final result is the same because each swap is independent - swapping at a parent doesn't affect what needs to happen at children, and vice versa.
+
+### How to Discover This
+
+For tree transformation problems, ask: "What needs to happen at each node, and how does it relate to the subtrees?" If the operation at each node is independent of the recursion results, you can do it before, during, or after the recursive calls. This is the hallmark of simple tree transformations.
+
+### Pattern Recognition
+
+This is the **Tree Transformation via Traversal** pattern. Visit each node, perform a local operation (swap), and recurse. The same pattern applies to tree coloring, value modification, or any per-node transformation.
+
+## When NOT to Use
+
+- **When you need to preserve the original tree**: This approach modifies in-place. Create a copy if you need both versions.
+- **When working with very deep trees and recursion limits**: For trees with millions of nodes in a skewed shape, use iterative BFS/DFS to avoid stack overflow.
+- **When the tree has special structure you want to preserve**: Inverting a BST destroys its BST property; if you need the BST property, inversion is the wrong operation.
+- **When "inversion" means something different in your context**: Make sure swapping children is actually what's required; some problems use "invert" to mean something else.
+
 ## Approach
 
 ### Recursive (DFS)

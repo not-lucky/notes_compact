@@ -23,6 +23,31 @@ p = 5, q = 4
 Output: 5 (5 is ancestor of 4 and itself)
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The algorithm exploits a key property: when searching for two nodes in a binary tree, if you find one in the left subtree and one in the right subtree, you must be at their LCA - the first node where they "split" onto different paths. If both are found in the same subtree, the LCA is somewhere within that subtree.
+
+The recursive function returns "what was found below": the target node if found, or null if neither was found. When a node receives non-null results from both children, it means p and q are on opposite sides - this node is the LCA. When only one side returns non-null, that result bubbles up (it's either a target node still searching for its partner, or the LCA itself).
+
+The elegance is that the same logic handles the case where one target is an ancestor of the other: the ancestor is found first and returned immediately, and the search in its subtree eventually confirms the descendant exists.
+
+### How to Discover This
+
+For LCA problems, think about where paths diverge. The LCA is the deepest node where both targets are reachable. The recursive approach naturally finds this by exploring all paths and combining results. Ask: "What information does each subtree need to report?" Here, it's "did you find p, q, or both?"
+
+### Pattern Recognition
+
+This is the **Recursive Search with Result Combination** pattern. Each subtree reports findings, and the parent combines them to determine if it's the answer node. This pattern applies to finding paths, distances between nodes, and other problems where two items need to be located and related.
+
+## When NOT to Use
+
+- **When you have a BST (Binary Search Tree)**: Use BST properties for O(h) time without full tree exploration - go left if both values are smaller, right if both are larger.
+- **When nodes have parent pointers**: Walk up from both nodes simultaneously (like finding linked list intersection); no recursion needed, O(h) time, O(1) space.
+- **When you need LCA for many queries**: Build an Euler tour and use Range Minimum Query (RMQ) for O(1) per query after O(n) preprocessing.
+- **When the nodes might not exist in the tree**: This algorithm assumes p and q exist; if they might not, you need additional validation to confirm both were actually found.
+
 ## Approach
 
 ### Recursive DFS

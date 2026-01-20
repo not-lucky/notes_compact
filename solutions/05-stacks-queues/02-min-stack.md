@@ -24,6 +24,31 @@ minStack.top();    // return 0
 minStack.getMin(); // return -2
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The key insight is that the minimum value can only change when we push or pop. More importantly, when we push a value, we know exactly what the minimum is *at that moment* - it's either the new value or the previous minimum. By storing this information alongside each element (or in a parallel stack), we create a "snapshot" of what the minimum was when each element was pushed.
+
+When we pop, we lose the most recent element, but we also implicitly restore the minimum to what it was before that element was pushed. With a min stack, this information is already stored - we just pop from both stacks.
+
+The elegance is that history matters: we're not just tracking the current minimum, but the minimum *at every point in the stack's history*. This historical tracking is what enables O(1) getMin even after pops.
+
+### How to Discover This
+
+When asked to track a property (min, max, sum) with O(1) access across push/pop operations, think about storing auxiliary information with each element. Ask: "What state do I need to restore when I pop?" Then store enough information to make that restoration O(1).
+
+### Pattern Recognition
+
+This is the **Auxiliary Stack** or **Paired Data** pattern. By maintaining additional state that changes in sync with the primary data, we trade space for time. This pattern extends to max stack, tracking frequency, or any property that needs O(1) retrieval.
+
+## When NOT to Use
+
+- **When you need popMin() - removing the minimum itself**: Min stack only tracks where the minimum is, not efficiently removes it. For popMin(), use a heap-based structure instead.
+- **When memory is extremely constrained**: Storing the minimum with every element doubles space usage; the single-value encoding saves space but has overflow risks.
+- **When you rarely call getMin()**: If getMin() is called much less often than push/pop, O(n) linear scan on demand might be simpler and use less space.
+- **When you need to support peek at arbitrary positions**: Min stack only provides O(1) access to the top and minimum; random access would require a different structure.
+
 ## Approach
 
 ### Two Stacks

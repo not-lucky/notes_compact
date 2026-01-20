@@ -16,6 +16,38 @@ Input: s = "race a car"
 Output: false
 ```
 
+## Building Intuition
+
+### Why This Works
+
+A palindrome reads the same forwards and backwards. The two-pointer approach directly tests this definition: compare the first character with the last, the second with the second-to-last, and so on. If all pairs match, it is a palindrome.
+
+The twist in this problem is ignoring non-alphanumeric characters and case. We handle this by skipping over irrelevant characters (move `left` past non-alphanumeric on the left side, move `right` past non-alphanumeric on the right side) and comparing lowercase versions.
+
+This is more space-efficient than creating a cleaned string because we never allocate O(n) extra memory. We work directly on the original string, using only O(1) space for the two pointers.
+
+### How to Discover This
+
+Two pointers from both ends is natural for any problem involving comparing elements at "opposite" positions (first vs last, second vs second-to-last). Palindrome checking is the canonical example.
+
+When the problem involves filtering or normalization (ignore case, ignore punctuation), handle it inline within the pointer movement logic rather than preprocessing the entire string. This saves space and can save time if you find a mismatch early.
+
+### Pattern Recognition
+
+This is the **Two Pointers from Ends** pattern applied to **String Comparison**. It appears in:
+- Valid palindrome (this problem) and its variants
+- Reverse string / reverse words
+- Container with most water
+- Two Sum on sorted arrays
+- Any problem comparing elements from opposite ends
+
+## When NOT to Use
+
+- **When you need to find the longest palindromic substring**: Two-pointer comparison checks if the whole string is a palindrome. Finding the longest palindrome within a string requires expand-around-center or Manacher's algorithm.
+- **When modifications are allowed**: Valid Palindrome II (delete at most one character) requires branching into two recursive checks when a mismatch is found.
+- **When working with very complex filtering rules**: If the rules for "valid characters" are complex, it might be cleaner to preprocess the string despite the space cost.
+- **When you need palindrome partitioning**: Finding all ways to split a string into palindromes requires backtracking, not simple two-pointer comparison.
+
 ## Approach
 
 ### Two Pointers

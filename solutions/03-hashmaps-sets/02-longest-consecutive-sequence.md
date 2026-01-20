@@ -13,6 +13,31 @@ Output: 4
 Explanation: The longest consecutive sequence is [1, 2, 3, 4]. Length = 4.
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The key insight is recognizing that we only need to start counting from the *beginning* of each sequence. If a number has a predecessor (num-1 exists in the set), then it's not the start of a sequence - we can skip it because we'll count it when we start from the actual beginning.
+
+Think of it like finding the longest chain of dominoes. Instead of examining every domino and trying to figure out which chain it belongs to, we only look at dominoes that could be the "first" in a chain (those without a predecessor). From each starting point, we count forward until the chain breaks. This simple optimization transforms what looks like O(n^2) into O(n).
+
+The hash set is crucial because it gives us O(1) lookups. We need to quickly answer two questions: "Is this number the start of a sequence?" and "Does the next consecutive number exist?" Both require checking membership, which would be O(n) with a list but O(1) with a set.
+
+### How to Discover This
+
+When you see "O(n) required" and "find something in an array," immediately think hash set for O(1) lookups. The key creative step is realizing you shouldn't process every element the same way - identify which elements are "special" (sequence starters) and only fully process those. This pattern of selective processing based on a cheap check is common in O(n) algorithms.
+
+### Pattern Recognition
+
+This is the **Intelligent Starting Point** pattern combined with **Hash Set for O(1) Lookup**. You identify a condition that marks the "beginning" of what you're looking for, only start expensive operations from those points, and use a hash set to make all membership checks constant time.
+
+## When NOT to Use
+
+- **When the range of numbers is small and bounded**: If numbers are in range [0, 1000], bucket sort or a boolean array might be simpler and has better cache locality.
+- **When you need the actual sequence, not just the length**: While you can modify this to track elements, other approaches like sorting might be cleaner if you need to return the sequence itself.
+- **When the input is already sorted or nearly sorted**: Just iterate through looking for breaks in the sequence - no hash set needed, O(n) time with O(1) space.
+- **When duplicates matter**: This approach uses a set which removes duplicates. If counting duplicates differently is required, you'll need a different strategy.
+
 ## Approach
 
 ### Key Insight

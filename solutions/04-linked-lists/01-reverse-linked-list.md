@@ -16,6 +16,31 @@ Input: head = []
 Output: []
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Reversing a linked list is fundamentally about changing the direction of every arrow. In a forward list, each node points to the next; in a reversed list, each node points to the previous. The iterative approach maintains exactly the information we need: where we came from (prev), where we are (curr), and where we're going (next).
+
+The critical insight is that we must save the "next" pointer before we overwrite it. Once we reverse curr's pointer to point to prev, we've lost our connection to the rest of the list. By saving next_node first, we preserve our ability to move forward even as we're rewiring backward.
+
+Think of it like a train switching tracks while moving. You need to know where the next section of track is before you switch the current track's direction, otherwise the train (our traversal) would derail.
+
+### How to Discover This
+
+When manipulating linked lists, always ask: "What information will I lose by making this change, and how can I preserve it?" For reversal, changing `curr.next` loses the forward path, so save it first. This "save before modify" pattern applies to many pointer manipulation problems.
+
+### Pattern Recognition
+
+This is the **In-Place Pointer Reversal** pattern using the **Three-Pointer Technique**. The three pointers (prev, curr, next) form a sliding window that maintains all necessary context for safe manipulation. This pattern extends to partial reversals, k-group reversals, and other linked list transformations.
+
+## When NOT to Use
+
+- **When the list is doubly linked**: With a doubly linked list, you can reverse by simply swapping head and tail pointers and traversing backward - no pointer reversal needed.
+- **When you need to preserve the original list**: This approach modifies in-place. If you need both versions, create a new reversed copy instead.
+- **When working with very deep recursion limits**: The recursive approach uses O(n) stack space; for extremely long lists (millions of nodes), the iterative approach is safer.
+- **When the list might have cycles**: The algorithm assumes a proper singly-linked list; cycles would cause infinite loops. Detect cycles first if the input isn't guaranteed to be acyclic.
+
 ## Approach
 
 ### Iterative (Optimal)

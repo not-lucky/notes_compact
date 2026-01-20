@@ -24,6 +24,31 @@ Input: s = "{[]}"
 Output: true
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The key insight is that valid parentheses follow a LIFO (Last In, First Out) pattern - the most recently opened bracket must be the first one closed. This is exactly what a stack provides. When we see an opening bracket, we push it; when we see a closing bracket, the top of the stack must be its matching opener.
+
+Think of it like nested containers. If you open a box, then a bag, then an envelope, you must close them in reverse order: envelope first, then bag, then box. Any other order means something got mismatched. The stack tracks our "currently open containers" with the innermost on top.
+
+The check `len(stack) == 0` at the end catches unmatched openers. Even if every closer matched correctly, leftover openers mean the string is invalid.
+
+### How to Discover This
+
+Whenever you see nested structures that must be closed in reverse order of opening, think stack. The pattern appears in matching tags (HTML/XML), nested function calls, expression parsing, and anywhere "last opened, first closed" applies.
+
+### Pattern Recognition
+
+This is the **Stack for Matching Pairs** pattern. The stack maintains pending items waiting for their match, and items are matched in LIFO order. Variations include matching with different rules, counting minimum additions/deletions for validity, and finding the longest valid substring.
+
+## When NOT to Use
+
+- **When there's only one type of bracket**: A simple counter suffices (increment for '(', decrement for ')'); no stack needed.
+- **When brackets can be matched out of order**: For example, if "(]" could be valid, you'd need a different approach (perhaps treating brackets as interchangeable).
+- **When you need to handle escape sequences**: Brackets inside quotes or after backslashes might not count; additional parsing state is needed.
+- **When the string is extremely long and you only need validity**: Early termination optimizations (like checking odd length) should be applied first.
+
 ## Approach
 
 ### Stack-Based Solution

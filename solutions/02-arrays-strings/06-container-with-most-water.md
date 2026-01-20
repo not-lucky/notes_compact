@@ -16,6 +16,38 @@ Explanation: Lines at index 1 (height 8) and index 8 (height 7)
              Area = min(8, 7) × (8 - 1) = 7 × 7 = 49
 ```
 
+## Building Intuition
+
+### Why This Works
+
+The area of a container is determined by two factors: width and height. Width is `right - left`, and height is `min(height[left], height[right])` because water can only rise to the shorter wall.
+
+Starting with the widest possible container (pointers at both ends) gives us maximum width. From here, the only way to potentially increase area is to find taller walls. If we move the taller wall inward, we definitely lose width and cannot gain height (the shorter wall still limits us). So we must move the shorter wall, hoping to find a taller one.
+
+This greedy choice is optimal: we never skip a pair that could be the answer. If the optimal pair is (i, j), we will consider it when our pointers reach those positions. We move away from a position only when it cannot possibly be part of a better solution.
+
+### How to Discover This
+
+When a problem involves pairs of elements where order matters (left < right), consider two pointers starting from both ends. This gives you O(n) time instead of O(n^2) brute force.
+
+The key insight is the greedy rule: "Which pointer should I move?" Think about what each move loses (here, width) versus what it might gain (here, height). If moving one pointer can only make things worse, move the other one.
+
+### Pattern Recognition
+
+This is the **Two Pointers from Ends** pattern with a **Greedy Decision Rule**. It appears in:
+- Container with most water (this problem)
+- Trapping rain water (different calculation, similar traversal)
+- Two Sum on sorted array
+- Valid palindrome
+- Any problem where you are optimizing over pairs with an ordering constraint
+
+## When NOT to Use
+
+- **When the greedy rule does not hold**: If moving either pointer could lead to improvement, you cannot use this approach without modification. You would need to explore both branches (leading to higher complexity).
+- **When you need all pairs, not just the optimal one**: Two pointers finds one answer; it does not enumerate all pairs meeting some criterion.
+- **When heights can be negative**: The min/max logic assumes non-negative heights. Negative heights would break the container analogy.
+- **When the problem is "Trapping Rain Water"**: Despite visual similarity, trapping water measures water ON TOP of bars, not between two walls. It requires tracking running max from both sides, not just a simple min comparison.
+
 ## Approach
 
 ### Key Insight

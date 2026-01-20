@@ -11,6 +11,34 @@ Output: [[1,6], [8,10], [15,18]]
 Explanation: [1,3] and [2,6] overlap, merge into [1,6].
 ```
 
+## Building Intuition
+
+### Why This Works
+
+Sorting by start time is the key insight that makes this problem tractable. Once sorted, intervals that could potentially merge are adjacent in the list. You never need to look back more than one interval because if interval A doesn't overlap with the last merged interval, no future interval will either (they all start even later).
+
+Two intervals [a, b] and [c, d] overlap if and only if c <= b (assuming they're sorted by start, so a <= c). When they overlap, the merged interval is [a, max(b, d)] - start from the earlier interval, end at the later endpoint. This "extend the end if necessary" logic handles both partial overlap and complete containment.
+
+The greedy choice is: always try to merge with the previous interval. This works because sorting ensures we process intervals in the order they "begin," and once an interval's end is finalized, no future interval can affect it (they start later).
+
+### How to Discover This
+
+Interval problems almost always start with sorting. Ask: "In what order would processing be easiest?" Sorting by start time groups overlapping intervals together. Then ask: "What's the simplest decision at each step?" Here, it's: "Does this interval overlap with the last one? If yes, merge. If no, start a new group."
+
+### Pattern Recognition
+
+This is the **Interval Processing** pattern. Recognize it when:
+- You're dealing with ranges/intervals
+- The problem involves overlap detection, scheduling, or partitioning
+- Sorting would create useful structure
+
+## When NOT to Use
+
+- **When intervals have weights/priorities and you need optimal selection**: Use interval scheduling (greedy by end time) or DP.
+- **When you can't modify the input and need sorted order**: You'd need O(n) extra space for a sorted copy.
+- **When intervals are already non-overlapping**: No merging needed; just verify or count.
+- **When the problem requires considering all pairs of intervals**: Sorting alone doesn't help; you might need O(n^2) comparisons.
+
 ## Approach
 
 ### Key Insight

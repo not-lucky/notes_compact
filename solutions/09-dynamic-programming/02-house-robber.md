@@ -17,6 +17,34 @@ Output: 12
 Explanation: Rob houses 1, 3, and 5 (2 + 9 + 1 = 12).
 ```
 
+## Building Intuition
+
+### Why This Works
+
+At each house, you face a binary decision: rob it or skip it. If you rob it, you gain its value but must skip the previous house (the adjacent constraint). If you skip it, you keep whatever maximum you had from considering the previous house. The recurrence `dp[i] = max(dp[i-1], dp[i-2] + nums[i])` captures exactly this: either "skip current" (take dp[i-1]) or "rob current" (take value plus best from two houses ago).
+
+The reason this greedy-like thinking works is that we're building up the optimal solution incrementally. At each step, dp[i] represents "the best I can do considering houses 0 through i." We don't need to know which specific houses were robbed, just the maximum value achievable. This is the essence of dynamic programming: compress complex state into a single number.
+
+Like climbing stairs, we only look back two positions, so O(1) space suffices. The constraint "no two adjacent" creates exactly a 2-step lookback pattern.
+
+### How to Discover This
+
+Frame it as: "At house i, what are my options?" The constraint tells you that robbing house i precludes house i-1. So compare: (1) the best without house i, versus (2) the best without house i-1, plus house i. This "take or skip" pattern appears in many DP problems: Knapsack, Longest Increasing Subsequence, and more.
+
+### Pattern Recognition
+
+This is the **Take-or-Skip DP** pattern with a gap constraint. Recognize it when:
+- You're selecting a subset of items to maximize/minimize something
+- Adjacent items (or items within some distance) can't both be selected
+- The answer for item i depends on a fixed window of previous answers
+
+## When NOT to Use
+
+- **When the constraint is more complex than "no adjacent"**: For example, "no three consecutive" or "must skip at least k" requires more sophisticated state.
+- **When items have dependencies beyond adjacency**: If robbing house A affects houses C and F (not just adjacent), you need a different model.
+- **When the structure is circular**: House Robber II (circular street) requires splitting into two linear problems.
+- **When you need the actual selection, not just the max value**: You'd need to track choices, adding O(n) space.
+
 ## Approach
 
 ### Key Insight
