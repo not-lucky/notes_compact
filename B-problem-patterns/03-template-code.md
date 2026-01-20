@@ -6,6 +6,70 @@ This file contains copy-paste-ready templates for the most common interview patt
 
 ---
 
+## Building Intuition
+
+### Why Templates Matter
+
+Templates aren't about memorizing code—they're about internalizing patterns. When you've written the sliding window template 20 times, you don't think about the mechanics anymore. Your brain focuses on the problem-specific logic, not the boilerplate.
+
+**The key insight**: Every pattern has a skeleton that stays the same across problems. The variable parts are:
+1. **Initialization** (what state you track)
+2. **Expansion logic** (when to grow the window/move forward)
+3. **Contraction logic** (when to shrink/backtrack)
+4. **Result update** (when to record an answer)
+
+### How to Use Templates Effectively
+
+1. **Understand before copying**: Don't just paste. Know why each line exists.
+2. **Identify the skeleton**: Which parts are pattern-specific vs. problem-specific?
+3. **Practice variations**: After copying, immediately adapt to a similar problem.
+4. **Build muscle memory**: Type templates from memory until they're automatic.
+
+### Mental Model: The Template Equation
+
+```
+Template = Skeleton (pattern-specific) + Blanks (problem-specific)
+
+Sliding Window Skeleton:
+  for right in range(n):
+      [expand logic]          ← blank: what to add/update
+      while [invalid]:        ← blank: what makes window invalid
+          [shrink logic]      ← blank: what to remove/update
+          left += 1
+      [update result]         ← blank: when is result optimal?
+```
+
+The skeleton is the same for "longest substring without repeating characters" and "minimum window substring"—only the blanks differ.
+
+### Why This Approach Beats Memorization
+
+- **Fewer things to remember**: 15 skeletons vs. 300+ problems
+- **Adaptable**: New problems are just new blank values in familiar skeletons
+- **Debuggable**: When code fails, you can check "did I fill in the blanks correctly?" vs. "what's wrong with this 50-line function I barely remember?"
+
+---
+
+## When NOT to Use Templates
+
+### Templates Can Mislead You
+
+1. **When the problem needs a hybrid approach**: "Find the longest subarray with at most K distinct elements where elements are sorted" might need sliding window + binary search. No single template fits.
+
+2. **When constraints allow brute force**: If n ≤ 10, writing a backtracking template is overkill. Just enumerate all 2^10 = 1024 possibilities.
+
+3. **When a simpler solution exists**: Sometimes a problem that looks like DP can be solved with math. Don't force a template when insight works better.
+
+4. **When you're over-engineering**: Templates optimize for correctness and speed of writing. If you only need to solve one problem once, a bespoke solution might be clearer.
+
+### Common Template Mistakes
+
+- **Template mismatch**: Using the wrong template (e.g., fixed window template for variable window problem)
+- **Blank-filling errors**: Getting the skeleton right but filling blanks incorrectly
+- **Not adapting edge cases**: Templates often assume non-empty input; real problems have edge cases
+- **Cargo-culting**: Copying template parts you don't need because "that's how the template looks"
+
+---
+
 ## Table of Contents
 
 1. [Two Pointers](#1-two-pointers)

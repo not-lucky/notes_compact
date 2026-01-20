@@ -6,6 +6,65 @@ This decision tree helps you quickly identify the right algorithm pattern based 
 
 ---
 
+## Building Intuition
+
+### Why Flowcharts Work for Pattern Selection
+
+Interview problems aren't random—they're designed to test specific techniques. After solving hundreds of problems, you notice that the same ~15 patterns appear over and over. The flowchart approach works because:
+
+**The key insight**: Problem characteristics strongly predict the solution pattern. If someone says "sorted array, find a pair," you immediately know it's two pointers—not because you memorized it, but because sorted + pair = O(n) two-pointer solution is faster than O(n²) brute force.
+
+### How to Think About Pattern Selection
+
+Think of it like a doctor's diagnostic flowchart:
+1. **Symptoms** (input type, constraints) narrow down possibilities
+2. **Ruling out** (what patterns definitely won't work) is as important as identifying what will
+3. **The first pattern you think of isn't always right**—verify with complexity analysis
+
+### Mental Model: The Funnel
+
+```
+All possible algorithms
+        ↓
+Input type filter (array? graph? string?)
+        ↓
+Constraint filter (sorted? contiguous? k-related?)
+        ↓
+Operation filter (search? optimize? count?)
+        ↓
+1-2 candidate patterns
+```
+
+The flowchart systematizes this funnel so you don't waste time considering irrelevant patterns.
+
+### Why This Matters in Interviews
+
+- **45 minutes is short**: Spending 5 minutes on the wrong approach costs you
+- **Confidence compounds**: Quickly identifying the pattern lets you focus on implementation details
+- **Pattern recognition = expertise**: It's what separates a 6-month LeetCoder from a 2-year one
+
+---
+
+## When NOT to Use Flowcharts
+
+### Don't Use Flowcharts When...
+
+1. **The problem is clearly hybrid**: Some problems combine multiple patterns (e.g., binary search + sliding window). The flowchart leads to one pattern; you need to recognize when two are needed.
+
+2. **Constraints are unusual**: If n ≤ 15, brute force or bitmask DP might work even if the flowchart suggests something else. Always check constraints first.
+
+3. **The problem has a mathematical insight**: Problems like "count number of subarrays divisible by k" need math (prefix sums + modular arithmetic), not pattern matching.
+
+4. **You're stuck in one branch**: If you've been in the "Array → Unsorted → Subarray" branch for 10 minutes without progress, step back. Maybe it's not a sliding window problem at all.
+
+### Common Flowchart Mistakes
+
+- **Forcing the first pattern**: Just because the flowchart says "sliding window" doesn't mean you should ignore that the solution might be simpler
+- **Ignoring problem constraints**: Flowcharts optimize for typical cases; atypical constraints change everything
+- **Not verifying complexity**: After the flowchart suggests a pattern, verify it achieves the required complexity
+
+---
+
 ## Master Decision Tree
 
 ```

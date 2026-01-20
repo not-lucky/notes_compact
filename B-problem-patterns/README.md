@@ -2,6 +2,71 @@
 
 This appendix is your go-to resource for pattern recognition during interviews. Instead of memorizing hundreds of problems, learn to recognize the ~15 core patterns that cover 90%+ of FANG+ interview questions.
 
+---
+
+## Building Intuition
+
+### Why Pattern Recognition is the Key Skill
+
+When you solve a new problem, you're not really inventing a solution from scratch. You're recognizing which of the ~15 common patterns applies and adapting it to the specific constraints. This is what interviewers actually test—can you see the pattern beneath the problem's surface?
+
+**The key insight**: Most interview problems are variations of problems you've already solved. The trick isn't to memorize solutions—it's to develop pattern-matching intuition.
+
+### How Experts See Problems Differently
+
+Beginners see: "Given an array of integers, find two numbers that add up to a target."
+
+Experts see: "This is a lookup problem. I need to check if `target - current` exists. That's either:
+1. Sort + two pointers (O(n log n))
+2. HashSet for O(1) lookup (O(n))
+3. If I need indices, HashMap instead of HashSet"
+
+The difference isn't intelligence—it's pattern vocabulary.
+
+### The 80/20 of Interview Patterns
+
+~80% of FANG interview problems use these patterns:
+1. **Two Pointers / Sliding Window** (25% of problems)
+2. **DFS/BFS** (20% of problems)
+3. **Dynamic Programming** (15% of problems)
+4. **Binary Search** (10% of problems)
+5. **Heap / Priority Queue** (10% of problems)
+
+The remaining 20% use specialized patterns (Union-Find, Trie, etc.).
+
+### Mental Model: Pattern Recognition as Language
+
+Think of patterns as vocabulary words. When you're fluent in a language, you don't consciously translate—you just understand. Similarly, when you're fluent in patterns:
+
+- You **hear** "contiguous subarray with constraint" and **think** "sliding window"
+- You **hear** "shortest path" and **think** "BFS (unweighted) or Dijkstra (weighted)"
+- You **hear** "generate all combinations" and **think** "backtracking"
+
+This appendix teaches you that vocabulary.
+
+---
+
+## When NOT to Use Pattern Matching
+
+### Pattern Matching Has Limits
+
+1. **Novel problems require novel thinking**: Some problems genuinely need creative insight. Don't force a pattern when none fits naturally.
+
+2. **Constraints override patterns**: A problem that looks like O(n²) DP might allow O(n log n) with a greedy approach—if constraints hint at it.
+
+3. **Pattern matching ≠ understanding**: If you apply a pattern without understanding WHY it works, you'll struggle with variations.
+
+4. **Interview communication matters**: Even if you recognize the pattern instantly, walk through your reasoning. Interviewers want to see your thought process, not just the answer.
+
+### Anti-Patterns in Pattern Recognition
+
+- **Hammer syndrome**: "I just learned monotonic stacks, so every problem is a nail"
+- **Pattern shopping**: Trying patterns randomly until one works
+- **Ignoring the problem**: Forcing a pattern instead of reading carefully
+- **Over-complicating**: Using advanced patterns when simpler approaches work
+
+---
+
 ## Why Pattern Recognition Matters
 
 1. **Limited interview time**: 45 minutes means no time for trial and error

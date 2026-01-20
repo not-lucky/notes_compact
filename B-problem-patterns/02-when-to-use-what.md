@@ -6,6 +6,59 @@ This guide helps you choose the right data structure and algorithm based on the 
 
 ---
 
+## Building Intuition
+
+### Why Data Structure Selection Matters
+
+Every data structure is a trade-off. There's no "best" structure—only the best one for your specific operations. The key insight: **what you do most frequently should be fastest**.
+
+Think of it like choosing a vehicle:
+- Need to carry 10 people? → Bus (slow but high capacity)
+- Need to go fast with one person? → Sports car
+- Need to go off-road? → Truck
+
+Similarly:
+- Need frequent lookups by key? → HashMap (O(1) lookup)
+- Need to maintain sorted order with insertions? → TreeMap (O(log n) operations)
+- Need to get min/max repeatedly? → Heap (O(1) peek, O(log n) operations)
+
+### The Core Trade-offs to Understand
+
+**Time vs Space**: HashMaps give O(1) lookup but consume memory. If you're memory-constrained, you might use binary search on a sorted array instead.
+
+**Preprocessing vs Query**: Prefix sums cost O(n) to build but give O(1) range queries. Worth it if you have many queries; wasteful for one query.
+
+**Static vs Dynamic**: Arrays are great when size is fixed. When you need frequent insertions/deletions, consider linked structures or trees.
+
+### Mental Model: The Operations Checklist
+
+Before choosing a data structure, list your operations:
+1. What's the most frequent operation?
+2. What's the second most frequent?
+3. What operations are rare but still needed?
+
+Then pick the structure that optimizes the frequent operations, even if rare operations are slower.
+
+---
+
+## When NOT to Use This Selection Guide
+
+### Avoid Over-Optimization
+
+1. **For small n (n < 100)**: Constants matter more than asymptotic complexity. A simple array with linear search might beat a HashMap due to cache locality.
+
+2. **When the guide suggests complexity you don't need**: If n ≤ 1000 and you're allowed O(n²), don't spend time implementing a heap when a simple nested loop works.
+
+3. **When problem structure provides natural optimizations**: Sometimes the problem constraints give you shortcuts. "Values are 1 to n" enables cyclic sort without needing any fancy structure.
+
+### Common Selection Mistakes
+
+- **HashMap for everything**: HashMaps are great but have overhead. For 5 elements, an array is faster.
+- **Choosing based on familiarity**: Don't pick a heap because you know heaps—pick it because you need O(1) min/max access.
+- **Ignoring built-in operations**: Python's `in` on lists is O(n), on sets is O(1). Know your language's guarantees.
+
+---
+
 ## Data Structure Selection
 
 ### Quick Decision Matrix
