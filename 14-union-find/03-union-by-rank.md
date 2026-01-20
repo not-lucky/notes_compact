@@ -8,6 +8,122 @@ Union by rank is the second key optimization for Union-Find. While path compress
 
 ---
 
+## Building Intuition
+
+**The "Merging Companies" Mental Model**
+
+Imagine two companies merging. Which CEO becomes the new overall CEO?
+
+Bad strategy (arbitrary choice):
+```
+Company A (1000 employees) + Company B (10 employees)
+If B's CEO becomes overall CEO:
+  - 1000 employees must update their org chart
+  - Deep hierarchy created unnecessarily
+```
+
+Good strategy (smaller under larger):
+```
+Company A (1000 employees) + Company B (10 employees)
+A's CEO becomes overall CEO:
+  - Only 10 employees update their direct reference
+  - Hierarchy stays shallow
+```
+
+**The Key Insight**
+
+*Attach the smaller/shorter tree under the larger/taller one.*
+
+This minimizes the maximum depth any node can reach. If we always attach the tree with fewer levels under the taller tree, the combined tree's height grows minimally.
+
+```
+Two approaches:
+1. Union by Rank (height): Track approximate tree height
+2. Union by Size: Track number of elements
+
+Both achieve O(log n) worst-case height guarantee.
+```
+
+**Why Height Matters**
+
+```
+Without union by rank:
+Bad sequence: union(0,1), union(0,2), union(0,3), ...
+Could create:  0 ← 1 ← 2 ← 3 ← 4 ← 5 ← ... ← n
+Height: O(n)
+
+With union by rank:
+Same unions create:    0
+                    / | | | \ \
+                   1  2 3 4 5  ...
+Height: O(1) for this case, O(log n) in general
+```
+
+**Visual Example**
+
+```
+Without rank (naive):
+union(1, 0): 1 ← 0  (0 under 1)
+union(2, 1): 2 ← 1 ← 0  (1 under 2)
+union(3, 2): 3 ← 2 ← 1 ← 0  (2 under 3)
+Result: Chain of height 3
+
+With rank:
+union(1, 0): 1 (rank 1)
+             |
+             0
+union(2, 1): 1 (rank stays 1, since 2's rank is 0)
+            /|
+           2 0
+union(3, 1): 1 (rank still 1)
+           / | \
+          2  0  3
+Result: Star of height 1
+```
+
+---
+
+## When NOT to Use Union by Rank
+
+**1. When You Need Exact Component Sizes**
+
+Rank is an approximation of height, not the actual count. If you need to know "how many elements are in this group?", use **union by size** instead:
+
+```python
+# Rank: Tracks tree height (approximate)
+# After many operations, rank[root] might be 3
+# But component could have 1000 elements
+
+# Size: Tracks actual count
+# size[root] = 1000 means exactly 1000 elements
+```
+
+**2. For Simple/Small Problems**
+
+If n is small (< 1000) and you're doing few operations, the optimization overhead isn't worth it:
+
+```python
+# Small n: O(n) vs O(log n) doesn't matter much
+# Code simplicity might be more valuable
+# Naive union works fine for quick prototypes
+```
+
+**3. When Memory is Extremely Tight**
+
+Union by rank requires an additional O(n) array for ranks. In memory-critical situations, you might skip it:
+
+```python
+# With rank: parent[n] + rank[n] = 2n space
+# Without: parent[n] = n space
+# For most practical cases, 2n is fine
+```
+
+**4. When Combined with Other Techniques**
+
+Some advanced structures (like link-cut trees or offline algorithms) have their own balancing mechanisms that supersede union by rank.
+
+---
+
 ## The Problem: Unbalanced Unions
 
 Without rank-based union, we might always attach to the same root:

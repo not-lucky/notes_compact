@@ -8,6 +8,100 @@ Union-Find is a fundamental data structure for managing disjoint sets. It appear
 
 ---
 
+## Building Intuition
+
+**The "Club Membership" Mental Model**
+
+Imagine a social network where people form clubs. Initially, everyone is in their own private club (a club of one). When two people become friends, their clubs merge—everyone in both clubs is now in the same combined club.
+
+The key operations are:
+- **Find**: "Which club is this person in?" (Find the club representative)
+- **Union**: "Make these two people's clubs merge into one"
+
+**Why Does This Work?**
+
+Union-Find answers the question: "Are A and B connected?" The insight is that we don't need to track the entire path between A and B. We just need to know if they share the same "representative" or "root."
+
+```
+Think of it like last names:
+- Initially: Alice Smith, Bob Jones, Carol Smith
+- Alice and Carol share a "last name" (Smith) → same family/club
+- Bob has a different "last name" (Jones) → different family/club
+
+Union-Find uses a "parent pointer" structure where:
+- Each element points to a parent
+- The root points to itself
+- Two elements are connected if they have the same root
+```
+
+**Visual Mental Model: Trees as Sets**
+
+```
+Elements: {A, B, C, D, E}
+
+Initial state (5 separate sets):
+  A    B    C    D    E     Each is its own root
+
+After union(A,B) and union(C,D):
+  A    C    E
+  |    |
+  B    D
+
+After union(A,C):
+      A
+     /|
+    B C
+      |
+      D
+
+Now A, B, C, D are all in the same set (root = A)
+E is still in its own set (root = E)
+```
+
+---
+
+## When NOT to Use Union-Find
+
+**1. When You Need the Actual Path**
+
+Union-Find only tells you IF two nodes are connected, not HOW they're connected. For the actual path, use BFS/DFS.
+
+```python
+# Union-Find: "Are nodes 5 and 10 connected?" → True/False
+# But can't tell you: [5 → 7 → 3 → 10]
+```
+
+**2. For Directed Graph Connectivity**
+
+Union-Find treats edges as undirected. For directed graphs with questions like "Can I reach B from A?" use DFS or topological sort.
+
+```python
+# A → B → C doesn't mean C can reach A!
+# Union-Find would incorrectly merge them into one "connected" set
+```
+
+**3. When DFS/BFS is Simpler**
+
+For one-time static connectivity queries, DFS/BFS might be cleaner:
+
+```python
+# Count connected components once on a static graph?
+# DFS: Simple, intuitive
+# Union-Find: Same complexity, more code
+
+# But: Dynamic edges added over time?
+# Union-Find: O(α(n)) per edge
+# DFS: O(V+E) per query → too slow
+```
+
+**4. When Edges Can Be Removed**
+
+Standard Union-Find only supports adding connections. You can't efficiently "un-merge" two sets. For dynamic graphs with both additions and deletions, consider:
+- Link-Cut Trees (O(log n) per operation)
+- Rebuild periodically
+
+---
+
 ## Pattern: Basic Union-Find
 
 The core idea: maintain a forest where each tree represents a set. Each element points to its parent, and the root is the set's representative.

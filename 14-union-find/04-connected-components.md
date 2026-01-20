@@ -8,6 +8,127 @@ Counting and managing connected components is the most common application of Uni
 
 ---
 
+## Building Intuition
+
+**The "Island Formation" Mental Model**
+
+Imagine islands appearing in an ocean one by one:
+- Each new island starts as its own landmass (count++)
+- When a new island appears next to existing land, they merge (count--)
+
+```
+Initial: ocean (0 islands)
+
+Add land at (0,0): 1 island
+  X . .
+  . . .
+
+Add land at (0,1): Still 1 island (merged with (0,0))
+  X X .
+  . . .
+
+Add land at (2,2): 2 islands (isolated)
+  X X .
+  . . .
+  . . X
+```
+
+**The Key Insight: Start High, Decrement on Merge**
+
+Union-Find makes component counting trivial:
+1. Start with `count = n` (each element is its own component)
+2. Each successful union decrements `count` by 1
+3. Failed unions (already connected) don't change count
+
+```python
+# The beauty: O(1) count tracking!
+def union(x, y):
+    if find(x) == find(y):
+        return False  # Already connected, count unchanged
+    # ... merge trees ...
+    self.count -= 1  # One less component!
+    return True
+```
+
+**Why Union-Find Beats DFS for Dynamic Graphs**
+
+```
+Scenario: Add 1000 edges, query count after each
+
+DFS approach:
+- After each edge: run full DFS to count components
+- Total: O(1000 × (V+E)) = O(1000 × 1000) = O(1,000,000)
+
+Union-Find approach:
+- After each edge: one union operation + O(1) count read
+- Total: O(1000 × α(n)) ≈ O(1000)
+
+1000x faster!
+```
+
+**Visual: Tracking Component Count**
+
+```
+Initial: {0}, {1}, {2}, {3}, {4}  count = 5
+
+union(0,1): {0,1}, {2}, {3}, {4}  count = 4
+
+union(2,3): {0,1}, {2,3}, {4}     count = 3
+
+union(0,2): {0,1,2,3}, {4}        count = 2
+
+union(0,1): Same component!        count = 2 (no change)
+```
+
+---
+
+## When NOT to Use Union-Find for Components
+
+**1. When You Need Component Members**
+
+Union-Find tracks count efficiently, but listing all members of each component requires extra work:
+
+```python
+# To get all elements in a component:
+# Must iterate through all n elements and group by find(i)
+# That's O(n × α(n)) every time you need the list
+
+# If you frequently need member lists, consider:
+# - Adjacency list + DFS (natural grouping)
+# - Union-Find + size tracking + member sets
+```
+
+**2. For One-Time Static Analysis**
+
+If you only need to count components once on a static graph, DFS is simpler:
+
+```python
+# DFS: Simple, intuitive, O(V+E)
+def count_components_dfs(graph):
+    visited = set()
+    count = 0
+    for node in graph:
+        if node not in visited:
+            dfs(node, visited)
+            count += 1
+    return count
+
+# Union-Find: Same complexity, more setup
+# Only wins when queries are repeated or graph is dynamic
+```
+
+**3. When Graph Has Weighted Shortest Paths**
+
+If you eventually need shortest paths or distances (not just connectivity), use BFS or Dijkstra from the start. Union-Find can't provide path information.
+
+**4. For Directed Graphs (Strongly Connected Components)**
+
+Union-Find doesn't handle direction. For strongly connected components in directed graphs, use:
+- Kosaraju's algorithm
+- Tarjan's algorithm
+
+---
+
 ## Pattern: Component Counting
 
 Track the number of components by starting with n components and decrementing on each successful union.

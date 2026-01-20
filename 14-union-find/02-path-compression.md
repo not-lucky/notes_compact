@@ -8,6 +8,106 @@ Path compression is the first key optimization for Union-Find that reduces `find
 
 ---
 
+## Building Intuition
+
+**The "Phone Tree" Mental Model**
+
+Imagine a company where every employee knows their direct manager, but not the CEO. To find out who's the ultimate boss:
+
+Without path compression:
+```
+Employee → Manager → Director → VP → CEO
+Each query: "Who's your manager?" repeated up the chain
+Every lookup: O(depth) time
+```
+
+With path compression:
+```
+First query: Employee → Manager → Director → VP → CEO
+             (Remember: CEO is the ultimate boss!)
+Update everyone: Employee → CEO
+                 Manager → CEO
+                 Director → CEO
+                 VP → CEO
+
+Next query: Employee → CEO (instant!)
+```
+
+**Why This Works**
+
+The key insight: *We don't care about the intermediate managers—we only need the root.*
+
+Once we've found the root, we "shortcut" everyone's pointer directly to it. This is lazy optimization:
+- First access might be slow (traverse the chain)
+- But it fixes the structure for all future accesses
+- Amortized over many operations → nearly O(1)
+
+**Visual Transformation**
+
+```
+Before find(7):                After find(7):
+       0                              0
+       |                         / / | \ \ \
+       1                        1  2  3  4  5  7
+       |
+       2
+       |
+       3
+       |
+       4
+       |
+       5
+       |
+       7
+
+Tall chain → flat star
+```
+
+**The Amortization Argument**
+
+Each node can only move closer to the root, never further away. After path compression:
+- A node at depth d gets moved to depth 1
+- It can never go back to depth d
+- Total "work" across all operations is bounded
+
+---
+
+## When NOT to Use Path Compression
+
+**1. When You Need Parent Relationships**
+
+Path compression destroys the original parent structure. If you need to know the original edges:
+
+```python
+# Original: 0 ← 1 ← 2 ← 3
+# After find(3): 0 ← 1, 0 ← 2, 0 ← 3
+# Lost: the information that 1 was parent of 2
+```
+
+**2. In Weighted Union-Find (Sometimes)**
+
+With weighted Union-Find (tracking ratios like a/b = 2.5), path compression must also update weights. It's doable but requires careful implementation:
+
+```python
+# x/parent[x] = weight[x]
+# When compressing x → root, must multiply weights along the path
+```
+
+**3. When Stack Depth is Constrained**
+
+Recursive path compression can cause stack overflow on very deep trees. Use iterative version instead:
+
+```python
+# Recursive: O(depth) stack space
+# Iterative two-pass: O(1) extra space
+```
+
+**4. When Modification is Forbidden**
+
+If the structure is read-only or needs to remain unchanged for other uses, you can't apply path compression.
+
+---
+
 ## The Problem: Tall Trees
 
 Without optimization, the Union-Find tree can become a long chain:

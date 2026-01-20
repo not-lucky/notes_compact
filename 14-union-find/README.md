@@ -2,6 +2,48 @@
 
 Union-Find (also called Disjoint Set Union or DSU) is a data structure that tracks elements partitioned into disjoint subsets. It provides near-constant time operations for combining sets and determining if two elements belong to the same set.
 
+## Building Intuition
+
+**The "Friendship Groups" Mental Model**
+
+Imagine a school where students form friend groups:
+- Initially, everyone is a stranger (n groups of 1)
+- When two people become friends, their entire friend circles merge
+- The question "Are A and B in the same friend group?" becomes easy
+
+```
+Day 1: Alice, Bob, Carol, Dave (4 separate groups)
+
+Alice befriends Bob:    {Alice, Bob}, {Carol}, {Dave}
+Carol befriends Dave:   {Alice, Bob}, {Carol, Dave}
+Alice befriends Carol:  {Alice, Bob, Carol, Dave}  ← All connected!
+```
+
+**Why Union-Find is Elegant**
+
+The magic is in how we answer "Are X and Y connected?":
+- Each group has a "representative" (the root)
+- Two people are in the same group if they have the same representative
+- No need to store or search through member lists!
+
+```
+Traditional approach: Check if Y is in X's friend list
+Time: O(n) per query
+
+Union-Find approach: Check if find(X) == find(Y)
+Time: O(α(n)) ≈ O(1) per query
+```
+
+**When Does Union-Find Shine?**
+
+Union-Find is the go-to when you see:
+1. **Dynamic grouping**: Elements merge over time
+2. **Connectivity queries**: "Are these connected?"
+3. **Cycle detection**: In undirected graphs
+4. **Equivalence classes**: Transitive relationships
+
+---
+
 ## Why Union-Find Matters
 
 1. **Interview frequency**: Appears in ~5-10% of FANG interviews

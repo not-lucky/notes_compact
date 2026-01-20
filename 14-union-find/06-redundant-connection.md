@@ -8,6 +8,121 @@
 
 ---
 
+## Building Intuition
+
+**The "One Wire Too Many" Mental Model**
+
+Imagine you're wiring a network of computers. A tree network needs exactly n-1 cables to connect n computers with no loops. Someone added one extra cable, creating a loop—find which one!
+
+```
+Correct tree (5 nodes, 4 cables):
+    1 --- 2
+    |
+    3 --- 4
+    |
+    5
+
+With redundant cable (5 nodes, 5 cables):
+    1 --- 2
+    |     |    ← This creates a loop: 1-2-3-1
+    3 --- 4
+    |
+    5
+```
+
+**The Key Insight: Union Reveals Cycles**
+
+When processing edges one by one:
+- `union(a, b)` succeeds → a and b were in different components → no cycle
+- `union(a, b)` fails → a and b were already connected → THIS EDGE CREATES A CYCLE!
+
+```
+Processing edges: [1-2], [1-3], [2-3]
+
+[1-2]: union(1,2) → Success! Components: {1,2}, {3}
+[1-3]: union(1,3) → Success! Components: {1,2,3}
+[2-3]: union(2,3) → FAIL! 2 and 3 already connected!
+       → Edge [2-3] is redundant
+```
+
+**Why This Works**
+
+In a tree:
+- Every edge connects two previously disconnected subtrees
+- Adding an edge between already-connected nodes creates a cycle
+
+Union-Find tracks connectivity. If `find(a) == find(b)` before adding edge (a,b), that edge would create a cycle.
+
+```
+Visual proof:
+
+Before edge (2,3):          After edge (2,3):
+    1                           1
+   / \                         / \
+  2   3                       2---3  ← Cycle!
+
+find(2) = 1, find(3) = 1 → Already connected!
+```
+
+---
+
+## When NOT to Use Union-Find for Cycle Detection
+
+**1. For Directed Graphs**
+
+Union-Find treats all edges as undirected. For directed cycle detection:
+
+```python
+# Directed graph: A → B → C → A is a cycle
+# But A → B, C → B, C → A might not form a directed cycle!
+
+# Use instead:
+# - DFS with coloring (white/gray/black)
+# - Topological sort (cycle = failed sort)
+```
+
+**2. When You Need to Find ALL Cycles**
+
+Union-Find only detects that A cycle exists. To enumerate all cycles:
+
+```python
+# Union-Find: "There's a cycle" (boolean)
+# For all cycles: Use DFS backtracking or Johnson's algorithm
+```
+
+**3. When You Need the Cycle Path**
+
+Union-Find can identify the redundant edge but not the complete cycle path:
+
+```python
+# Union-Find: "Edge (2,3) creates a cycle"
+# Doesn't tell you: "The cycle is 1 → 2 → 3 → 1"
+
+# For the actual cycle path, use DFS with parent tracking
+```
+
+**4. For Weighted "Negative Cycle" Detection**
+
+To detect negative cycles (Bellman-Ford territory), Union-Find doesn't help—you need to track distances:
+
+```python
+# Negative cycle in weighted graph: sum of edge weights < 0
+# Completely different problem from Union-Find's connectivity check
+```
+
+**5. When Graph is Given as Adjacency List**
+
+If you already have an adjacency list, DFS might be simpler:
+
+```python
+# Adjacency list + DFS: Natural cycle detection with visited set
+# Union-Find: Need to extract edges first, then process
+
+# Union-Find shines when input IS an edge list
+```
+
+---
+
 ## Problem: Redundant Connection I
 
 **LeetCode 684**: Given a graph that was a tree with one additional edge, find the edge that can be removed to restore the tree. If there are multiple answers, return the one that appears last.

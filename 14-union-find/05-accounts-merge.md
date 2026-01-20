@@ -8,6 +8,112 @@
 
 ---
 
+## Building Intuition
+
+**The "Email Detective" Mental Model**
+
+Imagine you're a detective trying to identify people based on their email addresses:
+
+```
+Evidence:
+Account 1: "John" uses john@gmail.com, john@work.com
+Account 2: "John" uses john@home.com
+Account 3: "John" uses john@work.com, john@school.com
+
+Deduction:
+- Accounts 1 and 3 share john@work.com → SAME PERSON!
+- Account 2 has no overlap → DIFFERENT PERSON
+
+Result: Two distinct people named "John"
+```
+
+The key insight: **Emails are the fingerprints**, not names. Two accounts merge if they share ANY email.
+
+**The Transitive Chain**
+
+```
+Account A: email1, email2
+Account B: email2, email3
+Account C: email3, email4
+
+email1 ←→ email2 ←→ email3 ←→ email4
+         (all connected transitively!)
+
+All four emails belong to ONE person.
+```
+
+**Why Union-Find Fits Perfectly**
+
+This is a connectivity problem in disguise:
+- **Nodes**: Email addresses
+- **Edges**: Emails appearing in the same account
+- **Groups**: All emails of one real person
+
+Union-Find excels because:
+1. We union all emails within each account
+2. Transitive connections happen automatically
+3. Final grouping is efficient via find()
+
+```
+Traditional approach (graph + DFS):
+- Build adjacency list of email connections
+- DFS from each unvisited email
+- Track visited to avoid duplicates
+- Complex bookkeeping
+
+Union-Find approach:
+- Union emails in same account (single loop)
+- Group by root (simple dict aggregation)
+- Clean, efficient
+```
+
+---
+
+## When NOT to Use Union-Find for Merging
+
+**1. When Merge Logic is Complex**
+
+Union-Find assumes binary connectivity: either connected or not. For nuanced merging rules:
+
+```python
+# "Merge accounts if they share 2+ emails" → Can't use basic UF
+# "Merge accounts if names match AND share email" → Needs preprocessing
+
+# Union-Find assumes: share ANY email = same person
+```
+
+**2. When You Need to Preserve Original Groups**
+
+If you need to track which original accounts contributed to each merged account, Union-Find loses that information:
+
+```python
+# Union-Find: Tells you "these 5 emails belong together"
+# Doesn't tell you: "This came from accounts 1, 3, and 7"
+
+# If you need provenance, track it separately
+```
+
+**3. When Un-Merging is Required**
+
+If accounts can later be "split" (e.g., user requests separation), Union-Find can't undo merges efficiently:
+
+```python
+# Union is permanent in standard Union-Find
+# For reversible merging, consider different data structures
+```
+
+**4. For Small Input Sizes**
+
+If there are only a few accounts (< 100), a simpler approach might be clearer:
+
+```python
+# Build graph, run DFS, group by component
+# More lines of code but easier to understand
+# For interview: mention you'd use Union-Find for scale
+```
+
+---
+
 ## Problem Statement
 
 Given a list of accounts where each account contains a name followed by emails, merge accounts that share at least one email. Return the merged accounts with emails sorted.
