@@ -15,9 +15,19 @@ Create Chapter 17: System Design Basics with 3-4 files:
 - [ ] LFU Cache implementation
 - [ ] 3-4 markdown files created
 ## Done summary
-TBD
+- Created Chapter 17: System Design Basics with 5 markdown files
+- Covered data structure trade-offs, LRU cache, LFU cache, and rate limiter patterns
+- All sections include full implementations, complexity analysis, and interview tips
 
+**Why:**
+- Bridges DSA knowledge with system design interviews
+- Focuses on coding aspects of system design (LRU/LFU Cache, Rate Limiter)
+
+**Verification:**
+- 5 files created (README.md + 4 sections)
+- Consistent format with other chapters
+- Internal links validated
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 3452088418b4a737a433264e49ed32ee52df8367
+- Tests: file structure verification
 - PRs:
