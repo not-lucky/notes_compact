@@ -2,6 +2,82 @@
 
 > **Prerequisites:** [03-dfs-basics](./03-dfs-basics.md)
 
+## Building Intuition
+
+**The "Back Road" Mental Model**: In undirected graphs, every edge is a two-way street. When exploring, if you find a road leading back to somewhere you've been (that's not where you just came from), you've found a loop!
+
+```
+Road Network:          DFS from 0:
+    0 --- 1            Visit 0 (from start)
+    |     |            Visit 1 (from 0)
+    2 --- 3            Visit 3 (from 1)
+                       Visit 2 (from 3)
+                       Edge to 0 exists! 0 is visited but NOT parent of 2
+                       → CYCLE FOUND!
+```
+
+**Why we need to track "parent"**:
+In undirected graphs, edge A-B means both A→B and B→A exist. Without parent tracking:
+
+```
+Graph: 0 --- 1
+
+DFS from 0:
+1. Visit 0
+2. Go to neighbor 1 (edge 0-1)
+3. From 1, see neighbor 0 (edge 1-0)
+4. 0 is visited! CYCLE? NO! That's just the edge we came from!
+
+With parent tracking:
+- From 1, parent = 0
+- See neighbor 0, but 0 = parent, so skip
+- No false positive ✓
+```
+
+**The key insight**: An edge to a visited node that's NOT your parent is a "back edge" - proof of a cycle.
+
+**Union-Find perspective**:
+Before adding any edge, check if endpoints are already connected. If yes → adding this edge would create a cycle!
+
+```
+Adding edges one by one:
+Edge 0-1: 0 and 1 in different sets → union them, OK
+Edge 1-2: 1 and 2 in different sets → union them, OK
+Edge 2-0: 2 and 0 already in SAME set → CYCLE!
+```
+
+---
+
+## When NOT to Use
+
+**Parent-tracking DFS is wrong when:**
+- **Graph is directed** → Use three-color DFS instead
+- **Multiple edges between same nodes** → Need edge-index tracking
+- **Self-loops exist** → Special case (always a cycle)
+
+**Union-Find is better when:**
+- Processing edges one at a time (streaming)
+- Need to find the SPECIFIC edge causing cycle
+- Building minimum spanning tree (Kruskal's)
+
+**Common mistake scenarios:**
+- Not tracking parent → False positives on every edge
+- Using visited-only (like directed) → Every 2-node graph looks like a cycle
+- Forgetting about multiple connected components → Must check all
+
+**The multi-edge trap:**
+```
+Multiple edges between 0 and 1:
+Edge list: [(0,1), (0,1)]  ← duplicate edge
+
+Parent tracking says: "1's parent is 0, so edge back to 0 is fine"
+But there are TWO edges! The second one creates a cycle!
+
+Solution: Track edge INDEX as parent, not node ID
+```
+
+---
+
 ## Interview Context
 
 Cycle detection in undirected graphs is important because:

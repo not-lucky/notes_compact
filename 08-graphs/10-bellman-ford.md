@@ -2,6 +2,93 @@
 
 > **Prerequisites:** [09-dijkstra](./09-dijkstra.md)
 
+## Building Intuition
+
+**The "Repeated Announcements" Mental Model**: Imagine a town where everyone shouts their house number to neighbors. Initially, only you know your distance from home (0). Each round:
+1. Everyone shouts their current best known distance
+2. Neighbors update if they hear a better path
+3. After enough rounds, everyone knows the true shortest distance
+
+```
+Round 0: You know your distance (0), others don't know
+Round 1: Your direct neighbors learn their distance (1 hop)
+Round 2: Their neighbors learn (2 hops via relay)
+...
+Round V-1: Everyone within V-1 hops knows (covers all possible paths)
+```
+
+**Why V-1 iterations?**
+
+```
+Longest possible shortest path in V nodes uses V-1 edges:
+0 → 1 → 2 → 3 → ... → V-1
+     (V-1 edges total)
+
+Each iteration guarantees at least one more edge is "correct."
+After V-1 iterations, paths with up to V-1 edges are all correct.
+```
+
+**The negative weight handling**:
+Unlike Dijkstra (which assumes "farther nodes can't help"), Bellman-Ford doesn't assume anything. It just keeps propagating updates until nothing changes.
+
+```
+Dijkstra's assumption: Once I finalize node X, no better path exists.
+                       FALSE with negative weights!
+
+Bellman-Ford's approach: Keep updating until V-1 rounds.
+                         If still updating at round V → negative cycle!
+```
+
+**Why the Vth iteration detects negative cycles**:
+If a path keeps getting shorter after V-1 iterations, there must be a cycle with negative total weight - you can loop forever getting cheaper!
+
+```
+Negative cycle detection:
+After V-1 iterations: All finite shortest paths are found
+At iteration V: If ANY edge can still be relaxed → negative cycle exists
+
+Why? A shortest path has at most V-1 edges. If we can still improve,
+we're using more than V-1 edges → must be cycling!
+```
+
+---
+
+## When NOT to Use
+
+**Don't use Bellman-Ford when:**
+- **All weights are non-negative** → Dijkstra is O((V+E)logV) vs O(VE)
+- **Graph is unweighted** → BFS is O(V+E), much faster
+- **Need to process dynamically** → Not designed for updates
+
+**Bellman-Ford is the only choice when:**
+- Negative edge weights exist (Dijkstra fails)
+- Need to detect negative cycles
+- Graph structure doesn't allow Dijkstra optimization
+
+**Common mistake scenarios:**
+- Using Bellman-Ford when Dijkstra works → Much slower
+- Relaxing from unreachable nodes → dist[u] + w with dist[u]=inf is problematic
+- Forgetting to copy array in limited-edges variant → Wrong answers
+
+**The "limited stops" variant trap:**
+```
+Problem: Cheapest flights with at most K stops
+
+WRONG approach:
+for i in range(k+1):
+    for each edge (u,v,w):
+        dist[v] = min(dist[v], dist[u] + w)
+        # Problem: dist[u] might have JUST been updated this round!
+
+CORRECT approach:
+for i in range(k+1):
+    temp = dist.copy()  # Use previous round's values
+    for each edge (u,v,w):
+        dist[v] = min(dist[v], temp[u] + w)
+```
+
+---
+
 ## Interview Context
 
 Bellman-Ford is important because:

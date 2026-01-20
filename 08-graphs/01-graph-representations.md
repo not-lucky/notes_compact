@@ -2,6 +2,52 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)
 
+## Building Intuition
+
+**Why do we need different representations?** Think of a social network:
+- **Sparse network**: Most people have 100-500 friends out of billions of users
+- **Dense network**: A small club where everyone knows everyone
+
+For sparse networks (most real-world graphs), storing "who knows whom" as a list is efficient. For dense networks, a matrix makes lookups instant.
+
+**The key insight**: Graph representation is about trade-offs between:
+1. **Space**: How much memory do we use?
+2. **Access patterns**: What operations do we do most?
+
+**Mental model - The Phone Book Analogy**:
+- **Adjacency List** = Phone book with each person's contacts listed under their name
+  - Finding all of Alice's friends: O(1) - just look up Alice's entry
+  - Checking if Alice knows Bob: O(degree) - scan Alice's contact list
+- **Adjacency Matrix** = Giant grid where row=caller, column=receiver, cell=connected?
+  - Finding all of Alice's friends: O(n) - scan entire row
+  - Checking if Alice knows Bob: O(1) - instant lookup at [Alice][Bob]
+
+**When the representation matters most**:
+- BFS/DFS traverse neighbors → Adjacency List wins (O(degree) per node)
+- Floyd-Warshall checks all pairs → Adjacency Matrix wins (O(1) per check)
+- Most interview problems → Default to Adjacency List
+
+---
+
+## When NOT to Use
+
+**Don't use Adjacency Matrix when:**
+- Graph is sparse (E << V²) - wastes O(V²) space
+- You need to iterate all edges - O(V²) vs O(E) for list
+- Memory is constrained - matrix scales quadratically
+
+**Don't use Adjacency List when:**
+- Frequent "does edge exist?" queries - O(degree) vs O(1) for matrix
+- Graph is dense (E ≈ V²) - list overhead exceeds matrix
+- Using Floyd-Warshall algorithm - needs matrix structure
+
+**Don't over-engineer representation when:**
+- Problem gives adjacency list directly - use it as-is
+- Grid problem - use implicit neighbors, don't build explicit graph
+- Tree problem - parent/children pointers often cleaner
+
+---
+
 ## Interview Context
 
 Understanding graph representations is critical because:

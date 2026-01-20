@@ -2,6 +2,59 @@
 
 > **Prerequisites:** [01-graph-representations](./01-graph-representations.md), [05-stacks-queues](../05-stacks-queues/README.md)
 
+## Building Intuition
+
+**The Wave Propagation Mental Model**: Imagine dropping a stone in still water. Ripples spread outward in concentric circles - each ring represents vertices at the same distance from the center. BFS works exactly like this:
+
+```
+Time 0:     Time 1:     Time 2:     Time 3:
+    ○           ●           ●           ●
+                ○ ○       ● ● ●       ● ● ●
+                          ○ ○ ○ ○     ● ● ● ●
+                                      ○ ○ ○ ○ ○
+```
+
+**Why BFS guarantees shortest path in unweighted graphs**:
+1. We process nodes level-by-level (distance 0, then 1, then 2...)
+2. When we first reach a node, we've taken the minimum hops
+3. All edges have equal weight (1), so "minimum hops" = shortest path
+
+**Key insight - The Queue is Everything**:
+- FIFO (First-In-First-Out) ensures we exhaust all distance-k nodes before distance-(k+1)
+- Using a stack would make it DFS (depth-first, not breadth-first)
+- Using a priority queue would make it Dijkstra (weighted shortest path)
+
+**Visual proof of correctness**:
+```
+If BFS visits node X at distance d, can there be a shorter path?
+No! Because:
+1. All nodes at distance < d were already processed
+2. None of them led to X (or we'd have seen X earlier)
+3. Therefore d is the minimum distance to X
+```
+
+---
+
+## When NOT to Use
+
+**Don't use BFS when:**
+- **Edges have different weights** → Use Dijkstra instead
+- **You need all paths, not just shortest** → Use DFS with backtracking
+- **Graph is very deep but narrow** → DFS uses less memory (O(depth) vs O(width))
+- **You're detecting cycles** → DFS with three colors is cleaner for directed graphs
+
+**BFS is overkill when:**
+- Simple reachability check → DFS is equally valid and often simpler
+- Tree traversal → Specialized tree algorithms may be cleaner
+- Graph has special structure (DAG) → Topological sort may be better
+
+**Common mistake scenarios:**
+- Using BFS on weighted graphs expecting shortest path → Wrong answer
+- Using list instead of deque → O(n) popleft() kills performance
+- Marking visited when dequeuing → Duplicates in queue, TLE
+
+---
+
 ## Interview Context
 
 BFS is essential because:
@@ -385,6 +438,158 @@ def count_components(graph, n):
 for node in range(n):
     if node not in visited:
         bfs(graph, node)
+```
+
+---
+
+## Step-by-Step BFS Trace with ASCII Visualization
+
+**Graph for demonstration:**
+```
+        0
+       /|\
+      1 2 3
+     /|   |
+    4 5   6
+```
+
+Adjacency list: `{0:[1,2,3], 1:[0,4,5], 2:[0], 3:[0,6], 4:[1], 5:[1], 6:[3]}`
+
+**Complete BFS trace from node 0:**
+
+```
+INITIAL STATE:
+Queue: [0]
+Visited: {0}
+Result: []
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 1: Dequeue 0                                           ║
+╚══════════════════════════════════════════════════════════════════╝
+  Processing: 0
+  Neighbors of 0: [1, 2, 3]
+
+  Check 1: not visited → add to queue, mark visited
+  Check 2: not visited → add to queue, mark visited
+  Check 3: not visited → add to queue, mark visited
+
+  Queue: [1, 2, 3]
+  Visited: {0, 1, 2, 3}
+  Result: [0]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 2: Dequeue 1                                           ║
+╚══════════════════════════════════════════════════════════════════╝
+  Processing: 1
+  Neighbors of 1: [0, 4, 5]
+
+  Check 0: already visited → skip
+  Check 4: not visited → add to queue, mark visited
+  Check 5: not visited → add to queue, mark visited
+
+  Queue: [2, 3, 4, 5]
+  Visited: {0, 1, 2, 3, 4, 5}
+  Result: [0, 1]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 3: Dequeue 2                                           ║
+╚══════════════════════════════════════════════════════════════════╝
+  Processing: 2
+  Neighbors of 2: [0]
+
+  Check 0: already visited → skip
+
+  Queue: [3, 4, 5]
+  Visited: {0, 1, 2, 3, 4, 5}
+  Result: [0, 1, 2]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 4: Dequeue 3                                           ║
+╚══════════════════════════════════════════════════════════════════╝
+  Processing: 3
+  Neighbors of 3: [0, 6]
+
+  Check 0: already visited → skip
+  Check 6: not visited → add to queue, mark visited
+
+  Queue: [4, 5, 6]
+  Visited: {0, 1, 2, 3, 4, 5, 6}
+  Result: [0, 1, 2, 3]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATIONS 5-7: Dequeue 4, 5, 6                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+  All neighbors already visited
+  Queue becomes empty
+
+FINAL RESULT: [0, 1, 2, 3, 4, 5, 6]
+Distance from 0: {0:0, 1:1, 2:1, 3:1, 4:2, 5:2, 6:2}
+```
+
+**Level visualization:**
+```
+Level 0:        0           (distance 0)
+               /|\
+Level 1:      1 2 3         (distance 1)
+             /|   |
+Level 2:    4 5   6         (distance 2)
+```
+
+---
+
+## Complexity Derivation with Proof
+
+**Time Complexity: O(V + E)**
+
+```
+Proof:
+1. Each vertex is enqueued at most once
+   - We mark visited BEFORE enqueueing
+   - Visited check prevents re-enqueueing
+   - Therefore: exactly V enqueue operations
+
+2. Each vertex is dequeued exactly once
+   - Once dequeued, never re-added (visited)
+   - Therefore: exactly V dequeue operations
+
+3. For each vertex, we examine all its neighbors
+   - When processing vertex v, we look at all edges from v
+   - Each edge (u,v) is examined twice in undirected graph
+     (once from u's perspective, once from v's)
+   - Therefore: O(E) edge examinations total
+
+4. Total: O(V) + O(V) + O(E) = O(V + E)
+```
+
+**Space Complexity: O(V)**
+
+```
+Proof:
+1. Visited set: stores up to V vertices → O(V)
+2. Queue: at most all vertices at once → O(V)
+   (worst case: star graph where center connects to all)
+3. No recursion, so no stack space
+4. Total: O(V) + O(V) = O(V)
+```
+
+**Why BFS is optimal for unweighted shortest path:**
+
+```
+Theorem: BFS finds shortest path in unweighted graphs.
+
+Proof by induction on distance d:
+
+Base case (d=0): Source node s has distance 0. ✓
+
+Inductive step: Assume all nodes at distance d are correct.
+For any node v at distance d+1:
+- There exists a node u at distance d with edge (u,v)
+- u is processed (dequeued) before v (by FIFO property)
+- When u is processed, v is added to queue with dist[v] = d+1
+- No shorter path exists (induction hypothesis)
+- Therefore, v has correct distance d+1. ✓
+
+By induction, all distances are correct. □
 ```
 
 ---

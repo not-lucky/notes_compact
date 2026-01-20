@@ -2,6 +2,68 @@
 
 > **Prerequisites:** [07-topological-sort](./07-topological-sort.md)
 
+## Building Intuition
+
+**The University Registration Mental Model**: Imagine planning your 4-year course schedule. Some courses require prerequisites:
+- Data Structures requires Intro to Programming
+- Algorithms requires Data Structures
+- Machine Learning requires Algorithms AND Linear Algebra
+
+**Question 1 (Can Finish?)**: Is there ANY valid order to take all courses?
+**Question 2 (Find Order)**: What IS that order?
+
+```
+Prerequisites:              Dependency Graph:
+ML requires Algo, LinAlg    Intro → DS → Algo → ML
+Algo requires DS                         ↗
+DS requires Intro           LinAlg ─────
+
+Can we schedule? Yes! Take: Intro → DS → LinAlg → Algo → ML
+```
+
+**The cycle = impossibility insight**:
+If A requires B and B requires A, neither can be taken first. This is exactly a cycle!
+
+```
+Impossible schedule:
+Course A requires B        A → B
+Course B requires A        B → A
+
+This forms a cycle: A → B → A → B → ...
+No valid ordering exists!
+```
+
+**Key insight: Course Schedule IS Topological Sort**:
+- Course Schedule I = "Does a topological order exist?" = "Is the graph a DAG?"
+- Course Schedule II = "Give me the topological order"
+
+---
+
+## When NOT to Use
+
+**Course Schedule approach is overkill when:**
+- No dependencies at all → Answer is trivially "yes" / "any order"
+- Linear chain of dependencies → Just follow the chain
+- Tree structure → Level-order traversal works
+
+**Don't confuse with:**
+- **Shortest path problems** → Different question entirely
+- **Finding a cycle** → We only need to detect, not return the cycle
+- **Minimum spanning tree** → Wrong algorithm family
+
+**Common mistake scenarios:**
+- Wrong edge direction → [a, b] means b→a, not a→b
+- Not handling disconnected components → Must check all courses
+- Returning wrong format → II returns list of courses, not true/false
+
+**When DFS vs BFS (Kahn's) matters:**
+- Both work equally well for correctness
+- Kahn's is often more intuitive (process available courses first)
+- DFS is shorter code if you're comfortable with recursion
+- For Course Schedule II, Kahn's builds the order naturally (no reversal needed)
+
+---
+
 ## Interview Context
 
 Course Schedule is a FANG+ classic because:

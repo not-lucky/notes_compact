@@ -2,6 +2,75 @@
 
 > **Prerequisites:** [03-dfs-basics](./03-dfs-basics.md)
 
+## Building Intuition
+
+**The Deadlock Detection Mental Model**: In a directed graph, a cycle means "A waits for B waits for C waits for A" - classic deadlock!
+
+```
+Deadlock Example (Process Dependencies):
+Process A → waits for B → waits for C → waits for A
+    ↓           ↓           ↓           ↓
+    A    →      B    →      C    →      A  (CYCLE!)
+```
+
+**Why "visited" isn't enough for directed graphs**:
+
+```
+This is NOT a cycle:            This IS a cycle:
+    0 → 1                           0 → 1
+    ↓   ↓                           ↓   ↓
+    2 → 3                           2 ← 3
+
+Path 0→2→3 and 0→1→3          0→1→3→2→0 is a cycle
+share node 3 - that's fine!    (can walk forever)
+```
+
+In the left graph, revisiting node 3 is just "two roads lead to same place." In the right graph, revisiting node 0 while still on the path means we can loop forever.
+
+**The Three-Color Insight**:
+- **WHITE (unvisited)**: Haven't touched this node yet
+- **GRAY (in progress)**: Currently exploring this node's subtree
+- **BLACK (done)**: Finished with this node and all descendants
+
+**The key**: A cycle exists if we see a GRAY node during exploration!
+
+```
+DFS State Visualization:
+
+Step 1:        Step 2:        Step 3:        Step 4:
+[G]→[W]        [G]→[G]        [G]→[G]        CYCLE!
+ ↓   ↓          ↓   ↓          ↓   ↓
+[W]←[W]        [W]←[W]        [G]←[W]        Gray→Gray
+
+G=Gray, W=White
+When we try to go from node 2 to node 0, node 0 is GRAY = still on current path!
+```
+
+---
+
+## When NOT to Use
+
+**Three-color DFS is wrong when:**
+- **Graph is undirected** → Use parent tracking instead (simpler)
+- **Need to find the actual cycle** → Need to track parent pointers too
+- **Multiple disconnected components** → Must iterate all nodes
+
+**Kahn's algorithm (BFS) is better when:**
+- You also need topological order if no cycle
+- BFS is more intuitive to you
+- Cycle detection is part of topological sort
+
+**Cycle detection is overkill when:**
+- You only need to know if graph is a DAG → Same thing, but terminology matters
+- Graph structure guarantees no cycles (tree input) → Trust the input
+
+**Common mistake scenarios:**
+- Using simple visited check → False positives on reconvergent paths
+- Not checking all components → Miss cycles in disconnected parts
+- Forgetting to mark BLACK → Incorrect results
+
+---
+
 ## Interview Context
 
 Cycle detection in directed graphs is essential because:

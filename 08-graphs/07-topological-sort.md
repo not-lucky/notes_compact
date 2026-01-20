@@ -2,6 +2,71 @@
 
 > **Prerequisites:** [05-cycle-detection-directed](./05-cycle-detection-directed.md)
 
+## Building Intuition
+
+**The Dependency Resolution Mental Model**: Think of getting dressed in the morning:
+- Underwear before pants
+- Socks before shoes
+- Shirt before jacket
+
+You need a valid order that respects all dependencies. Topological sort finds this order!
+
+```
+Dependencies:          Valid Orders:
+underwear → pants      [underwear, socks, pants, shirt, shoes, jacket]
+socks → shoes          [socks, underwear, shirt, pants, shoes, jacket]
+shirt → jacket         (many valid orders exist if graph isn't a chain)
+```
+
+**Why it's called "topological"**:
+The ordering respects the "topology" (structure) of dependencies. If A must come before B, A appears earlier in the sorted result.
+
+**Key insight - Two equivalent approaches**:
+
+1. **Kahn's (BFS) - "Process ready items first"**:
+   - Find nodes with no dependencies (in-degree 0)
+   - Process them, remove their outgoing edges
+   - Repeat until done
+   - Like: "What can I do right now? Do it, then check again."
+
+2. **DFS - "Finish dependencies last"**:
+   - Explore deeply, add to result when DONE (post-order)
+   - Reverse at end
+   - Like: "Go all the way, then on your way back, record the order."
+
+**Visual proof - Why DFS post-order works**:
+```
+If A → B (A must come before B):
+- DFS from A will visit B (directly or indirectly)
+- B is added to result BEFORE A (post-order)
+- Reversing puts A before B ✓
+
+Graph:      DFS Post-order:    Reversed (topological):
+A → B       [B, A]             [A, B] ✓
+```
+
+---
+
+## When NOT to Use
+
+**Don't use topological sort when:**
+- **Graph has cycles** → No valid ordering exists; detect cycle first
+- **Graph is undirected** → Concept doesn't apply (no "direction" of dependency)
+- **You need shortest path** → Topological sort is about ordering, not distance
+- **Order doesn't matter** → Simple traversal is simpler
+
+**Topological sort is overkill when:**
+- Graph is a simple chain → Just follow the links
+- Only need to detect if ordering exists → Cycle detection is sufficient
+- Problem asks for ANY traversal → BFS/DFS is simpler
+
+**Common mistake scenarios:**
+- Applying to undirected graphs → Meaningless result
+- Forgetting to reverse DFS result → Order is backwards
+- Not handling disconnected components → Must process all nodes
+
+---
+
 ## Interview Context
 
 Topological sort is a FANG+ favorite because:
@@ -356,6 +421,152 @@ def parallel_courses(n: int, relations: list[list[int]]) -> int:
         queue = next_queue
 
     return semesters if completed == n else -1
+```
+
+---
+
+## Step-by-Step Topological Sort Traces
+
+**DAG for demonstration:**
+```
+    0 → 1 → 3
+    ↓   ↓
+    2 → 4
+```
+
+Edges: `[(0,1), (0,2), (1,3), (1,4), (2,4)]`
+
+### Kahn's Algorithm (BFS) Trace:
+
+```
+INITIAL STATE:
+In-degrees: {0: 0, 1: 1, 2: 1, 3: 1, 4: 2}
+Queue: [0]  (only node with in-degree 0)
+Result: []
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 1: Dequeue node 0                                      ║
+╚══════════════════════════════════════════════════════════════════╝
+  Add 0 to result: [0]
+
+  Decrement in-degrees of 0's neighbors:
+    1: 1 → 0  ← Now 0, add to queue!
+    2: 1 → 0  ← Now 0, add to queue!
+
+  In-degrees: {0: -, 1: 0, 2: 0, 3: 1, 4: 2}
+  Queue: [1, 2]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 2: Dequeue node 1                                      ║
+╚══════════════════════════════════════════════════════════════════╝
+  Add 1 to result: [0, 1]
+
+  Decrement in-degrees of 1's neighbors:
+    3: 1 → 0  ← Now 0, add to queue!
+    4: 2 → 1  ← Not 0 yet
+
+  In-degrees: {0: -, 1: -, 2: 0, 3: 0, 4: 1}
+  Queue: [2, 3]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATION 3: Dequeue node 2                                      ║
+╚══════════════════════════════════════════════════════════════════╝
+  Add 2 to result: [0, 1, 2]
+
+  Decrement in-degrees of 2's neighbors:
+    4: 1 → 0  ← Now 0, add to queue!
+
+  In-degrees: {0: -, 1: -, 2: -, 3: 0, 4: 0}
+  Queue: [3, 4]
+
+╔══════════════════════════════════════════════════════════════════╗
+║ ITERATIONS 4-5: Dequeue nodes 3, 4                               ║
+╚══════════════════════════════════════════════════════════════════╝
+  No outgoing edges from 3 and 4
+
+FINAL RESULT: [0, 1, 2, 3, 4]
+All 5 nodes processed → No cycle → Valid topological order!
+```
+
+### DFS Approach Trace:
+
+```
+INITIAL STATE:
+Colors: {0: WHITE, 1: WHITE, 2: WHITE, 3: WHITE, 4: WHITE}
+Result (post-order): []
+
+DFS(0):
+  Color 0 → GRAY
+  │
+  ├─ DFS(1):
+  │    Color 1 → GRAY
+  │    │
+  │    ├─ DFS(3):
+  │    │    Color 3 → GRAY
+  │    │    No neighbors
+  │    │    Color 3 → BLACK, add to result: [3]
+  │    │
+  │    ├─ DFS(4):
+  │    │    Color 4 → GRAY
+  │    │    No neighbors (or all BLACK)
+  │    │    Color 4 → BLACK, add to result: [3, 4]
+  │    │
+  │    Color 1 → BLACK, add to result: [3, 4, 1]
+  │
+  ├─ DFS(2):
+  │    Color 2 → GRAY
+  │    4 is already BLACK (skip)
+  │    Color 2 → BLACK, add to result: [3, 4, 1, 2]
+  │
+  Color 0 → BLACK, add to result: [3, 4, 1, 2, 0]
+
+Post-order result: [3, 4, 1, 2, 0]
+REVERSED (topological order): [0, 2, 1, 4, 3]
+
+Both [0, 1, 2, 3, 4] and [0, 2, 1, 4, 3] are valid!
+```
+
+---
+
+## Complexity Derivation with Proof
+
+**Time Complexity: O(V + E)**
+
+```
+Kahn's Algorithm:
+1. Computing in-degrees: O(E)
+2. Each vertex enqueued once: O(V)
+3. Each edge decrements in-degree once: O(E)
+4. Total: O(V + E)
+
+DFS Algorithm:
+1. Each vertex visited once: O(V)
+2. Each edge examined once: O(E)
+3. Total: O(V + E)
+```
+
+**Space Complexity: O(V + E)**
+
+```
+1. Graph storage: O(V + E)
+2. In-degree array (Kahn's) or color array (DFS): O(V)
+3. Queue/Stack: O(V)
+4. Total: O(V + E)
+```
+
+**Correctness proof for Kahn's algorithm:**
+
+```
+Theorem: If Kahn's processes all V vertices, the result is a valid topological order.
+
+Proof:
+1. Each processed vertex had in-degree 0 at processing time.
+2. In-degree 0 means all predecessors were already processed.
+3. Therefore, for every edge (u,v), u appears before v in result.
+4. This is the definition of topological order. ∎
+
+Corollary: If not all vertices processed, a cycle exists.
+Proof: Remaining vertices form a strongly connected component (cycle).
 ```
 
 ---

@@ -1,14 +1,14 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-20T08:11:32.445238Z",
   "created_at": "2026-01-20T06:53:59.318014Z",
   "depends_on": [],
   "epic": "fn-1",
   "id": "fn-1.2",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.2.md",
-  "status": "todo",
+  "status": "in_progress",
   "title": "Enhance 08-graphs chapter (10 files)",
-  "updated_at": "2026-01-20T06:53:59.318026Z"
+  "updated_at": "2026-01-20T08:11:32.445252Z"
 }

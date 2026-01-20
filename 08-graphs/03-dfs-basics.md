@@ -2,6 +2,71 @@
 
 > **Prerequisites:** [01-graph-representations](./01-graph-representations.md)
 
+## Building Intuition
+
+**The Maze Explorer Mental Model**: Imagine exploring a maze with a ball of string. You:
+1. Walk as far as possible in one direction
+2. When you hit a dead end, follow the string back
+3. Try a different unexplored path
+4. Repeat until you've seen everything
+
+```
+Maze:             DFS Exploration (string = recursion stack):
++---+---+---+     Start at A, string at A
+| A | B | C |     Go to B, string: A→B
++   +---+   +     Go to D, string: A→B→D
+| D | E | F |     Dead end! Backtrack to B
++   +---+   +     E visited? No, go there: A→B→E
+| G | H | I |     Continue until all visited
++---+---+---+
+```
+
+**Why DFS uses a stack (or recursion)**:
+- Stack = LIFO (Last-In-First-Out)
+- We explore the most recent discovery first
+- Backtracking happens naturally when we pop
+- Recursion IS a stack (the call stack)
+
+**The Recursion Tree Visualization**:
+```
+DFS from node 0 in graph: 0-[1,2], 1-[3], 2-[4]
+
+Call Stack:           Recursion Tree:
+                            dfs(0)
+                           /      \
+                      dfs(1)      dfs(2)
+                        |           |
+                      dfs(3)      dfs(4)
+```
+
+Each call adds a frame to the stack. When a call finishes, we pop and return to the parent - this is backtracking!
+
+**Key insight - Two types of "visited"**:
+1. **Global visited** (for traversal): "Have I ever seen this node?" - prevents cycles
+2. **Path visited** (for backtracking): "Is this node in my current path?" - for finding all paths
+
+---
+
+## When NOT to Use
+
+**Don't use DFS when:**
+- **Shortest path needed** → DFS may find long path first; use BFS
+- **Graph is very wide** → Recursion depth explodes; use BFS or iterative DFS
+- **Level-order processing** → BFS naturally gives levels
+- **Multi-source problems** → BFS handles multiple starts elegantly
+
+**DFS is problematic when:**
+- Python recursion limit (~1000) → Use iterative DFS for deep graphs
+- You need distance tracking → BFS is more natural
+- Memory is tight and graph is wide → BFS uses O(max-level-width) while DFS uses O(depth)
+
+**Common mistake scenarios:**
+- Using global visited for path problems → Blocks valid paths through same node
+- Not handling disconnected graphs → Must iterate all nodes
+- Modifying graph during traversal → Unpredictable behavior
+
+---
+
 ## Interview Context
 
 DFS is essential because:
@@ -368,6 +433,148 @@ def dfs(node, path):
     for neighbor in graph[node]:
         if neighbor not in path:  # Check path, not global visited
             dfs(neighbor, path + [neighbor])
+```
+
+---
+
+## Step-by-Step DFS Trace with ASCII Visualization
+
+**Graph for demonstration:**
+```
+        0
+       / \
+      1   2
+     / \   \
+    3   4   5
+```
+
+Adjacency list: `{0:[1,2], 1:[0,3,4], 2:[0,5], 3:[1], 4:[1], 5:[2]}`
+
+**Complete recursive DFS trace from node 0:**
+
+```
+CALL STACK VISUALIZATION (→ = call, ← = return):
+
+→ dfs(0)
+  │ Visited: {0}
+  │ Neighbors: [1, 2]
+  │
+  ├→ dfs(1)          [1 not visited]
+  │  │ Visited: {0, 1}
+  │  │ Neighbors: [0, 3, 4]
+  │  │ Skip 0 (visited)
+  │  │
+  │  ├→ dfs(3)       [3 not visited]
+  │  │  │ Visited: {0, 1, 3}
+  │  │  │ Neighbors: [1]
+  │  │  │ Skip 1 (visited)
+  │  │  │ No more neighbors
+  │  │← Return from dfs(3)
+  │  │
+  │  ├→ dfs(4)       [4 not visited]
+  │  │  │ Visited: {0, 1, 3, 4}
+  │  │  │ Neighbors: [1]
+  │  │  │ Skip 1 (visited)
+  │  │  │ No more neighbors
+  │  │← Return from dfs(4)
+  │  │
+  │← Return from dfs(1)
+  │
+  ├→ dfs(2)          [2 not visited]
+  │  │ Visited: {0, 1, 3, 4, 2}
+  │  │ Neighbors: [0, 5]
+  │  │ Skip 0 (visited)
+  │  │
+  │  ├→ dfs(5)       [5 not visited]
+  │  │  │ Visited: {0, 1, 3, 4, 2, 5}
+  │  │  │ Neighbors: [2]
+  │  │  │ Skip 2 (visited)
+  │  │  │ No more neighbors
+  │  │← Return from dfs(5)
+  │  │
+  │← Return from dfs(2)
+  │
+← Return from dfs(0)
+
+TRAVERSAL ORDER: [0, 1, 3, 4, 2, 5]
+```
+
+**Stack state at each step (iterative visualization):**
+```
+Step 0: Stack = [0]              Visit 0
+Step 1: Stack = [2, 1]           Visit 1 (push neighbors, visit last)
+Step 2: Stack = [2, 4, 3]        Visit 3 (skip 0, push 3,4)
+Step 3: Stack = [2, 4]           Visit 4 (3 has no unvisited neighbors)
+Step 4: Stack = [2]              Visit 2 (4 has no unvisited neighbors)
+Step 5: Stack = [5]              Visit 5 (skip 0, push 5)
+Step 6: Stack = []               Done
+
+Note: Iterative DFS visits in different order than recursive
+depending on how you push neighbors (reverse vs forward).
+```
+
+---
+
+## Complexity Derivation with Proof
+
+**Time Complexity: O(V + E)**
+
+```
+Proof:
+1. Each vertex is visited exactly once
+   - The visited set check ensures this
+   - Adding to visited happens once per vertex
+   - Therefore: O(V) vertex operations
+
+2. For each vertex, we examine all adjacent edges
+   - When visiting vertex v, we iterate through adj[v]
+   - Each edge is examined twice (undirected) or once (directed)
+   - Total edge examinations: O(E)
+
+3. Recursive call overhead is O(1) per call
+   - At most V calls (one per vertex)
+   - Therefore: O(V) function call overhead
+
+4. Total: O(V) + O(E) = O(V + E)
+```
+
+**Space Complexity: O(V)**
+
+```
+Proof:
+1. Visited set: O(V) space
+
+2. Recursion stack (worst case):
+   - Linear graph: 0 → 1 → 2 → ... → V-1
+   - Maximum stack depth: V
+   - Therefore: O(V) stack space
+
+3. Iterative stack: same worst case O(V)
+
+4. Total: O(V)
+
+Comparison with BFS:
+- DFS space depends on graph DEPTH
+- BFS space depends on graph WIDTH
+- For deep narrow graphs: DFS may use more space
+- For wide shallow graphs: BFS may use more space
+```
+
+**Pre-order vs Post-order timing:**
+
+```
+Pre-order:  Record node BEFORE visiting children
+Post-order: Record node AFTER visiting children
+
+Graph: 0 → 1 → 2
+
+Pre-order traversal:  [0, 1, 2]
+Post-order traversal: [2, 1, 0]
+
+Post-order is crucial for:
+- Topological sort (reverse post-order)
+- Dependency resolution
+- Strongly connected components
 ```
 
 ---

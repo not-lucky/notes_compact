@@ -2,6 +2,68 @@
 
 > **Prerequisites:** [02-bfs-basics](./02-bfs-basics.md), [03-dfs-basics](./03-dfs-basics.md)
 
+## Building Intuition
+
+**The Island Exploration Mental Model**: Imagine you're flying over an archipelago. Each island is separate - you can walk anywhere within an island, but you need to fly between islands.
+
+```
+Archipelago (Graph):        Components:
+    0---1      4---5        Island 1: {0, 1, 2, 3}
+    |   |      |            Island 2: {4, 5, 6}
+    2---3      6            Island 3: {7}
+
+               7
+```
+
+**The key insight**: A connected component is a "maximal" connected subgraph - you can't add more nodes without breaking connectivity.
+
+**Why DFS/BFS finds components**:
+1. Start at any unvisited node
+2. Traverse visits ALL reachable nodes (entire component)
+3. When traversal ends, that's one complete component
+4. Find another unvisited node → new component
+5. Repeat until all nodes visited
+
+**Union-Find perspective**:
+Think of each edge as a "merge" operation:
+- Initially: every node is its own component
+- Each edge unions two components into one
+- Final number of components = n - (successful unions)
+
+```
+n=5, edges=[[0,1], [1,2], [3,4]]
+
+Initial: 5 components {0}, {1}, {2}, {3}, {4}
+Edge 0-1: union(0,1) → 4 components {0,1}, {2}, {3}, {4}
+Edge 1-2: union(1,2) → 3 components {0,1,2}, {3}, {4}
+Edge 3-4: union(3,4) → 2 components {0,1,2}, {3,4}
+```
+
+---
+
+## When NOT to Use
+
+**DFS/BFS component counting is wrong when:**
+- **Graph is directed** → "Connected" means different things (weak vs strong connectivity)
+- **Dynamic graph** → Edges added/removed frequently; use Union-Find instead
+- **Only need count, not actual components** → Union-Find is simpler
+
+**Union-Find is overkill when:**
+- Graph is static (won't change) → DFS is simpler to implement
+- Need to output actual components → DFS naturally collects members
+- Graph is small → Difference doesn't matter
+
+**Common mistake scenarios:**
+- Forgetting isolated nodes → They're components too!
+- Only running DFS from node 0 → Misses other components
+- Treating directed graph as undirected → Different semantics
+
+**Grid-specific traps:**
+- Not checking all 4/8 directions → Missed connections
+- Stack overflow on large grids → Use BFS instead of recursive DFS
+
+---
+
 ## Interview Context
 
 Connected components problems are common because:
