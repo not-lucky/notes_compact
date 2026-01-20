@@ -20,12 +20,14 @@ Focus on solutions for:
 - Blind 75 problems
 - NeetCode 150 problems
 - Common variations
+
 ## Acceptance
 - [ ] solutions/ directory structure mirrors chapters
 - [ ] Solutions include full explanations
 - [ ] Code has complexity annotations
 - [ ] Edge cases documented
 - [ ] Covers key problems from Blind 75/NeetCode 150
+
 ## Done summary
 TBD
 

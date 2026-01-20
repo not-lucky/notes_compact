@@ -1,16 +1,25 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-20T02:50:36.957225Z",
   "created_at": "2026-01-19T06:04:03.649426Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "4cae1b7090ed2229a6324e8a21f3da7876a8eaff"
+    ],
+    "prs": [],
+    "tests": [
+      "file structure verification"
+    ]
+  },
   "id": "fn-1.21",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.21.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Appendix B: Problem Patterns Guide (3-4 files)",
-  "updated_at": "2026-01-19T06:18:36.831966Z"
+  "updated_at": "2026-01-20T02:56:21.474527Z"
 }
