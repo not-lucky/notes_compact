@@ -2,6 +2,40 @@
 
 > **Prerequisites:** [01-big-o-notation.md](./01-big-o-notation.md)
 
+## Building Intuition
+
+**The "Work Counter" Mental Model**
+
+Imagine you have a clicker counter in your hand. Every time your code does a "unit of work" (comparison, addition, assignment), you click. Time complexity answers: "How many clicks for n items?"
+
+```
+Linear scan:     Click once per item → n clicks → O(n)
+Nested scan:     Click once per pair → n² clicks → O(n²)
+Binary search:   Click once per halving → log n clicks → O(log n)
+```
+
+**The "Doubling Test"**
+
+A quick mental check for complexity:
+1. Imagine doubling your input size
+2. Ask: "How much more work?"
+
+| If work... | Then complexity is... |
+|------------|----------------------|
+| Stays same | O(1) |
+| Adds constant | O(log n) |
+| Doubles | O(n) |
+| Slightly more than doubles | O(n log n) |
+| Quadruples | O(n²) |
+
+**Why This Matters**
+
+Understanding time complexity lets you predict performance:
+- O(n) with n=1,000,000 → ~1 second on modern hardware
+- O(n²) with n=1,000,000 → ~12 days (!!)
+
+---
+
 ## Interview Context
 
 Interviewers expect you to analyze code on the spot. The skill isn't just knowing Big-O—it's breaking down any algorithm and determining its complexity systematically.
@@ -450,6 +484,18 @@ O(n²). The `+` creates a new list each time, copying all previous elements. Tot
 4. **Recursion branching factor matters** → draw the tree
 5. **Divide & conquer with linear merge** → typically O(n log n)
 6. **Watch for hidden operations** → list concatenation, membership tests
+
+---
+
+## When NOT to Over-Analyze
+
+1. **Don't count every operation**: Focus on the dominant term
+2. **Don't analyze obvious O(1)**: Single variable assignments, comparisons
+3. **Don't forget amortization**: Some expensive operations are rare (array resize)
+4. **Don't assume worst case always matters**: Average case often more relevant
+5. **Don't over-complicate**: If it looks like O(n), it probably is O(n)
+
+**Practical tip**: For interviews, get the complexity class right (O(n) vs O(n²)). Don't waste time proving whether it's O(2n) or O(3n).
 
 ---
 

@@ -2,6 +2,38 @@
 
 > **Prerequisites:** [01-big-o-notation.md](./01-big-o-notation.md), [02-time-complexity.md](./02-time-complexity.md), [03-space-complexity.md](./03-space-complexity.md)
 
+## Building Intuition
+
+**The "Teach Back" Mental Model**
+
+Think of explaining complexity like teaching a colleague:
+- **Bad**: "It's O(n²)." (What? Why?)
+- **Good**: "We have nested loops, each running n times, so O(n²)."
+- **Great**: "The outer loop runs n times. For each iteration, the inner loop also runs n times, giving us n × n = O(n²)."
+
+**The "Trade-off Story" Framework**
+
+Every solution has trade-offs. Frame them as choices:
+- "We can solve this in O(n²) time with O(1) space, OR O(n) time with O(n) space. The hash table version uses more memory but is much faster."
+
+This shows you understand there's no free lunch—every optimization costs something.
+
+**The "Bottleneck Identification" Skill**
+
+When asked "Can you do better?", identify what's slow:
+1. Find the highest-complexity operation
+2. Ask: "Can this operation be done faster with a different data structure?"
+3. Propose the trade-off
+
+```
+Current: O(n²) because of nested search
+Bottleneck: The inner "x in list" is O(n)
+Solution: Use a set → inner lookup becomes O(1) → total O(n)
+Trade-off: O(n) extra space for the set
+```
+
+---
+
 ## Interview Context
 
 Knowing complexity isn't enough—you need to **communicate it effectively**. This section covers:
@@ -264,6 +296,27 @@ Before stating your complexity, verify:
 4. **Know your trade-offs** and be ready to discuss them
 5. **When asked to optimize**, identify the bottleneck first
 6. **Practice explaining** out loud—communication matters
+
+---
+
+## When NOT to Over-Discuss Complexity
+
+1. **Don't delay coding too long**: A brief statement is enough; don't lecture
+2. **Don't be overly precise**: "O(n)" is fine; no need for "O(2n + 3)"
+3. **Don't argue semantics**: If interviewer says O(log n), don't debate base of log
+4. **Don't bring up edge cases unprompted**: Focus on the main analysis
+5. **Don't sound rehearsed**: Explain naturally, not like reciting a textbook
+
+**The balance**: Be thorough but concise. State complexity, give a one-line justification, then move on unless asked for more detail.
+
+### Common Communication Mistakes
+
+| Mistake | Better Approach |
+|---------|-----------------|
+| "The complexity is O(n)" (forgot space) | "Time is O(n), space is O(1)" |
+| Long-winded mathematical proofs | Brief justification: "one loop, n iterations" |
+| Uncertain: "I think it's O(n)?" | Confident: "This is O(n) because..." |
+| Defensive when wrong | "Good catch, let me reconsider..." |
 
 ---
 

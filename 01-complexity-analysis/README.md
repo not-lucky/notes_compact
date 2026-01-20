@@ -1,5 +1,31 @@
 # Chapter 01: Complexity Analysis
 
+## Building Intuition
+
+**The "Speed vs Memory" Trade-off Mental Model**
+
+Think of complexity analysis like planning a road trip:
+- **Time complexity** = How long will the trip take?
+- **Space complexity** = How much luggage space do we need?
+
+Just as you'd estimate "This route takes about 4 hours" rather than "exactly 237 minutes," Big-O gives us meaningful approximations that help us make decisions.
+
+**Why Approximations Are Enough**
+
+When comparing algorithms, we care about **how they scale**, not exact counts:
+- An O(n²) algorithm with n=1000 does ~1,000,000 operations
+- An O(n) algorithm with n=1000 does ~1,000 operations
+- The exact constants (1.5n vs 2n) become irrelevant at scale
+
+**The Interview Mindset**
+
+Interviewers don't want mathematical proofs—they want you to:
+1. Quickly identify complexity class (O(n), O(n²), etc.)
+2. Justify why it's that complexity
+3. Know when you can do better
+
+---
+
 ## Why This Matters for Interviews
 
 Complexity analysis is the **foundation of every technical interview**. Before you write a single line of code, interviewers expect you to:
@@ -39,6 +65,16 @@ This chapter covers:
 | O(n²) | Quadratic | Nested loops, bubble sort |
 | O(2ⁿ) | Exponential | Recursive subsets generation |
 | O(n!) | Factorial | Permutations |
+
+---
+
+## When NOT to Overthink Complexity
+
+1. **Don't memorize formulas**: Understand patterns instead (loop = O(n), nested loop = O(n²))
+2. **Don't count exact operations**: O(3n + 5) is just O(n)
+3. **Don't optimize prematurely**: Get a working solution first, then optimize if needed
+4. **Don't forget space**: Time is flashy, but space complexity is equally important
+5. **Don't ignore constants for small n**: O(n²) with n=10 is only 100 operations—often fine
 
 ---
 

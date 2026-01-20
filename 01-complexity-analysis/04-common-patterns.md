@@ -2,6 +2,41 @@
 
 > **Prerequisites:** [01-big-o-notation.md](./01-big-o-notation.md)
 
+## Building Intuition
+
+**The "Data Structure Toolkit" Mental Model**
+
+Think of data structures as tools with different strengths:
+
+```
+List = Filing cabinet (drawers in order)
+  - Finding a specific file: Check each drawer → O(n)
+  - Getting file #5: Go directly to drawer 5 → O(1)
+  - Adding to front: Move ALL files down → O(n)
+
+Hash Table = Magic filing cabinet (tells you exactly where things are)
+  - Finding a specific file: "It's in drawer 7" → O(1)
+  - No order, but instant lookup!
+
+Heap = Priority mailbox (most urgent always on top)
+  - Get most urgent: Just look at top → O(1)
+  - Add new mail: Bubble to right spot → O(log n)
+```
+
+**The "Why Hash Tables Are Magic" Insight**
+
+Hash tables convert searching into arithmetic:
+- Instead of checking each item: "Is this the one? Is this? Is this?"
+- Hash function says: "The item at key K is at index H(K)"
+
+That's why O(1) lookup is possible—it's not searching, it's calculating.
+
+**The "Why Trees Are Fast" Insight**
+
+A balanced tree with 1 billion elements has only ~30 levels. Each step eliminates half the possibilities. That's why tree operations are O(log n)—not by luck, but by design.
+
+---
+
 ## Interview Context
 
 Interviewers expect you to know the complexity of basic operations without thinking. When you use a data structure, you should instantly know the cost.
@@ -335,6 +370,32 @@ Sorting:
 5. **String concatenation in loops is O(n²)** - use join instead
 6. **`x in list` is O(n)** - convert to set for O(1)
 7. **Heapify is O(n)**, not O(n log n)
+
+---
+
+## When NOT to Use These Data Structures
+
+### When NOT to use Hash Tables
+- **Need sorted order**: Hash tables don't maintain order
+- **Memory constrained**: Hash tables use ~2x the memory
+- **Small datasets**: For n < 20, list search is often faster (cache locality)
+- **Unhashable keys**: Objects that can't be hashed (mutable types)
+
+### When NOT to use Heaps
+- **Need arbitrary access**: Heaps only efficiently access min/max
+- **Frequent searches**: Searching a heap is O(n)
+- **Need median**: Use two heaps (min and max) or sorted data structure
+
+### When NOT to use Deques
+- **Need random access**: Deques are O(n) for index access
+- **Memory sensitive**: Deques have higher overhead than lists
+
+### When NOT to use Lists
+- **Frequent front insertions**: Use deque instead (O(1) vs O(n))
+- **Frequent membership tests**: Use set instead (O(1) vs O(n))
+- **Need min/max efficiently**: Use heap instead
+
+**Choosing the right data structure is often more impactful than clever algorithms.**
 
 ---
 

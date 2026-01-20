@@ -2,6 +2,43 @@
 
 > **Prerequisites:** None - this is where it all begins
 
+## Building Intuition
+
+**The "Scaling Story" Mental Model**
+
+Imagine you're comparing two pizza delivery services:
+- **Service A**: Takes 5 minutes per pizza, regardless of order size
+- **Service B**: Takes 1 minute setup + 2 minutes per pizza
+
+For 1 pizza: A = 5 min, B = 3 min → B wins
+For 10 pizzas: A = 50 min, B = 21 min → B wins
+For 100 pizzas: A = 500 min, B = 201 min → B still wins, but gap is proportionally smaller
+
+At scale, both services are "linear in the number of pizzas"—the constants (5 vs 2) don't change the fundamental scaling behavior.
+
+**Why We Drop Constants**
+
+```
+O(2n) vs O(n)
+  ↓      ↓
+Both double when n doubles → Same growth pattern → Both O(n)
+
+O(n²) vs O(n)
+  ↓       ↓
+Quadruples   Doubles → Different patterns → Different classes
+```
+
+**The Key Insight**
+
+Big-O answers: "If I double my input, how much more work do I do?"
+- O(1): Same work
+- O(log n): A tiny bit more
+- O(n): Double the work
+- O(n²): Quadruple the work
+- O(2ⁿ): Work explodes exponentially
+
+---
+
 ## Interview Context
 
 Big-O notation is the language of algorithm efficiency. In every FANG+ interview, you'll use it to:
@@ -383,6 +420,18 @@ for char in chars:     # O(n) iterations
 # Fixed: O(n)
 s = "".join(chars)  # Join is O(n) total
 ```
+
+---
+
+## When NOT to Use Big-O Thinking
+
+1. **Small, fixed inputs**: If n is always ≤ 10, an O(n²) solution is fine
+2. **One-time scripts**: Optimization doesn't matter for code run once
+3. **Micro-optimization**: Don't obsess over O(3n) vs O(2n)—they're both O(n)
+4. **Readability trade-offs**: Sometimes O(n²) code is clearer than clever O(n log n)
+5. **When constants matter**: For performance-critical systems, a 2x constant factor might matter
+
+**Practical guideline**: Only worry about Big-O when n can be large (>1000) or when code runs frequently.
 
 ---
 

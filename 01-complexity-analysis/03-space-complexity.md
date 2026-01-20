@@ -2,6 +2,41 @@
 
 > **Prerequisites:** [01-big-o-notation.md](./01-big-o-notation.md)
 
+## Building Intuition
+
+**The "Desk Space" Mental Model**
+
+Imagine your algorithm is doing paperwork at a desk:
+- **Input papers**: The data you're given (doesn't count as "extra" space)
+- **Scratch paper**: Any extra notes you make (THIS is what we measure)
+- **Stack of pending work**: Recursive calls waiting to be processed
+
+Space complexity asks: "How much scratch paper do I need?"
+
+```
+Finding max in array:  Just one sticky note for "current max" → O(1)
+Making a copy:         Photocopy every page → O(n)
+Building a matrix:     n×n grid of sticky notes → O(n²)
+Recursive factorial:   Stack of n pending calculations → O(n)
+```
+
+**The Forgotten Cost: Recursion Stack**
+
+Every recursive call is like putting a bookmark in a book and starting a new chapter. You need to remember where you were:
+
+```python
+factorial(5)      # Bookmark 1: "Return to multiply by 5"
+  factorial(4)    # Bookmark 2: "Return to multiply by 4"
+    factorial(3)  # Bookmark 3: "Return to multiply by 3"
+      ...         # Stack grows with n bookmarks → O(n) space!
+```
+
+**Key Insight**
+
+The recursive solution that "looks" like O(1) space often uses O(n) stack space. Always ask: "How deep can the recursion go?"
+
+---
+
 ## Interview Context
 
 Space complexity is the **most commonly forgotten** aspect of complexity analysis. Interviewers frequently ask:
@@ -464,6 +499,22 @@ def process_half(arr: list[int]) -> list[int]:
 4. **Strings in Python create copies** on concatenation
 5. **List slicing creates copies**
 6. **Trade space for time** is a common optimization
+
+---
+
+## When NOT to Optimize Space
+
+1. **Readability over cleverness**: An O(n) space solution that's clear beats a confusing O(1) solution
+2. **Memory is cheap**: For most applications, O(n) space is fine
+3. **Don't destroy input**: Modifying input to save space is often a bad practice
+4. **Small n**: For n ≤ 1000, space is almost never an issue
+5. **One-off scripts**: Don't optimize space for code run once
+
+**When space DOES matter:**
+- Embedded systems with limited RAM
+- Processing massive datasets (millions of elements)
+- Long-running servers where memory leaks compound
+- Mobile apps where memory affects battery
 
 ---
 
