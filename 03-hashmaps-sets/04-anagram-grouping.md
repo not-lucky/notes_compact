@@ -16,6 +16,120 @@ The key insight: anagrams share the same **sorted string** or **character freque
 
 ---
 
+## Building Intuition
+
+**The Core Insight: Canonical Representation**
+
+The key question: "How do we identify that two strings are anagrams?"
+
+Answer: Transform them into the same **canonical form** (signature).
+
+```
+"listen" → signature → "eilnst" (sorted)
+"silent" → signature → "eilnst" (sorted)
+
+Same signature = Same anagram group!
+```
+
+**Two Signature Strategies**
+
+1. **Sorted String**: Simple, works for any characters
+   - `"listen"` → `sorted("listen")` → `"eilnst"`
+   - Time: O(k log k) per string
+
+2. **Count Tuple**: Faster for lowercase, fixed alphabet
+   - `"listen"` → `(0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,0,1,1,0,0,0,0,0,0)`
+   - Time: O(k) per string
+
+**Mental Model: The Signature as a "Name Tag"**
+
+Imagine a party where everyone wearing the same "name tag" is grouped together:
+- Instead of comparing everyone to everyone (O(n²))
+- Give each person a name tag based on their letters
+- People with matching name tags go to the same table
+
+The hashmap groups by name tag in O(1) per lookup.
+
+**Why Sliding Window for Substring Anagrams**
+
+Naive approach for "find all anagrams of 'abc' in 'cbaebabacd'":
+- Check every substring of length 3: O(n × k) where k=3
+- Each check sorts or counts: O(k log k) or O(k)
+
+Sliding window optimization:
+- Start with first window, compute signature
+- Slide right: add new char, remove old char
+- Update signature incrementally → O(1) per slide
+
+Total: O(n) instead of O(n × k)
+
+**The Delete-Zero Trick**
+
+When using Counter comparison:
+```python
+Counter({'a': 1, 'b': 0}) != Counter({'a': 1})  # Different!
+```
+
+Always delete zero-count entries:
+```python
+if window[char] == 0:
+    del window[char]
+```
+
+This ensures Counter equality works correctly.
+
+---
+
+## When NOT to Use Anagram Grouping
+
+**1. Order Matters Within Groups**
+
+Anagram grouping treats "abc", "bca", "cab" as equivalent. If you need:
+- Lexicographically smallest in each group
+- Original order preserved
+- Specific ordering within groups
+
+You need post-processing after grouping.
+
+**2. Substrings/Subsequences (Not Anagrams)**
+
+Related but different:
+```python
+# Substring: contiguous slice ("abc" in "xabcy")
+# Subsequence: not necessarily contiguous ("ace" in "abcde")
+# Anagram: exact same characters, any order ("abc" vs "cba")
+```
+
+Don't confuse these—they have different solutions.
+
+**3. Partial Matches Are Acceptable**
+
+Anagram requires EXACT character match. For "at least 50% overlap":
+- Use set intersection with threshold
+- Not anagram grouping
+
+**4. Very Long Strings with Unicode**
+
+For strings with arbitrary Unicode characters:
+- 26-element count array won't work
+- sorted() still works but may be slow
+- Counter is the safe choice (but signature is a large frozenset)
+
+**5. Approximate/Fuzzy Matching**
+
+"Similar enough" isn't "anagram":
+- Levenshtein distance for edit distance
+- Soundex/Metaphone for phonetic similarity
+- n-gram similarity for fuzzy matching
+
+**Red Flags:**
+- "Find similar strings" → Fuzzy matching, not anagrams
+- "Preserve original order in output" → Need extra tracking
+- "Any characters including Unicode" → Use Counter, not array[26]
+- "Partial character overlap" → Set operations, not anagrams
+
+---
+
 ## Core Concept
 
 Two strings are anagrams if they contain the same characters with the same frequencies.

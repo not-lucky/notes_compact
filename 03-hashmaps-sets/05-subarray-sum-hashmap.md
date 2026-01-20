@@ -17,6 +17,135 @@ The key insight: `sum(i, j) = prefix[j] - prefix[i-1] = k` means `prefix[i-1] = 
 
 ---
 
+## Building Intuition
+
+**The Key Insight: Prefix Sums Turn Ranges Into Differences**
+
+Without prefix sums:
+```
+"What's the sum of elements from index 2 to 5?"
+→ Add nums[2] + nums[3] + nums[4] + nums[5] → O(n) each time
+```
+
+With prefix sums (O(n) preprocessing):
+```
+prefix = [0, a, a+b, a+b+c, ...]
+sum(2, 5) = prefix[6] - prefix[2] → O(1)
+```
+
+**The Hashmap Insight: Don't Search—Remember**
+
+Naive approach for "find subarray with sum k":
+```
+For each end position j:
+  For each start position i:
+    Check if sum(i, j) == k → O(n²)
+```
+
+Hashmap insight:
+```
+sum(i, j) = k
+→ prefix[j] - prefix[i-1] = k
+→ prefix[i-1] = prefix[j] - k
+
+At position j: "Have I seen prefix_sum = (current_prefix - k) before?"
+→ O(1) lookup in hashmap!
+```
+
+**Mental Model: The Bank Account**
+
+Think of prefix sums as a running bank balance:
+```
+Deposits: [+3, +1, -2, +4]
+Balance:  [3, 4, 2, 6]
+
+"When was my balance exactly 2 less than now?"
+→ If current balance is 6 and I want a period of net +4...
+→ I need a previous balance of 6-4=2
+→ Check hashmap: balance 2 occurred at index 2
+→ Period from index 3 to now has sum 4
+```
+
+**Why {0: 1} Is Crucial**
+
+The dummy prefix represents "before the array started":
+```
+nums = [3], k = 3
+
+Without {0: 1}:
+  prefix = 3, looking for 3-3=0
+  0 not in hashmap → WRONG! Miss [3] itself
+
+With {0: 1}:
+  prefix = 3, looking for 3-3=0
+  0 in hashmap at "index -1" → Found subarray [0, 0] → [3]
+```
+
+It lets you find subarrays that START at index 0.
+
+**Why Mod Works for Divisibility**
+
+If two prefix sums have the same remainder when divided by k:
+```
+prefix[i] = a × k + r
+prefix[j] = b × k + r
+
+prefix[j] - prefix[i] = (b - a) × k → divisible by k!
+```
+
+So: group by remainder, pairs within same group form valid subarrays.
+
+---
+
+## When NOT to Use Prefix Sum + Hashmap
+
+**1. All Numbers Are Positive → Use Sliding Window**
+
+For positive-only arrays with sum >= k:
+```python
+# Sliding window: O(1) space
+# Prefix + hashmap: O(n) space
+```
+
+Sliding window works because sum only increases when expanding, only decreases when shrinking. Monotonic property → no need to store history.
+
+**2. You Need the Actual Subarray, Not Just Count**
+
+Hashmap stores counts, not positions:
+```python
+# "Find all subarrays with sum k" → Need to store indices, not just counts
+# This changes the data structure significantly
+```
+
+For returning actual subarrays, track list of indices per prefix sum.
+
+**3. 2D or Multi-dimensional Arrays**
+
+Prefix sum + hashmap is 1D. For 2D:
+- Fix two rows, reduce to 1D problem
+- Or use 2D prefix sum matrix
+
+**4. "At Least K" or "At Most K" Instead of "Exactly K"**
+
+Exact match uses hashmap; range conditions use:
+- Sliding window (for positive numbers)
+- Two-pointer approaches
+- Binary search on sorted prefix array
+
+**5. Streaming Data with Bounded Memory**
+
+Hashmap grows with unique prefix sums. For streams:
+- Sliding window if applicable
+- Approximate algorithms otherwise
+
+**Red Flags:**
+- "All positive integers" + "sum >= k" → Sliding window
+- "Return all subarrays" → Store indices, not counts
+- "Sum in range [a, b]" → Different approach needed
+- "2D matrix" → Reduce dimension first
+
+---
+
 ## Core Concept
 
 For any subarray `[i, j]`:

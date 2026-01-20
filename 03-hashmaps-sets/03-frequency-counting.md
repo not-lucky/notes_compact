@@ -17,6 +17,130 @@ The key insight: counting occurrences transforms comparison problems into lookup
 
 ---
 
+## Building Intuition
+
+**The Core Insight: Counting Enables O(1) Decisions**
+
+Without frequency counting:
+```
+"How many times does 5 appear?" → Scan entire array → O(n)
+```
+
+With frequency counting (one-time O(n) preprocessing):
+```
+freq = {5: 3, 2: 2, 7: 1}
+"How many times does 5 appear?" → freq[5] → O(1)
+```
+
+You pay O(n) once to answer unlimited questions in O(1).
+
+**Mental Model: Inventory Sheet**
+
+Think of a warehouse inventory:
+- Walking the aisles to count each item type → O(n) every time
+- Building an inventory sheet first → O(n) once, O(1) lookups forever
+
+**Why Bucket Sort Works for Top K**
+
+The magical O(n) trick: frequency is bounded by array size.
+
+```
+nums = [1,1,1,2,2,3], n=6
+
+Maximum possible frequency = 6
+Create 6 buckets (one per frequency):
+
+bucket[0] = []
+bucket[1] = [3]      ← appears 1 time
+bucket[2] = [2]      ← appears 2 times
+bucket[3] = [1]      ← appears 3 times
+bucket[4] = []
+bucket[5] = []
+bucket[6] = []
+
+Top K? Walk buckets from right to left!
+```
+
+No sorting needed—frequency IS the index.
+
+**Why Boyer-Moore Is Genius**
+
+The voting algorithm uses a key observation: if there's a majority element (>n/2), it can "afford" to be cancelled by all other elements and still survive.
+
+```
+[2, 2, 1, 1, 1, 2, 2]
+
+Think of it as a battle:
+- Each 2 "cancels" one non-2
+- Each non-2 "cancels" one 2
+- Majority survives because it has more soldiers
+
+Result: The candidate after all battles is the majority.
+```
+
+**Pattern Recognition: When to Use XOR**
+
+XOR has magical properties:
+- `a ^ a = 0` (any number XORed with itself is 0)
+- `a ^ 0 = a` (any number XORed with 0 is itself)
+- Commutative and associative
+
+So for "find the single non-duplicate":
+```
+XOR all elements → duplicates cancel to 0 → only unique remains
+```
+
+No hashmap needed, O(1) space!
+
+---
+
+## When NOT to Use Frequency Counting
+
+**1. You Need Order Information**
+
+Frequency maps lose positional information:
+```python
+# "Find first element that appears k times" → need to track positions too
+# "Find longest streak of same element" → sliding window is better
+```
+
+**2. Counting Isn't the Question**
+
+Some problems look like counting but aren't:
+```python
+# "Find two numbers that sum to target" → Two Sum, not frequency
+# "Find longest increasing subsequence" → DP, not frequency
+```
+
+**3. Memory Constraints Are Tight**
+
+Counter uses O(k) space where k = unique elements:
+```python
+# Stream of 10 billion elements with 1 billion unique values
+# Counter would use 1 billion entries → too much memory
+# Use probabilistic structures (Count-Min Sketch, HyperLogLog)
+```
+
+**4. You Need Approximate Answers**
+
+For "roughly how many unique?" or "approximately top-K":
+- Probabilistic algorithms are better
+- Exact counting is overkill
+
+**5. Streaming Data with Limited Memory**
+
+For unbounded streams:
+- Boyer-Moore works for majority (O(1) space)
+- But generic "top K" on infinite stream needs different approach
+
+**Red Flags:**
+- "Maintain order of first occurrence" → Use OrderedDict or track separately
+- "Streaming with bounded memory" → Probabilistic structures
+- "Approximate answer acceptable" → Sketch algorithms
+- "Find position of kth unique" → Need position tracking too
+
+---
+
 ## Core Concept
 
 **Frequency Map**: A hashmap where keys are elements and values are their counts.

@@ -15,6 +15,131 @@ Interviewers want to see that you understand *why* hash tables work, not just *t
 
 ---
 
+## Building Intuition
+
+**Why O(1) Lookup Is "Magic"**
+
+Think of a hash table like a huge filing cabinet with numbered drawers:
+
+```
+Regular list: "Find John's file"
+→ Open drawer 1, not there
+→ Open drawer 2, not there
+→ ... (check every drawer) → O(n)
+
+Hash table: "Find John's file"
+→ hash("John") = 47
+→ Open drawer 47 directly → O(1)
+```
+
+The hash function is like a magical index that tells you EXACTLY where to look.
+
+**The Fundamental Trade-off: Space for Time**
+
+Hash tables sacrifice memory for speed:
+- You allocate MORE buckets than you have items
+- Most buckets are empty (wasted space)
+- But lookups are instant (no searching)
+
+```
+Items: 10
+Buckets: 16 (typical, with ~60% load factor)
+Wasted space: 6 buckets
+
+BUT: Every lookup is O(1) instead of O(n)
+```
+
+**Why Collisions Are Inevitable (Birthday Paradox)**
+
+Even with a good hash function, collisions happen surprisingly often:
+- With 23 people, there's a 50% chance two share a birthday
+- With n buckets and √n items, expect at least one collision
+
+This is why collision handling isn't optional—it's essential.
+
+**Mental Model: Phone Book vs. Library**
+
+```
+Phone Book (Sorted List):
+- Find "Smith" → binary search → O(log n)
+- Must be kept sorted
+
+Hash Table (Direct Dial):
+- hash("Smith") → extension 4721
+- Call directly → O(1)
+- No sorting needed
+```
+
+**Why Only Immutable Keys?**
+
+Imagine you file "John Doe" in drawer 47 (based on hash). Then "John" changes to "Jonathan":
+- New hash = 89
+- But the file is still in drawer 47
+- Looking for "Jonathan" checks drawer 89 → NOT FOUND
+
+The file is "lost" because the key changed. This is why Python requires immutable keys.
+
+---
+
+## When NOT to Use Hash Tables
+
+**1. Order Matters**
+
+Hash tables don't maintain insertion order (historically) or sorted order:
+```python
+# Need sorted iteration? → Use list + sort, or sortedcontainers
+# Need oldest-first? → Use OrderedDict or deque
+```
+
+Note: Python 3.7+ dicts maintain insertion order, but this is a CPython implementation detail.
+
+**2. Memory Is Critical**
+
+Hash tables use 2-3× more memory than the data alone:
+```python
+# 1000 integers
+list: ~8KB
+dict: ~36KB (4.5× more!)
+```
+
+For embedded systems or huge datasets, arrays may be better.
+
+**3. Keys Aren't Hashable**
+
+Lists, dicts, and other mutable objects can't be keys:
+```python
+d[["a", "b"]] = 1  # TypeError!
+# Solution: d[tuple(["a", "b"])] = 1
+```
+
+If your keys are naturally mutable, you need a different structure.
+
+**4. Range Queries or Nearest Neighbors**
+
+Hash tables only support exact match:
+```python
+# "Find all keys between 10 and 20" → O(n) scan
+# "Find key closest to 15" → O(n) scan
+
+# Use instead: Sorted array + binary search, or balanced BST
+```
+
+**5. Very Small Data Sets (n < 10)**
+
+The overhead of hashing isn't worth it:
+```python
+# For 5 items, linear search in list is often faster
+# Cache locality matters more than O(1) vs O(n)
+```
+
+**Red Flags:**
+- "Maintain sorted order" → Use sorted structure
+- "Find range of keys" → Use BST or sorted array
+- "Memory-constrained environment" → Use arrays
+- "Keys are mutable objects" → Convert to tuples or use different approach
+
+---
+
 ## Core Concept: How Hash Tables Work
 
 A hash table maps keys to values using a **hash function** that converts keys into array indices.

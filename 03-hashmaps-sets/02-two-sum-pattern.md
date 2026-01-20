@@ -16,6 +16,111 @@ The core insight: instead of checking all pairs O(n²), use a hashmap to check i
 
 ---
 
+## Building Intuition
+
+**The Key Insight: Don't Search—Remember**
+
+Brute force Two Sum asks: "For each number, does any OTHER number complete the sum?"
+This requires checking all pairs → O(n²).
+
+The hashmap insight flips this: "Have I ALREADY seen the number I need?"
+
+```
+Looking for pairs that sum to 9:
+
+Brute Force Thinking:
+  At num=2: "Is there a 7 somewhere?" → scan entire array
+
+Hashmap Thinking:
+  At num=2: "Have I seen 7 before?" → check hashmap O(1)
+  Store 2 for future use.
+  At num=7: "Have I seen 2 before?" → YES! Found it.
+```
+
+**Mental Model: The Party Introduction**
+
+Imagine you're at a party looking for someone whose age + yours = 50:
+
+```
+Brute Force:
+- For each person you meet, ask everyone else their age
+- O(n²) conversations
+
+Hashmap Approach:
+- Memorize each person's age as you meet them
+- When you meet someone new, check your memory:
+  "Do I know someone who's (50 - their age)?"
+- O(n) conversations total
+```
+
+**Why One Pass Is Enough**
+
+A common question: "What if the complement comes AFTER the current number?"
+
+Answer: It doesn't matter! If nums[i] + nums[j] = target, we'll find the pair when we reach the LATER index (whichever is processed second):
+
+```
+nums = [7, 2], target = 9
+
+i=0: num=7, need 2, haven't seen it → store {7: 0}
+i=1: num=2, need 7, already stored! → return [0, 1]
+```
+
+The pair is found when we reach index 1, not index 0.
+
+**The Complement Pattern Is Everywhere**
+
+Once you recognize "find two things that combine to X," you'll see it everywhere:
+- Two Sum (add to target)
+- Pairs with XOR = k
+- Pairs with product = k
+- Songs with duration % 60 = 0 (modular arithmetic)
+
+All use the same insight: store what you've seen, check for complement.
+
+---
+
+## When NOT to Use Hashmap Two Sum
+
+**1. Array Is Already Sorted**
+
+Use two pointers instead—O(1) space vs O(n):
+```python
+# Sorted array: two pointers is better
+left, right = 0, n-1
+while left < right:
+    if nums[left] + nums[right] == target: return True
+    elif sum < target: left += 1
+    else: right -= 1
+```
+
+**2. Need Multiple Solutions But Array Has No Duplicates**
+
+If the problem guarantees unique values and exactly one solution, hashmap is fine. But for counting all pairs or handling duplicates, you need Counter or careful deduplication.
+
+**3. Memory Is Extremely Constrained**
+
+Hashmap uses O(n) extra space. For huge arrays with strict memory limits:
+- Sort + two pointers: O(1) space (if in-place sort allowed)
+- Trade time for space with O(n²) brute force
+
+**4. Looking for K-Sum with Large K**
+
+For 3Sum/4Sum, hashmap alone isn't optimal:
+- 3Sum: Sort + fix one + two pointers = O(n²)
+- 4Sum: Sort + fix two + two pointers = O(n³)
+- General K-Sum: Recursive reduction to 2Sum
+
+Hashmap is the inner primitive, not the whole solution.
+
+**Red Flags:**
+- "Array is sorted" → Two pointers (O(1) space)
+- "Count all pairs" → Need Counter, not basic hashmap
+- "Find closest sum to target" → Two pointers + tracking
+- "Memory limit: O(1)" → Sort + two pointers
+
+---
+
 ## Core Concept
 
 **Problem**: Find two numbers in an array that add up to a target.

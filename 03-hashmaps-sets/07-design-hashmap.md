@@ -17,6 +17,125 @@ This problem appears at Google, Amazon, and many other companies.
 
 ---
 
+## Building Intuition
+
+**Why This Problem Matters**
+
+"Design a HashMap" isn't about memorizing code—it tests whether you truly understand:
+- How hash tables achieve O(1) average time
+- What happens when things go wrong (collisions)
+- The trade-offs between different approaches
+
+**Mental Model: The Postal System**
+
+Think of a HashMap like a post office with numbered PO boxes:
+```
+Key "John" → hash("John") = 42 → PO Box #42
+
+To find John's mail:
+- Don't search all boxes (O(n))
+- Calculate his box number directly → O(1)
+```
+
+But what if two people hash to the same box? That's collision handling.
+
+**Chaining: One Box, Many Cubbies**
+
+```
+Box #42: [("John", mail1), ("Jane", mail2)]
+
+When both hash to 42:
+- Store both in the same box
+- Look through the list to find the right person
+- Average case: still O(1) if boxes aren't too crowded
+```
+
+**Open Addressing: Find Another Box**
+
+```
+"John" → Box #42 (occupied by "Jane")
+→ Try #43 (occupied)
+→ Try #44 (empty!) → Store here
+
+Lookup: Same process—start at hash, probe until found or empty.
+```
+
+**Why Prime Numbers for Bucket Size?**
+
+Keys often have patterns (IDs like 100, 200, 300...). If bucket size is 100:
+```
+100 % 100 = 0
+200 % 100 = 0
+300 % 100 = 0  ← All collide!
+```
+
+Prime bucket size (e.g., 97) breaks patterns:
+```
+100 % 97 = 3
+200 % 97 = 6
+300 % 97 = 9  ← Better distribution!
+```
+
+**Load Factor: How Full Is Too Full?**
+
+```
+Load factor = items / buckets
+
+α = 0.3: Wasteful (too many empty buckets)
+α = 0.7: Good balance
+α = 1.5: Too crowded (long chains, slow lookups)
+```
+
+Python dict resizes at ~0.66 load factor.
+
+---
+
+## When NOT to Implement Your Own HashMap
+
+**1. Production Code**
+
+Built-in `dict` is:
+- Heavily optimized (C implementation)
+- Tested for edge cases
+- Thread-safe for basic operations (GIL)
+
+Roll your own only for learning or specialized needs.
+
+**2. Ordered Access Required**
+
+Standard hashmaps don't maintain order:
+```python
+# Need sorted keys? → Use sortedcontainers.SortedDict
+# Need insertion order? → Use collections.OrderedDict (or Python 3.7+ dict)
+```
+
+**3. Range Queries**
+
+Hashmaps only support exact key lookup:
+```python
+# "All keys between 10 and 20" → O(n) scan
+# Use BST or sorted structure instead
+```
+
+**4. Persistent/Immutable Version Needed**
+
+Standard hashmap mutates in place. For immutable versions:
+- Functional data structures (HAMTs)
+- Copy-on-write patterns
+
+**5. Memory Is Extremely Constrained**
+
+Hashmaps trade space for time:
+```python
+# 1000 integers: list ~8KB, dict ~36KB
+# For embedded/constrained environments, consider alternatives
+```
+
+**Interview Tip:**
+Interviewers want to see you CAN implement a hashmap. But always mention that in production, you'd use the built-in `dict`.
+
+---
+
 ## Core Design Decisions
 
 ### 1. Hash Function

@@ -17,6 +17,138 @@ These problems are **FAANG favorites** and test both data structure knowledge an
 
 ---
 
+## Building Intuition
+
+**Why Combine Data Structures?**
+
+Each structure excels at one thing:
+- HashMap: O(1) lookup by key
+- Array: O(1) access by index, random selection
+- Linked List: O(1) insertion/deletion if you have the node
+- Heap: O(1) min/max access
+
+But real problems need MULTIPLE O(1) operations. The trick: use multiple structures that reference the same data.
+
+**LRU Cache: The Classic Combo**
+
+The requirements:
+- O(1) get by key → need HashMap
+- O(1) update recency → need quick reordering
+- O(1) evict oldest → need access to oldest element
+
+Array fails reordering. Heap fails arbitrary access. But Doubly Linked List:
+- Move any node to front in O(1) (if you have the node pointer)
+- Access oldest (tail) in O(1)
+
+HashMap stores key → node pointer. DLL handles ordering. Together: O(1) everything.
+
+**Mental Model: Library Book Tracking**
+
+```
+HashMap = Card catalog (find any book's location instantly)
+DLL = Stack of "recently touched" books
+
+Access a book:
+1. Card catalog → find book's position in stack → O(1)
+2. Move book to top of stack → O(1)
+3. When shelf is full, remove bottom book → O(1)
+```
+
+**RandomizedSet: Why HashMap Alone Fails**
+
+HashMap can't select random element in O(1):
+```python
+# To pick random key, you'd need to:
+random.choice(list(hashmap.keys()))  # O(n) to create list!
+```
+
+Array gives O(1) random selection, but O(n) deletion (shifting).
+
+The trick: **swap-to-end**:
+```
+[A, B, C, D] → delete B
+Step 1: Swap B with D → [A, D, C, B]
+Step 2: Pop last → [A, D, C]
+```
+
+HashMap tracks current index of each element.
+
+**LFU Cache: The Harder Version**
+
+LRU = evict "used longest ago"
+LFU = evict "used fewest times" (with LRU as tiebreaker)
+
+Why it's harder:
+- Need to track frequency of each key
+- Need O(1) access to "minimum frequency" keys
+- Among min-frequency keys, need LRU order
+
+Solution: HashMap + frequency buckets (each bucket is its own LRU list).
+
+**Time-Based Store: When History Matters**
+
+```
+set("price", 100, timestamp=1)
+set("price", 200, timestamp=5)
+get("price", timestamp=3) → 100 (value at or before time 3)
+```
+
+Store sorted list of (timestamp, value) per key. Binary search for queries.
+
+---
+
+## When NOT to Use These Patterns
+
+**1. Simpler Cache Policies Suffice**
+
+LRU/LFU are complex. Consider simpler alternatives:
+```python
+# Random eviction: O(1), surprisingly effective
+# FIFO: Just use deque, simple to implement
+# LRU without full O(1): Use ordered dict (good enough for most cases)
+```
+
+**2. Cache Size Is Very Small**
+
+For capacity < 100:
+- O(n) operations are fast enough
+- Use simple list + linear search
+- Complexity overhead not worth it
+
+**3. Memory Is More Constrained Than Time**
+
+These patterns use 2-3× more memory than minimal structures:
+```python
+# LRU: HashMap + DLL = pointers + extra overhead
+# RandomizedSet: HashMap + Array = store data twice
+```
+
+For memory-constrained systems, consider time/space trade-offs.
+
+**4. Concurrency Is Critical**
+
+These single-threaded implementations break under concurrent access:
+- LRU: Updating recency while reading is a race condition
+- RandomizedSet: Swap-delete is not atomic
+
+Use concurrent data structures or proper locking.
+
+**5. Distributed Systems**
+
+Single-node caches don't scale:
+```python
+# For distributed cache: Redis, Memcached
+# For distributed random selection: Reservoir sampling
+```
+
+**Red Flags:**
+- "High concurrency" → Lock-free structures or external systems
+- "Distributed system" → Redis, Memcached, etc.
+- "Very small capacity" → Simple O(n) is fine
+- "Memory-critical" → Simpler, leaner structures
+
+---
+
 ## Template: LRU Cache
 
 ```python
