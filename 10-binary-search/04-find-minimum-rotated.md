@@ -12,6 +12,95 @@ Finding the minimum in a rotated array tests:
 
 ---
 
+## Building Intuition
+
+**Where Is the Minimum?**
+
+The minimum is exactly at the "break point" where the rotation happened:
+
+```
+Original: [1, 2, 3, 4, 5, 6, 7]
+Rotated:  [4, 5, 6, 7, 1, 2, 3]
+                    ↑
+            HERE - the minimum is where order breaks
+```
+
+Before the break: values are increasing
+After the break: values continue increasing (but all smaller than before)
+
+**The Key Insight: Compare with Right, Not Left**
+
+Why compare `nums[mid]` with `nums[right]` instead of `nums[left]`?
+
+```
+[3, 4, 5, 1, 2]
+ L     M     R
+
+Comparing with LEFT (nums[left] = 3):
+- nums[mid] = 5 > nums[left] = 3
+- This tells us mid is in the "larger" part, so minimum is to the right... CORRECT!
+
+[4, 5, 1, 2, 3]
+ L     M     R
+
+Comparing with LEFT (nums[left] = 4):
+- nums[mid] = 1 < nums[left] = 4
+- Minimum is on the left? But mid IS the minimum!
+- We'd set right = mid - 1 and MISS IT!
+
+Comparing with RIGHT (nums[right] = 3):
+- nums[mid] = 1 < nums[right] = 3
+- Minimum is at mid or to its left
+- We set right = mid (keeping mid in range) ✓
+```
+
+**Mental Model: The Cliff**
+
+Imagine walking along the array values like elevation. A rotated sorted array looks like:
+
+```
+        6  7
+      5
+    4
+  3                      The values "fall off a cliff"
+                        and start low again
+                1  2  3
+```
+
+You're looking for the bottom of the cliff. When you're BEFORE the cliff (on the high side), you see `nums[mid] > nums[right]`. When you're AT or AFTER the cliff (on the low side), you see `nums[mid] <= nums[right]`.
+
+**Why `left < right` Instead of `left <= right`?**
+
+We're not looking for an exact target—we're looking for a POSITION (the minimum's index). When `left == right`, they've converged on that position. No need to check further.
+
+---
+
+## When NOT to Use This Approach
+
+**1. Non-Rotated Array (Or Don't Know If Rotated)**
+- If `nums[0] <= nums[n-1]`, the array is sorted → minimum is `nums[0]`
+- Check this first to avoid unnecessary work
+
+**2. Array Has Many Duplicates**
+- When `nums[mid] == nums[right]`, you can't determine which half has the minimum
+- Worst case becomes O(n)
+- Use the duplicate-handling variant
+
+**3. You Actually Need the Target, Not Minimum**
+- Finding minimum is a SUBPROBLEM for "search in rotated array"
+- But if you just need to find a target, use the direct approach from file 03
+
+**4. Array Is Very Small (n <= 3)**
+- Linear scan is simpler and just as fast
+- Constant factor overhead of binary search not worth it
+
+**Red Flags:**
+- "Array contains duplicates" → Use O(n) fallback
+- "Find target in rotated array" → Don't find minimum first (use direct search)
+- "Array might not be rotated" → Check `nums[0] <= nums[n-1]` first
+
+---
+
 ## The Problem
 
 Find the minimum element in a rotated sorted array:
@@ -22,23 +111,6 @@ Rotated:  [3, 4, 5, 1, 2]  → minimum = 1
 
 Rotated:  [1, 2, 3, 4, 5]  → minimum = 1 (no rotation)
 ```
-
----
-
-## The Core Insight
-
-The minimum is at the **rotation point** where the order breaks:
-
-```
-[3, 4, 5, 1, 2]
-       ↓
-    5 > 1  (order breaks here)
-```
-
-Compare `nums[mid]` with `nums[right]`:
-- If `nums[mid] > nums[right]`: minimum is in right half
-- If `nums[mid] < nums[right]`: minimum is in left half (including mid)
-- If `nums[mid] == nums[right]`: can't determine (duplicates)
 
 ---
 

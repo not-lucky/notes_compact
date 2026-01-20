@@ -12,6 +12,161 @@ This is a classic hard problem and FANG+ favorite because:
 
 ---
 
+## Building Intuition
+
+**What Is the Median Really?**
+
+The median is the value that PARTITIONS the data into two equal halves:
+
+```
+Merged: [1, 2, 3, 4, 5, 6, 7, 8]
+                  ↑
+             Left Half: [1,2,3,4]
+             Right Half: [5,6,7,8]
+             Median = (4+5)/2 = 4.5
+```
+
+**The Key Insight: Partition, Don't Merge**
+
+The naive approach merges both arrays first (O(m+n)), then finds the middle.
+
+But here's the insight: we don't need to ACTUALLY merge. We just need to find the correct PARTITION POINT.
+
+```
+nums1: [1, 3, | 8, 9]      partition i=2 (2 elements on left)
+nums2: [2, 4, 5, | 7, 10]  partition j=3 (3 elements on left)
+                           total left = 5 elements
+
+Combined left half:  [1, 2, 3, 4, 5]
+Combined right half: [7, 8, 9, 10]
+
+If max(left) ≤ min(right), this is a valid partition!
+```
+
+**Why Binary Search Works Here**
+
+We're searching for the correct partition point in nums1. Given how many elements we take from nums1, we can calculate how many to take from nums2.
+
+```
+Total elements: m + n
+Left half should have: (m + n + 1) // 2 elements
+
+If we take i elements from nums1:
+- We must take j = (m+n+1)//2 - i elements from nums2
+
+So there's only ONE variable to search: i
+Binary search on i!
+```
+
+**The Valid Partition Condition**
+
+A partition is valid if left half ≤ right half. Since both arrays are sorted internally, we only need to check the CROSS elements:
+
+```
+nums1: [..., A, | B, ...]
+nums2: [..., C, | D, ...]
+
+Valid if: A ≤ D  AND  C ≤ B
+
+A is max of nums1's left side
+C is max of nums2's left side
+B is min of nums1's right side
+D is min of nums2's right side
+```
+
+**Mental Model: Cutting Two Ropes**
+
+Imagine two ropes (sorted arrays) that you want to combine into one sorted rope. You need to cut each rope at some point, then verify that the left pieces fit before the right pieces.
+
+- Cut rope1 at position i, rope2 at position j
+- The last bead on rope1's left piece must be smaller than rope2's first right bead
+- The last bead on rope2's left piece must be smaller than rope1's first right bead
+
+**Why Search on the Smaller Array?**
+
+If we search on the larger array, the partition j might go negative:
+```
+nums1: [1,2,3,4,5,6,7,8,9,10]  (m=10)
+nums2: [5]                      (n=1)
+Total = 11, left half needs 6 elements
+
+If i=8 (from nums1), j = 6-8 = -2 ← Invalid!
+```
+
+By searching on the smaller array, j always stays valid.
+
+**Visual Walkthrough**
+
+```
+nums1: [1, 3, 8]  (m=3)
+nums2: [2, 4, 5, 7]  (n=4)
+Total = 7, left half needs 4 elements
+
+Step 1: Binary search on nums1 (0 to 3)
+  i = 1, j = 4-1 = 3
+  nums1: [1 | 3, 8]
+  nums2: [2, 4, 5 | 7]
+
+  Check: nums1[0]=1 ≤ nums2[3]=7 ✓
+         nums2[2]=5 ≤ nums1[1]=3 ✗
+
+  nums2's left max (5) > nums1's right min (3)
+  Need MORE from nums1! left = i+1 = 2
+
+Step 2:
+  i = 2, j = 4-2 = 2
+  nums1: [1, 3 | 8]
+  nums2: [2, 4 | 5, 7]
+
+  Check: nums1[1]=3 ≤ nums2[2]=5 ✓
+         nums2[1]=4 ≤ nums1[2]=8 ✓
+
+  Valid partition!
+  Odd total: median = max(3, 4) = 4
+```
+
+---
+
+## When NOT to Use This Approach
+
+**1. Arrays Aren't Sorted**
+
+This entire approach relies on sorted order. Unsorted arrays need:
+- Sort first: O(n log n + m log m)
+- Or use quickselect: O(n + m) average
+
+**2. Finding Other Quantiles**
+
+This partition approach is specific to median. For:
+- 25th percentile → Modify partition sizes
+- kth element → Use the kth element approach (also provided below)
+
+**3. More Than Two Arrays**
+
+For k sorted arrays, use:
+- Heap-based merge: O(total × log k)
+- Not a simple generalization of this approach
+
+**4. Very Small Arrays**
+
+If m + n ≤ 10:
+- Just merge and find middle: O(m + n)
+- Simpler to implement, same practical speed
+
+**5. Streaming Data**
+
+If arrays are being appended to:
+- Two-heap approach is better
+- This approach needs complete arrays
+
+**Red Flags:**
+- "Arrays may be unsorted" → Sort first or different approach
+- "Multiple arrays" → Heap-based merge
+- "Running median as elements arrive" → Two-heap approach
+- "Very large arrays that don't fit in memory" → External merge sort
+
+---
+
 ## The Problem
 
 Given two sorted arrays `nums1` and `nums2`, find the median of the combined sorted array.
@@ -29,26 +184,6 @@ Median = (2 + 3) / 2 = 2.5
 ```
 
 **Requirement**: O(log(m+n)) time complexity.
-
----
-
-## The Key Insight
-
-We need to **partition** both arrays such that:
-1. Left half has exactly `(m + n + 1) / 2` elements
-2. All elements in left half ≤ all elements in right half
-
-```
-nums1:    [1, 3, | 8, 9]     partition at i
-nums2:    [2, 4, 5, | 7]     partition at j
-
-Left half:  [1, 3, 2, 4, 5]
-Right half: [8, 9, 7]
-
-For valid partition:
-- nums1[i-1] <= nums2[j]
-- nums2[j-1] <= nums1[i]
-```
 
 ---
 

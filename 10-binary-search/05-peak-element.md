@@ -12,38 +12,105 @@ Peak finding demonstrates binary search on non-sorted arrays:
 
 ---
 
-## What is a Peak Element?
+## Building Intuition
 
-A peak element is greater than its neighbors:
+**What Is a Peak?**
+
+A peak element is strictly greater than its neighbors:
 
 ```
 Array: [1, 3, 5, 4, 2]
             ↑
-         Peak at index 2 (value 5)
+         5 is a PEAK: 5 > 3 (left) and 5 > 4 (right)
+```
 
-Boundary rules:
-- nums[-1] = nums[n] = -∞
-- So first/last element can be peaks if greater than their one neighbor
+Special boundary rule: Elements at the edges only need to be greater than their ONE neighbor (imagine `nums[-1] = nums[n] = -∞`).
+
+**Why Does Binary Search Work on Unsorted Data?**
+
+This is the mind-bending part. The array isn't sorted, so how can we eliminate half at each step?
+
+The key: **we're guaranteed to find A peak by following the uphill direction**.
+
+```
+[1, 2, 1, 3, 5, 6, 4]
+          M
+
+nums[mid] = 3
+nums[mid+1] = 5
+
+Since 3 < 5, we go RIGHT. Why?
+
+Either:
+- 5 is a peak (5 > 6? No, but maybe...), OR
+- There's something even bigger to the right, OR
+- We hit the boundary (which is -∞, so the last element before it is a peak)
+
+No matter what, going uphill ALWAYS leads to a peak!
+```
+
+**Mental Model: Climbing a Mountain**
+
+Imagine you're blindfolded on a mountain range. You can only feel the slope at your current position.
+
+- If the ground slopes UP to your right → walk right (you'll find a peak or summit)
+- If the ground slopes UP to your left → walk left
+- If you're at a local maximum → you found a peak!
+
+You might not find the HIGHEST peak, but you'll find A peak.
+
+**The Mathematical Guarantee**
+
+Why must following uphill lead to a peak?
+
+1. If `nums[mid] < nums[mid+1]`, we go right
+2. The right portion either:
+   - Has a peak somewhere (we'll find it), OR
+   - Keeps increasing until the boundary
+3. At the boundary, `nums[n] = -∞` by definition
+4. So the last element before boundary IS a peak
+
+**Multiple Peaks Don't Matter**
+
+```
+[1, 3, 1, 5, 1, 7, 1]
+    ↑     ↑     ↑
+   All three are valid peaks
+
+Binary search finds ONE of them—and that's fine for most problems.
 ```
 
 ---
 
-## Why Binary Search Works
+## When NOT to Use Peak Binary Search
 
-The key insight: **we can always find a peak by following the uphill direction**.
-
+**1. You Need THE Maximum (Not Just A Peak)**
+- Peak search finds A local maximum
+- If you need THE global maximum, you need O(n) scan
 ```
-[1, 3, 5, 4, 2]
-       M
-
-If nums[mid] < nums[mid+1]:
-  There's definitely a peak on the right (or mid+1 is the peak)
-
-If nums[mid] >= nums[mid+1]:
-  There's definitely a peak on the left (or mid is the peak)
+[1, 5, 1, 3, 1]
+    ↑     ↑
+Both are peaks, but 5 is the maximum. Binary search might find 3.
 ```
 
-Since boundaries are -∞, moving uphill always leads to a peak.
+**2. You Need ALL Peaks**
+- Finding all peaks requires O(n) linear scan
+- No way around it—each element must be checked
+
+**3. Equal Elements Allowed**
+- If plateau is allowed (nums[i] == nums[i+1]), the "uphill" direction is ambiguous
+- Some problems define peak as ">=" instead of ">"
+- Check problem definition carefully
+
+**4. Very Small Arrays (n <= 3)**
+- Just check all elements directly
+- Binary search overhead not worth it
+
+**Red Flags:**
+- "Find the maximum element" → Linear scan or different approach
+- "Find all peaks" → Linear scan
+- "Elements may be equal" → Carefully read peak definition
+- "Find peaks satisfying condition X" → May need linear scan
 
 ---
 

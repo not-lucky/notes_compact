@@ -12,19 +12,78 @@ Binary search template questions test:
 
 ---
 
-## Why Binary Search Works
+## Building Intuition
 
-Binary search requires a **monotonic property**:
+**Why does binary search work?**
+
+Think of binary search like a game of "20 Questions" where you're trying to guess a number between 1 and 1,000,000. Instead of asking "Is it 1? Is it 2?" you ask "Is it greater than 500,000?" Each answer eliminates half the possibilities.
+
+**The Key Insight: Monotonic Property**
+
+Binary search doesn't just require "sorted data"—it requires a **monotonic property**. This is any condition that transitions from false→true (or true→false) exactly once:
 
 ```
-Search space: [False, False, False, True, True, True]
-                                   ↑
-              Binary search finds this transition point
+Index:     [0] [1] [2] [3] [4] [5] [6]
+Condition: [F] [F] [F] [T] [T] [T] [T]
+                       ↑
+        Binary search finds this transition
 ```
 
-At each step, we can eliminate half the search space because:
-- If condition is true at `mid`, answer is at or before `mid`
-- If condition is false at `mid`, answer is after `mid`
+**Mental Model: The Boolean Divide**
+
+Imagine painting a sorted array: everything before some point is red (condition false), everything from that point onward is blue (condition true). Binary search finds where the color changes—in O(log n) time.
+
+**Why Halving Works**:
+1. You pick the middle element
+2. You evaluate the condition at that point
+3. If true: the transition is at or before mid → search left half
+4. If false: the transition is after mid → search right half
+5. Each step halves the search space: n → n/2 → n/4 → ... → 1
+
+This gives exactly log₂(n) steps.
+
+**The "Sorted Array" is a Special Case**
+
+When searching for a target in a sorted array:
+- Condition = "Is nums[mid] >= target?"
+- The condition transitions from false→true at the first occurrence
+- So binary search on sorted arrays is just finding this transition
+
+---
+
+## When NOT to Use Binary Search
+
+Binary search is powerful but has specific requirements:
+
+**1. Unsorted Data Without Monotonic Property**
+```python
+# Won't work: no monotonic property
+arr = [3, 1, 4, 1, 5, 9, 2, 6]
+# There's no "transition point" to find
+```
+
+**2. When You Need All Occurrences**
+- Binary search finds ONE position (first, last, or any occurrence)
+- For ALL occurrences, you still need O(k) time where k = count
+
+**3. Small Arrays (n < 10-20)**
+- Linear scan is often faster due to cache efficiency
+- Binary search has more comparisons per iteration
+- Only matters for performance-critical code
+
+**4. Linked Lists**
+- No O(1) random access means O(n) to reach middle
+- Binary search becomes O(n log n)—worse than linear!
+
+**5. Frequently Modified Data**
+- Insertions break sorted order
+- Consider balanced BST or skip list instead
+
+**Red Flags That Binary Search Won't Work:**
+- "Find all elements satisfying..."
+- "Count total occurrences" (though boundaries can help)
+- Unsorted data with no way to define monotonicity
+- Need to modify the array during search
 
 ---
 

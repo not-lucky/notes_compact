@@ -12,6 +12,127 @@ Matrix search problems test:
 
 ---
 
+## Building Intuition
+
+**Two Types of "Sorted" Matrices**
+
+This is the critical distinction that changes EVERYTHING:
+
+```
+TYPE 1: Row-wise and Column-wise Sorted (Not Globally Sorted)
+┌────────────────────────┐
+│  1    4    7   11     │  Each row is sorted left→right
+│  2    5    8   12     │  Each column is sorted top→bottom
+│  3    6    9   16     │  BUT: 11 > 2, 11 > 3 (no global order)
+│ 10   13   14   17     │
+└────────────────────────┘
+
+TYPE 2: Fully Sorted (Row-major Order)
+┌────────────────────────┐
+│  1    3    5    7     │  Each row is sorted
+│ 10   11   16   20     │  AND: row[i].last < row[i+1].first
+│ 23   30   34   60     │  It's really a 1D sorted array in 2D form
+└────────────────────────┘
+```
+
+**Type 2: The "Fake 2D" Array**
+
+A Type 2 matrix is just a sorted 1D array displayed in rows:
+
+```
+1D view: [1, 3, 5, 7, 10, 11, 16, 20, 23, 30, 34, 60]
+
+2D view:  1   3   5   7
+         10  11  16  20
+         23  30  34  60
+
+Index conversion:
+- 1D index 7 → 2D position (row=1, col=3) = matrix[1][3] = 20
+- row = index // num_cols
+- col = index % num_cols
+```
+
+**Type 1: The Staircase Insight**
+
+For Type 1, you can't use simple 1D conversion. Instead, use the **staircase pattern** from a corner:
+
+```
+Start at TOP-RIGHT (or bottom-left):
+┌────────────────────────┐
+│  1    4    7   [11] ← START HERE
+│  2    5    8   12     │
+│  3    6    9   16     │
+│ 10   13   14   17     │
+└────────────────────────┘
+
+Looking for 5:
+- At 11: 11 > 5, go LEFT (eliminate column)
+- At 7: 7 > 5, go LEFT
+- At 4: 4 < 5, go DOWN (eliminate row)
+- At 5: FOUND!
+```
+
+**Why Top-Right (or Bottom-Left)?**
+
+From top-right:
+- Go LEFT → values decrease (eliminate that column)
+- Go DOWN → values increase (eliminate that row)
+
+You can make a decision at every step! Each move eliminates a row OR column.
+
+From top-left (BAD):
+- Go RIGHT → values increase
+- Go DOWN → values increase
+- BOTH directions increase! Can't decide which way to go.
+
+**Mental Model: The Ladder**
+
+Imagine you're on a ladder leaning against a wall:
+- Going LEFT means stepping down the ladder (smaller values)
+- Going DOWN means climbing up the wall (larger values)
+- You can always adjust your position to reach your target
+
+---
+
+## When NOT to Use These Approaches
+
+**1. Type 1 Methods on Type 2 Matrix (and Vice Versa)**
+
+- Type 2 allows O(log(mn)) binary search
+- Type 1 only allows O(m+n) staircase
+- Using staircase on Type 2 wastes efficiency
+- Using 1D binary search on Type 1 gives wrong results
+
+**2. Unsorted Matrix**
+
+If rows/columns aren't sorted, no efficient search exists:
+```
+┌──────────────┐
+│ 5   2   8    │
+│ 1   9   3    │  No pattern → must check all elements O(mn)
+│ 4   7   6    │
+└──────────────┘
+```
+
+**3. When You Need Multiple Elements**
+
+- "Find all elements satisfying X" → likely O(mn)
+- These methods find ONE element
+
+**4. Non-Square Matrices with Extreme Dimensions**
+
+For m×n where m >> n (or vice versa):
+- Staircase is O(m+n) which is basically O(m)
+- Binary search per row might be better: O(m·log(n))
+- Compare based on actual dimensions
+
+**Red Flags:**
+- "Find all occurrences" → Can't avoid O(mn)
+- Matrix isn't sorted at all → Linear scan
+- Matrix has complex sorting (diagonals, etc.) → Different approach
+
+---
+
 ## Types of Sorted Matrices
 
 ### Type 1: Row and Column Sorted

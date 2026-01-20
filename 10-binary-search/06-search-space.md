@@ -12,6 +12,140 @@
 
 ---
 
+## Building Intuition
+
+**The Paradigm Shift**
+
+Normally, binary search finds an element IN an array. But here's the twist: you can binary search on the **answer itself**.
+
+```
+Traditional Binary Search:
+- Given: sorted array [1, 3, 5, 7, 9]
+- Question: "Where is 5?"
+- Search: in the array indices
+
+Binary Search on Answer:
+- Given: some problem constraints
+- Question: "What's the minimum X that satisfies constraints?"
+- Search: in the range of possible answers
+```
+
+**The Key Insight: Optimization → Decision**
+
+Every optimization problem ("Find minimum X such that...") can be converted to a decision problem ("Can we achieve X?"):
+
+```
+Optimization: "What's the minimum speed to finish in 8 hours?"
+↓ Transform to ↓
+Decision: "Can we finish in 8 hours at speed 5?" → Yes/No
+Decision: "Can we finish in 8 hours at speed 3?" → Yes/No
+Decision: "Can we finish in 8 hours at speed 4?" → Yes/No
+```
+
+If we can answer the decision question quickly, we can binary search on the answer!
+
+**The Monotonic Property of Feasibility**
+
+This is WHY binary search works:
+
+```
+Speed:      [1] [2] [3] [4] [5] [6] [7] [8]
+Can finish: [N] [N] [N] [Y] [Y] [Y] [Y] [Y]
+                        ↑
+                 First "Yes" = minimum speed
+
+If you CAN finish at speed 4, you CAN finish at speed 5, 6, 7...
+(More speed = easier to meet deadline)
+
+This monotonic property lets us binary search!
+```
+
+**Mental Model: The Goldilocks Zone**
+
+Imagine adjusting a dial (the answer):
+- Too low: constraints not satisfied
+- Too high: works, but not optimal
+- Just right: the minimum value that works
+
+Binary search finds "just right" efficiently.
+
+**The Template Pattern**
+
+```
+1. Define the answer range: [min_possible, max_possible]
+2. Write a feasibility check: is_feasible(answer) → bool
+3. Verify monotonicity: is_feasible(X) implies is_feasible(X+1) (or vice versa)
+4. Binary search to find the boundary
+```
+
+**Example Walkthrough: Koko's Bananas**
+
+Problem: Eat all banana piles in H hours. Minimum eating speed?
+
+```
+Piles: [3, 6, 7, 11], H = 8 hours
+
+Answer range: [1, 11] (min: 1 banana/hr, max: largest pile/hr)
+
+is_feasible(speed):
+  hours = ceil(3/speed) + ceil(6/speed) + ceil(7/speed) + ceil(11/speed)
+  return hours <= 8
+
+is_feasible(4)?
+  hours = 1 + 2 + 2 + 3 = 8 ≤ 8 ✓
+
+is_feasible(3)?
+  hours = 1 + 2 + 3 + 4 = 10 > 8 ✗
+
+Binary search finds: minimum speed = 4
+```
+
+---
+
+## When NOT to Use Binary Search on Answer
+
+**1. Non-Monotonic Feasibility**
+
+If "works at X" doesn't imply "works at X+1", binary search fails:
+
+```
+Bad Example: "Find X where X² = 16"
+is_feasible(3) = 9 ≠ 16 → No
+is_feasible(4) = 16 = 16 → Yes
+is_feasible(5) = 25 ≠ 16 → No
+
+Not monotonic! Binary search won't work.
+(Though this specific example has better solutions anyway)
+```
+
+**2. Discrete Answers with Gaps**
+
+If valid answers aren't contiguous, binary search may miss them:
+```
+Valid answers: {1, 5, 10, 15}  (not all integers in range)
+Binary search assumes continuous search space.
+```
+
+**3. Expensive Feasibility Check**
+
+If `is_feasible(X)` takes O(n²) time:
+- Total time = O(log(range) × n²)
+- Might be worse than brute force O(n × range)
+
+**4. Small Answer Range**
+
+If range is only 10-20 values:
+- Linear scan is O(range)
+- Binary search is O(log(range)) — marginal improvement
+- Linear scan is simpler to implement
+
+**Red Flags:**
+- "Find exact value X where..." → May not be monotonic
+- "Which of these specific options..." → Discrete choices, not range
+- "Minimize function with multiple local minima" → Ternary search or calculus
+
+---
+
 ## The Pattern
 
 Instead of searching in an array, search in the **range of possible answers**:

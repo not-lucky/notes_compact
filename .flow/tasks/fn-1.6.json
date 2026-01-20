@@ -1,14 +1,24 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-20T11:57:06.588551Z",
   "created_at": "2026-01-20T06:54:20.511097Z",
   "depends_on": [],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "bebc7e1966f3079cf3471ca013687299b4783bce"
+    ],
+    "prs": [],
+    "tests": [
+      "grep -l 'Building Intuition' *.md | wc -l \u2192 8",
+      "grep -l 'When NOT to Use' *.md | wc -l \u2192 8"
+    ]
+  },
   "id": "fn-1.6",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.6.md",
-  "status": "todo",
+  "status": "done",
   "title": "Enhance 12-binary-search chapter (7 files)",
-  "updated_at": "2026-01-20T06:54:20.511110Z"
+  "updated_at": "2026-01-20T12:04:59.041426Z"
 }

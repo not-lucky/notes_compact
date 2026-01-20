@@ -12,6 +12,91 @@ Rotated array search is a FANG+ favorite because:
 
 ---
 
+## Building Intuition
+
+**What Happens When You Rotate a Sorted Array?**
+
+```
+Original: [0, 1, 2, 3, 4, 5, 6, 7]
+                        ↓ rotate at index 4
+Rotated:  [4, 5, 6, 7, 0, 1, 2, 3]
+                    ↑
+             This is the "pivot"
+```
+
+The array breaks into TWO sorted subarrays joined at the pivot:
+- Left portion: [4, 5, 6, 7] — sorted, but all values are LARGER
+- Right portion: [0, 1, 2, 3] — sorted, but all values are SMALLER
+
+**The Key Insight: One Half Is ALWAYS Sorted**
+
+No matter where you pick `mid`, at least one half (left or right) is completely sorted. Why?
+
+```
+Case 1: mid is in the LEFT portion (larger values)
+[4, 5, 6, 7, 0, 1, 2, 3]
+       ↑
+      mid=6
+Left half [4,5,6] is sorted (we're before the pivot)
+Right half [7,0,1,2,3] contains the pivot
+
+Case 2: mid is in the RIGHT portion (smaller values)
+[4, 5, 6, 7, 0, 1, 2, 3]
+                ↑
+               mid=1
+Left half [4,5,6,7,0] contains the pivot
+Right half [1,2,3] is sorted (we're after the pivot)
+```
+
+**Mental Model: The Mountain Range**
+
+Think of the rotated array as two mountains side by side:
+- A tall mountain (the larger values before rotation)
+- A shorter mountain (the smaller values)
+
+Binary search is like asking: "Is my target on the tall mountain or the short one?" Once you know which sorted slope to search, it's standard binary search.
+
+**How to Identify the Sorted Half**
+
+Compare `nums[left]` with `nums[mid]`:
+- If `nums[left] <= nums[mid]`: Left half is sorted (no pivot in between)
+- Otherwise: Right half is sorted
+
+Then check if your target falls within the sorted half's range.
+
+**Why This Works**
+
+The sorted half has a predictable range: `[nums[left], nums[mid]]` or `[nums[mid], nums[right]]`. You can definitively say whether target is in that range. If not, target must be in the other (unsorted) half—and you recurse there.
+
+---
+
+## When NOT to Use Rotated Array Search
+
+**1. The Array Isn't Rotated**
+- A "rotation of 0" or "rotation of n" is just a sorted array
+- Use standard binary search (it's simpler)
+- The rotated search still works, but why add complexity?
+
+**2. Array Has Many Duplicates**
+- Duplicates break the `nums[left] <= nums[mid]` check
+- Worst case degrades to O(n)
+- See the variant with duplicates below
+
+**3. Array Is Not Sorted Before Rotation**
+- If original array wasn't sorted, rotation means nothing
+- No binary search will help
+
+**4. You Need All Occurrences**
+- Rotated search finds ONE occurrence
+- For all occurrences, you'd need additional boundary searches
+
+**Red Flags in Problem Statements:**
+- "Array may have duplicates" → Use O(n) fallback or careful duplicate handling
+- "Find all positions of target" → Rotated search + boundary search
+- "Array is not sorted" → Different problem entirely
+
+---
+
 ## What is a Rotated Sorted Array?
 
 A sorted array rotated at some pivot:
@@ -27,25 +112,6 @@ Properties:
 - The array consists of two sorted subarrays
 - One half is always completely sorted
 - The minimum element is at the rotation point
-
----
-
-## The Core Insight
-
-At any `mid` point, **at least one half is sorted**:
-
-```
-[4, 5, 6, 7, 0, 1, 2]
- L        M        R
-
-nums[L]=4 <= nums[M]=7  → Left half [4,5,6,7] is sorted
-nums[M]=7 > nums[R]=2   → Right half contains rotation
-```
-
-Strategy:
-1. Find which half is sorted
-2. Check if target is in the sorted half
-3. Search accordingly
 
 ---
 

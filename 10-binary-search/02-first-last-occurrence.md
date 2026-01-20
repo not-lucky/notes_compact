@@ -12,6 +12,83 @@ Finding boundaries in sorted arrays is a classic interview pattern:
 
 ---
 
+## Building Intuition
+
+**Why Can't Standard Binary Search Find Boundaries?**
+
+Standard binary search stops at ANY matching element. But what if you need the FIRST or LAST one?
+
+```
+Array: [1, 2, 2, 2, 2, 2, 3]
+                ↑
+       Standard search might find this 2
+       But the FIRST 2 is at index 1
+       And the LAST 2 is at index 5
+```
+
+**The Key Insight: Don't Stop When You Find It**
+
+Instead of returning immediately when `nums[mid] == target`, we:
+1. Record the match (it might be our answer)
+2. Keep searching in the direction of the boundary we want
+
+**Mental Model: The Stubborn Detective**
+
+Imagine you're a detective who found ONE suspect matching a description. A lazy detective stops there. But you're thorough—you keep investigating in case there's an earlier (or later) match.
+
+- **Finding first**: "I found a match at index 5. But could there be one at index 4? 3? Let me check left."
+- **Finding last**: "I found a match at index 5. But could there be one at index 6? 7? Let me check right."
+
+**Two Boolean Conditions**
+
+This is really two different binary searches:
+- First occurrence: Find leftmost index where `nums[i] >= target` AND `nums[i] == target`
+- Last occurrence: Find rightmost index where `nums[i] <= target` AND `nums[i] == target`
+
+**Visual: The Search Space Shrinks Toward the Boundary**
+
+```
+Finding FIRST 2 in [1, 2, 2, 2, 2, 2, 3]:
+
+Round 1: [1, 2, 2, 2, 2, 2, 3]
+                     M           Found 2! Record it. Search LEFT.
+
+Round 2: [1, 2, 2, 2, 2, 2, 3]
+             M                   Found 2! Record it. Search LEFT.
+
+Round 3: [1, 2, 2, 2, 2, 2, 3]
+          M                      Found 1. Not target. Search RIGHT.
+
+Done: Answer is the last recorded match = index 1
+```
+
+---
+
+## When NOT to Use Boundary Search
+
+**1. When Any Occurrence Is Fine**
+- If you just need to check existence, standard binary search is simpler
+- Don't overcomplicate with boundary finding
+
+**2. Unsorted Arrays**
+- Boundaries only make sense in sorted order
+- For unsorted: scan linearly for first/last
+
+**3. When You Need the Count, Not Position**
+- Use `last - first + 1` only if you ALSO need positions
+- For just counting, consider: `bisect_right(target) - bisect_left(target)`
+
+**4. When There Are No Duplicates**
+- Standard binary search gives you the only occurrence
+- Boundary search is overkill
+
+**Red Flags:**
+- "Find any element matching..." → Use standard search
+- "Check if element exists..." → Use standard search
+- "Find index in unsorted array..." → Linear scan
+
+---
+
 ## The Problem
 
 Given a sorted array with duplicates, find:
@@ -24,14 +101,6 @@ Array:  [1, 2, 2, 2, 3, 4, 5]
 Target: 2
 Output: first=1, last=3
 ```
-
----
-
-## Pattern: Continue Searching After Finding
-
-The key insight: **don't stop when you find the target**.
-
-Standard binary search stops immediately when `nums[mid] == target`. To find boundaries, we record the match and continue searching in the appropriate direction.
 
 ---
 
