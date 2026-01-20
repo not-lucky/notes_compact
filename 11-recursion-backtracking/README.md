@@ -1,6 +1,61 @@
 # Chapter 11: Recursion & Backtracking
 
-Recursion and backtracking are fundamental problem-solving paradigms that appear constantly in FANG+ interviews. Backtracking is essentially recursion with the ability to "undo" choices, making it ideal for exploring all possible solutions.
+## Overview
+
+Recursion is a problem-solving technique where a function solves a problem by calling itself with simpler inputs. Backtracking extends recursion by **exploring possibilities and undoing choices** when they don't lead to solutions. Together, they're essential tools for solving constraint satisfaction problems, generating combinations, and searching through solution spaces.
+
+## Building Intuition
+
+**Why are recursion and backtracking so powerful?**
+
+1. **The Power of Self-Similarity**: Many problems have structure that repeats at different scales. A binary tree is made of smaller binary trees. A maze is solved by solving smaller sub-mazes. When you recognize this self-similarity, recursion becomes natural.
+
+2. **The Explore-Backtrack Pattern**: Think of backtracking as navigating a maze:
+   - At each intersection (choice point), pick a path
+   - Walk until you hit a dead end or find the goal
+   - If dead end, return to the last intersection and try a different path
+   - Repeat until you've found all solutions or exhausted all paths
+
+3. **Why "Make Choice, Explore, Undo" Works**: By systematically trying every possibility and undoing choices that don't work, you guarantee finding all solutions without missing any. The key insight: **undoing is what makes exploration reusable**.
+
+4. **Visual Intuition—The Decision Tree**:
+```
+Every backtracking problem is a tree traversal:
+
+                [Start]
+               /   |   \
+          Choice1 Choice2 Choice3
+            /        |        \
+        [State1] [State2]  [State3]
+           ✓        ✗          ...
+         (valid)  (dead end→backtrack)
+
+You're doing DFS on a tree of possible states.
+```
+
+5. **When It "Clicks"**: Backtracking clicks when you realize you're searching an implicit tree. The tree isn't stored in memory—it's defined by your choices. Each recursive call goes down one level; each return goes back up.
+
+## When NOT to Use Backtracking
+
+Backtracking is powerful but not always optimal:
+
+1. **When Greedy Works**: If locally optimal choices lead to globally optimal solutions, greedy is O(n) vs backtracking's exponential. Example: activity selection.
+
+2. **When DP Applies**: If subproblems overlap significantly and you only need optimal value (not all solutions), DP is polynomial vs backtracking's exponential.
+
+3. **When BFS Finds It Faster**: For shortest path or minimum steps, BFS guarantees finding the shortest solution first. DFS/backtracking might explore long paths first.
+
+4. **When Constraints Propagate Well**: Some constraint satisfaction problems (like Sudoku) benefit more from constraint propagation than brute backtracking.
+
+5. **When n Is Large**: Backtracking is often O(2^n), O(n!), or worse. For n > 20, reconsider the approach.
+
+**Red Flags Against Backtracking:**
+- Problem asks for minimum/maximum → probably DP
+- Only need one solution → BFS or greedy may be faster
+- n > 20 in constraints → exponential won't work
+- No "generate all" or "find all" in problem → likely not backtracking
+
+---
 
 ## Why Recursion & Backtracking Matter
 

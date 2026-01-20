@@ -2,6 +2,63 @@
 
 > **Prerequisites:** Basic understanding of function calls, stack data structure
 
+## Overview
+
+Recursion is a problem-solving technique where a function solves a problem by calling itself with a smaller or simpler input. It's one of the most fundamental concepts in computer science and forms the foundation for many advanced algorithms including tree traversals, divide-and-conquer, and backtracking.
+
+## Building Intuition
+
+**Why does recursion work?**
+
+Think of recursion as a chain of delegation. Imagine you're in a long line and want to know your position:
+
+1. **The Delegation Pattern**: You ask the person in front of you, "What's your position?" They ask the person in front of them, and so on until someone at the front says "I'm #1." Then answers flow back: "I'm #2", "I'm #3", etc.
+
+2. **The Key Mental Model**: Every recursive problem has two parts:
+   - **Base case**: The simplest version you can solve directly (the person at the front)
+   - **Recursive case**: A way to reduce the problem and combine results (asking the person ahead and adding 1)
+
+3. **The "Leap of Faith"**: The most powerful recursive thinking technique is to **trust** that your recursive call correctly solves the smaller problem. Don't trace through every call—just assume it works and focus on: "If I had the answer to the smaller problem, how would I use it?"
+
+4. **When Recursion "Clicks"**: Recursion is natural when the problem has self-similar structure—when a problem can be broken into smaller instances of itself. Trees, nested structures, and mathematical sequences all exhibit this property.
+
+**Visual Intuition—The Nesting Dolls Model**:
+```
+Problem(5) contains Problem(4) contains Problem(3) contains Problem(2) contains Problem(1)
+    └── depends on ────└── depends on ────└── depends on ────└── depends on ────└── solved directly!
+```
+You can't solve the outer doll without first solving the inner ones. The base case is the smallest doll that you can handle directly.
+
+## When NOT to Use Recursion
+
+Recursion is elegant but not always the best choice. Avoid it when:
+
+1. **Simple Loops Suffice**: If a problem can be solved with a straightforward `for` or `while` loop, prefer iteration. It's often clearer and more efficient.
+
+2. **Deep Recursion Depth**: Python's default stack limit is ~1000. Problems with n > 1000 may cause stack overflow. Convert to iteration or increase the limit carefully.
+
+3. **Heavy State Passing**: If you need to pass many variables through recursive calls, the overhead adds up. An iterative solution with explicit state may be cleaner.
+
+4. **Performance-Critical Code**: Each function call has overhead (stack frame creation, parameter passing). For performance-critical inner loops, iteration is faster.
+
+5. **No Natural Subproblem Structure**: If you can't easily define "a smaller version of the same problem," recursion probably isn't the right fit.
+
+**Red Flags That Recursion May Be Wrong:**
+- You're artificially creating a recursive structure just to use recursion
+- The problem is fundamentally sequential with no self-similarity
+- You find yourself needing global variables to track state
+- Each recursive call doesn't meaningfully reduce problem size
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Linear processing | Simple loop |
+| Need explicit stack control | While loop with stack |
+| Performance critical | Iterative version |
+| Deep recursion (n > 1000) | Tail recursion or iteration |
+
+---
+
 ## Interview Context
 
 Recursion questions test:

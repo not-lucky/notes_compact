@@ -2,6 +2,79 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), [Subsets](./02-subsets.md)
 
+## Overview
+
+Permutations are all possible **orderings** of a set of elements. Unlike subsets where order doesn't matter, in permutations [1,2,3] and [3,2,1] are different results. This is a fundamental backtracking pattern that appears in scheduling, arrangement, and optimization problems.
+
+## Building Intuition
+
+**Why does the "choose from remaining" pattern work?**
+
+Think of building a permutation as filling slots in a sequence. At each slot, you choose from the elements you haven't used yet.
+
+1. **The Slot-Filling Model**: Imagine you have n empty slots and n numbered balls. For the first slot, you can choose any of n balls. For the second slot, you choose from the remaining n-1 balls. And so on. The total arrangements: n × (n-1) × (n-2) × ... × 1 = n!
+
+2. **The Key Mental Model**: Picture arranging books on a shelf. The first position has n choices. Once you place a book, the second position has n-1 choices from the remaining books. This "shrinking choice set" is the essence of permutations.
+
+3. **Why n! Permutations?**:
+   - n=1: 1 way (just [1])
+   - n=2: 2 ways ([1,2], [2,1])
+   - n=3: 6 ways (3 × 2 × 1)
+   - n=4: 24 ways (4 × 3 × 2 × 1)
+   - n=10: 3,628,800 ways—factorial grows FAST!
+
+4. **Visual Intuition—Position-by-Position**:
+```
+Position 1:  Choose from {1,2,3}
+               /      |      \
+              1       2       3
+
+Position 2:  Choose from remaining
+            /   \   /   \   /   \
+           2     3 1     3 1     2
+
+Position 3:  Only one left
+           |     |     |     |     |     |
+           3     2     3     1     2     1
+
+Results:  123  132  213  231  312  321
+```
+
+5. **Tracking Used Elements**: Unlike subsets (where we use a "start index"), permutations need to track which elements are already used. Two approaches:
+   - **Boolean array**: `used[i] = True` means element i is in the current permutation
+   - **Swapping**: Swap elements into position, eliminating the need for extra tracking
+
+## When NOT to Use Permutations Pattern
+
+Permutations have n! complexity—avoid when possible:
+
+1. **When Order Doesn't Matter**: If [1,2,3] and [3,2,1] are the same answer, use subsets or combinations instead. They have exponential (2^n) or polynomial complexity, not factorial.
+
+2. **When n Is Large (n > 10)**: 10! = 3.6 million. 12! = 479 million. For n > 10-12, generating all permutations is usually too slow.
+
+3. **When You Need Only One Permutation**: If you just need one valid arrangement, use greedy or constraint propagation—don't enumerate all n! possibilities.
+
+4. **When You Only Need the Count**: If you just need to count valid permutations, use math (factorial with restrictions) or DP.
+
+5. **When Elements Can Be Reused**: If the same element can appear multiple times, you're dealing with permutations with repetition—a different formula (n^k, not n!).
+
+**Red Flags Against Full Permutation Enumeration:**
+- n > 10 in constraints → n! won't fit in time limit
+- Problem asks for "minimum/maximum" → usually DP
+- Problem asks for "any valid" → greedy or targeted search
+- Problem asks for kth permutation → use math, not enumeration
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Order doesn't matter | Subsets/Combinations |
+| Need kth permutation | Mathematical indexing (O(n²)) |
+| Need count only | Factorial math with constraints |
+| n is large | Problem-specific optimization |
+| Need "next" permutation | O(n) next permutation algorithm |
+
+---
+
 ## Interview Context
 
 Permutation problems test:

@@ -2,6 +2,77 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), [Backtracking concepts from Subsets](./02-subsets.md)
 
+## Overview
+
+N-Queens is the classic **constraint satisfaction** backtracking problem. You place n queens on an n×n chessboard such that no two queens attack each other. It elegantly demonstrates how backtracking explores possibilities while respecting constraints, making it a favorite interview and teaching problem.
+
+## Building Intuition
+
+**Why does row-by-row placement with constraint checking work?**
+
+Think of it as a systematic search with early rejection of invalid paths.
+
+1. **The Row-by-Row Strategy**: Since each row must have exactly one queen (otherwise they'd attack each other horizontally), we place one queen per row. This reduces the search space from n² positions to n positions per row.
+
+2. **The Key Mental Model**: Imagine filling out a schedule where each row is a time slot and columns are resources. Each slot needs exactly one resource, and certain combinations conflict. You try each possibility, checking for conflicts, and backtrack when stuck.
+
+3. **The Three Attack Vectors**: Queens attack along:
+   - **Column**: Only one queen per column (track with a set or array)
+   - **Main diagonal (↘)**: Cells where `row - col` is constant
+   - **Anti-diagonal (↙)**: Cells where `row + col` is constant
+
+4. **Visual Intuition—Diagonal Math**:
+```
+    col→  0  1  2  3
+row↓
+  0      [0][-1][-2][-3]   ← row - col (main diagonal ID)
+  1      [1][0][-1][-2]
+  2      [2][1][0][-1]
+  3      [3][2][1][0]
+
+    col→  0  1  2  3
+row↓
+  0      [0][1][2][3]      ← row + col (anti-diagonal ID)
+  1      [1][2][3][4]
+  2      [2][3][4][5]
+  3      [3][4][5][6]
+```
+If two queens have the same diagonal ID, they attack each other.
+
+5. **Why Backtracking is Needed**: Not all partial solutions lead to complete solutions. For n=4, if you place queens at (0,0) and (1,2), there's no valid place for row 2. You must undo (backtrack) and try (1,3) instead.
+
+6. **Pruning via Constraint Checking**: Before placing a queen at (row, col), check if col is taken, if `row-col` diagonal is taken, if `row+col` diagonal is taken. This O(1) check (with sets) prunes entire subtrees instantly.
+
+## When NOT to Use N-Queens Style Backtracking
+
+This constraint satisfaction approach isn't always best:
+
+1. **When n Is Very Large**: N-Queens can be solved for large n, but finding ALL solutions becomes exponential. For n > 15, consider heuristic methods or just finding one solution.
+
+2. **When Constraints Are Different**: N-Queens has specific diagonal constraints. Other constraint satisfaction problems (like graph coloring, scheduling) may need different representations.
+
+3. **When You Only Need One Solution**: For large n, heuristics like minimum conflicts or random restart can find one solution faster than exhaustive backtracking.
+
+4. **When You Need the Count Only**: For counting N-Queens solutions, there are mathematical approaches and optimized algorithms (like Dancing Links) that are faster.
+
+5. **When Symmetry Can Be Exploited**: N-Queens has 8-fold symmetry (rotations and reflections). For counting or finding all solutions, you can solve for 1/8 of the cases and multiply.
+
+**Red Flags for N-Queens Pattern:**
+- n > 15 and need ALL solutions → too slow
+- Need just one solution → use heuristics
+- Just need count → use specialized algorithms
+- Problem isn't chess-like → may need different constraint model
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Just need one solution | Min-conflicts heuristic |
+| Very large n, all solutions | Dancing Links (DLX) |
+| Need count only | Mathematical + DLX |
+| Exploit symmetry | Solve 1/8, apply transforms |
+
+---
+
 ## Interview Context
 
 N-Queens is a classic constraint satisfaction problem that tests:

@@ -2,6 +2,79 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), [Combinations](./04-combinations.md)
 
+## Overview
+
+This classic problem generates all letter combinations from a phone number's digit sequence, like old T9 predictive text. It's a pure **Cartesian product** problem—you're combining choices from independent groups. It's simpler than other backtracking problems because there are no constraints between choices.
+
+## Building Intuition
+
+**Why does digit-by-digit exploration work?**
+
+Think of it as filling slots where each slot has its own independent set of choices.
+
+1. **The Vending Machine Model**: Imagine a vending machine with n rows (one per digit). Each row has 3-4 letter buttons. You press one button per row, and the combination of presses gives you a letter sequence. Every combination of button presses is valid.
+
+2. **The Key Mental Model**: Unlike most backtracking problems, there are **no constraints** between choices. Picking 'a' for digit 2 doesn't restrict what you can pick for digit 3. This makes the problem simpler—just enumerate all combinations.
+
+3. **Why It's a Cartesian Product**: If digit 2 has {a,b,c} and digit 3 has {d,e,f}, the result is:
+   ```
+   {a,b,c} × {d,e,f} = {ad, ae, af, bd, be, bf, cd, ce, cf}
+   ```
+   For n digits with ~3-4 letters each, total combinations ≈ 3^n to 4^n.
+
+4. **Visual Intuition—The Letter Tree**:
+```
+digits = "23"
+Digit 2: {a, b, c}
+Digit 3: {d, e, f}
+
+          ""
+       /   |   \
+      a    b    c       (choices for digit 2)
+    / | \ / | \ / | \
+   d  e  f d e f d e f  (choices for digit 3)
+
+Results: ad, ae, af, bd, be, bf, cd, ce, cf
+```
+
+5. **The Mapping Is Fixed**: Memorize or define the phone keypad:
+   ```
+   2→abc  3→def  4→ghi  5→jkl
+   6→mno  7→pqrs 8→tuv  9→wxyz
+   ```
+   Note: 7 and 9 have **4 letters** (pqrs, wxyz), not 3!
+
+6. **Why Backtracking Here Is Simple**: No pruning needed. Every path is valid. You're just enumerating a fixed tree with no dead ends.
+
+## When NOT to Use This Pattern
+
+This specific pattern is quite narrow:
+
+1. **When You Need Dictionary Matching**: For T9 predictive text (matching dictionary words), don't generate all combinations and filter. Use a Trie to prune impossible paths early.
+
+2. **When Digits Include 0 or 1**: Traditional phone keypads have no letters for 0 and 1. Decide how to handle: skip them, or treat as special characters.
+
+3. **When Input Is Long**: For 10+ digits, you have 3^10 ≈ 59,000+ combinations. For 15+ digits, it becomes impractical.
+
+4. **When You Need Specific Length**: If you only want certain-length outputs, you might need a modified approach.
+
+5. **When Case Matters**: Phone letters are typically uppercase or lowercase consistently. If you need both cases, the problem changes.
+
+**Red Flags Against Full Enumeration:**
+- Need dictionary matching → Trie-based pruning
+- Input very long (>12 digits) → too many combinations
+- Only need count → 3^n or 4^n formula
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Match dictionary words | Trie + DFS |
+| Count only | Mathematical (3^n × 4^m) |
+| Find specific word | Trie lookup |
+| Very long input | Problem-specific optimization |
+
+---
+
 ## Interview Context
 
 This classic problem tests:

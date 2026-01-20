@@ -2,6 +2,81 @@
 
 > **Prerequisites:** [Combinations](./04-combinations.md), [Subsets](./02-subsets.md)
 
+## Overview
+
+Combination Sum problems ask you to find combinations that add up to a target value. This is a critical pattern because it combines backtracking with constraint satisfaction (the sum constraint) and teaches important concepts about handling duplicates and element reuse.
+
+## Building Intuition
+
+**Why does the target-tracking backtracking work?**
+
+Think of it as a budget problem: you have a target amount to spend, and each choice reduces what's left.
+
+1. **The Budget Model**: Imagine you have $7 to spend and items costing $2, $3, $6, $7. Each time you "buy" an item, subtract its cost from your remaining budget. When budget hits $0 exactly, you found a valid combination. If it goes negative, backtrack.
+
+2. **The Key Mental Model**:
+   - **remaining = 0**: Perfect! Save this combination.
+   - **remaining < 0**: Overspent! Backtrack and try something else.
+   - **remaining > 0**: Still have budget. Try adding more items.
+
+3. **Why Sorting Enables Pruning**: If candidates are sorted and the current candidate exceeds remaining, all subsequent candidates will too. This allows immediate termination: `if candidate > remaining: break`.
+
+4. **Visual Intuition—The Spending Tree**:
+```
+target=7, candidates=[2,3,6,7]
+
+Start: remaining=7
+├── Buy 2 → remaining=5
+│   ├── Buy 2 → remaining=3
+│   │   ├── Buy 2 → remaining=1
+│   │   │   └── Buy 2 → remaining=-1 ✗ (overspent)
+│   │   └── Buy 3 → remaining=0 ✓ Found [2,2,3]!
+│   └── Buy 3 → remaining=2
+│       └── (no item ≤ 2 works cleanly)
+├── Buy 3 → remaining=4
+│   └── ...
+├── Buy 6 → remaining=1
+│   └── (nothing fits)
+└── Buy 7 → remaining=0 ✓ Found [7]!
+```
+
+5. **Reuse vs No-Reuse**: The critical difference between Combination Sum variants:
+   - **Combination Sum I**: `backtrack(i, ...)` — stay at index i (can reuse current element)
+   - **Combination Sum II**: `backtrack(i+1, ...)` — move to next (each element used once)
+
+6. **Handling Input Duplicates**: When the input has duplicates (like [1,1,2]), sorting groups them together, and `if i > start and nums[i] == nums[i-1]: continue` skips duplicates at the same decision level.
+
+## When NOT to Use Combination Sum Pattern
+
+This pattern isn't always the best approach:
+
+1. **When You Only Need the Count**: If you just need to count how many combinations sum to target, use DP (like Coin Change 2). DP is O(n×target) vs potentially exponential backtracking.
+
+2. **When Order Matters**: Combination Sum IV actually counts orderings (so [1,2] and [2,1] are different). That's DP, not backtracking.
+
+3. **When Target Is Large**: If target can be huge (10^9) but candidates are small, the recursion tree is too deep. Consider DP or mathematical approaches.
+
+4. **When You Need One Solution, Not All**: If any valid combination works, BFS or greedy might find it faster than exhaustive backtracking.
+
+5. **When Negative Numbers Are Involved**: Standard pruning (`if candidate > remaining: break`) doesn't work. You'd need depth limits or different approaches.
+
+**Red Flags Against Backtracking for Sum Problems:**
+- Problem asks for count only → DP
+- Target is extremely large → DP or math
+- Candidates include negative numbers → careful with termination
+- Only need existence check → BFS or DP
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Count combinations | DP (Coin Change 2) |
+| Order matters in count | DP (Combination Sum IV) |
+| Minimum coins to make sum | DP (Coin Change 1) |
+| Check if sum possible | DP or BFS |
+| Very large target | DP with optimization |
+
+---
+
 ## Interview Context
 
 Combination sum problems test:

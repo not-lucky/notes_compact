@@ -2,6 +2,68 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md)
 
+## Overview
+
+The subsets problem asks you to generate all possible subsets of a given set—this is called the **power set**. It's the foundational backtracking problem because it teaches the core "include or exclude" decision pattern that applies to many other problems.
+
+## Building Intuition
+
+**Why does the include/exclude pattern work?**
+
+Think of building a subset as going through a checklist. For each item, you make a binary decision: "Should this item be in my subset?"
+
+1. **The Binary Decision Tree**: For n elements, you make n independent yes/no decisions. Each path through the decision tree represents one unique subset. With n decisions, there are 2^n possible paths—exactly the number of subsets.
+
+2. **The Key Mental Model**: Imagine you're at a buffet with n dishes. For each dish, you decide: take it or leave it. Every possible combination of takes and leaves gives you a different plate (subset). The empty plate (taking nothing) and the full plate (taking everything) are both valid.
+
+3. **Why 2^n Subsets?**: Each element doubles the number of subsets. With 0 elements: 1 subset (empty). Add element A: 2 subsets ({}, {A}). Add element B: 4 subsets ({}, {A}, {B}, {A,B}). Each new element can be added to all existing subsets OR not.
+
+4. **Visual Intuition—The Branching Tree**:
+```
+                    Start: {}
+                   /        \
+          Include 1?       Exclude 1?
+              /                  \
+           {1}                  {}
+          /    \              /    \
+     Include 2?  Exclude 2?  Include 2?  Exclude 2?
+        /           \          /           \
+      {1,2}        {1}       {2}          {}
+```
+Each leaf is a valid subset. The tree has 2^n leaves.
+
+5. **The "Start Index" Trick**: To avoid duplicates like {1,2} and {2,1}, we always process elements in order. By starting from index `start` and only considering elements at `start` or later, we ensure each subset is generated exactly once in a canonical order.
+
+## When NOT to Use Subsets Pattern
+
+The subsets/power set approach isn't always appropriate:
+
+1. **When Only Some Subsets Are Valid**: If most subsets fail validation (like combination sum), consider pruning during generation rather than generating all 2^n subsets and filtering.
+
+2. **When You Need a Specific Size**: If you only need subsets of size k, use the combinations pattern instead—it's more efficient than generating all subsets and filtering.
+
+3. **When n Is Large (n > 20)**: 2^20 = 1 million subsets. For n > 20, you probably need a different approach (DP, greedy, or problem-specific optimization).
+
+4. **When Order Matters**: Subsets don't care about order. If [1,2] and [2,1] are different answers, you need permutations, not subsets.
+
+5. **When You Only Need the Count**: If you just need to count valid subsets, use DP or math—don't generate them all.
+
+**Red Flags Against Subsets Pattern:**
+- Problem says "minimum/maximum" → probably DP or greedy
+- Problem says "order matters" → probably permutations
+- n > 20 in constraints → 2^n won't fit in time limit
+- You only need one subset, not all → use greedy or targeted search
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Need subsets of size k | Combinations |
+| Order matters | Permutations |
+| Count only | DP/Math |
+| n is large | Problem-specific optimization |
+
+---
+
 ## Interview Context
 
 Subsets problems test:

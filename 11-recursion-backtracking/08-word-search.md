@@ -2,6 +2,82 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), grid traversal concepts
 
+## Overview
+
+Word Search applies backtracking to **grid-based path finding**. Given a 2D grid of characters and a target word, you determine if the word can be formed by sequentially adjacent cells. This pattern is fundamental for any problem involving exploring paths through a grid.
+
+## Building Intuition
+
+**Why does DFS with visited-marking work?**
+
+Think of it as exploring a maze where you need to find a specific sequence of checkpoints.
+
+1. **The Trail-Blazing Model**: Imagine you're in a letter forest. You need to spell a word by stepping on letters in sequence. You can't step on the same spot twice in one path, and you can only move to adjacent tiles (up/down/left/right).
+
+2. **The Key Mental Model**: At each cell, you're asking: "Is this letter correct? If yes, mark it as visited, try all four neighbors for the next letter, then unmark it (backtrack)."
+
+3. **Why Mark and Unmark?**: The visited marker prevents cycles in the current path. But after exploring one path, you unmark so other paths can use that cell. This is the essence of backtracking in grids.
+
+4. **Visual Intuition—Path Exploration**:
+```
+Grid:           Word: "ABCCED"
+A B C E
+S F C S
+A D E E
+
+Starting at A(0,0), looking for "ABCCED":
+(0,0)A → mark, need "BCCED"
+  ↓
+(0,1)B → mark, need "CCED"
+  ↓
+(0,2)C → mark, need "CED"
+  ↓
+(1,2)C → mark, need "ED"
+  ↓
+(2,2)E → mark, need "D"
+  ↓
+(2,1)D → mark, need "" ← Empty! Found it!
+
+Path: A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)
+```
+
+5. **The Four Directions Pattern**: Use a directions array `[(0,1), (0,-1), (1,0), (-1,0)]` for cleaner code. This represents right, left, down, up movements.
+
+6. **In-Place Marking**: Instead of a separate visited set, temporarily change the cell to '#' (or any non-letter), then restore it. This saves O(m×n) space and is a common interview optimization.
+
+7. **Early Termination**: Check character mismatch before recursing. If `board[r][c] != word[index]`, return False immediately—don't waste time exploring neighbors.
+
+## When NOT to Use DFS Backtracking for Grid Search
+
+This pattern isn't always optimal:
+
+1. **When Finding Shortest Path**: DFS finds *any* path, not the *shortest*. For shortest path, use BFS. DFS may explore long winding paths before finding short ones.
+
+2. **When Searching for Multiple Words**: For Word Search II (find all words from a dictionary), naive DFS per word is slow. Use a Trie to search all words simultaneously.
+
+3. **When the Grid Is Huge**: A 1000×1000 grid with a long word could have very deep recursion. Consider iterative DFS with an explicit stack.
+
+4. **When Cells Can Be Revisited**: Some problems allow revisiting cells. In that case, don't mark visited (but beware of infinite loops).
+
+5. **When Movement Rules Are Different**: Some grids allow diagonal movement (8 directions) or have blocked cells. Adapt the directions array accordingly.
+
+**Red Flags for DFS Word Search:**
+- Need shortest path → use BFS
+- Multiple words to find → use Trie
+- Grid is very large → watch stack depth
+- Need all occurrences → different algorithm
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Shortest path | BFS |
+| Multiple words | Trie + DFS |
+| Count all paths | DP on DAG (if applicable) |
+| Very large grid | Iterative DFS |
+| 8-directional | Modify directions array |
+
+---
+
 ## Interview Context
 
 Word search problems test:

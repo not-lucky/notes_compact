@@ -2,6 +2,76 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), [Subsets](./02-subsets.md)
 
+## Overview
+
+Combinations are about choosing k elements from n where **order doesn't matter**. It's the "pick a team" problem: choosing 3 players from 10 is the same regardless of the order you pick them. This pattern appears whenever you need to select a fixed-size group from a larger set.
+
+## Building Intuition
+
+**Why does the "start index + size limit" pattern work?**
+
+Think of combinations as subsets with a constraint: we only want subsets of exactly size k.
+
+1. **The Team Selection Model**: Imagine picking a 3-person team from 10 candidates. You can use the subsets approach (include/exclude each person), but only save teams of exactly 3. The "start index" ensures you don't count {Alice, Bob} and {Bob, Alice} as different teams.
+
+2. **The Key Mental Model**: Line up all candidates in order. For each combination, you're essentially saying "I'll take candidates at positions i, j, k where i < j < k." The ordering constraint (i < j < k) is enforced by the start index.
+
+3. **Why C(n,k) Combinations?**: C(n,k) = n! / (k! × (n-k)!)
+   - The numerator n! counts all orderings
+   - Dividing by k! removes duplicate orderings of the chosen k
+   - Dividing by (n-k)! removes orderings of the unchosen
+
+4. **Visual Intuition—Pruned Subset Tree**:
+```
+n=4, k=2: Choose 2 from {1,2,3,4}
+
+Start with {} (need 2 more)
+├── Add 1 → {1} (need 1 more)
+│   ├── Add 2 → {1,2} ✓ size=k, save!
+│   ├── Add 3 → {1,3} ✓ save!
+│   └── Add 4 → {1,4} ✓ save!
+├── Add 2 → {2} (need 1 more)
+│   ├── Add 3 → {2,3} ✓ save!
+│   └── Add 4 → {2,4} ✓ save!
+├── Add 3 → {3} (need 1 more)
+│   └── Add 4 → {3,4} ✓ save!
+└── Add 4 → {4} (need 1 more)
+    └── No more elements! (pruned)
+```
+
+5. **The Pruning Insight**: If you need k elements and only have fewer than k remaining, stop early. This "not enough elements" pruning is the key optimization. Without it, you'd explore many dead-end branches.
+
+## When NOT to Use Combinations Pattern
+
+Combinations are powerful but have specific use cases:
+
+1. **When Order Matters**: If picking A then B is different from B then A, use permutations. Combinations treat {A,B} and {B,A} as identical.
+
+2. **When Size Isn't Fixed**: If you need all subset sizes (not just k), use the general subsets pattern. Combinations are specifically for fixed-size selection.
+
+3. **When k Is Close to n/2**: C(n, n/2) is the largest binomial coefficient. For n=20 and k=10, C(20,10) ≈ 184,756. If constraints allow, this might be manageable, but be aware of the growth.
+
+4. **When Elements Can Repeat**: Standard combinations assume each element is chosen at most once. For "combinations with replacement," use a different formula and algorithm.
+
+5. **When You Need Weighted Selection**: If elements have weights or costs and you want the "best" combination, consider DP or greedy approaches rather than enumerating all.
+
+**Red Flags Against Generating All Combinations:**
+- n and k are large (C(n,k) > 10^7) → too many combinations
+- Problem asks for "optimal" → probably DP or greedy
+- Problem asks for count → use math formula directly
+- Elements can be chosen multiple times → different problem
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Order matters | Permutations |
+| All sizes needed | Subsets |
+| Need optimal combination | DP/Greedy |
+| Just counting | Math: C(n,k) = n!/(k!(n-k)!) |
+| With replacement | Stars and bars / different algorithm |
+
+---
+
 ## Interview Context
 
 Combination problems test:

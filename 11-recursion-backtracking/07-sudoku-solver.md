@@ -2,6 +2,96 @@
 
 > **Prerequisites:** [N-Queens](./06-n-queens.md), understanding of constraint satisfaction
 
+## Overview
+
+Sudoku Solver applies constraint satisfaction backtracking to a familiar puzzle. Unlike N-Queens (which has one constraint type), Sudoku has **three simultaneous constraints**: row, column, and 3×3 box. This makes it an excellent advanced backtracking problem that teaches multi-dimensional constraint tracking.
+
+## Building Intuition
+
+**Why does cell-by-cell placement with triple constraint checking work?**
+
+Think of Sudoku as filling slots while respecting multiple "clubs" each cell belongs to.
+
+1. **The Three-Club Model**: Every cell belongs to exactly one row-club, one column-club, and one box-club. Each club requires digits 1-9 with no repeats. Your job is to find an assignment where every club is happy.
+
+2. **The Key Mental Model**: Imagine 81 job positions, each requiring one of 9 skill types. Each position has three managers (row, column, box) who each forbid certain skills. You must assign skills such that no manager sees duplicates.
+
+3. **Why Box Index = (row//3)*3 + col//3**:
+```
+The 9 boxes are numbered 0-8:
+┌───┬───┬───┐
+│ 0 │ 1 │ 2 │   row 0-2
+├───┼───┼───┤
+│ 3 │ 4 │ 5 │   row 3-5
+├───┼───┼───┤
+│ 6 │ 7 │ 8 │   row 6-8
+└───┴───┴───┘
+ col col col
+ 0-2 3-5 6-8
+
+For cell (5,7):
+- row//3 = 5//3 = 1 (middle row of boxes)
+- col//3 = 7//3 = 2 (right column of boxes)
+- box = 1*3 + 2 = 5 ✓
+```
+
+4. **Visual Intuition—Constraint Intersection**:
+```
+For cell (4,5):
+
+Row 4 constraint: [8 . . | . 6 . | . . 3]  ← Can't use 8,6,3
+                       ↓
+Column 5 constraint:   .
+                       5     ← Can't use 5,3,9 (etc.)
+                       .
+                       .
+                       .     ← Cell (4,5) is here
+                       3
+                       .
+                       9
+                       .
+
+Box 4 constraint:     . 6 .
+                      8 X 3   ← X is (4,5), can't use 8,6,3
+                      . 2 .
+
+Valid choices = {1-9} - (row used) - (col used) - (box used)
+```
+
+5. **Why MRV (Minimum Remaining Values) Helps**: Instead of filling cells left-to-right, pick the cell with fewest valid options. If a cell has only one valid digit, fill it first. If a cell has zero valid digits, backtrack immediately. This prunes the search tree dramatically.
+
+6. **The Propagation Insight**: When you place a digit, it might force other cells. Advanced solvers use "constraint propagation" to detect forced moves and impossibilities without explicit recursion.
+
+## When NOT to Use Simple Backtracking for Sudoku
+
+Simple backtracking works but isn't always optimal:
+
+1. **For Extremely Hard Puzzles**: "World's hardest Sudoku" puzzles may require advanced techniques like naked pairs, hidden singles, X-wing, etc. Pure backtracking might be slow.
+
+2. **When Generating Puzzles**: Creating valid Sudoku puzzles is a different problem. You need to ensure unique solvability, which requires specialized algorithms.
+
+3. **When You Need All Solutions**: Most Sudoku puzzles have exactly one solution. If you're checking for multiple solutions, you need a modified approach.
+
+4. **For Real-Time Solving**: If solving thousands of Sudokus per second (like for AI training), use optimized solvers like Dancing Links (DLX) which can solve any Sudoku in microseconds.
+
+5. **When the Board Is Invalid**: If constraints are already violated (duplicate in row/col/box), detect this early rather than waste time backtracking.
+
+**Red Flags for Simple Sudoku Backtracking:**
+- Need to solve millions of puzzles → use DLX or SAT solver
+- Generating puzzles → different algorithm entirely
+- Checking uniqueness → need to count solutions
+- Board already invalid → validate first
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Maximum speed | Dancing Links (DLX) |
+| Puzzle generation | Removal from solved board |
+| Check uniqueness | Solution counter |
+| Very hard puzzles | Constraint propagation + backtracking |
+
+---
+
 ## Interview Context
 
 Sudoku solver tests:

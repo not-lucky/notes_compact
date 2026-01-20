@@ -2,6 +2,86 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md)
 
+## Overview
+
+Generate Parentheses is a classic **sequence generation** backtracking problem. Given n pairs of parentheses, you generate all valid (well-formed) combinations. It's elegant because the constraint is simple—balance—yet produces non-trivial results. The number of valid sequences follows the Catalan number sequence.
+
+## Building Intuition
+
+**Why does tracking open/close counts work?**
+
+Think of it as maintaining a balance while building a sequence.
+
+1. **The Balance Model**: Imagine parentheses as a bank account. `(` is a deposit (+1), `)` is a withdrawal (-1). The rules:
+   - You can deposit anytime (as long as you have deposits left)
+   - You can only withdraw if your balance is positive
+   - At the end, balance must be zero
+
+2. **The Key Mental Model**: At each position, you decide: add `(` or add `)`?
+   - Add `(` if: open_count < n (haven't used all opens yet)
+   - Add `)` if: close_count < open_count (have unclosed opens to match)
+
+3. **Why This Guarantees Validity**:
+   - We never add `)` without a matching `(`
+   - We use exactly n of each
+   - At every prefix, opens ≥ closes (never go negative)
+
+4. **Visual Intuition—The Decision Tree**:
+```
+n=2, tracking (open, close)
+
+                        "" (0,0)
+                       /
+                      ( (1,0)
+                    /       \
+                  (( (2,0)    () (1,1)
+                    |           \
+                  (() (2,1)      ()( (2,1)
+                    |              \
+                  (()) (2,2) ✓    ()() (2,2) ✓
+
+Only 2 valid sequences for n=2: "(())" and "()()"
+```
+
+5. **Why Not Just All Permutations?**: There are (2n)! / (n!)² = C(2n,n) ways to arrange n opens and n closes. But only C(2n,n)/(n+1) = Catalan(n) are *valid*. Backtracking builds only valid ones, never generating invalid sequences.
+
+6. **The Catalan Connection**: The count of valid parentheses is the n-th Catalan number:
+   - C(1) = 1: "()"
+   - C(2) = 2: "(())", "()()"
+   - C(3) = 5: "((()))", "(()())", "(())()", "()(())", "()()()"
+   - C(n) = (2n)! / ((n+1)! × n!)
+
+## When NOT to Use Generate Parentheses Pattern
+
+This pattern is specific to sequence generation:
+
+1. **When You Only Need Validity Check**: If checking if a given string is valid, just count balance in O(n). Don't generate anything.
+
+2. **When You Need to Count Only**: If you only need the number of valid sequences, use the Catalan formula directly. Don't generate all sequences.
+
+3. **When Multiple Bracket Types**: With multiple types ((), [], {}), the logic is more complex—you need a stack to ensure proper nesting, not just counts.
+
+4. **When Finding Minimum Edits**: For problems like "minimum insertions to make valid," use DP or greedy, not enumeration.
+
+5. **When n Is Large**: Catalan(15) ≈ 9 million. For n > 12-15, generating all sequences is impractical.
+
+**Red Flags Against Full Generation:**
+- n > 12 → too many sequences
+- Only need count → use Catalan formula
+- Only need validity check → single-pass balance check
+- Multiple bracket types → stack-based validation
+
+**Better Alternatives:**
+| Situation | Use Instead |
+|-----------|-------------|
+| Check validity | Balance counter O(n) |
+| Count only | Catalan formula O(n) |
+| Minimum edits | DP or greedy |
+| Multiple bracket types | Stack-based approach |
+| Very large n | Mathematical analysis |
+
+---
+
 ## Interview Context
 
 Generate Parentheses tests:
