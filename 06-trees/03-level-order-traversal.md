@@ -2,6 +2,100 @@
 
 > **Prerequisites:** [02-tree-traversals](./02-tree-traversals.md), [05-stacks-queues](../05-stacks-queues/README.md)
 
+## Building Intuition
+
+**The Burning Building Mental Model**: Imagine a building where each floor is a level of the tree. Firefighters (BFS) clear floor by floor:
+
+```
+Floor 0:     🧑‍🚒    [1]          Clear first floor
+Floor 1:    🧑‍🚒 🧑‍🚒   [2, 3]       Then second floor
+Floor 2:   🧑‍🚒🧑‍🚒🧑‍🚒 [4, 5, 6]     Then third floor...
+
+        1           ← Level 0
+       / \
+      2   3         ← Level 1
+     / \   \
+    4   5   6       ← Level 2
+```
+
+**Why we use a queue (FIFO)**:
+- Enqueue all children of current level
+- When we dequeue, we get them in order by level
+- Stack (LIFO) would give DFS, not BFS
+
+```
+Queue visualization:
+Start: [1]
+After processing 1: [2, 3]     (1's children added)
+After processing 2: [3, 4, 5]  (2's children added to end)
+After processing 3: [4, 5, 6]  (3's children added to end)
+...and so on, level by level!
+```
+
+**The "level size" trick**:
+To process level by level (not just node by node), snapshot the queue size at start of each level:
+
+```python
+while queue:
+    level_size = len(queue)  # All nodes currently in queue are at same level
+    for _ in range(level_size):
+        node = queue.popleft()
+        # Process node, add children to queue
+```
+
+**DFS vs BFS for trees**:
+
+| Property | DFS | BFS |
+|----------|-----|-----|
+| Data structure | Stack / Recursion | Queue |
+| Order | Depth-first (down before across) | Breadth-first (across before down) |
+| Space | O(h) height | O(w) max width |
+| Good for | Path problems, tree shape | Level problems, shortest path |
+
+---
+
+## When NOT to Use
+
+**Level-order traversal is overkill when:**
+- Just need to visit all nodes in any order → DFS is simpler
+- Processing subtrees independently → DFS maps to recursion naturally
+- Tree is very wide → Queue can be huge (O(n/2) at widest level)
+
+**Level-order is essential when:**
+- Need level-by-level output
+- Finding shortest path (in unweighted tree)
+- Right-side view, left-side view, max per level
+- Connecting nodes at same level
+
+**Common mistake scenarios:**
+- Using list instead of deque → O(n) pop from front!
+- Forgetting to track level boundaries → Wrong level grouping
+- Processing children before siblings → That's DFS, not BFS
+
+**When DFS is better:**
+| Problem Type | Use This |
+|--------------|----------|
+| "Collect all root-to-leaf paths" | DFS |
+| "Calculate subtree values" | DFS (postorder) |
+| "Serialize tree" | DFS (preorder) |
+| "Return values by level" | BFS |
+| "Find min depth" | BFS (early termination) |
+
+**The space complexity insight**:
+```
+Wide tree (worst for BFS):     Skinny tree (worst for DFS):
+         1                              1
+     /   |   \                           \
+    2    3    4                           2
+   /|\ /|\ /|\                             \
+  5 6 7 8 9 ...                             3
+
+Queue: O(n/2) at bottom level   Stack: O(n) for chain
+BFS space: O(width) = O(n)      DFS space: O(height) = O(n)
+```
+
+---
+
 ## Interview Context
 
 Level-order traversal is essential because:

@@ -2,6 +2,95 @@
 
 > **Prerequisites:** [01-tree-basics](./01-tree-basics.md)
 
+## Building Intuition
+
+**The Sorted Book Shelf Mental Model**: Imagine a bookshelf where every book on the left is "earlier" (alphabetically or numerically) than the book you're looking at, and every book on the right is "later". That's a BST!
+
+```
+Looking for "M" in a BST of letters:
+      K
+     / \
+    D   P
+   / \ / \
+  A  F M  T
+
+K < M → go right
+P > M → go left
+Found M!
+```
+
+**Why BST gives O(log n) - the binary search insight**:
+Each comparison eliminates half the remaining nodes. With n nodes in a balanced tree:
+- After 1 comparison: n/2 candidates
+- After 2 comparisons: n/4 candidates
+- After log₂(n) comparisons: 1 candidate
+
+```
+Search path for value X:
+     Compare with root
+           |
+    ┌──────┴──────┐
+  X < root      X > root
+    |              |
+  Go left       Go right
+    |              |
+  (half tree)   (half tree)
+```
+
+**The three deletion cases - visual intuition**:
+
+```
+Case 1: Leaf node        Case 2: One child       Case 3: Two children
+  Delete 4                 Delete 3                Delete 5
+      5                        5                       5
+     / \                      / \                     / \
+    3   7    →              3   7    →               3   7
+   /   /                   /   /                    / \   \
+  4   6                   1   6                    1   4   9
+        (just remove)     └─(replace with child)  └─(replace with successor 6)
+```
+
+**The successor/predecessor insight**:
+- **Inorder successor** = smallest value greater than current = leftmost node in right subtree
+- **Inorder predecessor** = largest value smaller than current = rightmost node in left subtree
+
+These are used in deletion (case 3) because they maintain BST property when substituted.
+
+---
+
+## When NOT to Use
+
+**Don't use a plain BST when:**
+- **Data arrives in sorted order** → Tree becomes a linked list (O(n) operations)
+- **Need O(1) lookups** → Use hash map instead
+- **Data rarely changes** → Sorted array with binary search may be simpler
+- **Need ordered iteration without tree overhead** → Use sorted array
+
+**BST is overkill when:**
+- Only need insertion order → Use array/list
+- Data set is small → Linear search is fine
+- No ordering requirements → Hash map is faster
+
+**When to use self-balancing trees instead:**
+- Production systems → Use AVL or Red-Black tree
+- Insertions in sorted/reverse order → Plain BST degrades to O(n)
+- Guaranteed O(log n) is critical → Balanced tree variants
+
+**Common mistake scenarios:**
+- Not considering tree balance in complexity analysis
+- Using BST when hash map would be simpler
+- Forgetting that duplicate handling varies by implementation
+
+**Performance comparison:**
+| Structure | Search | Insert | Delete | Space |
+|-----------|--------|--------|--------|-------|
+| BST (balanced) | O(log n) | O(log n) | O(log n) | O(n) |
+| BST (skewed) | O(n) | O(n) | O(n) | O(n) |
+| Hash Map | O(1) avg | O(1) avg | O(1) avg | O(n) |
+| Sorted Array | O(log n) | O(n) | O(n) | O(n) |
+
+---
+
 ## Interview Context
 
 BST operations are fundamental because:

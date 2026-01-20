@@ -2,6 +2,98 @@
 
 > **Prerequisites:** [01-tree-basics](./01-tree-basics.md), [02-tree-traversals](./02-tree-traversals.md)
 
+## Building Intuition
+
+**The Trail Marker Mental Model**: Imagine hiking in a forest where each node has a "difficulty score". You're looking for trails with a specific total difficulty. As you walk:
+- Add each node's score to your running total
+- At a leaf (trail end), check if you hit the target
+- Backtrack to try other trails
+
+```
+       5 (start hiking)
+      / \
+     4   8
+    /   / \
+   11  13  4
+  / \       \
+ 7   2       1
+
+Trail 5→4→11→2 = 22 (target sum!)
+Trail 5→8→13 = 26 (not target)
+```
+
+**The "remaining sum" insight**:
+Instead of tracking running sum and comparing at leaf, track remaining sum:
+- Start with target
+- Subtract each node's value
+- At leaf, check if remaining == 0
+
+```
+Target = 22
+At 5: remaining = 22 - 5 = 17
+At 4: remaining = 17 - 4 = 13
+At 11: remaining = 13 - 11 = 2
+At 2: remaining = 2 - 2 = 0 → Found!
+```
+
+**Three types of path problems**:
+
+| Type | Definition | Approach |
+|------|------------|----------|
+| **Root-to-leaf** | Start at root, end at leaf | Simple DFS with sum tracking |
+| **Downward** | From any ancestor to any descendant | Prefix sum with hashmap |
+| **Any-to-any** | Any node to any node (can go up) | DP on subtrees, track through root |
+
+**The prefix sum insight for downward paths**:
+For paths not starting at root, use cumulative sums:
+```
+If prefix[j] - prefix[i] = target, then nodes (i+1 to j) sum to target.
+
+Path: root → ... → node_i → ... → node_j
+Cumulative sum at i = 10
+Cumulative sum at j = 18
+Target = 8
+Since 18 - 10 = 8, there's a valid path from i+1 to j!
+```
+
+---
+
+## When NOT to Use
+
+**Simple path sum approach fails when:**
+- **Paths can go up** → Need to consider paths through root
+- **Negative values exist** → Cannot prune early when sum > target
+- **Need path count, not existence** → May need different tracking
+
+**Path sum is overkill when:**
+- Only need to know if any path exists → Simpler DFS
+- Tree is actually a graph → Different traversal needed
+- Just counting nodes → No sum logic needed
+
+**Common mistake scenarios:**
+- Forgetting to check leaf condition → Non-leaf nodes shouldn't match
+- Not backtracking state properly in Path Sum II → Wrong paths
+- Using wrong path definition → Root-to-leaf vs any-to-any
+
+**Pattern matching guide:**
+| Problem Asks For | Use This Pattern |
+|------------------|------------------|
+| "Has path root to leaf with sum?" | Simple DFS, subtract from target |
+| "Find all such paths" | DFS + backtracking with path list |
+| "Count paths anywhere with sum" | Prefix sum + hashmap |
+| "Maximum path sum any-to-any" | DP: max(through_root, left_only, right_only) |
+
+**The negative number trap**:
+With positive numbers only, you can prune when current_sum > target. With negatives:
+```
+Target = 10
+Path so far: 5 → 8 (sum = 13 > 10)
+With positives: PRUNE, no hope
+With negatives: CONTINUE, might find -3 later: 5 + 8 + (-3) = 10
+```
+
+---
+
 ## Interview Context
 
 Path sum problems are important because:

@@ -2,6 +2,100 @@
 
 > **Prerequisites:** [01-tree-basics](./01-tree-basics.md), [04-bst-operations](./04-bst-operations.md)
 
+## Building Intuition
+
+**The Family Tree Mental Model**: LCA is like finding the most recent common ancestor of two family members. The "lowest" means the deepest in the tree (closest to both).
+
+```
+       Great-grandma
+           /    \
+       Grandpa  Grandma
+        /   \
+      Dad   Uncle
+      / \
+    You  Sibling
+
+LCA(You, Sibling) = Dad      (immediate parent)
+LCA(You, Uncle) = Grandpa    (one level up from Uncle)
+LCA(Dad, Grandma) = Great-grandma
+```
+
+**Two different problems - BST vs General BT**:
+
+| Tree Type | Key Property | Approach |
+|-----------|--------------|----------|
+| BST | Ordered: left < root < right | Use BST property to navigate |
+| General BT | No ordering guarantee | Search entire tree |
+
+**BST LCA - the split point insight**:
+In a BST, the LCA is where p and q "split" - one goes left, one goes right:
+
+```
+BST:        Looking for LCA(2, 8):
+      6
+     / \
+    2   8       At 6: 2 < 6 and 8 > 6 → SPLIT POINT!
+   / \ / \      LCA = 6
+  0  4 7  9
+
+Looking for LCA(2, 4):
+      6
+     / \
+    2   8       At 6: both < 6 → go left
+   / \          At 2: 2 = 2 and 4 > 2 → SPLIT POINT!
+  0   4         LCA = 2
+```
+
+**General BT LCA - the recursive search insight**:
+Search for p and q in both subtrees. The LCA is:
+- If found in different subtrees → current node is LCA
+- If both in one subtree → LCA is in that subtree
+- If current node is p or q → current node might be LCA
+
+```
+Recursive LCA logic:
+1. If I am p or q → return myself
+2. Search left subtree → left_result
+3. Search right subtree → right_result
+4. If both non-null → I am the LCA (split point)
+5. Otherwise → return whichever is non-null
+```
+
+---
+
+## When NOT to Use
+
+**Standard LCA algorithms don't apply when:**
+- **Tree has parent pointers** → Simpler: trace ancestors and find intersection
+- **Need LCA for many queries** → Preprocess with binary lifting or Euler tour
+- **Graph is not a tree** → Different algorithms needed
+
+**BST approach fails when:**
+- Tree is not a BST → Must use general BT approach
+- Values are not unique → Cannot reliably navigate
+
+**Common mistake scenarios:**
+- Using BST algorithm on general binary tree → Wrong answer
+- Not handling "node is ancestor of itself" case → Definition says node can be its own descendant
+- Assuming both nodes exist → Add existence check if not guaranteed
+
+**When to use specialized LCA algorithms:**
+| Scenario | Best Approach |
+|----------|---------------|
+| Single query, BST | O(h) BST traversal |
+| Single query, general BT | O(n) recursive search |
+| Many queries, static tree | Binary lifting O(n log n) preprocess, O(log n) query |
+| Queries with updates | Link-Cut trees (advanced) |
+| Need all ancestors | Parent pointer + path comparison |
+
+**The parent pointer simplification**:
+If nodes have parent pointers, LCA becomes "find intersection of two linked lists":
+1. Trace p's ancestors to root → path1
+2. Trace q's ancestors to root → path2
+3. Find last common node in both paths
+
+---
+
 ## Interview Context
 
 LCA problems are popular because:

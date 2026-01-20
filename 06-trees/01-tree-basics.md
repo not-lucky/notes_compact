@@ -2,6 +2,77 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)
 
+## Building Intuition
+
+**The Organizational Chart Mental Model**: Every company has a CEO (root), with VPs reporting to them (children), managers reporting to VPs, and so on. A tree captures this hierarchical structure perfectly:
+
+```
+         CEO (root)
+        /    \
+      VP1    VP2
+      / \      \
+   Mgr1 Mgr2  Mgr3 (leaves = no reports)
+```
+
+**Why trees appear everywhere in CS**:
+- **File systems**: Folders containing folders containing files
+- **HTML/DOM**: `<body>` contains `<div>` contains `<p>` contains text
+- **Database indexes**: B-trees organize sorted data for fast lookup
+- **Syntax trees**: Code is parsed into tree structure
+
+**The recursion insight**: A tree is defined recursively - every subtree is itself a tree. This means most tree algorithms have elegant recursive solutions:
+
+```
+count(tree) = 1 + count(left_subtree) + count(right_subtree)
+```
+
+**Height vs Depth - remember the difference**:
+- **Depth** = how far DOWN from root (root has depth 0)
+- **Height** = how far UP from leaves (leaf has height 0, tree height = root's height)
+
+```
+         1     ← depth=0, height=2
+        / \
+       2   3   ← depth=1, height=1
+      /
+     4         ← depth=2, height=0 (leaf)
+```
+
+**Why height matters for complexity**: Most tree operations are O(h) where h = height:
+- Balanced tree: h = log(n) → operations are O(log n)
+- Skewed tree: h = n → operations degrade to O(n)
+
+---
+
+## When NOT to Use
+
+**Don't use a tree when:**
+- **Data is not hierarchical** → Use array, hash map, or graph instead
+- **Frequent insertions in sorted order** → Use balanced tree or skip list
+- **Need O(1) access by index** → Use array
+- **Need O(1) access by key** → Use hash map
+
+**Trees are overkill when:**
+- Simple linear data with no hierarchy → Use array/list
+- Small data sets (< 100 elements) → Linear search is fine
+- You only need LIFO/FIFO access → Use stack/queue
+
+**Common mistake scenarios:**
+- Using tree when hash map suffices for key-value storage
+- Building tree from sorted array (creates skewed tree) → Use middle element as root
+- Forgetting that unbalanced trees lose their efficiency guarantees
+
+**Binary tree vs other structures:**
+| Use Case | Best Structure |
+|----------|----------------|
+| Hierarchical data | Tree |
+| Key-value lookup | Hash Map |
+| Sorted data with range queries | BST / B-tree |
+| Priority access | Heap |
+| Graph traversal | Graph (not tree) |
+
+---
+
 ## Interview Context
 
 Trees are fundamental because:

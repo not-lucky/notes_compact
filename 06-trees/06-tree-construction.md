@@ -2,6 +2,84 @@
 
 > **Prerequisites:** [02-tree-traversals](./02-tree-traversals.md)
 
+## Building Intuition
+
+**The Detective Puzzle Mental Model**: You're given clues (traversals) and must reconstruct the original tree. Each traversal gives different information:
+
+```
+Preorder tells you: "Who is the root?"  (first element)
+Inorder tells you:  "Who is left vs right of root?" (position relative to root)
+Postorder tells you: "Who is the root?" (last element)
+```
+
+**Why you need TWO traversals**:
+A single traversal can correspond to multiple different trees:
+
+```
+Preorder [1, 2, 3] could be:      Inorder [1, 2, 3] could be:
+    1           1                    1           2
+   /             \                    \         / \
+  2               2                    2       1   3
+ /                 \                    \
+3                   3                    3
+```
+
+But (preorder + inorder) or (postorder + inorder) uniquely determines the tree!
+
+**The recursive construction insight**:
+1. Find root from preorder[0] (or postorder[-1])
+2. Locate root in inorder → splits left/right subtrees
+3. Calculate sizes → determine preorder/postorder ranges for subtrees
+4. Recurse on left and right
+
+```
+Preorder: [3, 9, 20, 15, 7]    Inorder: [9, 3, 15, 20, 7]
+           ↑ root                         ↑ root position
+
+Left subtree:  inorder[0:1] = [9]
+Right subtree: inorder[2:5] = [15, 20, 7]
+
+Recurse on each subtree!
+```
+
+**Why inorder is always needed**:
+- Preorder/postorder can identify the root
+- Only inorder can tell us which nodes belong to left vs right subtree
+- Without inorder, we can't determine subtree boundaries
+
+**The hashmap optimization**:
+Finding root in inorder is O(n) per node → O(n²) total. Build a hashmap of value→index first → O(1) lookups → O(n) total.
+
+---
+
+## When NOT to Use
+
+**Tree construction doesn't work when:**
+- **Only one traversal given** → Multiple valid trees exist (unless special constraints)
+- **Duplicate values exist** → Cannot uniquely locate root in inorder
+- **Preorder + Postorder only** → Cannot determine left/right boundary (for general BT)
+
+**Special cases where one traversal suffices:**
+- Full binary tree + preorder + postorder → Unique reconstruction possible
+- BST + one traversal → BST property constrains structure
+- Complete binary tree + level order → Positions are deterministic
+
+**Common mistake scenarios:**
+- Forgetting to handle empty subtrees (left_size = 0)
+- Off-by-one errors in slicing arrays
+- Not using hashmap → TLE on large inputs
+- Assuming preorder + postorder works (it doesn't for general BT)
+
+**When to use alternative approaches:**
+| Input Given | Approach |
+|-------------|----------|
+| Level-order array | Build using index math: left=2i+1, right=2i+2 |
+| BST + any traversal | Use BST property to bound values |
+| Serialized string | Parse with preorder-style DFS |
+| Parent array | Build with hashmap of parent→children |
+
+---
+
 ## Interview Context
 
 Tree construction problems are important because:

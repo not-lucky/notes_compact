@@ -2,6 +2,78 @@
 
 > **Prerequisites:** [01-tree-basics](./01-tree-basics.md)
 
+## Building Intuition
+
+**The "Visit Order" Mental Model**: Imagine walking through a tree and deciding when to "process" each node. The three DFS traversals differ only in WHEN you process vs WHEN you recurse:
+
+```
+For each node, you have 3 actions:
+1. Process this node (record its value)
+2. Visit left subtree
+3. Visit right subtree
+
+Preorder:  Process → Left → Right  (process FIRST)
+Inorder:   Left → Process → Right  (process in MIDDLE)
+Postorder: Left → Right → Process  (process LAST)
+```
+
+**Why these orderings matter:**
+
+| Traversal | Mental Model | Use Case |
+|-----------|--------------|----------|
+| **Preorder** | "Copy as you go" | Serializing tree, cloning |
+| **Inorder** | "Left, me, right" | BST → sorted order |
+| **Postorder** | "Clean up after" | Delete tree, compute subtree values |
+
+**The BST + Inorder magic**:
+For a BST, inorder traversal visits nodes in sorted order. This is because: left < root < right, and we visit left first.
+
+```
+BST:            Inorder:
+      5         → [2, 3, 5, 7, 9]
+     / \          (sorted!)
+    3   7
+   /     \
+  2       9
+```
+
+**Recursive vs Iterative - the trade-off**:
+- **Recursive**: More elegant, uses call stack implicitly
+- **Iterative**: Explicit stack, avoids stack overflow, sometimes needed for O(1) space (Morris)
+
+**The stack intuition for iterative**:
+The call stack in recursion does three things: (1) remember where to return, (2) save local state, (3) process in correct order. An explicit stack simulates this.
+
+---
+
+## When NOT to Use
+
+**Don't use DFS traversals when:**
+- **Need level-by-level processing** → Use BFS (level-order)
+- **Finding shortest path in unweighted tree** → Use BFS
+- **Need to process all nodes at same depth together** → Use BFS
+
+**Specific traversal anti-patterns:**
+- **Inorder for general binary tree** → Order is arbitrary (only meaningful for BST)
+- **Recursive on very deep trees** → Risk stack overflow; use iterative or Morris
+- **Any traversal for "widest level"** → Use BFS with level tracking
+
+**Common mistake scenarios:**
+- Using preorder when you need postorder (e.g., delete tree)
+- Expecting inorder to be useful for non-BST
+- Forgetting that recursive traversal uses O(h) stack space
+
+**When to use each:**
+| Problem Type | Best Traversal |
+|--------------|----------------|
+| Serialize/deserialize | Preorder |
+| Validate BST | Inorder |
+| Calculate subtree sizes | Postorder |
+| Level-order output | BFS |
+| Find depth | BFS or any DFS |
+
+---
+
 ## Interview Context
 
 Tree traversals are fundamental because:

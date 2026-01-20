@@ -2,6 +2,108 @@
 
 > **Prerequisites:** [04-bst-operations](./04-bst-operations.md), [02-tree-traversals](./02-tree-traversals.md)
 
+## Building Intuition
+
+**The Bouncer at the Door Mental Model**: Each node in a BST acts like a bouncer setting rules for who can enter left vs right:
+
+```
+At node 5: "Left side: only values < 5 allowed!"
+           "Right side: only values > 5 allowed!"
+
+But here's the catch: these rules ACCUMULATE as you go deeper!
+```
+
+**Why the naive approach fails**:
+Checking only `left.val < node.val < right.val` misses inherited constraints:
+
+```
+      5
+     / \
+    1   7
+       / \
+      3   9    ← 3 < 7 ✓ (passes naive check)
+               ← BUT 3 is in RIGHT subtree of 5!
+               ← 3 must be > 5, but 3 < 5 ✗ INVALID!
+```
+
+**The range constraint insight**:
+Every node must satisfy a range inherited from ALL ancestors:
+
+```
+     5 (range: -∞ to +∞)
+    / \
+   3   7 (range: 5 to +∞)
+  / \   \
+ 1   4   9
+         ↑
+    (range: 7 to +∞)
+
+At node 9: must be in (7, +∞) → 9 > 7 ✓
+If we had 6 here instead: 6 > 7? No! ✗ Invalid
+```
+
+**Two equivalent approaches**:
+
+| Approach | How It Works | Space |
+|----------|--------------|-------|
+| **Range-based** | Pass (min, max) bounds down, narrow at each step | O(h) stack |
+| **Inorder traversal** | BST inorder should be strictly increasing | O(h) or O(1) with Morris |
+
+**The inorder insight**:
+```
+Valid BST:        Inorder: [1, 3, 4, 5, 7, 9] → strictly increasing ✓
+      5
+     / \
+    3   7
+   / \   \
+  1   4   9
+
+Invalid BST:      Inorder: [1, 6, 4, 5, 7, 9] → 6 > 4 ✗ not increasing!
+      5
+     / \
+    6   7          (6 is invalid - should be < 5)
+   / \
+  1   4
+```
+
+---
+
+## When NOT to Use
+
+**Range-based validation fails when:**
+- Tree has duplicate values → Need to decide if duplicates allowed and where
+- Range is unclear → With duplicates, is it `<` or `<=`?
+
+**Inorder validation is simpler when:**
+- You're already comfortable with inorder traversal
+- Problem asks for sorted order verification anyway
+- You want O(1) space (Morris traversal variant)
+
+**Common mistake scenarios:**
+- Only checking immediate children → Misses ancestor constraints
+- Using `<=` instead of `<` → Depends on problem definition
+- Integer overflow with min/max → Use `float('-inf')` and `float('inf')` in Python
+
+**The duplicate value trap**:
+```
+Standard BST: left < root < right (no duplicates)
+Some BSTs: left <= root < right (duplicates go left)
+Others: left < root <= right (duplicates go right)
+
+ALWAYS clarify with interviewer!
+```
+
+**When to use alternative approaches:**
+| Scenario | Best Approach |
+|----------|---------------|
+| Standard validation | Range-based or inorder |
+| Need sorted values anyway | Inorder (returns list too) |
+| Memory constrained | Morris traversal |
+| Just need true/false | Range-based is minimal |
+| Debugging existing BST | Inorder shows problem clearly |
+
+---
+
 ## Interview Context
 
 Validating BST is a classic interview problem because:

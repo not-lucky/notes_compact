@@ -2,6 +2,90 @@
 
 > **Prerequisites:** [01-tree-basics](./01-tree-basics.md), [02-tree-traversals](./02-tree-traversals.md)
 
+## Building Intuition
+
+**The Tree Measurement Mental Model**: Think of measuring a tree in your backyard:
+- **Depth** = How far down from the top? (Root is at the top in CS trees!)
+- **Height** = How tall from bottom to top? (Max depth of any leaf)
+
+```
+Real tree (grows up):     CS tree (grows down):
+      🌳                        1 (root, depth=0)
+       |                       / \
+       |                      2   3 (depth=1)
+       |                     /
+       |                    4 (depth=2, leaf)
+    ground
+                          Height = 2 (longest path from root to leaf)
+```
+
+**The recursive insight for max depth**:
+Height of a tree = 1 + max(height of left, height of right)
+
+```
+      1
+     / \
+    2   3
+   /
+  4
+
+height(4) = 0 (leaf, or 1 in some definitions)
+height(2) = 1 + max(height(4), 0) = 1 + 1 = 2
+height(3) = 0 (leaf)
+height(1) = 1 + max(height(2), height(3)) = 1 + max(2, 0) = 3
+```
+
+**Balanced vs Unbalanced - why it matters**:
+```
+Balanced (good):          Unbalanced (bad):
+      1                        1
+     / \                        \
+    2   3                        2
+   / \ / \                        \
+  4  5 6  7                        3
+                                    \
+Height = 2                           4
+Operations = O(log n)
+                                Height = 3 (approaching n)
+                                Operations = O(n) worst case
+```
+
+A balanced tree guarantees O(log n) operations because height is logarithmic in node count.
+
+---
+
+## When NOT to Use
+
+**Depth/height calculations are overkill when:**
+- Only need to check if tree is empty → Simple null check
+- Need exact level of specific node → Track depth during search
+- Tree is always balanced by design (heap) → Height is log(n) by definition
+
+**Common mistake scenarios:**
+- Confusing depth (from root) with height (from leaves)
+- Off-by-one errors (0-indexed vs 1-indexed depth)
+- Computing height twice per node → O(n²) instead of O(n)
+
+**The balanced tree trap**:
+```
+Definition varies! Common definitions:
+1. AVL: |height(left) - height(right)| ≤ 1 for ALL nodes
+2. Red-Black: No path is more than 2x any other
+3. "Approximately balanced": Height is O(log n)
+
+Clarify with interviewer which definition to use!
+```
+
+**When specialized algorithms are better:**
+| Problem | Better Than Recursive |
+|---------|----------------------|
+| Just max depth | BFS (level count) is equivalent |
+| Is balanced? | Combined height + balance check |
+| Min depth to leaf | BFS finds it faster (early termination) |
+| Depth of specific node | DFS with target, not full traversal |
+
+---
+
 ## Interview Context
 
 Depth and balance problems are important because:
