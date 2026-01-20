@@ -1,16 +1,26 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-20T03:29:40.321830Z",
   "created_at": "2026-01-19T06:04:03.720801Z",
   "depends_on": [
     "fn-1.1"
   ],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "302e192016909f4ed7176a5bd9ed16fce6b09f0f"
+    ],
+    "prs": [],
+    "tests": [
+      "file count verification",
+      "link validation"
+    ]
+  },
   "id": "fn-1.22",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.22.md",
-  "status": "todo",
+  "status": "done",
   "title": "Create Appendix C: Company-Specific Patterns (3-4 files)",
-  "updated_at": "2026-01-19T06:18:36.989208Z"
+  "updated_at": "2026-01-20T03:36:09.495463Z"
 }
