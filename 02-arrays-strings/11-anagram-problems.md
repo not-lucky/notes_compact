@@ -2,6 +2,70 @@
 
 > **Prerequisites:** [09-string-basics.md](./09-string-basics.md)
 
+## Overview
+
+Anagram problems test your ability to efficiently compare character frequencies. The core insight is that anagrams have identical character counts—once you internalize this, many variations become straightforward applications of hash maps and sliding windows.
+
+## Building Intuition
+
+**Why does character frequency completely define anagrams?**
+
+The key insight is **order-independent equality**:
+
+1. **The Multiset View**: An anagram is a rearrangement. "listen" and "silent" both contain: {e:1, i:1, l:1, n:1, s:1, t:1}. Two words are anagrams if and only if their character multisets are identical.
+
+2. **Hash Map as Canonical Form**: By counting characters, we reduce strings to their "essence." Sorting does the same thing but costs O(n log n); counting costs O(n).
+
+3. **The Sliding Window Connection**: Finding anagrams of pattern P in text T means finding windows where character counts match P. This is a fixed-size sliding window problem with O(1) comparison per window.
+
+**Mental Model**: Think of each string as a bag of lettered tiles (like Scrabble). Two bags are anagrams if they contain exactly the same tiles. You don't care about the order—just count each tile type.
+
+**Why Counting Beats Sorting**:
+```
+Approach 1: Sort both strings, compare
+  Time: O(n log n + m log m)
+  Space: O(n + m) for sorted copies
+
+Approach 2: Count characters, compare counts
+  Time: O(n + m)
+  Space: O(26) = O(1) for lowercase letters
+
+For single anagram check: both work
+For finding anagrams in text: counting + sliding window is O(n)
+```
+
+**The Count Array Trick**:
+```python
+# Instead of two hash maps, use one and increment/decrement
+count = [0] * 26
+for c in s: count[ord(c) - ord('a')] += 1  # Add s's characters
+for c in t: count[ord(c) - ord('a')] -= 1  # Remove t's characters
+
+# If all zeros, s and t are anagrams
+all(x == 0 for x in count)  # True means anagram
+```
+
+## When NOT to Use Anagram Techniques
+
+Anagram patterns have limitations:
+
+1. **Order Matters**: Anagram techniques ignore order. If the problem requires order (e.g., "is s a rotation of t?"), use string concatenation or different techniques.
+
+2. **Approximate Matching**: "Almost anagrams" (differ by at most k characters) require more complex counting or DP.
+
+3. **Non-Character Properties**: If you need to match by word frequency (not character), adapt the technique for word-level counting.
+
+4. **Large Alphabets**: The array trick assumes small alphabet (26 letters). For Unicode or large character sets, use hash maps instead.
+
+5. **Counting Isn't Enough**: Some problems look like anagrams but have additional constraints (e.g., "rearrange into palindrome"—need to check odd-count characters).
+
+**Red Flags:**
+- "Rearrange to form X" → May need to check feasibility beyond simple anagram check
+- "Approximately equal" → Different technique (edit distance or similar)
+- "Subsequence" (not substring/rearrangement) → DP, not anagram counting
+
+---
+
 ## Interview Context
 
 Anagram problems test your ability to:

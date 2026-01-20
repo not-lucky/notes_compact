@@ -2,6 +2,70 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Kadane's algorithm finds the maximum subarray sum in O(n) time using a simple but powerful insight: at each position, either extend the current subarray or start fresh. This space-optimized dynamic programming solution is a cornerstone of algorithmic problem-solving.
+
+## Building Intuition
+
+**Why does "extend or restart" give the optimal answer?**
+
+The key insight is **local optimality leads to global optimality**. At each position, we make the locally optimal choice:
+
+1. **The Core Decision**: At position i, the maximum subarray ending at i either:
+   - Includes the previous maximum subarray (extend): `prev_max + arr[i]`
+   - Starts fresh at i (restart): `arr[i]`
+   - We take whichever is larger: `max(arr[i], prev_max + arr[i])`
+
+2. **Why This Works**: If the previous maximum subarray has a positive sum, extending it can only help (positive + anything increases the anything). If it has a negative sum, extending it hurts—we're better off starting fresh.
+
+3. **Simpler Form**: `current_max = max(arr[i], current_max + arr[i])` simplifies to: "If current_max is negative, reset to arr[i]; otherwise, add arr[i] to it."
+
+**Mental Model**: Imagine you're collecting coins (positive) and paying tolls (negative) as you walk. At each step, ask: "Is my accumulated wealth helping or hurting me?" If you're in debt (negative sum), declare bankruptcy and start over. If you have savings (positive sum), keep going.
+
+**Visual Trace**:
+```
+arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+
+Position 0: current = max(-2, -2) = -2, global = -2
+Position 1: current = max(1, -2+1=-1) = 1, global = 1
+           (Starting fresh at 1 is better than extending!)
+Position 2: current = max(-3, 1-3=-2) = -2, global = 1
+Position 3: current = max(4, -2+4=2) = 4, global = 4
+           (Starting fresh at 4 is better!)
+Position 4: current = max(-1, 4-1=3) = 3, global = 4
+Position 5: current = max(2, 3+2=5) = 5, global = 5
+Position 6: current = max(1, 5+1=6) = 6, global = 6 ← Maximum!
+Position 7: current = max(-5, 6-5=1) = 1, global = 6
+Position 8: current = max(4, 1+4=5) = 5, global = 6
+
+Answer: 6 (subarray [4, -1, 2, 1])
+```
+
+## When NOT to Use Kadane's Algorithm
+
+Kadane's solves a specific problem:
+
+1. **Non-Contiguous Subsequence**: Kadane's finds contiguous subarrays. For subsequences (non-adjacent elements), use DP with different state.
+
+2. **Product Instead of Sum**: For maximum product, track both max AND min (negative × negative = positive). See Max Product Subarray variation.
+
+3. **Must Include Specific Elements**: If certain elements must be included, Kadane's greedy approach may skip them. Need constrained DP.
+
+4. **Length Constraints**: If subarray must be at least length k or at most length m, standard Kadane's doesn't handle this directly. Need sliding window + Kadane's hybrid.
+
+5. **Multiple Disjoint Subarrays**: "Find 2 non-overlapping subarrays with maximum sum" needs a different approach (left-max and right-max arrays).
+
+6. **All Elements Are Negative**: Kadane's still works (returns the least negative), but clarify with interviewer: "Is empty subarray allowed?" If yes, answer is 0.
+
+**Red Flags:**
+- "Subsequence" (not subarray) → Different DP
+- "Product" (not sum) → Track min and max
+- "Exactly k elements" → Sliding window or constrained DP
+- "Two disjoint subarrays" → Left/right max arrays
+
+---
+
 ## Interview Context
 
 Kadane's algorithm solves the Maximum Subarray problem in O(n) time. This is a classic interview problem because:

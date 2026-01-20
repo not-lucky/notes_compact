@@ -2,6 +2,56 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Opposite-direction two pointers (converging pointers) start at opposite ends of an array and move toward each other based on comparisons. This pattern exploits sorted order or symmetry to achieve O(n) solutions where brute force would be O(n²).
+
+## Building Intuition
+
+**Why does converging from both ends work?**
+
+The key insight is **elimination by comparison**. At each step, we can definitively rule out a large portion of the search space:
+
+1. **The Sorted Array Insight**: In a sorted array, moving the left pointer increases the sum, moving the right decreases it. We have a "steering wheel" to navigate toward our target. This is why Two Sum on sorted arrays is O(n) instead of O(n²).
+
+2. **The Bottleneck Principle**: In container problems, the shorter wall limits the water level. Moving the taller wall can only decrease area (width shrinks, height can't improve). Moving the shorter wall might find a taller one. At each step, we try the only option that could possibly improve.
+
+3. **Symmetry Exploitation**: Palindrome checking works because we only need to verify character pairs from both ends. If outer characters match, the inner substring determines palindrome-ness.
+
+**Mental Model**: Think of two people searching a sorted bookshelf—one from each end. They're looking for a specific total page count by combining two books. If their current sum is too small, the left person moves right (bigger books). If too large, the right person moves left (smaller books). They never miss the answer because they're "squeezing" the search space systematically.
+
+**Why We Don't Miss Solutions**:
+```
+Looking for sum = 10 in sorted [1, 2, 4, 6, 8]
+                                 L           R
+
+If 1 + 8 = 9 < 10:
+  - All pairs (1, x) where x ≤ 8 will sum ≤ 9
+  - We can safely eliminate all of them by moving L right
+  - We don't lose any valid pairs!
+```
+
+## When NOT to Use Opposite-Direction Two Pointers
+
+This pattern requires specific conditions:
+
+1. **Unsorted Array (for pair problems)**: Two Sum with unsorted data needs a hash map (O(n) with O(n) space), not two pointers. Sorting first costs O(n log n).
+
+2. **Need All Pairs, Not Just One**: If you need all pairs summing to target, two pointers work, but tracking duplicates gets tricky. Hash map may be cleaner.
+
+3. **More Than Two Elements**: For 3Sum or 4Sum, you still use two pointers, but with outer loops fixing elements. Pure two-pointer only handles pairs.
+
+4. **No Natural Ordering**: If there's no sorted order or symmetric structure to exploit, converging pointers have no basis for deciding which to move.
+
+5. **Minimum Instead of Feasibility**: Two pointers find "first valid" or "any valid" easily. Finding "minimum that satisfies X" may need binary search instead.
+
+**Red Flags:**
+- "Array is not sorted" (for sum problems) → Use hash map
+- "Return indices from original unsorted array" → Sorting loses indices; use hash map
+- "Minimize/maximize some function" → May need binary search on answer
+
+---
+
 ## Interview Context
 
 Opposite-direction two pointers (converging pointers) are essential for:

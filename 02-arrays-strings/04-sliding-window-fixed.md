@@ -2,6 +2,56 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Fixed-size sliding window maintains a window of exactly k elements that slides across an array. Instead of recalculating for each position (O(n×k)), we update incrementally—adding one element and removing another—achieving O(n).
+
+## Building Intuition
+
+**Why does sliding work so efficiently?**
+
+The key insight is **incremental update**. Consecutive windows share almost all their elements:
+
+1. **The Overlap Insight**: Window [0,k-1] and window [1,k] share elements [1,k-1]. Only two elements change: one leaves, one enters. Why recompute k elements when only 2 changed?
+
+2. **Aggregate Functions**: Sum, count, frequency maps—all these can be updated incrementally. For sum: `new_sum = old_sum - leaving + entering`. This O(1) update is the heart of the technique.
+
+3. **State Maintenance**: The "window state" (sum, max, frequency count, etc.) is maintained as the window slides. Each slide updates the state, not rebuilds it.
+
+**Mental Model**: Think of a train with k cars. As the train moves forward, the rear car detaches and a new car attaches at the front. You don't need to count all passengers again—just subtract those who left and add those who joined.
+
+**Brute Force vs Sliding Window**:
+```
+Brute Force:                    Sliding Window:
+Window 1: sum([0:k])            Window 1: sum([0:k])
+Window 2: sum([1:k+1])          Window 2: window_1 - arr[0] + arr[k]
+Window 3: sum([2:k+2])          Window 3: window_2 - arr[1] + arr[k+1]
+...                             ...
+Each window: O(k)               Each slide: O(1)
+Total: O(n×k)                   Total: O(n)
+```
+
+## When NOT to Use Fixed Sliding Window
+
+Fixed windows have specific requirements:
+
+1. **Variable Window Size Needed**: If the window size must change based on content (e.g., "smallest window containing X"), use variable-size sliding window instead.
+
+2. **No Efficient Update Formula**: If the window "answer" can't be updated incrementally (e.g., median—adding/removing doesn't give new median easily), you may need a balanced BST or sorted container.
+
+3. **k > n or k = 0**: Edge cases to handle—no valid window exists.
+
+4. **Non-Contiguous Elements**: Sliding window requires contiguous subarrays. For non-contiguous subsequences, consider DP.
+
+5. **Order Matters Differently**: If you need the k smallest elements (not a contiguous subarray of size k), use a heap instead.
+
+**Red Flags:**
+- "Minimum window size that satisfies..." → Variable window
+- "k smallest/largest elements" → Heap, not window
+- "Median of window" → Need ordered structure (heap pair or sorted list)
+
+---
+
 ## Interview Context
 
 Fixed-size sliding window problems are extremely common in FANG+ interviews because:

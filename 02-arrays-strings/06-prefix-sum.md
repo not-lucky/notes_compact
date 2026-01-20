@@ -2,6 +2,61 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Prefix sum is a preprocessing technique that transforms O(n) range sum queries into O(1) operations. By storing cumulative sums, any range [i, j] can be computed as prefix[j+1] - prefix[i] in constant time.
+
+## Building Intuition
+
+**Why does subtraction give us range sums?**
+
+The key insight is **telescoping cancellation**. A prefix sum is like a running total:
+
+1. **The Running Total Model**: Imagine a bank account where prefix[i] represents your total balance after i deposits. The deposits from day 5 to day 10 equal (balance after day 10) minus (balance after day 4).
+
+2. **Mathematical Foundation**:
+   ```
+   prefix[j] = arr[0] + arr[1] + ... + arr[j-1]
+   prefix[i] = arr[0] + arr[1] + ... + arr[i-1]
+
+   prefix[j] - prefix[i] = arr[i] + arr[i+1] + ... + arr[j-1]
+   ```
+   The common terms (arr[0] to arr[i-1]) cancel out!
+
+3. **The Leading Zero Trick**: Adding a 0 at the start (`prefix = [0, ...]`) makes formulas cleaner. Range [i, j] = prefix[j+1] - prefix[i]. No off-by-one gymnastics.
+
+**Mental Model**: Think of milestones on a highway. Mile marker 50 to mile marker 80 is 30 miles—you subtract the lower marker from the higher one. Prefix sums are just "mile markers" for cumulative values.
+
+**Why Prefix + HashMap Works for "Sum = k"**:
+```
+If prefix[j] - prefix[i] = k, then prefix[i] = prefix[j] - k
+
+At position j, we ask: "Have we seen prefix[j] - k before?"
+If yes, there's a subarray ending at j with sum k.
+The hashmap stores how many times each prefix sum has appeared.
+```
+
+## When NOT to Use Prefix Sum
+
+Prefix sums have specific use cases:
+
+1. **Array Modifications Between Queries**: Prefix sum assumes immutable data. If the array changes frequently, updates cost O(n) to rebuild. Use a segment tree (O(log n) update) or Fenwick tree instead.
+
+2. **Non-Sum Aggregates**: Prefix sum works for sum (and XOR, by extension). For min/max queries, use sparse tables or segment trees. For product, prefix products have overflow issues and division-by-zero pitfalls.
+
+3. **Very Few Queries**: If you only need 1-2 range sums, computing them directly is O(range_size), while building prefix sum is O(n). Prefix sum pays off when queries are many.
+
+4. **Multi-Dimensional with Updates**: 2D prefix sums exist but are harder to update. For dynamic 2D, consider 2D Fenwick trees.
+
+5. **When Subarray Endpoints Don't Align Simply**: Some problems need subarrays with specific properties where endpoints depend on values, not just indices.
+
+**Red Flags:**
+- "Update element, then query" → Segment tree or Fenwick tree
+- "Range minimum/maximum" → Sparse table or segment tree
+- "Only one or two queries needed" → Direct computation may be simpler
+
+---
+
 ## Interview Context
 
 Prefix sum is a preprocessing technique that enables O(1) range sum queries. It appears in:

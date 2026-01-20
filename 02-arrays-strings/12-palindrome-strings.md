@@ -2,6 +2,68 @@
 
 > **Prerequisites:** [09-string-basics.md](./09-string-basics.md)
 
+## Overview
+
+Palindrome problems exploit the symmetry of strings that read the same forwards and backwards. The two key techniques are two-pointer checking and expand-from-center search—together they solve most palindrome interview problems efficiently.
+
+## Building Intuition
+
+**Why do palindromes lend themselves to these specific techniques?**
+
+The key insight is **symmetry enables comparison reduction**:
+
+1. **Two-Pointer Symmetry Check**: A palindrome is symmetric around its center. If outer characters match, the inner substring determines palindrome-ness. We only need n/2 comparisons, not n² substring comparisons.
+
+2. **Expand From Center**: There are only 2n-1 possible centers (n odd centers at characters, n-1 even centers between characters). From each center, expand outward while characters match. This is O(n²) but with small constant factor.
+
+3. **DP for Substrings**: If s[i:j] is a palindrome and s[i-1] == s[j+1], then s[i-1:j+2] is also a palindrome. This "if inner is palindrome AND outer chars match" pattern creates overlapping subproblems—perfect for DP.
+
+**Mental Model - Expand From Center**: Imagine dropping a pebble into still water. The ripples expand outward symmetrically. At each position, let the palindrome "ripple" outward as far as the symmetry allows.
+
+**Mental Model - Valid Palindrome II**: You're checking a nearly-perfect mirror. If you find one mismatch, you get one chance to remove either the left or right smudge. Try both and see if either makes a perfect mirror.
+
+**Why Expand From Center Works**:
+```
+For each center position, expand outward while s[left] == s[right]
+
+String: "babad"
+        01234
+
+Center 0 ('b'): "b" (length 1)
+Center 1 ('a'): expand → "bab" (length 3) ← found palindrome
+Center 2 ('b'): expand → "aba" (length 3) ← found palindrome
+Center 3 ('a'): "a" (length 1)
+Center 4 ('d'): "d" (length 1)
+
+Also check even-length centers (between characters):
+Center 0.5: s[0]='b' ≠ s[1]='a' → no even palindrome
+...
+
+Maximum length: 3, palindromes: "bab" or "aba"
+```
+
+## When NOT to Use Standard Palindrome Techniques
+
+These techniques have specific scopes:
+
+1. **Longest Palindromic Subsequence (not Substring)**: Subsequence allows gaps—"bbbab" has LPS "bbbb" (skipping 'a'). This is DP on two indices, not expand-from-center.
+
+2. **Count All Palindromes in Massive String**: O(n²) expand-from-center may be too slow for n > 10⁶. Manacher's algorithm achieves O(n) but is rarely expected in interviews.
+
+3. **Construct Palindrome by Modification**: "Minimum insertions to make palindrome" is LCS-based DP, not direct palindrome checking.
+
+4. **Numeric Palindromes**: Integer palindromes (121, 1221) should be checked by reversing the number or comparing digits—string conversion works but is slower.
+
+5. **Palindrome Partitioning**: "Partition into minimum palindromes" or "all palindrome partitions" needs DP or backtracking, not just checking.
+
+**Red Flags:**
+- "Subsequence" (not substring) → 2D DP
+- "Minimum insertions/deletions" → LCS-related DP
+- "Partition into palindromes" → Backtracking or interval DP
+- Constraints n > 10⁵ for all palindromic substrings → Manacher's algorithm
+
+---
+
 ## Interview Context
 
 Palindrome problems are interview favorites because they:

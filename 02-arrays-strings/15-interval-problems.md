@@ -2,6 +2,81 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Interval problems model real-world scheduling scenarios. The key insight is that sorting (usually by start or end time) transforms O(n²) pairwise comparisons into O(n log n) sequential processing. Most interval problems follow a common structure: sort, then traverse once.
+
+## Building Intuition
+
+**Why does sorting unlock efficient interval algorithms?**
+
+The key insight is **sorted intervals reveal structure**:
+
+1. **Sort by Start = Merge Potential**: When sorted by start, consecutive intervals are most likely to overlap. Interval [5,10] can only overlap with intervals starting at ≤10. Once we pass start=11, no more overlap is possible.
+
+2. **Sort by End = Greedy Selection**: When sorted by end time, the earliest-ending interval leaves maximum room for subsequent ones. This is why Activity Selection uses end-time sorting.
+
+3. **Event-Based Counting**: Treating starts and ends as events and processing them chronologically lets us count concurrent intervals in one pass. This solves "maximum overlap" problems elegantly.
+
+**Mental Model - Merge Intervals**: Imagine laying intervals as rods on a number line. Sorting by start arranges them left-to-right. Walk left to right, extending your current rod if the next one overlaps, or starting a new rod if there's a gap.
+
+**Mental Model - Meeting Rooms**: Think of people entering (+1) and leaving (-1) a room. Sort all enter/leave events by time. Walk through events, tracking the current count. The peak count is the max occupancy = rooms needed.
+
+**Why Sort by Start for Merging**:
+```
+Unsorted: [[8,10], [1,3], [2,6], [15,18]]
+Sorted:   [[1,3], [2,6], [8,10], [15,18]]
+
+After sorting, we check consecutive pairs:
+[1,3] and [2,6]: 2 ≤ 3 → overlap! Merge to [1,6]
+[1,6] and [8,10]: 8 > 6 → no overlap, start new
+[8,10] and [15,18]: 15 > 10 → no overlap, start new
+
+Result: [[1,6], [8,10], [15,18]]
+
+No sorting = must compare all pairs O(n²)
+```
+
+**Why Sort by End for Minimum Removals**:
+```
+Goal: Keep maximum non-overlapping intervals
+(equivalently: remove minimum)
+
+Greedy insight: The interval that ends earliest leaves
+most room for future intervals.
+
+Intervals: [[1,3], [2,4], [3,5]]
+
+Sorted by end:
+[1,3] ← keep (ends earliest)
+[2,4] ← overlaps with [1,3] (2 < 3), skip
+[3,5] ← doesn't overlap with [1,3] (3 ≥ 3), keep
+
+Keep 2, remove 1
+```
+
+## When NOT to Use Standard Interval Techniques
+
+Interval problems have variations needing different approaches:
+
+1. **Weighted Intervals**: If intervals have weights/values and you want maximum value non-overlapping subset, standard greedy doesn't work. Use DP with binary search.
+
+2. **Interval Scheduling on Multiple Resources**: If you have k resources (rooms/machines) and want to maximize scheduling, this is more complex than single-resource greedy.
+
+3. **Intervals with Dependencies**: If interval B must follow interval A, topological sort or constraint satisfaction comes into play.
+
+4. **Modify Intervals Dynamically**: If intervals are added/removed frequently with queries, consider interval trees (balanced BST augmented for intervals).
+
+5. **Circular Intervals**: If time wraps around (like daily schedules), need to handle the wrap-around case specially.
+
+**Red Flags:**
+- "Maximum value from non-overlapping intervals" → Weighted interval DP
+- "Assign to k resources optimally" → Complex scheduling
+- "Intervals added/removed + queries" → Interval tree
+- "Daily repeating schedule" → Handle circular time
+
+---
+
 ## Interview Context
 
 Interval problems are extremely popular at FANG+ because they:

@@ -2,6 +2,52 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+The same-direction two-pointer technique uses two pointers moving through an array in the same direction at different speeds or with different roles. It's the foundation for in-place array transformations with O(1) space.
+
+## Building Intuition
+
+**Why does this pattern work?**
+
+Think of two pointers as a "reader" and a "writer" in a copy-editing process:
+
+1. **The Reader-Writer Model**: The fast pointer (reader) scans through the original content, deciding what to keep. The slow pointer (writer) marks where to place the next valid item. The reader runs ahead identifying valuable content; the writer stays behind, building the clean result.
+
+2. **The Key Invariant**: Everything before the slow pointer is the "processed, valid" portion of the array. Everything between slow and fast is "garbage" that will be overwritten. This invariant is maintained throughout the algorithm.
+
+3. **Why O(1) Space**: We're reusing the input array as our output buffer. The slow pointer marks the boundary of our result, and we write valid elements there in-place.
+
+**Mental Model**: Imagine you're compacting files on a hard drive. You have a read head scanning through all files and a write head placing kept files at the start. The read head moves faster, skipping deleted files, while the write head only moves when it receives a file to keep.
+
+**The Fundamental Pattern**:
+```
+[processed valid portion] | [garbage/unknown] | [unprocessed]
+                          ↑                    ↑
+                        slow                 fast
+```
+
+## When NOT to Use Same-Direction Two Pointers
+
+This pattern has limitations:
+
+1. **Need to Preserve Original Array**: This pattern modifies the array in-place. If you need the original data, you must copy first (defeating the O(1) space benefit) or use a different approach.
+
+2. **Complex Validity Conditions**: If determining "valid" requires looking at future elements (not just past), the reader-writer model breaks down. Consider sliding window or DP.
+
+3. **Non-Contiguous Output**: If valid elements don't form a contiguous prefix, this pattern won't help. Example: alternating valid/invalid in the result.
+
+4. **When Order Must Change**: If you need to reorder elements (not just filter), sorting or partitioning techniques may be better.
+
+5. **When Counting, Not Removing**: If you just need to count elements (not remove them), a simple loop with a counter is cleaner.
+
+**Red Flags:**
+- "Find all pairs" → Usually opposite-direction or hash map
+- "Maintain specific ordering in output" → May need stable sort
+- "Elements depend on future values" → Consider right-to-left or DP
+
+---
+
 ## Interview Context
 
 The same-direction two-pointer technique (also called "fast and slow pointers" or "reader-writer pattern") is fundamental for:

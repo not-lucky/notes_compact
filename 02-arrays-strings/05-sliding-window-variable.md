@@ -2,6 +2,61 @@
 
 > **Prerequisites:** [04-sliding-window-fixed.md](./04-sliding-window-fixed.md)
 
+## Overview
+
+Variable-size sliding window expands and shrinks based on conditions, finding optimal contiguous subarrays. This pattern solves "longest/shortest subarray satisfying X" problems in O(n) where brute force would be O(n²) or O(n³).
+
+## Building Intuition
+
+**Why does the expand/shrink approach work?**
+
+The key insight is **monotonic progress**. Both pointers only move forward, guaranteeing O(n) total moves:
+
+1. **The Expand-Shrink Dance**: The right pointer expands the window, adding elements until a condition is met (or violated). Then the left pointer shrinks, removing elements until the condition flips. This dance explores all viable windows without revisiting combinations.
+
+2. **Why We Don't Miss Windows**: Every possible window has some right endpoint. By expanding right systematically and shrinking left optimally for each right position, we implicitly consider all windows. The left pointer never moves backward because shrinking past the optimal point for one right endpoint would only make future windows worse.
+
+3. **Maximum vs Minimum Windows**:
+   - **Maximum valid window**: Shrink when window becomes invalid. We want the largest valid window.
+   - **Minimum valid window**: Shrink while window stays valid. We want the smallest valid window.
+
+**Mental Model**: Imagine an accordion. You stretch it open (expand right), and when it gets too wide to handle, you compress the left side (shrink left). You're looking for either the widest manageable stretch or the narrowest sufficient stretch.
+
+**The Two Scenarios**:
+```
+For MAXIMUM valid window:
+  - Keep expanding right
+  - When INVALID: shrink left until valid again
+  - Track max during valid states
+
+For MINIMUM valid window:
+  - Keep expanding right
+  - When VALID: record answer, then shrink left (still valid? record again!)
+  - Stop shrinking when invalid
+```
+
+## When NOT to Use Variable Sliding Window
+
+This pattern has important limitations:
+
+1. **Negative Numbers with Sum Constraints**: Sliding window assumes adding elements increases (or maintains) some measure and removing decreases it. With negative numbers, adding an element might decrease sum. Use prefix sum + hash map instead.
+
+2. **Non-Contiguous Subsequences**: Sliding window finds contiguous subarrays only. For subsequences (elements not necessarily adjacent), use DP or two-pointer on sorted data.
+
+3. **Complex Validity That Isn't Monotonic**: If validity doesn't behave monotonically (valid→add→maybe invalid, invalid→remove→maybe valid), sliding window can't be applied directly.
+
+4. **Multiple Non-Overlapping Windows**: If you need multiple disjoint windows (like "partition into k subarrays"), this is interval DP or greedy, not sliding window.
+
+5. **When Window State Is Expensive**: If updating window state isn't O(1) (e.g., maintaining sorted order), the O(n) guarantee breaks.
+
+**Red Flags:**
+- "Subarray sum = k" with negative numbers → Prefix sum + hash map
+- "Subsequence" (not substring/subarray) → Usually DP
+- "Partition array into..." → Interval DP or greedy
+- "Median of all subarrays" → O(n²) or special data structures
+
+---
+
 ## Interview Context
 
 Variable-size sliding window is arguably the **most important pattern** for string problems at FANG+. It appears in:

@@ -2,6 +2,64 @@
 
 > **Prerequisites:** [09-string-basics.md](./09-string-basics.md)
 
+## Overview
+
+String matching (pattern search) finds occurrences of a pattern P in text T. While brute force is O(n×m), techniques like Rabin-Karp (rolling hash) and KMP (prefix function) achieve O(n+m). Understanding when each applies is key to interview success.
+
+## Building Intuition
+
+**Why is brute force O(n×m) and how do we beat it?**
+
+The key insight is **avoiding redundant comparisons**:
+
+1. **Brute Force Waste**: When a mismatch occurs at position i+j, brute force starts over at i+1. But we've already compared characters at i+1, i+2, etc. Can we reuse this work?
+
+2. **Rabin-Karp Insight**: Instead of comparing characters one by one, compute a hash of the current window. If hashes don't match, no need to compare (O(1) rejection). If hashes match, verify character-by-character (handles collisions). Rolling hash updates in O(1) as the window slides.
+
+3. **KMP Insight**: When mismatch occurs, how far can we skip? If we've matched "ABAB" and the pattern is "ABABAC", the "AB" at the end of what we matched is also a prefix of the pattern. We can resume matching from there instead of starting over.
+
+**Mental Model - Rabin-Karp**: Think of hashing as a "fingerprint." Comparing fingerprints is fast (one number comparison), while comparing full documents is slow. The rolling hash is like sliding a fingerprint scanner across the text—each slide updates the fingerprint incrementally.
+
+**Mental Model - KMP (Failure Function)**: The LPS array (Longest Proper Prefix which is also Suffix) tells us: "If we fail at position j, where can we resume without rechecking earlier characters?" It's like having bookmarks in the pattern that tell us where to jump back.
+
+**Why We Skip Ahead Safely**:
+```
+Text:    A B A B A B C ...
+Pattern: A B A B A C
+                   ↑ mismatch at position 5
+
+We've matched "ABABA". The pattern is "ABABAC".
+Longest prefix of "ABABA" that's also a suffix: "ABA" (length 3)
+
+We can resume matching the pattern from position 3 (after "ABA")
+because we know those characters already match!
+
+Text:    A B A B A B C ...
+Pattern:     A B A B A C
+                 ↑ resume here (position 3 in pattern)
+```
+
+## When NOT to Use Advanced String Matching
+
+Sometimes simpler approaches work better:
+
+1. **Short Strings**: For small inputs (n, m < 1000), brute force is fast and clear. KMP's constant factors may not pay off.
+
+2. **Built-in Is Available**: In interviews, `text.find(pattern)` is often acceptable. Modern languages have optimized implementations (often Boyer-Moore variants).
+
+3. **Single Search in Short Text**: Building KMP's failure function is O(m). For one search in short text, brute force may be faster.
+
+4. **Multiple Different Patterns**: If searching for many patterns simultaneously, consider Aho-Corasick (automaton-based) instead of repeated KMP.
+
+5. **Approximate Matching**: For fuzzy matching (edit distance ≤ k), use DP-based approaches, not exact match algorithms.
+
+**Red Flags:**
+- "Find multiple patterns" → Aho-Corasick or suffix structures
+- "Approximate match" or "at most k differences" → Edit distance DP
+- "Replace all occurrences" → Python's `str.replace()` is fine for interviews
+
+---
+
 ## Interview Context
 
 String matching (finding a pattern in text) appears in interviews as:

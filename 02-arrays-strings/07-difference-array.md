@@ -2,6 +2,68 @@
 
 > **Prerequisites:** [06-prefix-sum.md](./06-prefix-sum.md)
 
+## Overview
+
+Difference arrays are the inverse of prefix sums. While prefix sums enable O(1) range queries, difference arrays enable O(1) range updates. This makes them ideal for batch update scenarios where you modify many ranges before needing the final values.
+
+## Building Intuition
+
+**Why does marking just two positions update an entire range?**
+
+The key insight is **deferred computation**. Instead of updating every element in a range, we record where changes start and stop:
+
+1. **The "Delta" Concept**: A difference array stores changes between consecutive elements. Adding `v` to range [i, j] means:
+   - At position i: values start being `v` more than before
+   - At position j+1: values stop being `v` more than before
+   - Only these two boundaries matter!
+
+2. **Reconstruction via Prefix Sum**: When we need actual values, we compute prefix sums of the difference array. Each position accumulates all the "start adding" signals minus all the "stop adding" signals up to that point.
+
+3. **The Event Model**: Think of diff[i] as "at position i, increase all future values by this amount." Adding at start, subtracting after end creates a pulse that spans exactly [i, j].
+
+**Mental Model**: Imagine you're adjusting thermostat schedules. At 8 AM, set temperature +5°. At 5 PM, set temperature -5° (canceling the increase). During 8 AM - 5 PM, the temperature is elevated. You only set two events, not every hour individually.
+
+**Visual Trace**:
+```
+Range update: add 3 to indices [1, 4]
+              add 2 to indices [2, 3]
+
+Difference array operations:
+Initial:  [0, 0, 0, 0, 0, 0]
+After +3 to [1,4]:
+          [0, +3, 0, 0, 0, -3]
+After +2 to [2,3]:
+          [0, +3, +2, 0, -2, -3]
+
+Prefix sum to reconstruct:
+Position: 0   1   2   3   4   5
+Diff:     0   3   2   0  -2  -3
+Prefix:   0   3   5   5   3   0
+          ↑   ↑   ↑   ↑   ↑   ↑
+          base +3  +5  +5  +3  back to 0
+```
+
+## When NOT to Use Difference Arrays
+
+Difference arrays have specific requirements:
+
+1. **Queries Interleaved with Updates**: If you need to query the array value between updates, you must rebuild (O(n)) each time. For interleaved update/query, use segment trees with lazy propagation.
+
+2. **Point Updates, Not Range Updates**: If you're updating single elements (not ranges), difference arrays add complexity without benefit. Just update directly.
+
+3. **Large Sparse Ranges**: If the array is huge but updates are sparse and don't overlap much, using a list of (start, end, value) tuples may be simpler.
+
+4. **When You Need Original Values Preserved**: Difference arrays overwrite the original. If you need both original and modified, you need extra space anyway.
+
+5. **Non-Additive Operations**: Difference arrays work for additive updates. For "set range to value" or "multiply range by x," you need different techniques.
+
+**Red Flags:**
+- "Query between updates" → Segment tree with lazy propagation
+- "Update single elements" → Direct modification
+- "Set range to value" (not add) → Need different approach
+
+---
+
 ## Interview Context
 
 Difference arrays are the inverse of prefix sums. While prefix sums enable O(1) range queries, difference arrays enable O(1) range updates.

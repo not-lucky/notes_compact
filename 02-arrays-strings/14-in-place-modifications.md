@@ -2,6 +2,82 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+In-place modification techniques transform arrays without extra space by clever reuse of the input array itself. The key patterns—read/write pointers, swap-based partitioning, and index encoding—achieve O(1) space where naive approaches would need O(n).
+
+## Building Intuition
+
+**Why can we modify in-place without losing data?**
+
+The key insight is **overwritten data is no longer needed**:
+
+1. **Read/Write Pointer Model**: The read pointer (fast) scans ahead, finding elements to keep. The write pointer (slow) marks where to place them. Everything between read and write is "garbage"—we've already decided what to keep from that region.
+
+2. **Swap-Based Partitioning**: Instead of copying elements, swap them to their correct region. Dutch National Flag uses three regions (0s, 1s, 2s) managed by three pointers, swapping elements to their destination.
+
+3. **Index Encoding**: When values are bounded (1 to n), the array indices themselves become storage. Mark visited by negating: `arr[abs(num)-1] *= -1`. Recover originals later if needed.
+
+**Mental Model - Move Zeroes**: Imagine a deck of cards where you're pulling out all non-joker cards and stacking them at the front. Once you've processed a card and decided it's a joker, you don't need to look at it again—just keep stacking non-jokers at the write position.
+
+**Why Dutch National Flag Works**:
+```
+Three regions: [0s | 1s | unknown | 2s]
+              0    low  mid      high   n-1
+
+Invariants:
+- Elements before low are all 0
+- Elements between low and mid are all 1
+- Elements after high are all 2
+- mid scans through unknown region
+
+On each step:
+- arr[mid] == 0: swap with low, both advance
+- arr[mid] == 1: just advance mid
+- arr[mid] == 2: swap with high, only high retreats
+                 (don't advance mid—need to check what came from high!)
+```
+
+**Index Encoding Trick**:
+```
+Array: [4, 3, 2, 7, 8, 2, 3, 1] (values 1-8, indices 0-7)
+Task: Find duplicates (O(1) space)
+
+Idea: For each num, mark index (num-1) as visited by negating.
+If already negative, we've seen this num before → duplicate!
+
+Trace:
+4 → mark index 3: [4, 3, 2, -7, 8, 2, 3, 1]
+3 → mark index 2: [4, 3, -2, -7, 8, 2, 3, 1]
+2 → mark index 1: [4, -3, -2, -7, 8, 2, 3, 1]
+7 → mark index 6: [4, -3, -2, -7, 8, 2, -3, 1]
+8 → mark index 7: [4, -3, -2, -7, 8, 2, -3, -1]
+2 → index 1 already negative → 2 is duplicate!
+3 → index 2 already negative → 3 is duplicate!
+1 → mark index 0: [-4, -3, -2, -7, 8, 2, -3, -1]
+```
+
+## When NOT to Use In-Place Modifications
+
+In-place isn't always appropriate:
+
+1. **Need Original Array Later**: In-place destroys the original. If you need it for verification, debugging, or subsequent operations, copy first.
+
+2. **Complex Ordering Requirements**: If the output ordering is complex (not just partitioning or filtering), in-place may be error-prone. Consider if extra space simplifies the logic.
+
+3. **Immutable Data Structures**: In some languages/contexts (functional programming, string types), in-place modification isn't possible.
+
+4. **Concurrent Access**: If multiple threads read the array while you modify, you'll have race conditions. Need synchronization or copy-on-write.
+
+5. **When O(n) Space Is Acceptable**: If extra space is cheap and simplifies code significantly, it may be worth it. Correctness > optimization.
+
+**Red Flags:**
+- "Return original and modified" → Need copy
+- "Stable partition" (preserve relative order) → May need extra space or O(n²) time
+- "String modification" in Python → Must convert to list first
+
+---
+
 ## Interview Context
 
 In-place modification problems test your ability to:

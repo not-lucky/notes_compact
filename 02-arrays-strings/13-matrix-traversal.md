@@ -2,6 +2,70 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Matrix (2D array) problems require careful index manipulation and pattern recognition. The key techniques—layer-by-layer traversal, transpose+reverse for rotation, and corner-based search—form the foundation for solving most matrix interview problems.
+
+## Building Intuition
+
+**Why do these specific patterns work for matrix problems?**
+
+The key insight is **geometric structure enables systematic processing**:
+
+1. **Spiral as Layer Peeling**: A spiral traversal is like peeling an onion. Process the outer layer (top row, right column, bottom row, left column), then move inward. Each layer is a rectangle that shrinks by one on each side.
+
+2. **Rotation as Transpose + Flip**: 90° clockwise rotation = transpose (swap rows/columns) then reverse each row. This works because transpose "reflects" the matrix diagonally, and reversing rows completes the rotation. No need to calculate new coordinates!
+
+3. **Sorted Matrix Search from Corner**: At the top-right corner, moving left decreases values, moving down increases values. This gives binary-search-like O(m+n) elimination power—each comparison eliminates a row or column.
+
+**Mental Model - Spiral**: Imagine walking around a rectangular room, always turning right when you hit a wall. After each lap, the room shrinks. You keep walking until there's no more room.
+
+**Mental Model - Rotation**: Imagine index cards laid in a grid. Transpose = pick up along diagonals, lay them back row→column. Reverse rows = flip horizontally.
+
+**Why Corner Search Works (Search Matrix II)**:
+```
+Starting at top-right (11):
+Matrix (row-sorted, column-sorted):
+[1,  4,  7,  11]   ← Start here
+[2,  5,  8,  12]
+[3,  6,  9,  16]
+[10, 13, 14, 17]
+
+Looking for 5:
+  11 > 5 → go left (column--)
+  7 > 5 → go left
+  4 < 5 → go down (row++)
+  5 == 5 → Found!
+
+Each step eliminates a row OR column:
+- Going left: eliminates current column (all below are ≥ current)
+- Going down: eliminates current row (all right are ≤ current)
+
+At most m + n steps → O(m + n)
+```
+
+## When NOT to Use Standard Matrix Techniques
+
+Matrix problems have variations that require different approaches:
+
+1. **Matrix as Graph**: Some "matrix" problems are really graph problems (shortest path, connected components). Use BFS/DFS, not traversal patterns.
+
+2. **Sparse Matrices**: If most entries are zero, storing as a list of (row, col, value) tuples or a hash map is more efficient.
+
+3. **Non-Rectangular Grids**: Jagged arrays or hexagonal grids need adapted coordinate systems.
+
+4. **In-Place with Non-Square Matrix**: 90° rotation in-place requires square matrices. Non-square matrices need O(m×n) extra space or clever element cycling.
+
+5. **Dynamic Matrix Updates**: If the matrix changes frequently and you need repeated queries, consider 2D segment trees or 2D Fenwick trees.
+
+**Red Flags:**
+- "Shortest path in grid" → BFS
+- "Count islands/connected components" → DFS/BFS flood fill
+- "Matrix updates + queries" → 2D data structures
+- "Rotate non-square matrix in-place" → Not possible; need extra space
+
+---
+
 ## Interview Context
 
 Matrix (2D array) problems are common in FANG+ interviews because they test:

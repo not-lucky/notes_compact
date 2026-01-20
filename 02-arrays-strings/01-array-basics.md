@@ -2,6 +2,46 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)
 
+## Overview
+
+An array is a contiguous block of memory that stores elements of the same type, accessible by index in O(1) time. It's the most fundamental data structure in computer science, serving as the building block for almost every other data structure.
+
+## Building Intuition
+
+**Why are arrays so powerful?**
+
+Think of an array as a row of numbered mailboxes in an apartment building. Each mailbox has an address (index), and you can go directly to any mailbox without checking the others. This is the O(1) random access superpower that makes arrays unique.
+
+**The Memory Model**:
+1. **Contiguous Allocation**: Arrays occupy consecutive memory locations. If element 0 is at address 1000 and each element takes 4 bytes, element 5 is at address 1000 + (5 × 4) = 1020. The CPU calculates this in one step—no searching required.
+
+2. **Cache Friendliness**: Because elements are adjacent in memory, accessing one element often pre-loads nearby elements into the CPU cache. This makes sequential array traversal extremely fast—often 10-100x faster than pointer-chasing through scattered memory (like linked lists).
+
+3. **The Trade-off**: This contiguous layout means insertion/deletion in the middle is expensive (O(n))—you must shift elements to maintain the sequence. Arrays excel at random access and sequential processing, not frequent modifications.
+
+**Mental Model**: Think of arrays as "printed books" vs linked lists as "choose-your-own-adventure books with page jumps." In a printed book, you can flip directly to page 100 (O(1)), but inserting a new page 50 requires reprinting everything after it (O(n)).
+
+## When NOT to Use Arrays
+
+Arrays aren't always the best choice. Consider alternatives when:
+
+1. **Frequent Insertions/Deletions in Middle**: If you're constantly adding or removing elements at arbitrary positions, linked lists or balanced trees (O(log n) insert) may be better. Arrays require O(n) shifts.
+
+2. **Unknown or Highly Variable Size**: If the size changes dramatically and unpredictably, dynamic arrays (Python lists) handle this, but with occasional O(n) resize costs. If inserts dominate, consider other structures.
+
+3. **Need Fast Membership Testing**: "Is X in the array?" is O(n) for arrays. Use a hash set (O(1)) or sorted array with binary search (O(log n)) instead.
+
+4. **Sparse Data**: If most elements are empty/zero (e.g., a 1,000,000-element array with only 100 values), use a hash map to store only non-empty entries.
+
+5. **Need Fast Min/Max with Updates**: Finding min/max is O(n). Use a heap (O(log n) insert, O(1) min) if you need repeated min/max operations.
+
+**Red Flags in Problem Statements:**
+- "Insert/delete frequently" → Consider linked list
+- "Find if element exists" → Consider hash set
+- "Get minimum/maximum repeatedly" → Consider heap
+
+---
+
 ## Interview Context
 
 Understanding array fundamentals is essential because:

@@ -2,6 +2,60 @@
 
 > **Prerequisites:** [01-array-basics.md](./01-array-basics.md)
 
+## Overview
+
+Strings in Python are immutable sequences of Unicode characters. This immutability fundamentally affects how we build and modify strings—understanding this is crucial for writing efficient code and avoiding O(n²) pitfalls.
+
+## Building Intuition
+
+**Why does string immutability matter so much?**
+
+The key insight is **every modification creates a new string**:
+
+1. **The Copy Cost**: When you do `s += char`, Python doesn't append to the existing string. It creates a brand new string, copies all characters from the old string, adds the new character, and discards the old string. For a loop that builds a string character by character, this is O(n²) total work!
+
+2. **The Solution - Lists as Buffers**: Build strings using a list of characters (or substrings), then join at the end. `"".join(parts)` is O(total_length) because Python pre-computes the final size and copies everything once.
+
+3. **Why Immutability Exists**: Immutable strings can be hashed (used as dict keys), shared safely between variables, and interned for memory efficiency. These benefits come at the cost of modification overhead.
+
+**Mental Model**: Think of immutable strings like printed documents. To change one word, you must reprint the entire document. Lists are like whiteboards—you can erase and rewrite freely. Build on the whiteboard, then print once when done.
+
+**The O(n²) Trap**:
+```python
+# DON'T DO THIS - O(n²)
+s = ""
+for char in big_list:
+    s += char  # Creates new string each time!
+    # Copies: 1 + 2 + 3 + ... + n = O(n²)
+
+# DO THIS INSTEAD - O(n)
+parts = []
+for char in big_list:
+    parts.append(char)  # O(1) amortized
+s = "".join(parts)  # O(n) single pass
+```
+
+## When NOT to Use Python Strings Directly
+
+Consider alternatives in these cases:
+
+1. **Frequent Character Modifications**: If you're modifying individual characters repeatedly, convert to `list(s)`, modify, then `"".join(list)`. Direct string indexing assignment is impossible.
+
+2. **Very Large Strings with Many Concatenations**: Even with proper join technique, if you're building massive strings in a memory-constrained environment, consider streaming output instead.
+
+3. **Need Mutable In-Place Operations**: For algorithms like in-place reversal, you must work with character lists. Strings can't be modified in-place.
+
+4. **Binary Data**: For binary data (bytes), use `bytes` or `bytearray` (mutable) instead of `str`.
+
+5. **When Bytes vs Characters Matter**: `str` is Unicode (variable-width internally). For byte-level manipulation, use `bytes`.
+
+**Red Flags:**
+- "Modify string in-place" → Must use `list(s)`, then `"".join()`
+- "Append in a loop" → Use list + join, not `+=`
+- "Binary/byte manipulation" → Use `bytes` or `bytearray`
+
+---
+
 ## Interview Context
 
 String manipulation is tested extensively because:
