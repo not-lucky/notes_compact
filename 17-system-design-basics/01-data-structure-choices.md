@@ -2,6 +2,62 @@
 
 > **Prerequisites:** Knowledge of basic data structures (HashMap, Trees, Heaps)
 
+## Building Intuition
+
+### The Core Question Every Interviewer Is Asking
+
+When an interviewer asks "why did you choose X over Y?", they're not testing your memorization of Big-O tables. They're testing whether you understand **what problem each data structure was designed to solve**.
+
+Here's the mental framework:
+
+> **Every data structure is optimized for specific access patterns. Your job is to match access patterns to data structures.**
+
+### The Three Fundamental Trade-offs
+
+All data structure choices come down to three trade-offs:
+
+**1. Speed vs. Ordering**
+```
+HashMap: O(1) everything, but no ordering
+TreeMap: O(log n) everything, but maintains sorted order
+
+Question to ask: "Do I ever need items in sorted order?"
+- No → HashMap
+- Yes → TreeMap (or HashMap + separate sorting)
+```
+
+**2. Memory vs. Speed**
+```
+Array: Compact memory, O(n) search
+HashMap: Extra memory for buckets, O(1) search
+
+Question to ask: "How often do I search vs. how much memory can I spare?"
+- Rarely search, tight memory → Array
+- Frequent search, memory available → HashMap
+```
+
+**3. Read vs. Write Optimization**
+```
+Sorted Array: O(log n) search, O(n) insert
+HashMap: O(1) search, O(1) insert
+Heap: O(n) search, O(log n) insert, O(1) min/max
+
+Question to ask: "What's my read/write ratio?"
+- Read-heavy → Optimize for search (sorted array, hash)
+- Write-heavy → Optimize for insert (heap, unsorted structures)
+```
+
+### Why These Trade-offs Exist: A Deeper Look
+
+**HashMap's O(1) "Magic":**
+HashMap achieves O(1) by trading space for time. It pre-allocates buckets and uses a hash function to directly compute where an item lives. No searching required—just calculate and jump. The cost? Wasted space (load factor), no ordering (hash destroys order), and worst-case O(n) if hash function is bad.
+
+**Tree's O(log n) Balance:**
+Trees achieve O(log n) by maintaining a sorted structure. Each comparison eliminates half the remaining elements. The cost? You must maintain the sorted property on every insert, and you need extra pointers (left/right children).
+
+**Heap's Selective Optimization:**
+Heaps are brilliant because they're "partially sorted"—just enough to give O(1) access to min or max, but not fully sorted. This saves work on insert (O(log n) instead of O(n) for sorted array) while still giving fast access to the extreme value.
+
 ## Interview Context
 
 System design interviews frequently ask "why did you choose X over Y?" This section covers the trade-offs between common data structures in real-world scenarios. Understanding these trade-offs shows maturity and experience.
@@ -122,6 +178,101 @@ class TimeMap:
 - Slower than HashMap for simple lookups (O(log n) vs O(1))
 - More complex implementation
 - Requires comparable keys
+```
+
+## When NOT to Use Each Structure
+
+Understanding when NOT to use a data structure is as important as knowing when to use it.
+
+### When NOT to Use HashMap
+
+```
+❌ DON'T use HashMap when:
+1. You need range queries ("all keys between A and B")
+   → Use TreeMap/SortedDict instead
+
+2. You need ordered iteration
+   → Use TreeMap or LinkedHashMap (insertion order)
+
+3. Keys aren't hashable (mutable objects, complex nested structures)
+   → Use TreeMap with custom comparator
+
+4. Memory is extremely tight and you have small, fixed data
+   → Use array with linear search
+
+5. You need both min AND max efficiently
+   → Use two heaps or balanced BST
+```
+
+**Real-World Example:**
+```python
+# WRONG: Using HashMap for a time-series database
+# Can't efficiently query "all readings between 2pm and 4pm"
+readings = {}  # timestamp → value
+
+# RIGHT: Using SortedDict for time-series
+from sortedcontainers import SortedDict
+readings = SortedDict()  # O(log n + k) range queries
+```
+
+### When NOT to Use Tree (BST/TreeMap)
+
+```
+❌ DON'T use Tree when:
+1. You only need key-value lookup (no ordering, no range)
+   → HashMap is simpler and faster
+
+2. Keys don't have natural ordering
+   → HashMap or define custom comparator
+
+3. You need O(1) operations (performance-critical hot path)
+   → HashMap + auxiliary structure
+
+4. Data is mostly static and you can preprocess
+   → Sorted array with binary search (more cache-friendly)
+```
+
+**Real-World Example:**
+```python
+# WRONG: Using TreeMap for user session storage
+# We only do key lookups, never range queries
+sessions = SortedDict()  # Unnecessary O(log n)
+
+# RIGHT: Using HashMap for sessions
+sessions = {}  # O(1) lookup
+```
+
+### When NOT to Use Heap
+
+```
+❌ DON'T use Heap when:
+1. You need to search by value (not just min/max)
+   → Use HashMap or TreeMap
+
+2. You need both min AND max
+   → Use two heaps or balanced BST
+
+3. You need to delete arbitrary elements frequently
+   → Use TreeMap (O(log n) delete by key vs O(n) in heap)
+
+4. You need the k-th smallest element frequently (not just the smallest)
+   → Use order statistics tree or sorted structure
+
+5. Data can be sorted upfront
+   → Just sort and iterate
+```
+
+**Real-World Example:**
+```python
+# WRONG: Using heap to track both highest and lowest prices
+prices_heap = []  # Can only efficiently track ONE extreme
+
+# RIGHT: Using two heaps or SortedList
+min_heap = []  # Track lowest
+max_heap = []  # Track highest (use negation)
+# OR
+from sortedcontainers import SortedList
+prices = SortedList()  # O(1) access to both ends
 ```
 
 ---

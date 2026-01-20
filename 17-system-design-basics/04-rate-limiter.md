@@ -2,6 +2,103 @@
 
 > **Prerequisites:** Understanding of queues and sliding window concept
 
+## Building Intuition
+
+### Why Rate Limiting? Protecting Your System
+
+Rate limiting is about **protecting resources from being overwhelmed**. Think of it like a bouncer at a club:
+
+> **"You can only let in 100 people per hour. After that, everyone waits in line."**
+
+Without rate limiting:
+- A single user can consume all server resources
+- Denial of service attacks succeed easily
+- Expensive operations drain your budget (API calls, database queries)
+- Downstream services get overwhelmed
+
+### The Core Problem: Counting Events Over Time
+
+Every rate limiter answers one question:
+
+> **"How many requests have occurred in the last N seconds?"**
+
+The challenge is doing this efficiently:
+
+```
+Naive approach: Store every timestamp, count those within window
+Problem: O(n) per request, unbounded memory
+
+Smart approach: Use data structures that give O(1) operations
+```
+
+### The Five Algorithms: Mental Models
+
+**1. Token Bucket** - "The Arcade Token Dispenser"
+```
+Imagine an arcade that gives you 10 tokens per hour, max 10 at a time.
+- Tokens accumulate while you're away (up to max)
+- Each game costs 1 token
+- No tokens? Wait or leave
+
+Key insight: Allows BURSTS (if you saved tokens)
+```
+
+**2. Leaky Bucket** - "The Water Tank with a Hole"
+```
+Water (requests) pours in at any rate.
+Water leaks out at a fixed rate.
+If tank overflows, excess water is rejected.
+
+Key insight: SMOOTHS output (constant rate out, regardless of input pattern)
+```
+
+**3. Fixed Window** - "The Hourly Counter"
+```
+Count resets every hour on the hour.
+"100 requests per hour" = counter resets at :00
+
+Key insight: SIMPLE but has boundary problem
+(200 requests in 2 seconds: 100 at 12:59:59, 100 at 13:00:00)
+```
+
+**4. Sliding Window Log** - "The Receipt Box"
+```
+Keep every timestamp (receipt) in a box.
+To check limit: count receipts from last N seconds.
+Remove old receipts as you go.
+
+Key insight: ACCURATE but memory-intensive
+```
+
+**5. Sliding Window Counter** - "The Smart Estimator"
+```
+Keep counts for current and previous window.
+Estimate current window using weighted average.
+
+Key insight: MEMORY-EFFICIENT approximation
+```
+
+### Visual Comparison: Same Scenario, Different Results
+
+Limit: 4 requests per 10 seconds
+
+```
+Time:     0s   2s   4s   6s   8s   10s  12s  14s  16s
+Requests: R    R    R    R    R    R    R    -    R
+
+Token Bucket (4 tokens, 0.4/sec refill):
+R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (allows burst, then throttles)
+
+Leaky Bucket (4 capacity, 0.4/sec leak):
+R✓ R✓ R✓ R✓ R✗ R✗ R✓ - R✓  (smoothest output)
+
+Fixed Window (resets at 0s, 10s, 20s):
+R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (boundary allows extra)
+
+Sliding Window Log:
+R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (most accurate)
+```
+
 ## Interview Context
 
 Rate limiting is a fundamental system design topic that also appears in coding interviews. It tests:
@@ -477,6 +574,141 @@ class DistributedRateLimiter:
 | Sliding Window Counter | O(1) | O(1) | Approximate |
 
 *Amortized O(1), cleanup is O(n) but distributed over requests
+
+### Complexity Derivation: Why Sliding Window Counter is O(1)
+
+The sliding window counter is clever because it avoids storing individual timestamps:
+
+```
+Data stored: Just 4 values!
+- prev_window_id: int
+- prev_count: int
+- curr_window_id: int
+- curr_count: int
+
+Space: O(1) regardless of request volume!
+
+Per-request operations:
+1. Get current time             → O(1)
+2. Calculate window ID          → O(1) division
+3. Update window if changed     → O(1) assignment
+4. Calculate weighted estimate  → O(1) arithmetic
+5. Increment counter if allowed → O(1)
+Total: O(1)
+```
+
+**Why the estimate works:**
+```
+If we're 30% into the current window:
+- 70% of requests from previous window are "in scope"
+- 100% of current window requests are "in scope"
+
+Estimate = prev_count * 0.70 + curr_count * 1.0
+
+This is approximate but very close to true sliding window!
+```
+
+## When NOT to Use Rate Limiting
+
+Rate limiting isn't always the answer. Here's when to skip it or use alternatives.
+
+### When Rate Limiting is Overkill
+
+```
+❌ DON'T add rate limiting when:
+
+1. Internal service-to-service calls
+   Problem: You control both ends, add latency for no benefit
+   Better: Use circuit breakers, backpressure
+
+2. Batch/offline processing
+   Problem: No real-time constraints
+   Better: Queue-based throttling, job scheduling
+
+3. Low-traffic endpoints
+   Problem: Overhead exceeds benefit
+   Better: Simple validation, maybe no protection
+
+4. Write-once-read-many data
+   Problem: Writes are rare, reads are cacheable
+   Better: Caching, CDN
+```
+
+### When You Need Something Else
+
+**Problem: Protecting against slow clients**
+```
+Rate limiting says: "You can only send 100 requests/minute"
+But what if each request takes 30 seconds to process?
+
+Better: Connection limits, request timeouts, thread pool sizing
+```
+
+**Problem: Protecting expensive operations**
+```
+Rate limiting treats all requests equally.
+But GET /users is cheap, POST /analyze-video is expensive.
+
+Better: Operation-based limits (10 videos/day) or cost-based tokens
+```
+
+**Problem: Fair sharing among users**
+```
+Rate limiting per user, but some users share IP.
+Or: enterprise customers need higher limits.
+
+Better: Tiered limits, quotas, or reservation systems
+```
+
+### Algorithm Selection Pitfalls
+
+```
+❌ Token Bucket when you need smooth output
+   → Use Leaky Bucket instead
+
+❌ Fixed Window when accuracy matters
+   → Use Sliding Window instead
+
+❌ Sliding Window Log for high-volume APIs
+   → Memory explodes; use Counter instead
+
+❌ Any single algorithm for distributed systems
+   → Need coordination (Redis, consensus)
+```
+
+### The Distributed Rate Limiting Challenge
+
+```
+Single server: Easy - all state is local
+Multiple servers: Hard - state must be shared
+
+Options:
+1. Sticky sessions (route user to same server)
+   + Simple
+   - Uneven load, single point of failure
+
+2. Centralized store (Redis)
+   + Accurate
+   - Redis becomes bottleneck, adds latency
+
+3. Approximate/probabilistic
+   + Fast, scalable
+   - Not exact, can over/under limit
+
+Real systems often use hybrid:
+- Local rate limiting (fast, approximate)
+- Periodic sync with central store (accurate over time)
+```
+
+### When to Use Each Algorithm
+
+| Scenario | Best Algorithm | Why |
+|----------|---------------|-----|
+| API gateway | Token Bucket | Allows bursts for bursty clients |
+| Video streaming | Leaky Bucket | Smooth, constant bitrate needed |
+| Simple API | Fixed Window | Easy to implement and explain |
+| Financial transactions | Sliding Window Log | Accuracy critical, low volume |
+| High-traffic public API | Sliding Window Counter | Memory-efficient, good accuracy |
 
 ---
 

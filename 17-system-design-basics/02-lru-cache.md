@@ -2,6 +2,83 @@
 
 > **Prerequisites:** [Data Structure Choices](./01-data-structure-choices.md), Understanding of HashMap and Linked Lists
 
+## Building Intuition
+
+### Why LRU? The Principle of Temporal Locality
+
+LRU Cache is built on a simple observation about how we access data:
+
+> **If you accessed something recently, you're likely to access it again soon.**
+
+This is called **temporal locality**, and it's everywhere:
+- You re-read the same documentation page while coding
+- You visit the same websites repeatedly during a day
+- You use the same files in your editor
+
+### The Core Problem: O(1) for Everything
+
+Here's the challenge that makes LRU Cache an interview favorite:
+
+```
+We need THREE operations, ALL in O(1):
+1. get(key)     → Find value by key
+2. put(key,val) → Insert or update
+3. evict()      → Remove the least recently used item
+
+Why is this hard?
+- HashMap gives O(1) get/put, but how do you know which item is oldest?
+- Sorted structure knows age, but get/put become O(log n)
+- Array with timestamps? Delete is O(n)
+```
+
+### The "Aha!" Moment: Two Structures Working Together
+
+The insight is that **no single data structure can do this**. You need two:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  HashMap: "WHERE is the data?"     → O(1) lookup               │
+│  Linked List: "WHEN was it used?"  → O(1) reordering           │
+│                                                                 │
+│  The HashMap points to nodes in the Linked List.                │
+│  When accessed, move the node to the front.                     │
+│  When evicting, remove from the back.                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Why Doubly Linked?** Because to remove a node, you need to update both neighbors. With a singly linked list, you'd need to traverse from the head to find the previous node—that's O(n).
+
+### Visual Trace: How It Actually Works
+
+Let's trace through operations with capacity=3:
+
+```
+Initial: Empty
+HashMap: {}
+List: HEAD <-> TAIL
+
+put(A, 1):
+HashMap: {A: node_A}
+List: HEAD <-> [A] <-> TAIL
+
+put(B, 2):
+HashMap: {A: node_A, B: node_B}
+List: HEAD <-> [B] <-> [A] <-> TAIL
+              (MRU)         (LRU)
+
+put(C, 3):
+HashMap: {A: node_A, B: node_B, C: node_C}
+List: HEAD <-> [C] <-> [B] <-> [A] <-> TAIL
+
+get(A) → 1:  (Move A to front)
+List: HEAD <-> [A] <-> [C] <-> [B] <-> TAIL
+              (now MRU)        (now LRU)
+
+put(D, 4):  (Evict B, the LRU)
+HashMap: {A: node_A, C: node_C, D: node_D}
+List: HEAD <-> [D] <-> [A] <-> [C] <-> TAIL
+```
+
 ## Interview Context
 
 LRU (Least Recently Used) Cache is one of the most frequently asked coding interview questions at FANG companies. It's a "must-know" problem that tests:
@@ -250,6 +327,109 @@ Dummy nodes eliminate all null checks and edge cases.
 
 **Space: O(capacity)** - we store at most `capacity` nodes
 
+### Complexity Derivation: Why Each Operation is O(1)
+
+Let's prove each operation is truly O(1):
+
+**get(key):**
+```
+Step 1: HashMap lookup           → O(1) average
+Step 2: Access node.prev/next    → O(1) pointer access
+Step 3: Update 4 pointers        → O(1) constant work
+Total: O(1)
+```
+
+**put(key, value) - existing key:**
+```
+Step 1: HashMap lookup           → O(1)
+Step 2: Update node.value        → O(1)
+Step 3: Move to head (4 pointers)→ O(1)
+Total: O(1)
+```
+
+**put(key, value) - new key, no eviction:**
+```
+Step 1: Create new node          → O(1)
+Step 2: HashMap insert           → O(1)
+Step 3: Add to head (4 pointers) → O(1)
+Total: O(1)
+```
+
+**put(key, value) - new key, with eviction:**
+```
+Step 1-3: Same as above          → O(1)
+Step 4: Access tail.prev         → O(1)
+Step 5: Remove from list         → O(1)
+Step 6: HashMap delete           → O(1)
+Total: O(1)
+```
+
+## When NOT to Use LRU Cache
+
+LRU isn't always the right choice. Here's when to consider alternatives:
+
+### Access Patterns Where LRU Fails
+
+**1. Scan-Based Access (Sequential Reading)**
+```
+Problem: You sequentially scan through data (e.g., reading a file)
+What happens: Each new access evicts old items, cache is useless
+
+Example: SELECT * FROM users (full table scan)
+→ LRU cache fills with records you'll never read again
+→ Evicts actually useful cached queries
+
+Solution: Don't cache, or use scan-resistant variants (LRU-K, 2Q)
+```
+
+**2. Frequency-Based Popularity**
+```
+Problem: Some items are accessed frequently, others rarely
+What happens: A burst of access to cold items can evict hot items
+
+Example: A viral article floods the cache, evicting your homepage
+→ After the burst, homepage must be re-fetched
+
+Solution: LFU (Least Frequently Used) or hybrid (ARC, LIRS)
+```
+
+**3. Predictable Access Patterns**
+```
+Problem: You know exactly when data will be needed
+What happens: LRU ignores your knowledge
+
+Example: Video streaming - you know frames are accessed in order
+→ LRU might evict frame N+1 while buffering N+5
+
+Solution: Use prefetching or domain-specific eviction
+```
+
+### When Simple is Better
+
+```
+❌ DON'T use LRU when:
+1. Data fits in memory     → Just keep everything
+2. Data never changes      → Preload and never evict
+3. Uniform access pattern  → FIFO is simpler and nearly as good
+4. Write-heavy workload    → Cache provides little benefit
+5. TTL is more important   → Use time-based expiration instead
+```
+
+### Red Flags in Interviews
+
+If you suggest LRU and the interviewer asks about these scenarios, consider alternatives:
+
+```
+Q: "What if some items are accessed millions of times more than others?"
+A: LFU might be better, or hybrid approaches like TinyLFU.
+
+Q: "What if data has an expiration time?"
+A: Add TTL tracking, or use pure TTL-based cache.
+
+Q: "What if we're streaming large files?"
+A: LRU will thrash. Consider FIFO or specialized streaming buffers.
+```
+
 ---
 
 ## Common Variations
@@ -259,6 +439,7 @@ Dummy nodes eliminate all null checks and edge cases.
 ```python
 import time
 
+# Extends the from-scratch LRUCache implementation (not OrderedDict version)
 class LRUCacheWithTTL(LRUCache):
     def __init__(self, capacity: int, ttl_seconds: int):
         super().__init__(capacity)

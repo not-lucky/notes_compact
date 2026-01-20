@@ -2,6 +2,80 @@
 
 > **Prerequisites:** [LRU Cache](./02-lru-cache.md), Understanding of frequency-based eviction
 
+## Building Intuition
+
+### Why Frequency Matters: The "Popular Content" Problem
+
+LRU assumes recency predicts future access. But what about content that's popular regardless of when it was last accessed?
+
+> **If something has been accessed many times, it's probably important and will be accessed again.**
+
+This is **frequency-based locality**:
+- The homepage of a website is accessed constantly
+- Popular API endpoints are called more than obscure ones
+- Commonly used functions are invoked repeatedly
+
+### The Core Insight: Track Hits, Not Just Recency
+
+LFU adds a counter to each item:
+
+```
+LRU:  "When was this last used?"
+LFU:  "How many times has this been used?"
+
+LRU evicts: oldest access
+LFU evicts: fewest accesses
+```
+
+### The Challenge: O(1) Eviction with Frequency Tracking
+
+Finding the item with minimum frequency seems like it needs a min-heap (O(log n)), but we can do O(1):
+
+```
+Key Insight: Group items by frequency!
+
+Frequency 1: [item_D, item_E]  ← min_freq points here
+Frequency 2: [item_B, item_C]
+Frequency 3: [item_A]
+
+To evict:
+1. Look at min_freq list          → O(1)
+2. Remove oldest from that list   → O(1) (LRU within frequency)
+3. Update min_freq if list empty  → O(1)
+```
+
+### Visual Trace: How LFU Differs from LRU
+
+Let's compare with capacity=2:
+
+```
+                    LRU Cache              LFU Cache
+                    ----------             ----------
+put(A, 1)           [A]                    freq=1: [A]
+put(B, 2)           [B, A]                 freq=1: [B, A]
+get(A) → 1          [A, B]                 freq=1: [B], freq=2: [A]
+get(A) → 1          [A, B]                 freq=1: [B], freq=3: [A]
+get(A) → 1          [A, B]                 freq=1: [B], freq=4: [A]
+put(C, 3)           [C, A] (evicts B)      freq=1: [C], freq=4: [A] (evicts B)
+get(C) → 3          [C, A]                 freq=2: [C], freq=4: [A]
+put(D, 4)           [D, C] (evicts A!)     freq=1: [D], freq=2: [C], freq=4: [A] (evicts D? No, C!)
+                    ↑ LRU loses A           ↑ LFU keeps A (it's popular!)
+```
+
+**The difference**: In LRU, A was evicted because it was accessed longest ago. In LFU, A survives because it's the most frequently accessed.
+
+### Why Three HashMaps?
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Map 1: key → Node              "Where is this item?"                       │
+│  Map 2: freq → DoublyLinkedList "Which items have this frequency?"          │
+│  Var:   min_freq                "What's the minimum frequency?"             │
+│                                                                              │
+│  Together: O(1) for get, put, and evict!                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ## Interview Context
 
 LFU (Least Frequently Used) Cache is a harder variant of LRU Cache. It's asked at senior-level interviews and tests:
@@ -236,6 +310,108 @@ This is why we use a DoublyLinkedList within each frequency:
 | put() (evict) | O(1) | - |
 
 **Space: O(capacity)** for the cache entries
+
+### Complexity Derivation: Why min_freq Update is O(1)
+
+The trickiest part is understanding why `min_freq` updates are O(1):
+
+**When does min_freq change?**
+
+```
+Case 1: New item inserted
+→ min_freq = 1 (always, new items have freq=1)
+→ O(1)
+
+Case 2: Item accessed/updated
+→ Item moves from freq F to freq F+1
+→ If freq F was min_freq AND freq F list is now empty:
+  → min_freq = F + 1
+→ O(1) - just check if list is empty
+
+Case 3: Item evicted
+→ We always evict from min_freq list
+→ If min_freq list becomes empty, we're about to insert new item
+→ New item sets min_freq = 1
+→ O(1)
+```
+
+**Key insight**: min_freq can only increase by 1 at a time (because we increment frequencies by 1), and insertion always resets it to 1. No scanning needed!
+
+## When NOT to Use LFU Cache
+
+LFU has significant drawbacks that make it inappropriate for many scenarios.
+
+### The "Cache Pollution" Problem
+
+The biggest issue with pure LFU:
+
+```
+Problem: Old popular items NEVER leave
+
+Timeline:
+- Day 1: Item A accessed 1000 times (viral content)
+- Day 2-30: Item A never accessed again
+- Day 30: Item A still in cache with freq=1000!
+
+Why it's bad:
+- Stale data occupies cache space
+- New potentially-popular items can't enter
+- The cache reflects past popularity, not current
+```
+
+**Solutions:**
+1. **Frequency Decay**: Periodically halve all frequencies
+2. **Window-Based LFU**: Only count accesses in recent time window
+3. **Hybrid Policies**: TinyLFU combines recency + frequency
+
+### When LFU is the Wrong Choice
+
+```
+❌ DON'T use LFU when:
+
+1. Access patterns change over time
+   Problem: Old popular items block new ones
+   Better: LRU or LFU with decay
+
+2. All items have similar access frequency
+   Problem: LFU degenerates to insertion-order (like FIFO)
+   Better: LRU (simpler, same effectiveness)
+
+3. You need simplicity
+   Problem: LFU is complex (3 data structures, tie-breaking)
+   Better: LRU is simpler and usually "good enough"
+
+4. Items have TTL requirements
+   Problem: Pure LFU ignores time
+   Better: TTL-based cache or LRU with TTL
+
+5. Burst traffic is common
+   Problem: Burst inflates frequency unfairly
+   Better: LRU or rate-limited frequency counting
+```
+
+### LRU vs LFU Decision Matrix
+
+```
+Choose LRU when:                     Choose LFU when:
+├── Access patterns change often     ├── Clear hot/cold data distinction
+├── Simplicity matters               ├── Popularity is stable over time
+├── Streaming/sequential access      ├── Same items accessed repeatedly
+├── Time-sensitive data              ├── Cache pollution is acceptable
+└── Default choice when unsure       └── You can implement decay
+```
+
+### Real-World Usage
+
+**Where LFU is used:**
+- CDN caching for stable popular content
+- Database query plan caching (same queries repeat)
+- DNS caching (popular domains queried constantly)
+
+**Where LFU is NOT used:**
+- Web browser cache (pages/interests change)
+- Session storage (recency matters more)
+- Real-time systems (complexity adds latency)
 
 ---
 
