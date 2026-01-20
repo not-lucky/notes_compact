@@ -8,6 +8,188 @@ Power of two checks are common interview questions because they have an elegant 
 
 ---
 
+## Building Intuition
+
+**Why Powers of Two are Special in Binary**
+
+In decimal, powers of 10 look clean: 10, 100, 1000... They're 1 followed by zeros.
+
+In binary, powers of 2 have the same property:
+
+```
+2⁰ = 1  = 1
+2¹ = 2  = 10
+2² = 4  = 100
+2³ = 8  = 1000
+2⁴ = 16 = 10000
+
+Pattern: Exactly ONE bit set, all others zero
+```
+
+This visual pattern is the key to the O(1) check. No other positive integers have exactly one bit set.
+
+**The n & (n-1) Trick: Why It Works**
+
+The trick `n & (n-1)` clears the rightmost set bit. For powers of 2, there's only ONE set bit, so clearing it gives zero:
+
+```
+Let's trace why n-1 has this effect:
+
+n = 8 = 1000
+To get n-1, we subtract 1:
+  Starting from rightmost bit, we need to "borrow"
+  All zeros right of the 1 become 1s (no bit to borrow from)
+  The rightmost 1 becomes 0 (we borrowed from it)
+  Everything left of it stays same
+
+n-1 = 7 = 0111
+
+n & (n-1) = 1000 & 0111 = 0000
+
+For power of 2: Only 1 bit exists → clearing it gives 0 ✓
+
+For non-power of 2 (e.g., 6 = 110):
+n-1 = 5 = 101
+n & (n-1) = 110 & 101 = 100 ≠ 0 ✗
+```
+
+**Power of Four: Building on Power of Two**
+
+A power of 4 is a power of 2, but with an additional constraint: the single set bit must be at an even position (0, 2, 4, 6...).
+
+```
+Powers of 2:  1, 2, 4, 8, 16, 32, 64...
+Powers of 4:  1,    4,    16,     64...  (every other one)
+
+In binary:
+4⁰ = 1  = bit at position 0 ✓ (even)
+4¹ = 4  = bit at position 2 ✓ (even)
+4² = 16 = bit at position 4 ✓ (even)
+4³ = 64 = bit at position 6 ✓ (even)
+
+Not powers of 4:
+2 = bit at position 1 (odd)
+8 = bit at position 3 (odd)
+```
+
+The mask `0x55555555` has 1s at even positions only:
+
+```
+0x55555555 = 01010101 01010101 01010101 01010101
+
+If n is power of 2 AND (n & 0x55555555) != 0,
+the single bit is at an even position → power of 4!
+```
+
+**Power of Three: Why Bits Don't Help**
+
+3 isn't a power of 2, so its powers don't have the "single bit" property:
+
+```
+3¹ = 3  = 11
+3² = 9  = 1001
+3³ = 27 = 11011
+3⁴ = 81 = 1010001
+
+No clean binary pattern!
+```
+
+The trick for power of 3 uses number theory instead: the largest power of 3 that fits in a 32-bit signed integer is 3¹⁹ = 1162261467. Any power of 3 must divide this evenly, and no non-power-of-3 can.
+
+**Range Bitwise AND: The Common Prefix Insight**
+
+When you AND all numbers in a range, any bit that changes becomes 0. The result is the common prefix of the range boundaries:
+
+```
+Range [5, 7]:
+5 = 101
+6 = 110
+7 = 111
+
+Look at each bit position:
+- Bit 0: 1, 0, 1 → has both 0 and 1 → AND gives 0
+- Bit 1: 0, 1, 1 → has both 0 and 1 → AND gives 0
+- Bit 2: 1, 1, 1 → all same → AND gives 1
+
+Result: 100 = 4
+
+The common prefix is the leftmost bits where all numbers agree.
+```
+
+The algorithm: shift both boundaries right until they're equal (removing differing bits), then shift back.
+
+---
+
+## When NOT to Use Power of Two Checks
+
+**1. When the "Power" Base Isn't 2**
+
+The n & (n-1) trick only works for powers of 2. For other bases:
+
+```python
+# Power of 3: Use modulo with largest power, or loop
+def is_power_of_3(n):
+    return n > 0 and 1162261467 % n == 0
+
+# Power of 10: Has factors of both 2 and 5
+def is_power_of_10(n):
+    if n <= 0:
+        return False
+    while n % 10 == 0:
+        n //= 10
+    return n == 1
+```
+
+**2. For "Next Power of Two" (Different Problem)**
+
+Finding the next power of 2 ≥ n isn't just a check—it's a construction:
+
+```python
+# Wrong: just checking doesn't give you the next one
+# Right approach: fill all bits right of highest, then add 1
+def next_power_of_2(n):
+    if n <= 0:
+        return 1
+    n -= 1
+    n |= n >> 1
+    n |= n >> 2
+    n |= n >> 4
+    n |= n >> 8
+    n |= n >> 16
+    return n + 1
+```
+
+**3. When Zero is a Valid Input**
+
+The n & (n-1) check needs n > 0. Zero satisfies (n & (n-1)) == 0 but isn't a power of 2:
+
+```python
+# WRONG: returns True for 0
+def is_power_of_2_wrong(n):
+    return (n & (n-1)) == 0
+
+# CORRECT: explicitly check n > 0
+def is_power_of_2(n):
+    return n > 0 and (n & (n-1)) == 0
+```
+
+**4. For Negative Numbers**
+
+Negative numbers can't be powers of positive integers:
+
+```python
+# -8 is NOT a power of 2 (power of 2 means 2^k for non-negative k)
+# The check n > 0 handles this
+```
+
+**Red Flags (Don't Use Bit Tricks):**
+- Base isn't 2 (or 4, which is 2²)
+- You need the next/previous power, not just a check
+- Input might be zero or negative (need explicit checks)
+- The problem is really about divisibility, not bit patterns
+
+---
+
 ## Pattern: Power of Two Properties
 
 Powers of two have a unique property: they have exactly one set bit.

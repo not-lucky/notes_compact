@@ -8,6 +8,201 @@ XOR is the most versatile bitwise operator for interviews. Its unique properties
 
 ---
 
+## Building Intuition
+
+**XOR as "Controlled Toggling"**
+
+Think of XOR as a toggle switch controlled by another bit:
+
+```
+If control bit is 0: output = original (no change)
+If control bit is 1: output = opposite of original (toggle)
+
+a ^ 0 = a  (control is 0, no toggling)
+a ^ 1 = ~a's last bit  (control is 1, toggle that bit)
+
+This is why XOR with a mask selectively toggles bits:
+1010 ^ 0011 = 1001
+       ↑↑         ↑↑ toggled
+```
+
+**The "Difference Detector" Mental Model**
+
+XOR tells you WHERE two numbers differ:
+
+```
+a = 5 = 0101
+b = 3 = 0011
+a ^ b = 0110
+
+The 1s in the result mark positions where a and b disagree.
+Count these 1s → Hamming distance
+Use any of these positions → partition the numbers
+```
+
+**Why XOR for Missing/Single Number Works**
+
+The core insight: XOR with the same value twice cancels out.
+
+```
+If you XOR:
+- All indices 0 to n
+- All array values
+
+Indices that have their matching value: cancel
+The missing index: no value to cancel with → remains
+
+Example: [0, 1, 3] (missing 2)
+XOR indices: 0 ^ 1 ^ 2 ^ 3 = some value
+XOR values:  0 ^ 1 ^ 3     = another value
+Combined:    (0^0) ^ (1^1) ^ 2 ^ (3^3) = 2 ✓
+```
+
+**The Reversibility Property**
+
+XOR is its own inverse, which enables encoding/decoding:
+
+```
+If a ^ b = c, then:
+a = b ^ c
+b = a ^ c
+
+This is the basis for:
+- Swap without temp variable
+- Simple XOR encryption
+- Linked list tricks (XOR doubly linked list)
+```
+
+**XOR Range Pattern: The Mod 4 Insight**
+
+XORing 0 to n has a beautiful pattern:
+
+```
+n    XOR(0..n)
+0    0
+1    0^1 = 1
+2    0^1^2 = 3
+3    0^1^2^3 = 0
+4    0^1^2^3^4 = 4
+5    0^1^2^3^4^5 = 1
+6    ... = 7
+7    ... = 0
+8    ... = 8
+
+Pattern based on n % 4:
+n % 4 == 0 → n
+n % 4 == 1 → 1
+n % 4 == 2 → n + 1
+n % 4 == 3 → 0
+```
+
+Why? Every group of 4 consecutive numbers XORs to 0:
+
+```
+k ^ (k+1) ^ (k+2) ^ (k+3)
+For any k divisible by 4:
+= ...00 ^ ...01 ^ ...10 ^ ...11  (last 2 bits cycle through all patterns)
+= 0
+
+So XOR(0..n) = XOR of the remainder after removing complete groups of 4
+```
+
+**Addition with XOR and AND: The Carry Insight**
+
+XOR gives the sum ignoring carries. AND gives the carry bits:
+
+```
+Adding 5 + 7:
+  0101
++ 0111
+
+XOR (sum without carry):  0010 (what you'd get if no bit overflowed)
+AND (where both are 1):   0101 (these positions generate carries)
+AND << 1 (carry shifted): 1010 (carry goes to next position)
+
+Now add the sum and carry:
+  0010
++ 1010
+
+Repeat until no carry:
+XOR: 1000
+AND: 0010
+AND << 1: 0100
+
+XOR: 1100
+AND: 0000  ← no more carry, done!
+
+Result: 1100 = 12 ✓
+```
+
+---
+
+## When NOT to Use XOR Tricks
+
+**1. When Order Matters**
+
+XOR is commutative and associative—it loses ordering information:
+
+```python
+# "Find first duplicate" — XOR can't tell you which came first
+# "Find k-th occurrence" — XOR doesn't track positions
+
+# Use hashmap or other structures for order-sensitive problems
+```
+
+**2. For Subtraction or Division**
+
+XOR simulates addition (with AND for carry), but subtraction is different:
+
+```python
+# XOR-based addition works, but for subtraction:
+# You need two's complement: a - b = a + (~b + 1)
+# More complex than just using subtraction operator
+```
+
+**3. When Floating Point is Involved**
+
+XOR is for integers only:
+
+```python
+# Can't XOR floats directly
+# Floats have sign, exponent, mantissa — XOR produces garbage
+```
+
+**4. When You Need to Preserve Values**
+
+XOR is destructive when used incorrectly:
+
+```python
+# XOR swap fails when a and b are the same variable!
+a = 5
+a ^= a  # a becomes 0, original value lost
+a ^= a  # still 0
+a ^= a  # still 0
+
+# Also fails for aliased references:
+arr[i] ^= arr[j]  # if i == j, you've zeroed the element
+```
+
+**5. When There Are More Than Two Unique Elements**
+
+XOR of multiple unique elements gives their combined XOR, which isn't directly useful:
+
+```python
+[1, 2, 3, 4, 5]  # All unique
+# XOR: 1^2^3^4^5 = 1
+# This tells you... nothing useful about individual elements
+```
+
+**Red Flags (Don't Use XOR):**
+- Need to track positions or order
+- More than 2 unique elements among pairs
+- Floating point data
+- Same variable on both sides of XOR
+- Need to preserve original values
+
+---
+
 ## XOR Properties Cheat Sheet
 
 ```

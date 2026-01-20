@@ -8,6 +8,142 @@ The "Single Number" family of problems is a classic demonstration of XOR propert
 
 ---
 
+## Building Intuition
+
+**Why XOR is Perfect for Finding Unique Elements**
+
+Imagine you have a bag of paired socks, except one sock has no pair. How do you find it? You could sort them and look for the odd one out, or you could use a hashmap to count. But XOR gives you a magical approach:
+
+```
+XOR is like a "toggle switch" for each bit position.
+- See a 1? Toggle that bit.
+- See the same 1 again? Toggle it back to original.
+
+After processing all numbers, only the unique number's bits remain toggled.
+```
+
+**The Self-Cancellation Property is Key**
+
+This single property makes everything work:
+
+```
+a ^ a = 0  (any number XOR'd with itself equals zero)
+
+Why? Every bit position where a has a 1, XORing with itself means:
+1 XOR 1 = 0 (bits are same, result is 0)
+
+And where a has a 0:
+0 XOR 0 = 0 (bits are same, result is 0)
+
+So a ^ a = all zeros = 0
+```
+
+**Why Order Doesn't Matter**
+
+XOR is both commutative and associative:
+
+```
+Commutative: a ^ b = b ^ a
+Associative: (a ^ b) ^ c = a ^ (b ^ c)
+
+This means we can regroup any XOR expression however we want.
+Paired numbers will always find each other and cancel:
+
+1 ^ 2 ^ 3 ^ 2 ^ 1
+= (1 ^ 1) ^ (2 ^ 2) ^ 3  (regroup)
+= 0 ^ 0 ^ 3               (pairs cancel)
+= 3                       (identity: x ^ 0 = x)
+```
+
+**Single Number II Intuition: Bit Counting**
+
+When numbers appear 3 times instead of 2, XOR doesn't directly work (3 is odd, so bits don't cancel). The insight is to think about EACH bit position independently:
+
+```
+If a bit appears 3k times across all numbers, it's from the triples.
+If a bit appears 3k+1 times, the single number has that bit.
+
+Example: [2, 2, 3, 2] = [10, 10, 11, 10] in binary
+Bit position 0: 0+0+1+0 = 1  (mod 3 = 1) → single has bit 0
+Bit position 1: 1+1+1+1 = 4  (mod 3 = 1) → single has bit 1
+
+Single number = 11 binary = 3 decimal ✓
+```
+
+**Single Number III Intuition: Divide and Conquer with XOR**
+
+When there are TWO unique numbers, XORing everything gives us `a ^ b`, not the individual values. But this result tells us WHERE a and b differ:
+
+```
+If bit i is set in (a ^ b), then a and b have different values at bit i.
+We can use ANY such bit to partition all numbers into two groups:
+- Group 1: numbers with bit i = 0
+- Group 2: numbers with bit i = 1
+
+a and b go to DIFFERENT groups.
+Paired numbers go to the SAME group (they have identical bits).
+
+Now XOR each group separately → each reveals its unique number!
+```
+
+**The Mental Model: XOR as a "Difference Accumulator"**
+
+Think of XOR as accumulating differences:
+
+```
+Start with 0 (no differences seen)
+Each number toggles its bit pattern into the accumulator
+Seeing the same pattern twice cancels it out
+What remains is the pattern that appeared an odd number of times
+```
+
+---
+
+## When NOT to Use XOR for Finding Unique Elements
+
+**1. When Duplicates Appear an Even Number of Times (Including 0)**
+
+XOR finds elements appearing an ODD number of times. If you need to find elements appearing exactly once (not 0, not 2), XOR can't distinguish:
+
+```python
+# XOR treats "never appeared" the same as "appeared twice"
+[1, 1, 2, 2, 3, 3]  # XOR gives 0, but ALL elements appeared twice
+[4]                  # XOR gives 4, the single element
+```
+
+**2. When You Need the Duplicate, Not the Unique**
+
+Finding duplicates is a different problem. XOR cancels duplicates, which is exactly what you DON'T want:
+
+```python
+# Find duplicate in [1, 2, 3, 2]
+# XOR: 1 ^ 2 ^ 3 ^ 2 = 1 ^ 3 = 2... wait, this works?
+# Only by coincidence! If array was [1, 2, 3, 1], XOR = 2^3 = 1... wrong!
+```
+
+For finding duplicates, use Floyd's cycle detection or hashset.
+
+**3. When Multiple Elements Have Odd Occurrences**
+
+XOR gives the XOR of ALL odd-occurring elements, not a list:
+
+```python
+[1, 1, 2, 3]  # 2 appears once, 3 appears once
+# XOR: 1^1^2^3 = 0^2^3 = 2^3 = 1  ← Not useful!
+```
+
+**4. When You Need Count Information**
+
+If you need "how many times does the single element appear?", XOR can't help—it only tells you WHAT the element is (for Single Number I) or requires state machines (Single Number II).
+
+**Red Flags (Don't Use XOR):**
+- "Find the duplicate" (not the unique)
+- Elements can appear any number of times (not constrained to pairs+one)
+- You need to preserve or count occurrences
+- More than 2 unique elements among pairs
+
+---
+
 ## Pattern: XOR for Finding Unique Elements
 
 The key XOR properties that make these problems solvable:
