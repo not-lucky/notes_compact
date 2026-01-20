@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+2D DP uses a two-dimensional state dp[i][j] representing answers for subproblems involving two indices, positions, or parameters.
+
+## Building Intuition
+
+**Why do we need 2D DP?**
+
+1. **Two Independent Dimensions**: When the state of a problem depends on two independent variables—like position in two strings, row and column in a grid, or items and capacity—we need two dimensions to track all combinations.
+
+2. **Grid Problems Are Natural 2D**: In a grid, reaching cell (i, j) depends on cells (i-1, j) and (i, j-1). The state naturally has two coordinates.
+
+3. **String Comparison Needs Pairs**: For LCS or Edit Distance, we compare s1[0..i] with s2[0..j]. The answer for each (i, j) pair is different—1D can't capture this.
+
+4. **The Dependency Insight**: In 2D DP, dp[i][j] typically depends on:
+   - dp[i-1][j] (above), dp[i][j-1] (left), dp[i-1][j-1] (diagonal)
+   - This determines the filling order: row by row or by increasing diagonal
+
+5. **Space Optimization Key**: Since dp[i][j] usually only depends on row i-1 and the current row i, we can often reduce O(m×n) space to O(n) by keeping only one or two rows.
+
+6. **Mental Model**: Think of a spreadsheet where each cell (i, j) contains the answer for "first i elements of X and first j elements of Y." You fill it systematically, and each cell formula references cells above, left, or diagonally above-left.
+
 ## Interview Context
 
 2D DP problems are common because:
@@ -10,6 +32,26 @@
 2. **Two sequences**: Compare strings/arrays
 3. **Two parameters**: Capacity and items
 4. **Space optimization**: 2D → 1D reduction
+
+---
+
+## When NOT to Use 2D DP
+
+1. **State Is Actually 1D**: Don't force 2D when 1D suffices. Fibonacci, House Robber—these only need one index.
+
+2. **State Requires 3+ Dimensions**: Some problems need dp[i][j][k] (like 3D grid or stock with k transactions). Recognizing this prevents wrong solutions.
+
+3. **Non-Grid Graphs**: 2D DP works for grids (DAGs). For general graphs with cycles, use shortest path algorithms (Dijkstra, Bellman-Ford), not DP.
+
+4. **Sparse State Space**: If only a few (i, j) pairs are valid, use memoization with a dictionary instead of a 2D array to save space.
+
+5. **Dependencies Aren't Local**: If dp[i][j] depends on all dp[k][l] for k < i and l < j (not just neighbors), you may still get O(n²) per cell, giving O(n⁴) total. Consider optimization techniques.
+
+**Signs 2D DP is Appropriate:**
+- Two input sequences/arrays being compared
+- Grid with row and column indices
+- Knapsack-like problems with items and capacity
+- Dependencies only on adjacent cells
 
 ---
 

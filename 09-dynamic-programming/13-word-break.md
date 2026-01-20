@@ -2,6 +2,29 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+Word Break determines if a string can be segmented into a sequence of dictionary words.
+
+## Building Intuition
+
+**Why does Word Break need DP?**
+
+1. **Overlapping Subproblems**: To check if "leetcode" can be segmented, we might try "l" + "eetcode" or "le" + "etcode" or "lee" + "tcode" or "leet" + "code". The check for "code" might repeat across different attempts.
+
+2. **Greedy Fails**: Consider s = "catsanddog", dict = ["cat", "cats", "and", "sand", "dog"]. Greedy matching "cats" first leads to "anddog" (fails). But "cat" + "sand" + "dog" works.
+
+3. **The DP State**: dp[i] = "can s[0..i-1] be segmented?" We check all possible last words: if s[j..i-1] is in dictionary AND dp[j] is true, then dp[i] is true.
+
+4. **Optimization Insight**: We only need to check substrings of length ≤ max word length in dictionary. This can significantly prune the inner loop.
+
+5. **Boolean vs Counting vs Enumeration**:
+   - Word Break I: Boolean (can segment?)
+   - Counting: How many ways? (change OR to +=)
+   - Word Break II: Enumerate all (backtracking with memoization)
+
+6. **Mental Model**: Imagine reading a string character by character. At each position, you ask: "Can everything before this be segmented, AND does a dictionary word end right here?" If yes at the final position, the whole string is segmentable.
+
 ## Interview Context
 
 Word Break is a FANG+ favorite because:
@@ -10,6 +33,25 @@ Word Break is a FANG+ favorite because:
 2. **Dictionary lookups**: Set/trie usage
 3. **Multiple variants**: Boolean, count, reconstruct
 4. **Backtracking extension**: Word Break II
+
+---
+
+## When NOT to Use Word Break DP
+
+1. **Dictionary Has Fixed Small Words**: If all dictionary words are short (max length k), use Trie for O(n×k) instead of O(n²).
+
+2. **Single Dictionary Word Check**: To check if s is exactly one dictionary word, just use set lookup. DP is overkill.
+
+3. **Overlapping Words Not Needed**: If words must partition without reuse (each character used exactly once), standard Word Break applies. But if constraints differ, adapt accordingly.
+
+4. **Very Long String, Large Dictionary**: O(n² × hash) can be slow. Consider Aho-Corasick for O(n + m) where m is total dictionary length.
+
+5. **Need All Segmentations (Word Break II)**: DP gives boolean. For enumeration, use memoized backtracking, but beware exponential output.
+
+**Recognize Word Break Pattern When:**
+- Segment string into dictionary words
+- Boolean feasibility or count ways
+- String matching with multiple valid splits
 
 ---
 

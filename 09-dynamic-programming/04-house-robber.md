@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+House Robber is the canonical "take or skip" DP problem where you maximize sum while respecting a constraint (no adjacent elements).
+
+## Building Intuition
+
+**Why does the take/skip pattern work?**
+
+1. **Binary Decisions Create Dependencies**: At each house, you have exactly two choices: rob it or skip it. If you rob it, you can't rob the previous house. This creates a dependency chain that DP handles perfectly.
+
+2. **Why Greedy Fails**: You might think "always rob the higher-value house." But consider [2, 10, 3, 11]: greedy picks 10 (skip 2, 3, 11) = 10. Optimal: 2 + 11 = 13 or 10 + 11 (invalid) → Actually 2 + 11 = 13 beats greedy.
+
+3. **The Recurrence Insight**: At house i, the best you can do is:
+   - **Skip house i**: Your answer is the same as for houses 0..i-1
+   - **Rob house i**: Your answer is value[i] + best from houses 0..i-2 (skipping i-1)
+
+   Take the max. This captures all valid choices.
+
+4. **Why Only Two States Matter**: House i's decision only affects houses i-1 and i-2 (adjacent constraint). Houses before i-2 are unaffected by choosing i. So we only need prev1 and prev2.
+
+5. **Mental Model**: Imagine walking down a street. At each house, you ask: "Is robbing this house (plus what I could get two houses ago) better than what I could get from the previous house?" The answer at each step becomes the new "previous house" value.
+
 ## Interview Context
 
 House Robber is a FANG+ classic because:
@@ -10,6 +32,25 @@ House Robber is a FANG+ classic because:
 2. **Multiple variants**: Tests adaptability
 3. **Space optimization**: Natural O(1) optimization
 4. **Common pattern**: Take/skip decision appears everywhere
+
+---
+
+## When NOT to Use House Robber Pattern
+
+1. **Non-Adjacent Constraint Different**: If the constraint is "no three consecutive" or "at least k apart," the recurrence changes. Don't blindly apply dp[i-2].
+
+2. **Dependencies Extend Further**: If your choice at i affects more than just i-1 (e.g., affects i-1, i-2, and i-3), you need more state variables.
+
+3. **Greedy Actually Works**: Some problems look like House Robber but have greedy solutions. If there's no trade-off (e.g., all values positive, no constraint), just take everything.
+
+4. **Circular But Not Reducible**: While House Robber II (circular) can be solved with two linear passes, more complex circular dependencies may need different approaches.
+
+5. **Reconstruction Required**: Finding which houses to rob (not just max value) requires keeping track of decisions, which needs O(n) space or backtracking.
+
+**Recognize House Robber Pattern When:**
+- You must choose a subset of elements
+- Adjacent choices are forbidden (or some fixed constraint)
+- Goal is to maximize/minimize sum
 
 ---
 

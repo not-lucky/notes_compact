@@ -2,6 +2,30 @@
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
+## Overview
+
+Palindrome DP problems involve finding, counting, or partitioning palindromic structures within strings.
+
+## Building Intuition
+
+**Why are palindrome problems well-suited for DP?**
+
+1. **Natural Substructure**: A string is a palindrome if its first and last characters match AND the substring between them is a palindrome. This is perfect recursive structure.
+
+2. **Interval DP Pattern**: We define dp[i][j] = "is s[i..j] a palindrome?" or "LPS length for s[i..j]". The answer for larger ranges depends on smaller ranges.
+
+3. **Two Types of Problems**:
+   - **Substring (contiguous)**: "Expand around center" is often simpler and O(1) space
+   - **Subsequence (non-contiguous)**: Requires 2D DP, similar to LCS
+
+4. **The Fill Order**: For interval DP, we must fill by increasing length (or decreasing i). dp[i][j] depends on dp[i+1][j-1], so inner ranges must be computed first.
+
+5. **LPS Key Insight**: Longest Palindromic Subsequence of s = LCS(s, reverse(s)). This is because a common subsequence that reads same forwards and backwards is palindromic.
+
+6. **Mental Model (Substring)**: Place your fingers at both ends of a string. If characters match, move both inward. If they ever don't match, the full string isn't a palindrome. For longest, try all centers and expand.
+
+7. **Mental Model (Subsequence)**: If ends match, they're part of the LPS. If not, the LPS is either "without left end" or "without right end"—try both.
+
 ## Interview Context
 
 Palindrome DP problems are popular because:
@@ -10,6 +34,26 @@ Palindrome DP problems are popular because:
 2. **Different objectives**: Longest, count, partition
 3. **Interval DP introduction**: Natural dp[i][j] structure
 4. **String manipulation skills**: Common in real applications
+
+---
+
+## When NOT to Use Palindrome DP
+
+1. **Longest Palindromic Substring**: Expand-around-center is simpler and uses O(1) space. Manacher's algorithm gives O(n) time. DP is overkill.
+
+2. **Simple Palindrome Check**: For checking if a single string is a palindrome, use two pointers (O(n) time, O(1) space). DP is unnecessary.
+
+3. **Very Long Strings**: 2D DP for LPS is O(n²) time and space. For n = 10^6, this is infeasible. Consider different algorithms or approximations.
+
+4. **Need O(1) Space**: Expand-around-center for substring, or the 1D space-optimized LPS, but these have trade-offs.
+
+5. **Counting All Palindromic Subsequences (Distinct)**: This is a different, harder problem requiring careful handling of duplicates.
+
+**Choose the Right Approach:**
+- Palindrome check → Two pointers
+- Longest substring → Expand around center (or Manacher's)
+- Longest subsequence → 2D DP (or LCS with reverse)
+- Partition into palindromes → DP with precomputed palindrome table
 
 ---
 

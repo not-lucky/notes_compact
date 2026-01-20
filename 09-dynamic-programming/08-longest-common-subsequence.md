@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
+## Overview
+
+LCS finds the longest sequence that appears in both strings in the same order, but not necessarily contiguously.
+
+## Building Intuition
+
+**Why does LCS work with 2D DP?**
+
+1. **Two Strings = Two Dimensions**: We need to track progress through both strings simultaneously. dp[i][j] represents "best answer for first i chars of text1 and first j chars of text2."
+
+2. **The Core Insight**: At each pair (i, j), we ask: "Do the current characters match?"
+   - If text1[i] == text2[j]: We found a new common character! LCS is 1 + whatever LCS we had before (dp[i-1][j-1] + 1).
+   - If not: We can't use both characters. LCS is the best of "skip text1[i]" (dp[i-1][j]) or "skip text2[j]" (dp[i][j-1]).
+
+3. **Why We Take Max, Not Add**: When characters don't match, we explore two paths but only ONE can be the actual LCS. We take the better one.
+
+4. **Subsequence vs Substring**: LCS allows gaps. That's why when characters don't match, we don't reset to 0 (that would be substring). We carry forward the best we have.
+
+5. **Mental Model**: Imagine two people reading their books aloud, character by character. When they say the same letter, it counts toward LCS. When they differ, one person "waits" while the other advances. We try all possible coordinations.
+
+6. **Space Insight**: dp[i][j] only needs dp[i-1][j], dp[i][j-1], and dp[i-1][j-1]. So we only need two rows (or one row + one variable for diagonal).
+
 ## Interview Context
 
 LCS is a classic because:
@@ -10,6 +32,25 @@ LCS is a classic because:
 2. **Real applications**: Diff tools, DNA sequence alignment
 3. **Multiple variants**: Substring, editing, printing
 4. **Space optimization**: 2D → 1D demonstration
+
+---
+
+## When NOT to Use LCS
+
+1. **Need Contiguous Match (Substring)**: LCS finds subsequences (with gaps). For longest common SUBSTRING, reset dp[i][j] = 0 when characters don't match.
+
+2. **Three or More Strings**: LCS of 3 strings needs 3D DP. It's O(l×m×n), which can be prohibitive. Consider pairwise LCS heuristics.
+
+3. **Very Long Strings with Small Alphabet**: For DNA sequences (alphabet = 4), specialized algorithms like suffix arrays or Hunt-Szymanski may be faster.
+
+4. **Edit Distance Needed**: LCS tells you commonality; Edit Distance tells you difference. They're related (Edit Distance = m + n - 2×LCS for delete-only), but don't confuse them.
+
+5. **Need All LCS, Not Just One**: Finding all longest common subsequences is exponential. Only the length or one example is polynomial.
+
+**Recognize LCS Pattern When:**
+- Two sequences being compared
+- Order must be preserved, gaps allowed
+- Looking for similarity/commonality measure
 
 ---
 

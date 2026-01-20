@@ -2,6 +2,30 @@
 
 > **Prerequisites:** [10-knapsack-01](./10-knapsack-01.md)
 
+## Overview
+
+Unbounded Knapsack allows each item to be used multiple times (unlike 0/1 where each is used at most once).
+
+## Building Intuition
+
+**Why does forward iteration allow reuse?**
+
+1. **The Key Difference**: In 0/1 knapsack, backward iteration ensures dp[w - weight[i]] reflects "before considering item i." Forward iteration means dp[w - weight[i]] may already include item i—allowing reuse.
+
+2. **Why This Works**: For unbounded, we WANT to reuse items. When computing dp[10] with a coin of 3, if dp[7] already used that coin, great! We can use it again.
+
+3. **Iteration Order Matters**:
+   - Forward (0/1): Uses updated values → item can appear multiple times → WRONG for 0/1
+   - Forward (Unbounded): Uses updated values → item can appear multiple times → CORRECT for unbounded
+   - Backward (0/1): Uses previous-row values → item appears at most once → CORRECT for 0/1
+   - Backward (Unbounded): Uses previous-row values → item appears at most once → WRONG for unbounded
+
+4. **Combinations vs Permutations**: Loop order matters for counting:
+   - Items outer, capacity inner → combinations (coin 1+2 = coin 2+1 counted once)
+   - Capacity outer, items inner → permutations (1+2 ≠ 2+1)
+
+5. **Mental Model**: Imagine a vending machine with infinite stock. When filling capacity W, you can pick any item that fits and immediately consider the same item again for remaining capacity.
+
 ## Interview Context
 
 Unbounded Knapsack is important because:
@@ -10,6 +34,25 @@ Unbounded Knapsack is important because:
 2. **Different iteration**: Forward instead of backward
 3. **Common applications**: Coin change, rod cutting
 4. **Contrast with 0/1**: Tests understanding of both patterns
+
+---
+
+## When NOT to Use Unbounded Knapsack
+
+1. **Limited Item Quantities**: If each item has a maximum count (not unlimited), use bounded knapsack or split into multiple "virtual" items.
+
+2. **Single Use Required**: If items can only be used once, use 0/1 Knapsack (backward iteration).
+
+3. **Very Large Capacity**: Same as 0/1—if W = 10^9, O(n × W) is infeasible.
+
+4. **Order-Dependent Problems**: If the sequence of items matters (not just which items), this is a different problem class (sequences, not combinations).
+
+5. **Negative Values**: Unbounded with negative values can lead to infinite loops. Ensure all values are non-negative.
+
+**Distinguish 0/1 vs Unbounded:**
+- "Each item can be used once" → 0/1 (backward)
+- "Unlimited supply" → Unbounded (forward)
+- "At most k of each" → Bounded (or k copies as separate items)
 
 ---
 

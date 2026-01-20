@@ -2,6 +2,31 @@
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md), [09-edit-distance](./09-edit-distance.md)
 
+## Overview
+
+String DP encompasses problems involving subsequences, interleavings, decodings, and pattern matching across one or more strings.
+
+## Building Intuition
+
+**Why do strings need specialized DP patterns?**
+
+1. **Character-by-Character Decisions**: Most string DP processes strings one character at a time, deciding how each character contributes to the answer.
+
+2. **Common State Patterns**:
+   - dp[i] = answer for prefix s[0..i-1] (single string)
+   - dp[i][j] = answer for prefixes s1[0..i-1] and s2[0..j-1] (two strings)
+   - dp[i][j] = answer for substring s[i..j] (interval on single string)
+
+3. **Use vs Skip Decision**: Many problems ask "use this character or skip it?" Similar to 0/1 knapsack but for characters.
+
+4. **Counting vs Optimization**: String problems often involve counting (distinct subsequences, decodings) rather than just optimization. The recurrence adds possibilities rather than taking max.
+
+5. **The Interleaving Insight**: Interleaving problems track positions in multiple strings simultaneously, asking "did this character come from s1 or s2?"
+
+6. **Mental Model (Single String)**: Walk through the string character by character. At each step, update your answer based on the current character and what you've computed so far.
+
+7. **Mental Model (Two Strings)**: Maintain a 2D grid where cell (i, j) represents "answer for first i chars of s1 and first j chars of s2." Fill it systematically.
+
 ## Interview Context
 
 Advanced string DP problems appear in FANG+ because:
@@ -10,6 +35,27 @@ Advanced string DP problems appear in FANG+ because:
 2. **Pattern matching**: Real-world text processing
 3. **Counting problems**: Number of ways to achieve goal
 4. **Interleaving/Combination**: String manipulation
+
+---
+
+## When NOT to Use String DP
+
+1. **Simple String Matching**: For exact matching or pattern without wildcards, use built-in string methods or KMP. DP is overkill.
+
+2. **Suffix-Based Problems**: For suffix arrays, longest repeated substring, or substring search, specialized suffix data structures are better than DP.
+
+3. **Very Long Strings (n > 10⁴ for O(n²))**: Many string DPs are O(n²) or O(nm). For n = 10⁶, this times out. Consider approximations or different algorithms.
+
+4. **Need Rolling Hash or Hashing**: For problems like finding duplicate substrings, Rabin-Karp hashing is often more efficient than DP.
+
+5. **Streaming/Online Processing**: If the string is given character by character and you need immediate answers, batch DP doesn't apply.
+
+**Common String DP Categories:**
+- Subsequence: LCS, Distinct Subsequences
+- Transformation: Edit Distance, One Edit Distance
+- Decoding: Decode Ways, Valid Parentheses
+- Interleaving: Interleaving String, Scramble String
+- Palindrome: LPS, Partition, Count
 
 ---
 

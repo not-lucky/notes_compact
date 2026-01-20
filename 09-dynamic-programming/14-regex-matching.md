@@ -2,6 +2,34 @@
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md)
 
+## Overview
+
+Regex Matching uses DP to determine if a string matches a pattern containing wildcards (*) and single-character matches (. or ?).
+
+## Building Intuition
+
+**Why is regex matching harder than simple string comparison?**
+
+1. **Wildcards Create Branching**: The `*` can match 0, 1, 2, ... characters. We must try all possibilities. DP handles this by encoding "match 0" vs "match 1+" as transitions.
+
+2. **Two Different `*` Semantics**:
+   - **Wildcard `*`**: Matches ANY sequence (standalone)
+   - **Regex `*`**: Matches 0+ of the PRECEDING character (never standalone)
+
+   This subtle difference completely changes the recurrence!
+
+3. **Regex `*` Logic**: For pattern `a*`:
+   - Match 0 'a's: Skip the `a*` entirely → dp[i][j-2]
+   - Match 1+ 'a's: Current char must be 'a', and remaining string must match `a*` → dp[i-1][j]
+
+4. **Wildcard `*` Logic**: For pattern `*`:
+   - Match empty: dp[i][j-1]
+   - Match one char and continue with `*`: dp[i-1][j]
+
+5. **Base Cases Are Tricky**: Empty string matching `a*b*c*`? Yes! Each `x*` can match 0 of that character. So dp[0][j] depends on whether pattern[0..j-1] consists only of `x*` pairs.
+
+6. **Mental Model**: Think of regex matching as a two-player game. Player 1 reveals string characters one by one. Player 2 must "spend" pattern characters to match. `*` is a "loop card" that can match repeatedly.
+
 ## Interview Context
 
 Pattern matching DP is challenging because:
@@ -10,6 +38,25 @@ Pattern matching DP is challenging because:
 2. **Wildcard vs regex**: Subtly different rules
 3. **Edge cases**: Empty pattern, consecutive wildcards
 4. **Real-world relevance**: Shell globbing, regex engines
+
+---
+
+## When NOT to Use Regex DP
+
+1. **Simple Patterns (No `*`)**: If pattern has only literal characters and `.`, simple O(n) two-pointer matching works.
+
+2. **Full Regex Features**: DP handles `*` and `.`, but not `+`, `?`, `{n,m}`, `|`, `()`, etc. For full regex, use proper regex engines (NFA/DFA).
+
+3. **Very Long Strings/Patterns**: O(m×n) can be slow for m, n = 10^5. Specialized algorithms or compiled regex engines are faster.
+
+4. **Multiple Patterns**: For matching against many patterns, build a combined automaton (Aho-Corasick for literals, NFA for regex).
+
+5. **Streaming Input**: DP assumes you have the full string. For streaming regex matching, use DFA simulation.
+
+**Distinguish Wildcard vs Regex:**
+- Wildcard: `*` alone matches any sequence
+- Regex: `*` modifies preceding char (match 0+)
+- Both: `.` or `?` matches single char
 
 ---
 

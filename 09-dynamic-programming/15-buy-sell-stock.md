@@ -2,6 +2,35 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+Stock problems use state machine DP to model trading constraints like transaction limits, cooldowns, and fees.
+
+## Building Intuition
+
+**Why does state machine DP work for stock problems?**
+
+1. **Two States, Clear Transitions**: At any time, you either HOLD a stock or have CASH. Every day, you transition:
+   - Hold → Hold (rest) or Hold → Cash (sell)
+   - Cash → Cash (rest) or Cash → Hold (buy)
+
+2. **State Encapsulates History**: The key insight is that "how I got here" doesn't matter—only "what state am I in now?" Whether I bought yesterday or last week, my current profit depends only on today's price and my current state.
+
+3. **Constraints Add Dimensions**:
+   - k transactions → add "transactions used" dimension
+   - Cooldown → add "just sold" state (can't buy immediately)
+   - Fee → subtract fee when selling
+
+4. **Why Stock I Is Simple**: With one transaction, you just track min price seen and max profit possible. No need for full DP.
+
+5. **Why Stock II Is Greedy**: With unlimited transactions, take every upward price movement. If price goes up, you would have profited by buying yesterday and selling today.
+
+6. **Mental Model**: Imagine two parallel universes at each time step—one where you hold stock, one where you have cash. Each day, compute the best profit in each universe, considering what you could have done yesterday.
+
+7. **The Recurrence Pattern**:
+   - hold[i] = max(hold[i-1], cash[i-1] - price[i])
+   - cash[i] = max(cash[i-1], hold[i-1] + price[i])
+
 ## Interview Context
 
 Stock problems are popular because:
@@ -10,6 +39,26 @@ Stock problems are popular because:
 2. **Multiple variants**: Each adds new constraint
 3. **Progressively harder**: Good interview escalation
 4. **Real-world relevance**: Trading algorithms
+
+---
+
+## When NOT to Use State Machine DP
+
+1. **Stock I (One Transaction)**: Simple min-tracking suffices. DP is overkill.
+
+2. **Stock II (Unlimited, No Cooldown/Fee)**: Greedy (sum all positive differences) is O(n) and simpler.
+
+3. **Prices Unknown in Advance**: DP assumes full price history. For online/streaming decisions, use different algorithms.
+
+4. **Short Selling**: Standard stock DP assumes buy-before-sell. Short selling (sell-before-buy) needs modified states.
+
+5. **Complex Fee Structures**: If fees depend on transaction size or are non-linear, the standard recurrence doesn't apply.
+
+**Choose the Right Approach:**
+- 1 transaction → min tracking
+- Unlimited, no constraints → greedy
+- Limited transactions (k) → state machine DP
+- Cooldown or fees → add states to DP
 
 ---
 

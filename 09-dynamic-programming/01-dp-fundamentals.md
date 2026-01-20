@@ -1,5 +1,23 @@
 # DP Fundamentals
 
+## Overview
+
+Dynamic Programming (DP) is an algorithmic technique that solves complex problems by breaking them into simpler overlapping subproblems and storing their solutions to avoid redundant computation.
+
+## Building Intuition
+
+**Why does DP work?**
+
+Think of DP as "smart recursion with memory." The key insight is that many problems have a recursive structure where the same smaller problems appear repeatedly:
+
+1. **The Redundancy Problem**: In naive recursion, we solve the same subproblems exponentially many times. For Fibonacci(50), naive recursion would compute Fibonacci(25) over 75,000 times!
+
+2. **The Memory Solution**: If we store (memoize) each subproblem's answer the first time we compute it, subsequent lookups are O(1). This transforms exponential algorithms into polynomial ones.
+
+3. **The Key Mental Model**: Imagine you're climbing a staircase with numbered steps. To reach step N, you must first reach step N-1 or N-2. The number of ways to reach N depends only on the number of ways to reach those earlier steps—not on HOW you reached them. This "state compression" is the essence of DP.
+
+4. **When DP "Clicks"**: DP works when the problem has "optimal substructure" (the best solution contains best solutions to subproblems) and "overlapping subproblems" (same subproblems recur). If subproblems don't overlap, you have Divide & Conquer instead.
+
 ## Interview Context
 
 Dynamic Programming is tested heavily because:
@@ -8,6 +26,27 @@ Dynamic Programming is tested heavily because:
 2. **Optimization skill**: Finding optimal solutions efficiently
 3. **Pattern recognition**: Same patterns appear across different problems
 4. **Time-space tradeoffs**: Understanding memoization vs space optimization
+
+---
+
+## When NOT to Use DP
+
+DP is powerful but not always appropriate. Avoid DP when:
+
+1. **No Overlapping Subproblems**: If each subproblem is unique (like in merge sort or binary search), use Divide & Conquer instead. DP's memoization provides no benefit.
+
+2. **Greedy Works**: If locally optimal choices lead to globally optimal solutions (like in activity selection or Huffman coding), greedy is simpler and often faster. DP is overkill.
+
+3. **State Space Explodes**: If the number of unique states is exponential (e.g., tracking subsets or permutations), even memoized DP may be too slow. Consider approximation algorithms or heuristics.
+
+4. **No Optimal Substructure**: If the optimal solution doesn't contain optimal solutions to subproblems, DP won't work. Example: Longest simple path in a graph (taking the longest path to an intermediate node may block the remaining path).
+
+5. **Problem Asks for "Any" Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
+
+**Red Flags That DP Won't Help:**
+- The problem involves graphs with cycles (except shortest path problems)
+- You need to track the actual path/sequence, not just the count/optimal value (reconstruction requires extra space)
+- The constraints are tiny (n ≤ 10)—brute force may be cleaner
 
 ---
 

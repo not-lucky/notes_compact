@@ -2,6 +2,26 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+LIS is a fundamental sequence DP problem that finds the longest strictly increasing subsequence (not contiguous) in an array.
+
+## Building Intuition
+
+**Why does LIS have both O(n²) and O(n log n) solutions?**
+
+1. **O(n²) DP Insight**: For each position i, we ask: "What's the longest increasing subsequence ending at i?" To find this, we check all previous positions j < i where nums[j] < nums[i], and take the maximum dp[j] + 1. This exhaustive search over all pairs gives O(n²).
+
+2. **Why We Track "Ending At"**: If we only tracked "LIS in first i elements," we couldn't extend—we wouldn't know what value the LIS ends with, so we couldn't determine if nums[i] can extend it.
+
+3. **The Binary Search Insight**: Instead of tracking lengths, we track "the smallest ending value for a subsequence of each length." If we have subsequences of lengths 1, 2, 3 with smallest endings [2, 5, 8], and see 6, we can:
+   - Extend length-2 (ending 5) to create length-3 ending at 6
+   - Replace the length-3 ending (8 → 6), making future extensions easier
+
+4. **Why Binary Search Works**: The "smallest endings" array is always sorted! Proof: if we have length-2 ending at X and length-3 ending at Y, then Y > X (the length-3 sequence includes a valid length-2 prefix, and we track the smallest, so Y must be at least as large as the smallest length-2 ending).
+
+5. **Mental Model**: Imagine sorting playing cards into piles. Each pile represents sequences of a certain length. When a new card comes, place it on the leftmost pile whose top card is ≥ new card (binary search). The number of piles is the LIS length.
+
 ## Interview Context
 
 LIS is a FANG+ essential because:
@@ -10,6 +30,25 @@ LIS is a FANG+ essential because:
 2. **O(n log n) optimization**: Tests algorithm knowledge
 3. **Foundation for harder problems**: Russian Dolls, Envelopes
 4. **Multiple approaches**: DP, binary search, patience sorting
+
+---
+
+## When NOT to Use LIS Pattern
+
+1. **Contiguous Required**: If you need longest increasing SUBARRAY (contiguous), not subsequence, use a simpler single-pass O(n) approach.
+
+2. **Multiple Dimensions**: For problems like Russian Dolls (width AND height must increase), sort by one dimension first, then apply LIS on the other.
+
+3. **Non-Strict Increase**: For non-decreasing sequences (≤ instead of <), use `bisect_right` instead of `bisect_left` in the O(n log n) solution.
+
+4. **Need Actual Sequence**: The O(n log n) solution gives LENGTH only. Getting the actual subsequence requires extra bookkeeping (parent pointers).
+
+5. **Counting All LIS**: If you need to count how many LIS exist (not just find one), you need additional DP arrays for counting.
+
+**Recognize LIS Pattern When:**
+- Find longest subsequence (not contiguous) with ordering property
+- Elements must be strictly/non-strictly increasing/decreasing
+- Can reduce multi-dimensional problems to LIS after sorting
 
 ---
 

@@ -2,6 +2,29 @@
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md)
 
+## Overview
+
+Edit Distance (Levenshtein Distance) measures the minimum number of single-character operations (insert, delete, replace) to transform one string into another.
+
+## Building Intuition
+
+**Why does Edit Distance need three operations?**
+
+1. **Complete Transformation**: With only insert and delete, you can transform any string to any other. But replace makes it efficient—turning 'a' into 'b' is 1 operation, not 2 (delete 'a', insert 'b').
+
+2. **The Recurrence Logic**: At position (i, j), we're converting word1[0..i-1] to word2[0..j-1]:
+   - **Characters match**: No operation needed. Cost = dp[i-1][j-1].
+   - **Characters differ**: Three choices, pick cheapest:
+     - Delete from word1: Now convert word1[0..i-2] to word2[0..j-1]. Cost = dp[i-1][j] + 1.
+     - Insert into word1: Add word2[j-1] to match. Now convert word1[0..i-1] to word2[0..j-2]. Cost = dp[i][j-1] + 1.
+     - Replace: Change word1[i-1] to word2[j-1]. Cost = dp[i-1][j-1] + 1.
+
+3. **Why Base Cases Matter**: Converting to empty string requires deleting all characters (dp[i][0] = i). Converting from empty requires inserting all (dp[0][j] = j).
+
+4. **Relationship to LCS**: Edit Distance (delete + insert only) = m + n - 2×LCS. This shows LCS captures the "unchanging core" of both strings.
+
+5. **Mental Model**: Imagine you're an editor with three keys: Delete, Insert, and Replace. You process word1 from left to right, making it match word2. At each position, you choose the key that minimizes total presses.
+
 ## Interview Context
 
 Edit Distance (Levenshtein Distance) is essential because:
@@ -10,6 +33,25 @@ Edit Distance (Levenshtein Distance) is essential because:
 2. **Real applications**: Spell checkers, DNA alignment, diff tools
 3. **Three operations**: Insert, delete, replace
 4. **Interview favorite**: Meta, Google, Microsoft
+
+---
+
+## When NOT to Use Edit Distance
+
+1. **Fuzzy Matching at Scale**: For searching millions of strings, Edit Distance is O(m×n) per comparison. Use BK-trees, Levenshtein automata, or embedding-based similarity instead.
+
+2. **Operations Have Different Costs**: Standard Edit Distance assumes cost=1 for all operations. If insert costs differ from delete (e.g., keyboard distance), modify the DP accordingly.
+
+3. **Block Operations Allowed**: If you can move/copy entire substrings (like text editors), Edit Distance doesn't model this. Use sequence alignment or diff algorithms.
+
+4. **Only Need Approximate Answer**: For "is edit distance ≤ k" queries, you can prune the DP to only compute a diagonal band of width 2k+1, giving O(n×k) instead of O(m×n).
+
+5. **Strings Are Similar (Low Distance Expected)**: When k is known to be small, use Ukkonen's algorithm or the band optimization for O(n×k) time.
+
+**Recognize Edit Distance Pattern When:**
+- Transform one string to another
+- Operations: insert, delete, replace (with costs)
+- Need minimum operations or similarity measure
 
 ---
 

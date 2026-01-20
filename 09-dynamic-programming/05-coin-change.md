@@ -2,6 +2,26 @@
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
+## Overview
+
+Coin Change is the canonical unbounded knapsack problem where you find the minimum/count of ways to reach a target amount using unlimited coins of given denominations.
+
+## Building Intuition
+
+**Why does Coin Change work with DP?**
+
+1. **Optimal Substructure**: If the optimal way to make amount 11 uses a coin of value 5, then the remaining 6 must also be made optimally. Using a suboptimal solution for 6 would make the overall solution suboptimal.
+
+2. **Overlapping Subproblems**: To make 11, we try subtracting each coin denomination. If coins = [1, 5], we need solutions for 10 and 6. But making 10 also needs 6! Subproblems overlap heavily.
+
+3. **Why Greedy Fails**: Greedy (always use largest coin) fails for coins = [1, 3, 4], amount = 6. Greedy: 4+1+1 = 3 coins. Optimal: 3+3 = 2 coins.
+
+4. **The Unbounded Nature**: Unlike 0/1 knapsack, we can use each coin infinitely. This changes the iteration direction: we iterate forward through amounts so updated values can be reused (allowing multiple uses of same coin).
+
+5. **Mental Model**: Think of building a staircase. To reach step N, you can hop from any step that's exactly one coin-value behind. The minimum hops to N is 1 + minimum hops to the best previous step.
+
+6. **Counting vs Minimizing**: For counting ways, we add possibilities (dp[amount] += dp[amount - coin]). For minimizing coins, we take min (dp[amount] = min(dp[amount], dp[amount - coin] + 1)).
+
 ## Interview Context
 
 Coin Change is a must-know problem because:
@@ -10,6 +30,26 @@ Coin Change is a must-know problem because:
 2. **Two variants**: Min coins (optimization) and count ways (counting)
 3. **Foundation for harder problems**: Knapsack, subset sum
 4. **Interview staple**: Amazon, Google, Meta favorites
+
+---
+
+## When NOT to Use Coin Change Pattern
+
+1. **Limited Coin Usage**: If each coin can only be used once, this is 0/1 Knapsack, not Coin Change. Use backward iteration instead of forward.
+
+2. **Greedy Works for Canonical Systems**: For "canonical" coin systems (like US currency: 1, 5, 10, 25), greedy actually works. Only use DP when coins are arbitrary.
+
+3. **Order Matters (Permutations)**: Coin Change counts combinations (1+2 = 2+1). If order matters, you need different loop ordering (amount outer, coins inner).
+
+4. **Very Large Amounts**: For amount = 10^9 with few coins, DP array is too large. Consider matrix exponentiation or formula-based approaches.
+
+5. **Negative Coin Values**: Coin Change assumes positive denominations. Negative values break the subproblem ordering.
+
+**Recognize Coin Change Pattern When:**
+- Unlimited use of items
+- Target sum/amount to reach
+- Minimize count OR count combinations
+- All values positive
 
 ---
 
@@ -122,8 +162,8 @@ def change(amount: int, coins: list[int]) -> int:
 coins = [1, 2], amount = 3
 
 CORRECT (coins outer - combinations):
-After coin 1: dp = [1, 1, 1, 1]  (1+1+1, 1+1+1, 1+1+1)
-After coin 2: dp = [1, 1, 2, 2]  (add: 2+1)
+After coin 1: dp = [1, 1, 1, 1]  (ways: empty, 1, 1+1, 1+1+1)
+After coin 2: dp = [1, 1, 2, 2]  (add: 2, 2+1)
 Combinations: {1+1+1}, {1+2} = 2 ways
 
 WRONG (amount outer - permutations):

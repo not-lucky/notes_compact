@@ -2,6 +2,26 @@
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
+## Overview
+
+Matrix Chain Multiplication is the canonical interval DP problem where you find the optimal way to parenthesize a sequence of operations.
+
+## Building Intuition
+
+**Why is interval DP needed for matrix chain?**
+
+1. **Order Matters, But Not Linearly**: Matrix multiplication is associative (result is same), but the COST depends on parenthesization. We're not choosing a sequence—we're choosing a STRUCTURE (binary tree of operations).
+
+2. **Interval = Subchain**: dp[i][j] represents the best way to multiply matrices i through j. Every subchain can be split at some point k, giving (i..k) and (k+1..j).
+
+3. **The Split Point Insight**: To multiply matrices i to j, we must eventually do ONE final multiplication that combines two groups. That multiplication has dimensions p[i-1] × p[k] × p[j]. We try all possible k and take the minimum.
+
+4. **Why Iterate by Length**: dp[i][j] depends on dp[i][k] and dp[k+1][j], which are shorter chains. So we must solve shorter chains first. Iterating by length (1, 2, 3, ...) ensures this.
+
+5. **O(n³) Breakdown**: n² subproblems (all i,j pairs), each taking O(n) to solve (trying all split points k). Total: O(n³).
+
+6. **Mental Model**: Think of grouping expressions like ((A×B)×C) vs (A×(B×C)). The binary tree of multiplications can have many shapes. We're finding the tree with minimum total cost.
+
 ## Interview Context
 
 Matrix Chain Multiplication introduces **interval DP**:
@@ -10,6 +30,25 @@ Matrix Chain Multiplication introduces **interval DP**:
 2. **O(n³) pattern**: Iterate by length, split points
 3. **Foundation for harder**: Burst balloons, merge stones
 4. **Classic optimization**: Minimize/maximize over splits
+
+---
+
+## When NOT to Use Interval DP
+
+1. **Linear Dependencies**: If dp[i] only depends on dp[i-1] and dp[i-2], use 1D DP. Interval DP is for range-based dependencies.
+
+2. **O(n³) Is Too Slow**: For n > 500, O(n³) may time out. Some problems have Knuth's optimization reducing to O(n²).
+
+3. **Non-Associative Operations**: Interval DP assumes combining (i..k) and (k+1..j) gives (i..j). If merging isn't associative or has side effects, the model breaks.
+
+4. **Greedy Works**: Some parenthesization problems have greedy solutions (e.g., Huffman coding for optimal merge). Check before using DP.
+
+5. **Graph Structure, Not Interval**: If the problem involves graphs rather than linear sequences, interval DP doesn't apply.
+
+**Recognize Interval DP When:**
+- Combine contiguous ranges optimally
+- Split a range into two subranges
+- Order of operations affects cost but not result
 
 ---
 

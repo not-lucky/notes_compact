@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [01-dp-fundamentals](./01-dp-fundamentals.md), [02-memoization-vs-tabulation](./02-memoization-vs-tabulation.md)
 
+## Overview
+
+1D DP uses a single-dimensional state (dp[i]) representing the answer for position i, the first i elements, or elements ending at i.
+
+## Building Intuition
+
+**Why does 1D DP work for so many problems?**
+
+1. **Sequential Decision Making**: Many problems involve processing elements one at a time, making a decision at each step. The state only needs to track "where we are" (index i), not "how we got here."
+
+2. **State Compression**: Even if multiple paths lead to position i, the optimal answer at i is the same. We don't care about the path—only the result. This is the "principle of optimality."
+
+3. **Pattern Recognition**: Most 1D DP problems fall into a few patterns:
+   - **Fibonacci-like**: dp[i] depends on dp[i-1] and dp[i-2]
+   - **Take/Skip**: At each position, choose to include or exclude
+   - **Best Ending Here**: Track the best subarray/subsequence ending at i
+   - **Prefix Accumulation**: Build answer from left to right
+
+4. **Space Optimization Insight**: If dp[i] only depends on a constant number of previous states (not all of dp[0..i-1]), we can reduce from O(n) to O(1) space by only keeping those states.
+
+5. **Mental Model**: Think of 1D DP as filling a row of boxes from left to right, where each box's value is computed from previous boxes using a fixed formula.
+
 ## Interview Context
 
 1D DP problems are the building blocks:
@@ -10,6 +32,25 @@
 2. **Common patterns**: Same structure appears in many problems
 3. **Quick to solve**: Often warm-up or first questions
 4. **Space optimization**: Usually reducible to O(1) space
+
+---
+
+## When NOT to Use 1D DP
+
+1. **Problem Requires Multiple Dimensions**: If the state needs to track two variables (e.g., position AND remaining capacity), you need 2D DP. Forcing 1D won't work.
+
+2. **All Pairs/Substrings Needed**: Problems like LCS or edit distance inherently need dp[i][j] for all pairs. 1D DP can't express this directly (though space optimization can reduce storage).
+
+3. **Non-Linear Dependencies**: If dp[i] depends on all previous dp[j] values (not just a constant number), you still get O(n²) time even with 1D space.
+
+4. **State Includes More Than Position**: If the optimal answer at position i depends on additional information (like which items were taken), you need more dimensions or a different approach.
+
+5. **Graph Structure**: Grid/tree problems with branching paths often require 2D or tree DP, not linear 1D.
+
+**Signs 1D DP is Appropriate:**
+- Input is a single array/string processed linearly
+- Decision at position i only depends on a constant number of previous positions
+- No "knapsack-like" capacity constraint
 
 ---
 

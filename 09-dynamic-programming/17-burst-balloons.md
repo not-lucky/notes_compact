@@ -2,6 +2,31 @@
 
 > **Prerequisites:** [16-matrix-chain](./16-matrix-chain.md)
 
+## Overview
+
+Burst Balloons is a classic interval DP problem requiring the counterintuitive insight of thinking about the LAST element to process rather than the first.
+
+## Building Intuition
+
+**Why think backwards (last burst, not first)?**
+
+1. **The Problem with "First Burst"**: If we burst balloon i first, its neighbors change. The next burst depends on the new configuration. Tracking all possible configurations is exponential.
+
+2. **The "Last Burst" Insight**: If balloon k is the LAST to burst in range (i, j), then:
+   - All balloons between i and k are already gone
+   - All balloons between k and j are already gone
+   - k's neighbors at burst time are i and j (fixed!)
+
+   This gives a clean recurrence: dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i]×nums[k]×nums[j])
+
+3. **Virtual Boundaries**: We add 1s at both ends ([1] + nums + [1]). This handles edge balloons gracefully—their "missing" neighbors become 1.
+
+4. **State Definition**: dp[i][j] = max coins from bursting ALL balloons strictly between i and j (i and j are NOT burst). This "exclusive" definition makes the recurrence clean.
+
+5. **Same as Matrix Chain**: The structure is identical! In matrix chain, we pick where to make the "final" multiplication. In balloons, we pick the "last" balloon to burst. The O(n³) pattern is the same.
+
+6. **Mental Model**: Instead of asking "what should I do first?", ask "what's the last thing I'll do?" Work backwards. The last balloon bursted sees a predictable environment.
+
 ## Interview Context
 
 Burst Balloons is a FANG+ hard problem because:
@@ -10,6 +35,25 @@ Burst Balloons is a FANG+ hard problem because:
 2. **Interval DP mastery**: Non-obvious state definition
 3. **Tricky boundaries**: Virtual balloons at ends
 4. **Matrix chain connection**: Similar structure
+
+---
+
+## When NOT to Use Burst Balloons Pattern
+
+1. **Order Doesn't Affect Outcome**: If the result is the same regardless of burst order (like simple sum), DP is unnecessary.
+
+2. **No Range Structure**: If removing an element doesn't affect only its range (e.g., global effects), interval DP doesn't apply.
+
+3. **Forward Thinking Works**: Some problems are naturally solved by considering "first" rather than "last." Only use "last" thinking when "first" creates dependency chaos.
+
+4. **Small n (Brute Force)**: For n ≤ 10, brute force all permutations (O(n!)) might be acceptable and simpler to implement.
+
+5. **Different Cost Function**: If bursting depends on more than just neighbors (e.g., global state, history), the standard recurrence breaks.
+
+**Recognize This Pattern When:**
+- Processing elements changes their neighbors
+- "First" thinking leads to complex dependencies
+- Range-based problem with "last processed" insight
 
 ---
 
@@ -23,8 +67,11 @@ Input: nums = [3, 1, 5, 8]
 Output: 167
 
 Explanation:
-nums = [3,1,5,8] → [3,5,8] → [3,8] → [8] → []
-coins = 3*1*5 + 3*5*8 + 1*3*8 + 1*8*1 = 15 + 120 + 24 + 8 = 167
+Burst balloon 1 (value 1): 3*1*5 = 15 → nums = [3,5,8]
+Burst balloon 5 (value 5): 3*5*8 = 120 → nums = [3,8]
+Burst balloon 3 (value 3): 1*3*8 = 24 → nums = [8]
+Burst balloon 8 (value 8): 1*8*1 = 8 → nums = []
+Total: 15 + 120 + 24 + 8 = 167
 ```
 
 ---

@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
+## Overview
+
+0/1 Knapsack is a fundamental optimization problem where you select items (each usable at most once) to maximize value while staying within a weight capacity.
+
+## Building Intuition
+
+**Why is 0/1 Knapsack solved with DP?**
+
+1. **Exponential Choices, Polynomial States**: With n items, there are 2^n possible subsets. But the answer only depends on (current item index, remaining capacity)—just n × W states.
+
+2. **The Include/Exclude Decision**: For each item, we have two choices:
+   - **Exclude item i**: Best value is same as with items 0..i-1 and same capacity.
+   - **Include item i**: Best value is value[i] + best value for remaining capacity (capacity - weight[i]) using items 0..i-1.
+
+   We take the max. This captures all 2^n possibilities efficiently.
+
+3. **Why Backward Iteration (1D DP)**: In the space-optimized version, we iterate capacity backward. Why? If we go forward, dp[w - weight[i]] has already been updated in this iteration—we'd be using the same item twice! Backward ensures we use values from the "previous item" row.
+
+4. **Pseudo-Polynomial Complexity**: O(n × W) looks polynomial, but W is a VALUE (number of possible weights), not the INPUT SIZE (log W bits). If W = 10^9, this is infeasible.
+
+5. **Mental Model**: Imagine packing a backpack before a hike. You consider items one by one. For each item, you ask: "If I take this, is the value gained worth the capacity I lose?" You can only decide based on what you COULD fit before considering this item.
+
 ## Interview Context
 
 0/1 Knapsack is a foundational pattern because:
@@ -10,6 +32,30 @@
 2. **Include/exclude decision**: Binary choice at each step
 3. **Many variations**: Subset sum, partition, target sum
 4. **Space optimization**: 2D → 1D reduction
+
+---
+
+## When NOT to Use 0/1 Knapsack
+
+1. **Unlimited Item Usage**: If items can be reused, use Unbounded Knapsack (forward iteration, not backward).
+
+2. **Very Large Capacity**: If W = 10^9, O(n × W) is infeasible. Consider:
+   - Meeting in the middle (O(2^(n/2)) for small n)
+   - Approximation algorithms
+   - Greedy if items are divisible (fractional knapsack)
+
+3. **Greedy Works (Fractional Knapsack)**: If you can take fractions of items, sort by value/weight ratio and take greedily. DP is unnecessary.
+
+4. **Multiple Knapsacks**: For bin packing or multiple knapsack problems, standard 0/1 DP doesn't apply directly. Use more complex formulations.
+
+5. **Non-Additive Objectives**: If total value isn't the sum of individual values (e.g., discounts for combinations), the standard recurrence breaks.
+
+**Recognize 0/1 Knapsack Pattern When:**
+- Each item has weight and value
+- Capacity constraint
+- Each item used at most once
+- Maximize/minimize sum
+- Reduction: Subset Sum, Partition, Target Sum
 
 ---
 

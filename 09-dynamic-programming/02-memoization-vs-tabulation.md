@@ -2,6 +2,28 @@
 
 > **Prerequisites:** [01-dp-fundamentals](./01-dp-fundamentals.md)
 
+## Overview
+
+Both memoization (top-down) and tabulation (bottom-up) are techniques for implementing DP. They achieve the same asymptotic complexity but differ in implementation style, space optimization potential, and debugging ease.
+
+## Building Intuition
+
+**Why do two approaches exist?**
+
+1. **Memoization mirrors human thinking**: When you think about Fibonacci(10), you naturally think "I need Fibonacci(9) and Fibonacci(8) first." This top-down, recursive decomposition is intuitive. Memoization simply adds caching to avoid recomputation.
+
+2. **Tabulation mirrors computation order**: Computers execute sequentially. Tabulation explicitly builds solutions from smallest subproblems up, making dependencies clear and enabling space optimization.
+
+3. **The Trade-off**:
+   - **Memoization**: Easier to write (just add caching to recursion), only solves needed subproblems, but uses call stack and is harder to space-optimize.
+   - **Tabulation**: Requires understanding dependency order upfront, solves all subproblems, but avoids stack overflow and enables O(1) space optimizations.
+
+4. **Mental Model**: Think of memoization as "lazy evaluation with caching"—you only compute what you need. Tabulation is "eager evaluation"—you systematically build the entire solution table.
+
+5. **When each shines**:
+   - Memoization: When many subproblems are never needed (sparse state space), or when the recursive structure is complex.
+   - Tabulation: When you need space optimization, or when the iteration order is straightforward.
+
 ## Interview Context
 
 Understanding both approaches is essential because:
@@ -10,6 +32,30 @@ Understanding both approaches is essential because:
 2. **Space optimization**: Tabulation often easier to optimize
 3. **Interview flexibility**: Solve both ways to impress
 4. **Debugging**: Memoization easier to debug initially
+
+---
+
+## When NOT to Use Each
+
+### When NOT to Use Memoization
+
+1. **Deep Recursion Risk**: Python has a default recursion limit of ~1000. For n = 10,000, memoization will stack overflow. Use `sys.setrecursionlimit()` cautiously or switch to tabulation.
+
+2. **Space Optimization Needed**: When you only need the last few states (like Fibonacci needing only prev2 and prev1), tabulation allows O(1) space. Memoization inherently stores all computed states.
+
+3. **Cache Overhead Matters**: Hash table lookups (O(1) average) have constant overhead. For very tight time constraints or simple recurrences, tabulation's array indexing is faster.
+
+4. **Predictable Memory Usage**: Memoization's cache grows unpredictably. Tabulation allocates exactly what's needed upfront.
+
+### When NOT to Use Tabulation
+
+1. **Sparse State Space**: If only a small fraction of states are actually needed (e.g., subset sum with large capacity but few items), memoization avoids wasted computation.
+
+2. **Complex Dependency Order**: When it's hard to determine which states to fill first (e.g., recursive tree structures), memoization's natural recursion handles dependencies automatically.
+
+3. **Quick Prototyping**: Memoization is faster to write and debug. Use it first, then convert to tabulation if needed.
+
+4. **Multi-dimensional States**: With 3+ dimensions, figuring out the correct loop nesting for tabulation is error-prone. Memoization handles this naturally.
 
 ---
 
