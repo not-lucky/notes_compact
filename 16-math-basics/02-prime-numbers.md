@@ -2,6 +2,35 @@
 
 > **Prerequisites:** [GCD and LCM](./01-gcd-lcm.md) (helpful for understanding coprimality)
 
+## Building Intuition
+
+**The "Indivisible Atoms" Mental Model**
+
+Primes are the "atoms" of numbers—they can't be broken down further:
+- 12 = 2 × 2 × 3 (composite—made of primes)
+- 7 = 7 (prime—can't be factored)
+
+Every number is either prime or a unique product of primes. This is called the Fundamental Theorem of Arithmetic.
+
+**Why Check Only Up to √n**
+
+If n has a factor larger than √n, it must also have one smaller than √n:
+- 100 = 10 × 10 → √100 = 10
+- 100 = 4 × 25 → one factor (4) is less than 10
+
+So if no factor exists up to √n, none exists at all.
+
+**The 6k ± 1 Optimization**
+
+All primes greater than 3 are of the form 6k ± 1:
+- Numbers of form 6k, 6k+2, 6k+4 are divisible by 2
+- Numbers of form 6k+3 are divisible by 3
+- Only 6k+1 and 6k+5 (= 6k-1) can be prime
+
+This lets us check only 2 candidates per 6 numbers instead of all 6.
+
+---
+
 ## Interview Context
 
 Prime number problems test mathematical reasoning and optimization skills. Common interview scenarios include:
@@ -513,6 +542,18 @@ print(factorize_with_spf(60, spf))  # [2, 2, 3, 5]
 | 4 | Super Ugly Number | Medium | Generalized ugly number |
 | 5 | Happy Number | Easy | Digit sum cycle detection |
 | 6 | Perfect Number | Easy | Divisor sum |
+
+---
+
+## When NOT to Use Prime Algorithms
+
+1. **Single check, small n**: For n < 1000, simple trial division is fast enough
+2. **Don't pre-compute sieve for single query**: Sieve is only worth it for multiple queries
+3. **Don't use Miller-Rabin unless needed**: For n < 10^12, trial division is fine
+4. **Don't factor when you just need primality**: Factoring is overkill for "is prime?"
+5. **Don't forget Python's sympy**: `sympy.isprime()` handles edge cases
+
+**Space consideration**: Sieve uses O(n) memory—for n = 10^9, that's ~1GB!
 
 ---
 

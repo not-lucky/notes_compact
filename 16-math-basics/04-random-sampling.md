@@ -2,6 +2,41 @@
 
 > **Prerequisites:** None (standalone topic)
 
+## Building Intuition
+
+**The "Fair Lottery" Mental Model**
+
+Imagine you're running a lottery where people buy tickets as they arrive, but you don't know how many will show up:
+- You can only hold k winning tickets in your hand
+- You must be fair—everyone has equal chance of winning
+- You can't go back to earlier tickets
+
+Reservoir sampling solves this: keep k items, and as new ones arrive, randomly decide whether to swap.
+
+**Why the Math Works**
+
+For selecting 1 item from n:
+- Keep first item with probability 1
+- On item i, replace with probability 1/i
+
+After n items, probability any item is kept:
+```
+P(item k is final) = P(picked at k) × P(survived all later rounds)
+                   = (1/k) × (k/(k+1)) × ((k+1)/(k+2)) × ... × ((n-1)/n)
+                   = 1/n ✓
+```
+
+Each item has exactly 1/n chance—perfectly fair!
+
+**Fisher-Yates: The Perfect Shuffle**
+
+A biased shuffle: `for i, pick random j, swap` gives some permutations higher probability.
+Fisher-Yates: `for i from n-1 to 1, pick j from 0 to i, swap` is provably uniform.
+
+The key difference is shrinking the random range as you go.
+
+---
+
 ## Interview Context
 
 Random sampling algorithms appear when:
@@ -531,6 +566,27 @@ class Solution:
 | 4 | Random Pick Index | Medium | Reservoir with filter |
 | 5 | Random Pick with Blacklist | Hard | Remapping |
 | 6 | Generate Random Point in Circle | Medium | Rejection or sqrt trick |
+
+---
+
+## When NOT to Use These Algorithms
+
+### When NOT to use Reservoir Sampling
+1. **Data fits in memory**: Just store it all and pick randomly
+2. **You can make multiple passes**: Easier approaches exist
+3. **Stream is small and known size**: Simple `random.sample()` works
+
+### When NOT to use Fisher-Yates
+1. **Only need one random element**: Just use `random.choice()`
+2. **Need partial shuffle**: Shuffle only what you need
+3. **Built-in exists**: `random.shuffle()` in Python is already Fisher-Yates
+
+### When NOT to use Weighted Random
+1. **Equal weights**: Use uniform random selection
+2. **Weights change frequently**: Rebuilding prefix sums is O(n)
+3. **Single selection**: Building the structure is overkill
+
+**Common mistake**: Using naive shuffle `for i: swap with random j in [0,n)` which is biased.
 
 ---
 

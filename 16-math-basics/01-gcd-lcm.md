@@ -2,6 +2,42 @@
 
 > **Prerequisites:** None (foundational math concept)
 
+## Building Intuition
+
+**The "Shared Pieces" Mental Model**
+
+Think of GCD as finding the largest "unit" that divides both numbers evenly:
+
+```
+For 48 and 18:
+  48 = 6 × 8
+  18 = 6 × 3
+  GCD = 6 (the shared building block)
+
+For 35 and 15:
+  35 = 5 × 7
+  15 = 5 × 3
+  GCD = 5
+```
+
+**Why the Euclidean Algorithm Works**
+
+The key insight is that GCD doesn't change when you subtract:
+- gcd(48, 18) = gcd(48 - 18, 18) = gcd(30, 18)
+- Keep going: gcd(12, 18) = gcd(12, 6) = gcd(6, 0) = 6
+
+Modulo is just fast subtraction: `48 % 18 = 12` is 48 - 18 - 18 = 12.
+
+**LCM: The Flip Side**
+
+LCM is "how often do these cycles sync up?"
+- Bus A comes every 4 minutes, Bus B every 6 minutes
+- When do they arrive together? Every LCM(4,6) = 12 minutes
+
+Formula: `LCM(a,b) = a × b / GCD(a,b)`
+
+---
+
 ## Interview Context
 
 GCD (Greatest Common Divisor) and LCM (Least Common Multiple) appear frequently in interviews involving:
@@ -418,6 +454,18 @@ print(lcm(2, 3, 4))       # 12
 | 3 | Ugly Number II | Medium | LCM with DP |
 | 4 | Fraction to Recurring Decimal | Medium | GCD for simplification |
 | 5 | X of a Kind in a Deck of Cards | Easy | GCD of all counts ≥ 2 |
+
+---
+
+## When NOT to Use GCD/LCM
+
+1. **When Python has it built-in**: Use `math.gcd()` and `math.lcm()` instead of reimplementing
+2. **When numbers are small**: For n < 20, simple loops work fine
+3. **When you need prime factors anyway**: Prime factorization gives you GCD as a side effect
+4. **When extended GCD isn't needed**: The basic algorithm is simpler
+5. **When one number is always 1**: GCD(1, n) = 1, LCM(1, n) = n—no need to compute
+
+**Common mistake**: Forgetting that LCM can overflow even when inputs fit in int.
 
 ---
 

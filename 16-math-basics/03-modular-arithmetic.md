@@ -2,6 +2,39 @@
 
 > **Prerequisites:** [GCD and LCM](./01-gcd-lcm.md) (for modular inverse), [Prime Numbers](./02-prime-numbers.md) (for prime modulus)
 
+## Building Intuition
+
+**The "Clock" Mental Model**
+
+Think of modular arithmetic like a clock:
+- A 12-hour clock wraps around after 12: 13:00 → 1:00
+- In mod 12: 13 % 12 = 1, 25 % 12 = 1, 37 % 12 = 1
+
+```
+For mod 5:      0 → 1 → 2 → 3 → 4 → 0 → 1 → ...
+Number:         0   1   2   3   4   5   6   ...
+Result mod 5:   0   1   2   3   4   0   1   ...
+```
+
+**Why 10^9 + 7?**
+
+This magic number appears everywhere because:
+1. It's prime (enables Fermat's little theorem for division)
+2. It fits in 32-bit int with room for one multiplication: (10^9)² < 2^63
+3. It's large enough that collision probability is tiny
+
+**The Division Trap**
+
+Addition, subtraction, and multiplication work naturally with mod:
+- (a + b) % m = ((a % m) + (b % m)) % m ✓
+- (a × b) % m = ((a % m) × (b % m)) % m ✓
+
+But division is DIFFERENT:
+- (a / b) % m ≠ ((a % m) / (b % m)) % m ✗
+- You need the modular inverse: (a / b) % m = (a × b⁻¹) % m
+
+---
+
 ## Interview Context
 
 Modular arithmetic is essential for:
@@ -496,6 +529,18 @@ print(nCr_mod(100, 50, fact, inv_fact, MOD))  # Large but computed efficiently
 | 3 | Count Good Numbers | Medium | Modular arithmetic + counting |
 | 4 | String Hashing | Medium | Rolling hash (Rabin-Karp) |
 | 5 | Unique Paths (large grid) | Hard | nCr with modular inverse |
+
+---
+
+## When NOT to Use Modular Arithmetic
+
+1. **When results fit in normal int**: Don't add complexity if overflow isn't a risk
+2. **When you need actual values**: Mod loses information—can't recover original
+3. **When precision matters**: Modular division requires inverse, which can be tricky
+4. **When m isn't prime and you need division**: Modular inverse only exists when gcd(a, m) = 1
+5. **When debugging**: Mod operations make debugging harder—test without mod first
+
+**Common mistake**: Forgetting to handle negative numbers in languages like C++/Java.
 
 ---
 

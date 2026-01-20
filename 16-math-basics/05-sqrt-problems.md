@@ -2,6 +2,35 @@
 
 > **Prerequisites:** [Binary Search](../10-binary-search/README.md) (for integer sqrt)
 
+## Building Intuition
+
+**The "Goldilocks Search" Mental Model**
+
+Finding √n is like finding the perfect temperature:
+- If guess² < n: too cold, go higher
+- If guess² > n: too hot, go lower
+- If guess² = n: just right!
+
+Binary search naturally fits this pattern.
+
+**Why √n Appears Everywhere**
+
+Square root is special because it's the "balance point":
+- If n = a × b, at least one of a or b is ≤ √n
+- This is why primality checking only goes to √n
+- This is why some algorithms have O(√n) complexity (checking divisors)
+
+**Newton's Method: Faster Than Binary Search**
+
+Instead of halving the search range, Newton's method uses calculus:
+- If x is too big, n/x is too small
+- Average them: (x + n/x) / 2 is a better guess
+- Converges quadratically (doubles correct digits each iteration)
+
+For integers, this means ~log(log(n)) iterations vs log(n) for binary search.
+
+---
+
 ## Interview Context
 
 Square root problems test:
@@ -527,6 +556,30 @@ def mySqrt_safe(x: int) -> int:
 | 4 | Perfect Squares | Medium | DP or BFS |
 | 5 | Arranging Coins | Easy | Binary search or quadratic formula |
 | 6 | Kth Smallest in Multiplication Table | Hard | Binary search with counting |
+
+---
+
+## When NOT to Roll Your Own Sqrt
+
+1. **Python 3.8+ exists**: Use `math.isqrt()` for integer sqrt—it's correct and fast
+2. **Floating point is fine**: Use `math.sqrt()` for approximate answers
+3. **Small numbers**: For n < 1000, even a loop works fine
+4. **Precision concerns**: `int(math.sqrt(n))` can be off by 1 for large n—verify with multiplication
+
+### Common Pitfalls
+
+```python
+# WRONG: Can be off by 1 due to float precision
+result = int(math.sqrt(n))
+
+# RIGHT: Verify the result
+result = int(math.sqrt(n))
+if (result + 1) ** 2 == n:
+    result += 1
+
+# BEST: Use math.isqrt (Python 3.8+)
+result = math.isqrt(n)
+```
 
 ---
 

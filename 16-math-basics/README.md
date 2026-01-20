@@ -1,6 +1,33 @@
 # Chapter 16: Math for Interviews
 
-Mathematical concepts appear in technical interviews more often than candidates expect. Unlike competitive programming math (which requires deep number theory), interview math focuses on practical algorithms and number properties that can be implemented efficiently.
+## Building Intuition
+
+**The "Mathematical Shortcut" Mental Model**
+
+Think of math in interviews as a superpower that turns complex problems into simple calculations:
+
+```
+Without math:                     With math:
+Sum 1 to n → Loop n times O(n)    Use n*(n+1)/2 → O(1)
+Check power of 2 → Divide loop    Use n & (n-1) == 0 → O(1)
+Count primes to n → Check each    Use Sieve → O(n log log n)
+```
+
+**Why Math Matters**
+
+Interview math isn't about showing off—it's about recognizing patterns:
+- When you see "divisibility," think GCD/LCM
+- When you see "overflow," think modular arithmetic
+- When you see "random selection from stream," think reservoir sampling
+
+**The Hidden Costs**
+
+Watch for operations that seem O(1) but aren't:
+- `x in list` is O(n), not O(1)
+- String concatenation in a loop is O(n²)
+- Naive primality check is O(n), not O(√n)
+
+---
 
 ## Why Math Matters for Interviews
 
@@ -40,6 +67,18 @@ Mathematical concepts appear in technical interviews more often than candidates 
 1. **Complex expressions**: Sometimes DP or brute force is clearer
 2. **Unknown constraints**: Verify if math approach handles all cases
 3. **Floating point precision**: Use integer math when possible
+
+---
+
+## When NOT to Use Math Tricks
+
+1. **When clarity matters more**: A simple loop is often better than a clever formula
+2. **When constraints are small**: For n < 100, brute force is fine and more readable
+3. **When you don't understand the formula**: Using math you can't explain is risky
+4. **When edge cases multiply**: Math formulas often break for 0, negatives, or boundaries
+5. **When debugging is hard**: Loops are easier to trace than formulas
+
+**The golden rule**: If you use a math formula, be ready to explain WHY it works.
 
 ---
 

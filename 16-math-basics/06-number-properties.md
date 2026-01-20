@@ -2,6 +2,41 @@
 
 > **Prerequisites:** None (standalone topic)
 
+## Building Intuition
+
+**The "Digit Surgery" Mental Model**
+
+Working with digits is like surgery on numbers:
+- `n % 10` extracts the last digit (scalpel)
+- `n // 10` removes the last digit (amputation)
+- Build numbers by `result = result * 10 + digit` (reconstruction)
+
+```
+Extract digits from 123:
+  123 % 10 = 3, 123 // 10 = 12
+   12 % 10 = 2,  12 // 10 = 1
+    1 % 10 = 1,   1 // 10 = 0 (done)
+
+Digits: 3, 2, 1 (right to left)
+```
+
+**The Overflow Trap**
+
+When reversing integers, the result can overflow:
+- 32-bit signed int max: 2,147,483,647
+- Reversing 1,000,000,009 gives 9,000,000,001 → overflow!
+
+Always check BEFORE the operation that would cause overflow.
+
+**Bit Tricks for Powers**
+
+Powers of 2, 3, and 4 have elegant patterns:
+- Power of 2: Only one bit set → `n & (n-1) == 0`
+- Power of 4: Power of 2 AND bit at even position → `n & 0x55555555 != 0`
+- Power of 3: 3^19 = 1162261467 is largest in int range → if n divides it, n is power of 3
+
+---
+
 ## Interview Context
 
 Number property problems test:
@@ -571,6 +606,27 @@ print(plusOne([0]))        # [1]
 | 7 | Excel Sheet Column Number | Easy | Base-26 conversion |
 | 8 | Self Dividing Numbers | Easy | Digit extraction |
 | 9 | Happy Number | Easy | Cycle detection |
+
+---
+
+## When String Conversion is Acceptable
+
+1. **When string is cleaner**: For palindrome check, `str(n) == str(n)[::-1]` is often fine
+2. **When you need individual digits**: Converting to string is O(log n) anyway
+3. **When the interviewer allows it**: Ask if they want math-only solution
+4. **When debugging**: String conversion helps verify logic
+
+### String vs Math Trade-offs
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| Math (% and //) | Shows sophistication, no allocations | Harder to read, easy to mess up |
+| String | Clean, readable, easy to debug | Extra memory, may feel "lazy" |
+
+**When to definitely use math**:
+- When interviewer explicitly requires it
+- When overflow handling is the point
+- When you need half the digits only (palindrome)
 
 ---
 

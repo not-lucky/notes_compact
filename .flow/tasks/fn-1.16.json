@@ -1,14 +1,23 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-20T16:12:15.218951Z",
   "created_at": "2026-01-20T06:54:31.643073Z",
   "depends_on": [],
   "epic": "fn-1",
+  "evidence": {
+    "commits": [
+      "c3fe230"
+    ],
+    "prs": [],
+    "tests": [
+      "grep verification: 7/7 files with Building Intuition, 7/7 files with When NOT"
+    ]
+  },
   "id": "fn-1.16",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.16.md",
-  "status": "todo",
+  "status": "done",
   "title": "Enhance 16-math chapter (7 files)",
-  "updated_at": "2026-01-20T06:54:31.643084Z"
+  "updated_at": "2026-01-20T16:16:57.957818Z"
 }
