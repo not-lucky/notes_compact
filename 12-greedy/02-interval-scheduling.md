@@ -12,6 +12,96 @@ Interval scheduling tests:
 
 ---
 
+## Building Intuition
+
+**The "Room for More" Principle**
+
+Imagine you're scheduling meetings in a single conference room. You want to fit as many meetings as possible. The key insight:
+
+*The earlier a meeting ends, the more time remains for future meetings.*
+
+This is why we sort by END time, not start time. Starting early doesn't help if the meeting runs long—what matters is when you're FREE again.
+
+**Mental Model: The Greedy Host**
+
+Think of yourself as a host who must accept/reject meeting requests one at a time. Your strategy:
+
+```
+Guest requests:  [9-10:30], [9:30-10], [10-11], [10:30-12]
+
+Sort by end time: [9:30-10], [9-10:30], [10-11], [10:30-12]
+
+Decision process:
+1. [9:30-10]: Accept! (ends earliest, leaves most room)
+2. [9-10:30]: Reject (conflicts with [9:30-10])
+3. [10-11]: Accept! (starts after 10, ends at 11)
+4. [10:30-12]: Reject (conflicts with [10-11])
+
+Result: 2 meetings [9:30-10] and [10-11]
+```
+
+**Why NOT Sort by Start Time?**
+
+```
+Activities: [(0, 100), (1, 2), (3, 4)]
+
+Sort by start:     [(0, 100), (1, 2), (3, 4)]
+Greedy picks:      (0, 100) → 1 activity total 😞
+
+Sort by end:       [(1, 2), (3, 4), (0, 100)]
+Greedy picks:      (1, 2), then (3, 4) → 2 activities! 😊
+
+The long-running (0, 100) activity "hogs" the room
+if we pick it first!
+```
+
+**Why NOT Sort by Duration?**
+
+```
+Activities: [(0, 5), (4, 6), (5, 10)]
+Durations:    5       2       5
+
+Sort by duration: [(4, 6), (0, 5), (5, 10)]
+Greedy picks: (4, 6) → blocks both (0, 5) and (5, 10)!
+Result: 1 activity
+
+Optimal: (0, 5), (5, 10) → 2 activities
+```
+
+---
+
+## When NOT to Use Activity Selection
+
+**1. When Activities Have Weights/Values**
+
+If each activity has a different "profit" or value, greedy fails:
+
+```
+Activities: [(0, 5, value=10), (0, 3, value=7), (4, 6, value=8)]
+
+Greedy (by end time): Picks (0, 3), then (4, 6) → value = 15
+Optimal: Pick (0, 5) alone → value = 10? No wait...
+Actually: (0, 3) + (4, 6) = 15, or (0, 5) alone = 10
+
+In this case greedy works! But consider:
+[(0, 10, value=100), (0, 3, value=7), (4, 6, value=8)]
+
+Greedy: (0, 3) + (4, 6) = 15
+Optimal: (0, 10) alone = 100 ← Greedy missed this!
+```
+
+Use **Weighted Interval Scheduling (DP)** for valued activities.
+
+**2. When You Need Exactly K Activities**
+
+If the goal is "select exactly K non-overlapping activities with max total value," that's a constrained optimization problem needing DP.
+
+**3. When Activities Can Be Split**
+
+If activities can start/pause/resume, the problem becomes entirely different (scheduling theory).
+
+---
+
 ## Problem Statement
 
 Given a set of activities with start and end times, select the **maximum number of non-overlapping activities**.

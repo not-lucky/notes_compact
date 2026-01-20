@@ -12,6 +12,96 @@ Meeting rooms tests:
 
 ---
 
+## Building Intuition
+
+**Meeting Rooms I: The "One Room" Question**
+
+Can all meetings fit in a single room? This is just asking: "Do any meetings overlap?"
+
+Think of it as: if we lay all meetings on a timeline, do any of them stack on top of each other?
+
+```
+Meetings: [0,30], [5,10], [15,20]
+
+Timeline:
+0----5----10---15---20---25---30
+|============================|     [0,30]
+     |===|                        [5,10]
+               |=====|            [15,20]
+     ↑
+     Overlap here! Need 2 rooms.
+```
+
+**Meeting Rooms II: The "Peak Concurrency" Question**
+
+How many meetings overlap at the worst moment? That's the minimum number of rooms.
+
+Mental model: Imagine a graph of "meetings in progress" over time:
+
+```
+Time:     0   5   10  15  20  25  30
+Rooms:    1   2    1   2   1   1   0
+              ↑         ↑
+           Peak at 2 rooms needed
+```
+
+**The Three Equivalent Views**
+
+Meeting Rooms II can be solved three ways, all giving the same answer:
+
+1. **Min-Heap (Greedy Room Reuse)**:
+   - Track when each room becomes free
+   - For new meeting: reuse earliest-freeing room if possible
+   - If can't reuse, open new room
+
+2. **Sweep Line (Event Counting)**:
+   - +1 at each meeting start
+   - -1 at each meeting end
+   - Maximum concurrent meetings = answer
+
+3. **Two Pointers (Sorted Events)**:
+   - Sort starts and ends separately
+   - Walk through, counting active meetings
+
+---
+
+## When NOT to Use These Approaches
+
+**1. When Rooms Have Different Capacities**
+
+If rooms have size limits (room A fits 10 people, room B fits 50):
+```
+This becomes a bin packing / assignment problem,
+typically solved with greedy heuristics or optimization.
+```
+
+**2. When Meetings Have Preferences**
+
+If some meetings must be in specific rooms, or some rooms are preferred:
+```
+This becomes a constrained assignment problem.
+May need matching algorithms or constraint satisfaction.
+```
+
+**3. When You Need the Actual Schedule**
+
+If you need to output "meeting X → room Y":
+```
+Heap approach naturally gives this!
+Each pop/push represents room assignment.
+Sweep line only gives the count, not assignments.
+```
+
+**4. When Intervals Can Be Rescheduled**
+
+If you can move meetings to minimize rooms:
+```
+That's job scheduling with flexibility—much harder!
+Our algorithms assume fixed meeting times.
+```
+
+---
+
 ## Meeting Rooms I: Conflict Detection
 
 ### Problem Statement

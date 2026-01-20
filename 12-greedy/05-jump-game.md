@@ -12,6 +12,106 @@ Jump game problems test:
 
 ---
 
+## Building Intuition
+
+**The "Reach" Concept**
+
+Imagine you're hopping across stones in a river. At each stone, you see how far you CAN jump from there. The key insight:
+
+*You don't need to track WHERE you jump—just HOW FAR you can reach.*
+
+```
+nums = [2, 3, 1, 1, 4]
+        ↑
+From index 0, can reach index 0+2=2
+
+But from index 1 (reachable via index 0):
+Can reach index 1+3=4 (the end!)
+
+We never explicitly chose "jump from 0 to 1"—we just tracked that
+reaching index 4 is possible.
+```
+
+**Mental Model: The Expanding Frontier**
+
+Think of your "reachable zone" as water spreading across the array:
+
+```
+nums = [2, 3, 1, 1, 4]
+
+Initial:    [X] [ ] [ ] [ ] [ ]  reach=0
+After i=0:  [X] [X] [X] [ ] [ ]  reach=2 (can see indices 0,1,2)
+After i=1:  [X] [X] [X] [X] [X]  reach=4 (from index 1, jump 3)
+                              ↑
+                           Reached the end!
+```
+
+**Why Greedy Works for Jump Game I**
+
+The crucial observation: *If you can reach position i, you can reach ALL positions 0 through i.*
+
+This means there's no "better path" to worry about—any path reaching position i is equally good for the purpose of reaching position i.
+
+**Jump Game II: "Levels" of Jumps**
+
+For minimum jumps, think of it like BFS levels:
+
+```
+nums = [2, 3, 1, 1, 4]
+
+Jump 0 (start): Can see indices 0
+Jump 1:         Can see indices 1, 2 (reachable from index 0)
+Jump 2:         Can see indices 3, 4 (reachable from indices 1 or 2)
+                Index 4 is the end → 2 jumps!
+
+Level 0: [0]
+Level 1: [1, 2]
+Level 2: [3, 4] ← contains end
+```
+
+Each "level" represents positions reachable with exactly that many jumps.
+
+---
+
+## When NOT to Use the Standard Approach
+
+**1. When Jumps Can Go Backwards**
+
+Jump Game III allows jumping to `i + arr[i]` OR `i - arr[i]`:
+```
+This is no longer a "reach frontier" problem.
+Use BFS/DFS because you can visit the same index multiple ways.
+```
+
+**2. When Jumps Have Costs**
+
+If each jump position has a cost to land on:
+```
+nums = [2, 3, 1, 1, 4]
+cost = [1, 100, 1, 1, 1]
+
+Greedy "minimum jumps" might pick expensive path.
+Need DP: dp[i] = minimum cost to reach index i
+```
+
+**3. When You Must Land on Specific Indices**
+
+If only certain indices are "safe" (like Frog Jump with stones):
+```
+Greedy doesn't work because valid landing spots are sparse.
+Use DP with state = (position, last_jump_size)
+```
+
+**4. When Jump Sizes Have Constraints**
+
+If jump size must follow a pattern (k-1, k, k+1 from last jump):
+```
+This is stateful—the valid jumps depend on history.
+Greedy is stateless by design, so use DP.
+```
+
+---
+
 ## Jump Game I: Can You Reach the End?
 
 ### Problem Statement

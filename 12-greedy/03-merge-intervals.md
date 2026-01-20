@@ -12,6 +12,113 @@ Merge intervals tests:
 
 ---
 
+## Building Intuition
+
+**The Timeline Visualization**
+
+Imagine laying out all intervals on a number line. Overlapping intervals form "clusters." Our goal is to find these clusters and report their spans.
+
+```
+Input: [[1,3], [2,6], [8,10], [15,18]]
+
+Timeline:
+1   2   3   4   5   6   7   8   9  10  11 ... 15  16  17  18
+|---+---|--->
+    |---+---+---+---|
+                        |---+---|
+                                            |---+---+---|
+
+Clusters: [1,6], [8,10], [15,18]
+```
+
+**Why Sort by START Time (Not End)?**
+
+When we sort by start time and scan left-to-right:
+- Each new interval either extends the current cluster OR starts a new one
+- The decision depends only on: "Does this interval START before the current cluster ENDS?"
+
+```
+Sorted by start: [[1,3], [2,6], [8,10], [15,18]]
+
+Scan:
+- [1,3]: Start cluster [1,3]
+- [2,6]: 2 ≤ 3? Yes! Extends cluster to [1,6]
+- [8,10]: 8 ≤ 6? No. New cluster [8,10]
+- [15,18]: 15 ≤ 10? No. New cluster [15,18]
+```
+
+**Why End-Time Sort Doesn't Work Here**
+
+```
+Intervals: [[0,10], [1,2], [3,4]]
+
+Sorted by end: [[1,2], [3,4], [0,10]]
+
+Processing left-to-right:
+- [1,2]: Start with [1,2]
+- [3,4]: 3 > 2, no overlap... new cluster [3,4]
+- [0,10]: 0 > 4? No... 0 ≤ 4? Actually 0 < 1, so it starts BEFORE [1,2]!
+
+We'd need to LOOK BACK and re-merge, defeating the single-pass approach.
+```
+
+When sorted by start, we never need to look back because no future interval can start before the current one.
+
+**The "Extend or Close" Decision**
+
+At each step, we make exactly one decision:
+
+```
+current_cluster = [start, end]
+new_interval = [new_start, new_end]
+
+if new_start <= end:
+    # EXTEND: new interval overlaps/touches current cluster
+    end = max(end, new_end)
+else:
+    # CLOSE: output current cluster, start new one
+    output(current_cluster)
+    current_cluster = new_interval
+```
+
+---
+
+## When NOT to Use Standard Merge
+
+**1. When Intervals Have Weights/Priorities**
+
+If some intervals are "more important" and can override others:
+```
+Intervals: [(0, 10, priority=1), (2, 5, priority=2)]
+Standard merge: [0, 10]
+Weighted: [0, 2) = priority 1, [2, 5] = priority 2, (5, 10] = priority 1
+```
+
+This requires a sweep line with priority tracking.
+
+**2. When You Need to Track Which Intervals Merged**
+
+Standard merge loses the identity of merged intervals. If you need to know "which original intervals are in this merged cluster," maintain additional bookkeeping.
+
+**3. When Intervals Represent Different Resources**
+
+If intervals are for different resources (different meeting rooms, different people), you can't merge across resources.
+
+**4. Non-overlapping Check vs Merge**
+
+Sometimes you just need to check IF any overlap exists (Meeting Rooms I). Full merging is overkill:
+```python
+# Just detect any overlap:
+def has_overlap(intervals):
+    intervals.sort()
+    for i in range(1, len(intervals)):
+        if intervals[i][0] < intervals[i-1][1]:
+            return True
+    return False
+```
+
+---
+
 ## Problem Statement
 
 Given an array of intervals, merge all overlapping intervals.

@@ -12,6 +12,114 @@ Gas station tests:
 
 ---
 
+## Building Intuition
+
+**The "Fuel Balance" Mental Model**
+
+At each station, you gain gas and spend cost. Think of this as a "net gain" at each stop:
+
+```
+gas  = [1, 2, 3, 4, 5]
+cost = [3, 4, 5, 1, 2]
+gain = [-2, -2, -2, +3, +3]  (gas - cost)
+
+If we sum all gains: -2-2-2+3+3 = 0
+Total gain ≥ 0 means enough fuel exists—we just need the right starting point!
+```
+
+**The "Valley and Peak" Insight**
+
+Imagine plotting cumulative fuel as you drive from station 0:
+
+```
+Station:    0    1    2    3    4
+Gain:      -2   -2   -2   +3   +3
+Cumulative:-2   -4   -6   -3    0
+            ↓    ↓    ↓
+                Valley at station 2 (value -6)
+```
+
+The cumulative fuel hits its lowest point at station 2. If we START right after the valley (station 3), we'll have maximum fuel when we eventually wrap around and hit the valley.
+
+```
+Starting at station 3:
+Station:    3    4    0    1    2    3
+Gain:      +3   +3   -2   -2   -2
+Cumulative:+3   +6   +4   +2    0    ← Never goes negative!
+```
+
+**Why Failing at J Rules Out Stations I through J**
+
+This is the key insight that makes single-pass work:
+
+```
+Suppose we start at station I and fail at station J (tank goes negative).
+
+From I to J-1: We had non-negative fuel (otherwise we'd have failed earlier)
+At J: Fuel went negative
+
+Now consider starting at any station K between I and J:
+- We'd have LESS fuel at K than we did coming from I
+  (because we missed the positive gains from I to K-1)
+- If we couldn't make it to J from I, we definitely can't from K
+
+Conclusion: Skip directly to J+1 as the next candidate!
+```
+
+This is why we can solve in O(n)—when we fail, we don't retry from I+1, I+2, etc.
+
+---
+
+## When NOT to Use This Approach
+
+**1. When Fuel Capacity Is Limited**
+
+Real cars have limited tanks:
+```
+If tank capacity is 10, and at some point we'd need to
+hold 15 units, even a valid "start point" might fail.
+
+This requires tracking max tank needed, not just running total.
+```
+
+**2. When There Are Multiple Valid Starts**
+
+The standard problem guarantees unique answer. If duplicates are possible:
+```
+gas  = [1, 1, 1]
+cost = [1, 1, 1]
+gain = [0, 0, 0]
+
+Every station works! Standard algorithm returns 0,
+but the problem might want "all valid starts."
+```
+
+**3. When Stations Can Be Skipped**
+
+If you can skip stations (at a cost), it's no longer greedy:
+```
+gas  = [1, 10, 1]
+cost = [5, 5, 5]
+
+Normal: Start at 1, go 1→2→0→1: 10-5+1-5+1-5 = -3 (fail)
+With skipping: Start at 1, skip station 2, go 1→0→1: different problem!
+```
+
+**4. Non-circular Routes**
+
+If the route is linear (start → end, no wrap), simplify:
+```python
+def can_complete_linear(gas, cost):
+    tank = 0
+    for i in range(len(gas)):
+        tank += gas[i] - cost[i]
+        if tank < 0:
+            return False
+    return True
+```
+
+---
+
 ## Problem Statement
 
 There are `n` gas stations in a circle. You have a car with unlimited tank capacity. At station `i`:

@@ -12,6 +12,93 @@ Greedy basics test:
 
 ---
 
+## Building Intuition
+
+**Why Does Greedy Sometimes Work?**
+
+Imagine you're at a buffet with limited plate space. The greedy strategy is: "Take the best thing you see right now." This works if:
+1. What's "best" doesn't change based on what you've already taken
+2. Taking the best thing now never blocks you from an even better overall outcome
+
+The profound insight is that some problems have this "no regrets" property: making the locally best choice RIGHT NOW is always safe because it's part of SOME optimal solution.
+
+**The "Irrevocable Decision" Model**
+
+Think of greedy as a one-way door. Once you walk through, you can't go back. DP, by contrast, is like exploring a cave system with string to retrace your steps.
+
+```
+Greedy:    Choice A → Choice B → Choice C → Done
+           (Each choice is final, no backtracking)
+
+DP:        Consider A  →  Consider B  →  Consider C
+                ↓             ↓              ↓
+           All options   All options    All options
+                ↓             ↓              ↓
+           Pick best     Pick best      Pick best
+           (Remembers all paths, picks globally best)
+```
+
+**When Does "Locally Best = Globally Best"?**
+
+The magic happens when:
+1. **No dependencies**: Choosing item X doesn't affect the value of item Y
+2. **Monotonic improvement**: Each greedy choice gets you closer to the goal
+3. **Decomposability**: The optimal solution is made of optimal sub-solutions
+
+Counter-example: Why greedy fails for 0/1 knapsack:
+```
+Items: [(value=60, weight=10), (value=100, weight=20), (value=120, weight=30)]
+Capacity: 50
+
+Greedy by value/weight ratio:
+- Item 1: ratio = 6.0 ← Pick first (10kg)
+- Item 2: ratio = 5.0 ← Pick second (30kg total)
+- Item 3: ratio = 4.0 ← Pick third? Can't fit (would need 60kg)
+Result: 60 + 100 = 160
+
+Optimal:
+- Skip item 1
+- Take items 2 + 3: 100 + 120 = 220
+
+The problem: Taking item 1 BLOCKED the better combination.
+This "blocking" is why greedy fails.
+```
+
+---
+
+## When NOT to Use Greedy
+
+**1. Overlapping Subproblems with Dependencies**
+
+When the value of one choice depends on what you've already chosen:
+```
+Coin change [1, 3, 4], amount = 6
+Greedy: 4 + 1 + 1 = 3 coins
+Optimal: 3 + 3 = 2 coins
+
+Choosing 4 first BLOCKED the 3+3 combination.
+```
+
+**2. When You Can't Define a Clear "Greedy Ordering"**
+
+If you can't sort or prioritize elements by a single criterion that guarantees optimality, greedy likely fails.
+
+**3. When All-or-Nothing Constraints Exist**
+
+0/1 Knapsack fails because you can't take partial items. Fractional knapsack works because you CAN take fractions, removing the "blocking" problem.
+
+**4. When Path Dependencies Exist**
+
+If reaching node A via path X gives different options than reaching A via path Y, greedy may miss optimal paths.
+
+**Red Flags:**
+- "Choose exactly k items" (subset selection often needs DP)
+- "Minimize/maximize while satisfying constraints" (often DP or ILP)
+- "Count all ways" (almost always DP)
+- "Is it possible to...with backtracking needed" (DFS/BFS)
+
+---
+
 ## What is a Greedy Algorithm?
 
 A greedy algorithm makes the **locally optimal choice** at each step, hoping to find the **global optimum**.

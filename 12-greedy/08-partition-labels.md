@@ -12,6 +12,130 @@ Partition labels tests:
 
 ---
 
+## Building Intuition
+
+**The "Last Appearance" Rule**
+
+Every character in a partition must have ALL its occurrences in that partition. This means: once you include a character, you must extend the partition to include its LAST occurrence.
+
+```
+s = "ababcbaca"
+     012345678
+
+'a' appears at: 0, 2, 4, 6, 8  → last at 8
+'b' appears at: 1, 3, 5       → last at 5
+'c' appears at: 4, 7          → last at 7
+
+Starting at index 0:
+- We see 'a', must extend to index 8
+- Along the way, we see 'b' (extends to 5) and 'c' (extends to 7)
+- Maximum extension needed: 8
+- First partition: indices 0-8, length 9
+```
+
+**Mental Model: Character "Lifespans"**
+
+Think of each character as having a "lifespan" from first to last occurrence:
+
+```
+s = "ababcbacadefegdehijhklij"
+
+Character lifespans:
+a: |---------|
+b:  |---|
+c:    |---|
+d:           |---|
+e:            |----|
+f:             ||
+g:              ||
+h:                  |---|
+i:                   |-----|
+j:                    |----|
+k:                       ||
+l:                        ||
+
+Overlapping lifespans MUST be in the same partition.
+Non-overlapping lifespans CAN be in different partitions.
+
+Partitions: [a,b,c overlap], [d,e,f,g overlap], [h,i,j,k,l overlap]
+```
+
+**Why This Is Really "Merge Intervals"**
+
+Each character creates an interval [first_occurrence, last_occurrence].
+Overlapping intervals must be in the same partition.
+This is exactly merge intervals!
+
+```
+Character intervals:
+a: [0, 8]
+b: [1, 5]
+c: [4, 7]
+d: [9, 14]
+e: [10, 15]
+...
+
+Merged intervals = partitions:
+[0, 8] (merged a, b, c)
+[9, 15] (merged d, e, ...)
+...
+```
+
+**The Greedy "Extending Horizon" Approach**
+
+We don't need to explicitly build intervals. Just track the "horizon"—the farthest point we must reach:
+
+```
+s = "ababcbaca"
+     012345678
+
+i=0 'a': horizon = max(0, 8) = 8
+i=1 'b': horizon = max(8, 5) = 8
+i=2 'a': horizon = max(8, 8) = 8
+...
+i=8 'a': horizon = 8, i == horizon → partition ends here!
+```
+
+When current index equals horizon, we've seen all occurrences of all characters in this partition.
+
+---
+
+## When NOT to Use Partition Labels Approach
+
+**1. When Partitions Must Have Equal/Fixed Size**
+
+If partitions must be exactly k characters:
+```
+s = "aabb", k = 2
+Partition labels: Can't be applied—it optimizes partition COUNT, not size.
+Need different approach: sliding window or DP.
+```
+
+**2. When You Can Rearrange the String**
+
+If you can reorder characters to minimize partitions:
+```
+s = "abab" → "aabb" → only 2 partitions instead of 1!
+This becomes an optimization problem over permutations.
+```
+
+**3. When Characters Can Be in Multiple Partitions**
+
+The problem assumes each character appears in exactly ONE partition. If duplicates are allowed:
+```
+This is no longer interval merging—each character can have multiple "homes."
+```
+
+**4. When You Need Maximum Partitions with Constraints**
+
+If partitions must satisfy additional constraints (max length, certain characters together):
+```
+This becomes a constrained optimization problem.
+May need DP or greedy with more complex logic.
+```
+
+---
+
 ## Problem Statement
 
 Partition a string into as many parts as possible so that each letter appears in at most one part.

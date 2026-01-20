@@ -12,6 +12,132 @@ Candy distribution tests:
 
 ---
 
+## Building Intuition
+
+**Why Can't We Solve This in One Pass?**
+
+Each child must have more candy than both neighbors if they have a higher rating. One pass only considers one direction:
+
+```
+ratings = [1, 3, 2, 2, 1]
+
+Left-to-right pass (considering left neighbor only):
+candies = [1, 2, 1, 1, 1]
+           ↑  ↑
+           OK: 2 > 1 because 3 > 1
+              But wait: rating[2]=2 > rating[4]=1,
+              yet candies[2]=1 = candies[4]=1 ✗
+
+We need to also look RIGHT!
+```
+
+**The Two-Pass Strategy**
+
+Pass 1: Handle LEFT neighbor relationships
+Pass 2: Handle RIGHT neighbor relationships
+
+```
+ratings = [1, 3, 2, 2, 1]
+
+Initial:     [1, 1, 1, 1, 1]
+
+Left-to-right (if rating[i] > rating[i-1], candy[i] = candy[i-1] + 1):
+i=1: 3 > 1 → candies[1] = 1 + 1 = 2
+i=2: 2 < 3 → no change
+i=3: 2 = 2 → no change
+i=4: 1 < 2 → no change
+Result:      [1, 2, 1, 1, 1]
+
+Right-to-left (if rating[i] > rating[i+1], candy[i] = max(candy[i], candy[i+1] + 1)):
+i=3: 2 > 1 → candies[3] = max(1, 1+1) = 2
+i=2: 2 = 2 → no change
+i=1: 3 > 2 → candies[1] = max(2, 1+1) = 2 (already 2)
+i=0: 1 < 3 → no change
+Result:      [1, 2, 1, 2, 1]
+
+Total: 1 + 2 + 1 + 2 + 1 = 7
+```
+
+**Why Take MAX in the Second Pass?**
+
+The second pass might want to DECREASE candy to satisfy the right neighbor, but we can't violate the left neighbor constraint we already satisfied:
+
+```
+ratings = [1, 2, 87, 87, 87, 2, 1]
+
+After left-to-right: [1, 2, 3, 1, 1, 1, 1]
+                           ↑
+                        Rating 87 got 3 candies
+
+Right-to-left at index 4:
+- Rating[4]=87 > rating[5]=2 → needs more than candies[5]=2
+- candies[4] = max(1, 2+1) = 3
+
+At index 3:
+- Rating[3]=87 = rating[4]=87 → no constraint
+- candies[3] stays 1
+
+The max() ensures we never violate left constraints while satisfying right ones.
+```
+
+**Mental Model: The "Hill" Shape**
+
+Candy distribution creates "hills" where peaks get the most candy:
+
+```
+ratings: 1   2   3   2   1
+candies: 1   2   3   2   1
+             ↑
+            Peak
+
+ratings: 1   3   2   1   4   3
+candies: 1   2   1   1   2   1
+             ↑           ↑
+          Peak         Peak
+
+The two-pass approach naturally builds hills from both sides.
+```
+
+---
+
+## When NOT to Use Two-Pass
+
+**1. When There Are More Complex Constraints**
+
+If constraints involve more than immediate neighbors:
+```
+"Child i must have more candy than ALL children within distance 2 if higher rated"
+
+Two-pass won't work—need to track a window or use different approach.
+```
+
+**2. When Candy Values Are Constrained**
+
+If candy must be between 1 and k, or must be specific values:
+```
+This becomes a constraint satisfaction problem,
+potentially needing backtracking or linear programming.
+```
+
+**3. When You Need Optimal Assignment (Not Just Total)**
+
+If there are multiple valid distributions and you need a specific one:
+```
+ratings = [1, 1, 1]
+Valid:    [1, 1, 1], [2, 1, 1], [1, 1, 2], etc.
+
+Two-pass gives ONE valid answer; finding "all" needs different approach.
+```
+
+**4. When Ratings Can Be Modified**
+
+If you can change ratings to minimize total candy:
+```
+This is an optimization problem over the input, not the output.
+```
+
+---
+
 ## Problem Statement
 
 `n` children stand in a line with ratings. Distribute candies such that:
