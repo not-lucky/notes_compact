@@ -2,6 +2,63 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md), [01-stack-basics](./01-stack-basics.md)
 
+## Overview
+
+A queue is a linear data structure that follows the First-In-First-Out (FIFO) principle. Think of it as a horizontal pipe where elements enter at one end and exit at the other. This ordering makes queues essential for fair scheduling, level-by-level traversal, and any scenario where "first come, first served" matters.
+
+## Building Intuition
+
+**Why does FIFO ordering matter?**
+
+FIFO is the natural ordering for fairness and breadth exploration:
+
+1. **Waiting in line**: The person who arrived first gets served first. Jumping ahead breaks fairness. Every real-world queue—grocery stores, customer support, DMV—uses FIFO.
+
+2. **Printing documents**: If you send document A, then B, then C to a printer, you expect them to print in that order. LIFO would be chaos.
+
+3. **Exploring a maze level-by-level**: When finding the shortest path, you want to explore all options 1 step away before any options 2 steps away. FIFO naturally gives this breadth-first behavior.
+
+**The Core Insight**:
+```
+When all waiting items have equal priority, the oldest
+waiting item should be processed first. This is fairness.
+```
+
+**Stack vs Queue Mental Model**:
+```
+Stack (LIFO): Like a vertical tube—add and remove from the same end
+             Most recent item is always accessible
+             Natural for: "most recent first", nested structures
+
+Queue (FIFO): Like a horizontal pipe—add at one end, remove at other
+              Oldest item is always accessible
+              Natural for: fairness, level-by-level, shortest paths
+```
+
+**Why BFS Uses Queues**: In breadth-first search, you want to explore all nodes at distance k before any nodes at distance k+1. When you discover a neighbor, you add it to the queue (it waits its turn). When you process a node, you take from the front (oldest waiting). This ensures distance-ordered exploration.
+
+**The Hidden Guarantee**: With a queue, if you add items A, B, C, you're guaranteed to process them as A, B, C. This ordering guarantee is why queues are essential for simulation, message passing, and task scheduling.
+
+## When NOT to Use Queues
+
+Queues are the wrong choice when:
+
+1. **Most Recent First**: If the newest item has higher priority (like undo operations), use a stack instead. Example: browser back button needs LIFO.
+
+2. **Priority-Based Processing**: If items have different priorities (not just arrival order), use a priority queue (heap) instead. Example: emergency room triage.
+
+3. **Random Access Needed**: If you need to access or modify items in the middle, use a list or deque. Queues only expose front and back.
+
+4. **Both Ends Matter**: If you frequently need to add/remove from both ends, use a deque (double-ended queue) instead.
+
+5. **Need to Find or Search**: If you need to check if an item exists or find its position, queues don't support efficient search—use a set or map.
+
+**Red Flags in Interviews**:
+- "Process most recent first" → Use stack
+- "Higher priority items should be processed first" → Use heap
+- "Find if element exists in the structure" → Use set/map
+- "Access elements by index" → Use array/list
+
 ## Interview Context
 
 Queues are fundamental because:

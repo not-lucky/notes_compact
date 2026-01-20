@@ -2,6 +2,84 @@
 
 > **Prerequisites:** [02-queue-basics](./02-queue-basics.md), [04-monotonic-stack](./04-monotonic-stack.md)
 
+## Overview
+
+A monotonic queue (or monotonic deque) is a double-ended queue that maintains elements in sorted order while also supporting efficient removal of expired elements. It combines the monotonic property of monotonic stacks with the sliding window capability of queues, making it perfect for problems like "maximum/minimum in every sliding window."
+
+## Building Intuition
+
+**Why does a monotonic deque solve sliding window max/min?**
+
+The key insight is recognizing which elements can never be the answer:
+
+1. **Dominance principle**: In a window, if element A comes before element B and A ≤ B, then A can never be the maximum of any window containing B. Why? Because any window containing A also contains B (since B comes after A), and B ≥ A.
+
+2. **Expiration principle**: Elements outside the current window are irrelevant. We need to efficiently remove them.
+
+**The Core Insight**:
+```
+An element is only useful if:
+1. It might be the maximum (no larger element to its right in the window)
+2. It's still in the current window
+
+We can maintain exactly these "useful" elements in a monotonic deque.
+```
+
+**Worked Example - Sliding Window Maximum (k=3)**:
+```
+Array: [1, 3, -1, -3, 5, 3, 6, 7]
+
+i=0: push 0          deque: [0]       (values: [1])
+i=1: 3 > 1, pop 0    deque: []
+     push 1          deque: [1]       (values: [3])
+i=2: -1 < 3, push 2  deque: [1,2]     (values: [3,-1])
+     Window [0,1,2], max = deque[0] = 3
+
+i=3: -3 < -1, push 3 deque: [1,2,3]   (values: [3,-1,-3])
+     Check: 1 >= 3-3+1=1 ✓ (index 1 still in window)
+     Window [1,2,3], max = 3
+
+i=4: 5 > -3, pop 3   deque: [1,2]
+     5 > -1, pop 2   deque: [1]
+     5 > 3, pop 1    deque: []
+     push 4          deque: [4]       (values: [5])
+     Window [2,3,4], max = 5
+
+...and so on
+```
+
+**Why We Need a Deque (Not Just Stack)**:
+- **Pop from back**: Remove elements smaller than the new element (maintaining monotonic property)
+- **Pop from front**: Remove elements outside the window (maintaining window constraint)
+- A stack only allows pop from one end, but we need both!
+
+**Mental Model**: Imagine a "hall of champions" where only potential winners stay. When a new contender arrives:
+1. Anyone weaker (to the right of the door) is kicked out—they'll never win
+2. Anyone whose time has passed (too old) leaves through the other door
+3. The current champion (front) is the window maximum
+
+## When NOT to Use Monotonic Deques
+
+Monotonic deques are the wrong choice when:
+
+1. **No Fixed Window Size**: If the window size varies or there's no sliding window concept, consider segment trees or other structures.
+
+2. **Need Both Max AND Min**: A single monotonic deque tracks one extreme. For both, you need two deques (one increasing, one decreasing).
+
+3. **Window Contains Complex Objects**: If comparison is expensive or objects have multiple sortable dimensions, other approaches may be simpler.
+
+4. **Updates Within Window**: If you need to update values inside the window (not just add/remove at ends), monotonic deques don't support this—use segment trees.
+
+5. **Non-Contiguous Windows**: Monotonic deques assume contiguous sliding windows. For windows with gaps or jumps, different techniques are needed.
+
+**Alternative Approaches**:
+| Scenario | Better Approach |
+|----------|-----------------|
+| No fixed window | Segment tree |
+| Both max and min | Two monotonic deques |
+| Updates in window | Balanced BST or segment tree |
+| One-time query | Linear scan or heap |
+
 ## Interview Context
 
 The sliding window maximum problem is a **classic hard problem** at FANG+ companies because:

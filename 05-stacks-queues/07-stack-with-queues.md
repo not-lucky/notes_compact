@@ -2,6 +2,82 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md), [02-queue-basics](./02-queue-basics.md)
 
+## Overview
+
+This problem asks you to implement a stack (LIFO) using only queue (FIFO) operations. The core challenge is that queues give you the oldest element while stacks need the newest. The solution involves rearranging elements after each push so the most recent element becomes accessible at the front.
+
+## Building Intuition
+
+**Why is this conversion hard?**
+
+The fundamental conflict:
+- **Queue**: Gives you the oldest element (front)
+- **Stack**: Needs the newest element (top)
+
+**The Key Insight**:
+```
+After every push, we can rearrange the queue so that the newest
+element moves to the front. This makes it "look like" a stack
+from the perspective of pop operations.
+```
+
+**How Rotation Works**:
+```
+Starting queue: [A, B, C] (A is front, C is back)
+
+Push D:
+  1. Enqueue D: [A, B, C, D]
+  2. Rotate (move n-1 elements to back):
+     Dequeue A, enqueue A: [B, C, D, A]
+     Dequeue B, enqueue B: [C, D, A, B]
+     Dequeue C, enqueue C: [D, A, B, C]
+  3. Now D is at front (like stack top!)
+
+Pop:
+  Just dequeue from front: returns D, queue is [A, B, C]
+```
+
+**Why This Works**: After rotation, elements are ordered newest-to-oldest from front to back. This is exactly LIFO order! Each pop takes the front (newest), and each push places the new element at front.
+
+**The Trade-off**:
+```
+Push-costly approach:
+- Push: O(n) - rotate after adding
+- Pop: O(1) - just dequeue
+
+Pop-costly approach:
+- Push: O(1) - just enqueue
+- Pop: O(n) - rotate before removing
+
+You can't avoid O(n) somewhere—you're converting FIFO to LIFO.
+```
+
+**Mental Model**: Imagine a circular conveyor belt (the queue). When you add a new package (push), you rotate the belt until your package is at the pickup point (front). Now whenever someone picks up (pop), they always get the most recently added package.
+
+## When NOT to Use This Pattern
+
+Implementing stack with queues is wrong when:
+
+1. **You Have a Stack Available**: This is an interview exercise, not a real-world pattern. If you have a stack, just use it.
+
+2. **Performance Matters**: Both approaches have O(n) for one operation. If you need O(1) for all operations, use a real stack.
+
+3. **Memory is Constrained**: The rotation approach doesn't save memory—it uses O(n) either way.
+
+4. **Two-Queue Approach Wastes Space**: The two-queue solution uses twice the memory of a single-queue approach with no performance benefit.
+
+**When This IS Useful**:
+- Interview questions testing your understanding
+- Systems where you only have queue primitives (rare)
+- Educational purposes to understand LIFO/FIFO relationships
+
+**Important Limitation**:
+```
+Unlike Queue-with-Stacks (which achieves O(1) amortized),
+Stack-with-Queues cannot achieve O(1) amortized for all operations.
+The best you can do is O(n) for push OR pop.
+```
+
 ## Interview Context
 
 This problem is a **classic design question** at FANG+ companies because:

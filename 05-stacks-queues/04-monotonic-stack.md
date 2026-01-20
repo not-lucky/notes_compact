@@ -2,6 +2,67 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md)
 
+## Overview
+
+A monotonic stack is a stack that maintains elements in sorted order (all increasing or all decreasing) from bottom to top. When pushing a new element, we pop all elements that violate the monotonic property. This simple modification transforms a basic stack into a powerful tool for solving "next greater/smaller element" problems in O(n) time.
+
+## Building Intuition
+
+**Why does maintaining sorted order help?**
+
+The key insight is what information we gain from popping:
+
+1. **When we pop an element**: We've found its "answer"—the first element that breaks its dominance. If we're maintaining a decreasing stack and pop element X because element Y is larger, then Y is X's "next greater element."
+
+2. **Why we can pop confidently**: Once X is dominated by Y, X can never be the answer for any future element. If Z comes after Y and is looking for its next greater, Z will either be stopped by Y (if Y > Z) or go past Y. Either way, X is irrelevant.
+
+**The Core Insight**:
+```
+In a monotonic stack, popping an element means we've found its answer.
+The new element that caused the pop is the answer.
+```
+
+**Worked Example - Next Greater Element**:
+```
+Array: [2, 1, 5, 6, 2, 3]
+
+i=0: push 2       stack: [2]        (start building)
+i=1: push 1       stack: [2,1]      (1 < 2, still decreasing)
+i=2: 5 > 1, pop   stack: [2]        → 1's answer is 5
+     5 > 2, pop   stack: []         → 2's answer is 5
+     push 5       stack: [5]
+i=3: 6 > 5, pop   stack: []         → 5's answer is 6
+     push 6       stack: [6]
+i=4: push 2       stack: [6,2]      (2 < 6, still decreasing)
+i=5: 3 > 2, pop   stack: [6]        → 2's answer is 3
+     push 3       stack: [6,3]
+
+Elements left (6, 3) have no next greater.
+```
+
+**Why O(n)?**: Each element is pushed exactly once and popped at most once. Even though we have nested loops, the total number of operations is bounded by 2n.
+
+**Mental Model**: Think of people standing in a line by height (decreasing from left). When a tall person joins at the right, all shorter people in front of them "see" the tall person as their "next taller person to the right" and can leave the line. Only people taller than the new person stay.
+
+## When NOT to Use Monotonic Stacks
+
+Monotonic stacks are the wrong choice when:
+
+1. **No "Next/Previous Boundary" Question**: If you're not looking for the first element that breaks a property (greater, smaller, etc.), you probably don't need this pattern.
+
+2. **Need All Pairs, Not Just Next**: If you need to find all greater elements (not just the first one), you need a different approach like sorting or binary search.
+
+3. **Non-Comparable Elements**: If elements can't be ordered (like strings without a custom comparison), monotonic stacks don't apply.
+
+4. **Dynamic Data**: Monotonic stacks work best for single-pass problems. If elements are inserted/deleted dynamically, consider balanced BSTs or segment trees.
+
+5. **2D Problems Without Reduction**: Monotonic stacks solve 1D problems. For 2D grids, you often need to reduce rows/columns to 1D first (like in maximal rectangle).
+
+**Signs You Need a Different Approach**:
+- "Find all elements greater than X" → Sorting or binary search
+- "Count pairs with property" → Often two pointers or hashing
+- "Queries on ranges with updates" → Segment tree or Fenwick tree
+
 ## Interview Context
 
 Monotonic stacks are a **high-value interview pattern** at FANG+ companies because:

@@ -2,6 +2,56 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)
 
+## Overview
+
+A stack is a linear data structure that follows the Last-In-First-Out (LIFO) principle. Think of it as a vertical container where you can only access the top element. This simple constraint makes stacks surprisingly powerful for solving problems involving nested structures, undo operations, and depth-first traversal.
+
+## Building Intuition
+
+**Why does LIFO ordering matter?**
+
+Think about how you naturally handle nested activities in real life:
+
+1. **Reading email chains**: You start with the latest reply (most recent), then work backward to understand context. The last message you received is the first you read—that's LIFO.
+
+2. **Putting on and taking off clothes**: You put on your shirt, then jacket. To undress, you remove the jacket first, then the shirt. The last item on is the first item off.
+
+3. **Navigating web pages**: You click through pages A → B → C. The back button returns to C's predecessor (B), not the original page (A). Your browser history is a stack.
+
+**The Core Insight**:
+```
+When processing nested or reversible structures, the most recent
+incomplete item must be resolved before returning to earlier items.
+```
+
+**Why this matters for algorithms**: Many problems have this "most recent first" property:
+- **Matching brackets**: The most recently opened bracket must close first
+- **Function calls**: The most recently called function must return first
+- **Undo systems**: The most recent action is undone first
+- **DFS traversal**: The most recently discovered path is explored first
+
+**Mental Model**: Imagine a narrow pipe where you can only add or remove balls from one end. This constraint forces LIFO ordering. The "cost" of this constraint is that you can't access middle elements. The "benefit" is that push/pop are O(1) and you automatically get LIFO ordering without any bookkeeping.
+
+## When NOT to Use Stacks
+
+Stacks are the wrong choice when:
+
+1. **Random Access Needed**: If you frequently need to access elements by position (not just the top), use an array or list instead. Stacks only expose the top element.
+
+2. **FIFO Order Required**: If you need first-in-first-out ordering (like a waiting line), use a queue instead. Example: task schedulers that process oldest tasks first.
+
+3. **Multiple Accesses Per Element**: If you need to peek at multiple elements simultaneously (like comparing top-3 items), a stack's single-element access is limiting.
+
+4. **Frequent Middle Operations**: If you need to insert or remove from the middle, a linked list or deque is more appropriate.
+
+5. **Size Matters More Than Order**: If you just need to track min/max/size without ordering, use simpler counters or heaps.
+
+**Red Flags in Interviews**:
+- "Process elements in arrival order" → Use queue
+- "Access the kth element" → Use array/list
+- "Find median of elements" → Use heaps
+- "Need both ends" → Use deque
+
 ## Interview Context
 
 Stacks are fundamental because:

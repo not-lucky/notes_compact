@@ -2,6 +2,78 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md)
 
+## Overview
+
+The valid parentheses problem asks whether a string of brackets is properly nested and matched. It's the quintessential stack problem—demonstrating why LIFO ordering naturally solves nested structure validation. Every closing bracket must match the most recently opened unmatched bracket.
+
+## Building Intuition
+
+**Why does a stack solve bracket matching?**
+
+Think about how you naturally check brackets in your head:
+
+1. **When you see an opening bracket**: You "remember" it needs a match. You're adding a mental note.
+
+2. **When you see a closing bracket**: You check if it matches your "most recent unmatched opening." If it does, you can forget that opening bracket.
+
+3. **Why "most recent"?**: Because of nesting! In `([])`, when you see `]`, you must match the `[` that opened most recently—not the `(` that opened first.
+
+**The Core Insight**:
+```
+Nested structures have an "inside-out" property: the innermost
+pair must close before outer pairs. This is exactly LIFO ordering.
+```
+
+**Visual proof of why stack works**:
+```
+Expression: ( [ { } ] )
+            ↑
+            Open '(' - push, wait for match
+              ↑
+              Open '[' - push, wait for match
+                ↑
+                Open '{' - push, wait for match
+                  ↑
+                  Close '}' - must match top ('{') ✓
+                    ↑
+                    Close ']' - must match top ('[') ✓
+                      ↑
+                      Close ')' - must match top ('(') ✓
+
+The closing order is exactly reverse of opening order. That's LIFO.
+```
+
+**Why NOT a queue or counter?**: A simple counter (count + for open, - for close) fails because it doesn't track types. `([)]` has balanced counts but wrong order. A queue fails because `)][(` would incorrectly match `[` with `]` when we need LIFO matching.
+
+**Mental Model**: Imagine stacking plates with colors. You stack red, then blue, then green. When removing, you must remove green first, then blue, then red. If someone hands you a blue lid, it doesn't fit the green plate on top—invalid!
+
+## When NOT to Use This Pattern
+
+The stack-based parentheses pattern is wrong when:
+
+1. **Order Doesn't Matter**: If you just need to count if there are equal opens and closes (not caring about nesting), simple counters work. Example: "Do we have same number of `(` and `)`?" doesn't need a stack.
+
+2. **Wildcards Allow Flexibility**: For problems like "valid parenthesis string with `*`" (where `*` can be anything), the stack approach becomes complex. Greedy range tracking often works better.
+
+3. **Single Bracket Type**: For just `()`, you don't need a stack at all—just count balance and ensure it never goes negative.
+
+4. **Non-Nested Matching**: If brackets don't need to nest properly (like HTML tags that can overlap), stack matching doesn't apply.
+
+**Simpler Alternative for Single Type**:
+```python
+# No stack needed for just '(' and ')'
+def is_valid_simple(s: str) -> bool:
+    balance = 0
+    for c in s:
+        if c == '(':
+            balance += 1
+        elif c == ')':
+            balance -= 1
+            if balance < 0:  # More closes than opens so far
+                return False
+    return balance == 0
+```
+
 ## Interview Context
 
 The valid parentheses problem is one of the most common interview questions because:

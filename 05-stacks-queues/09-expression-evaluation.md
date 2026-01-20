@@ -2,6 +2,106 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md), [03-valid-parentheses](./03-valid-parentheses.md)
 
+## Overview
+
+Expression evaluation uses stacks to handle operator precedence and parentheses in mathematical expressions. The key insight is that stacks naturally handle nested structures (parentheses) and can defer operations until we know what comes next (precedence). This is how calculators and compilers work under the hood.
+
+## Building Intuition
+
+**Why do stacks solve expression evaluation?**
+
+Two challenges make expressions tricky:
+1. **Operator precedence**: `2 + 3 * 4` = 14, not 20 (multiply before add)
+2. **Parentheses**: `(2 + 3) * 4` = 20 (override precedence)
+
+**The Key Insight for Precedence**:
+```
+We can't evaluate an operator immediately because we don't know
+what comes next. In "2 + 3 * 4", we can't compute "2 + 3" right away
+because "*" has higher precedence and should happen first.
+
+Solution: Delay low-precedence operations by pushing to a stack.
+When we see a high-precedence operator, we evaluate it immediately.
+```
+
+**How Delayed Evaluation Works**:
+```
+Expression: 2 + 3 * 4
+
+Token  Action                   Stack
+2      Push 2                   [2]
++      Push + (wait for later)  [2, +] (can't compute yet)
+3      Push 3                   [2, +, 3]
+*      Higher precedence!       Keep 3, remember we need to multiply
+4      Push 4                   [...]
+End    Now evaluate:
+       - 3 * 4 = 12 (high precedence first)
+       - 2 + 12 = 14 (then lower precedence)
+```
+
+**The Key Insight for Parentheses**:
+```
+Parentheses create a "sub-expression" that must be evaluated completely
+before continuing the outer expression. This is a nested structure!
+
+Solution: When we see '(', save our current context and start fresh.
+When we see ')', finish the sub-expression and restore context.
+```
+
+**How Parentheses Work**:
+```
+Expression: 1 - (2 + 3)
+
+Token  Action                   Stack      Result
+1      num = 1                  []         result = 0
+-      result += 1*1 = 1        []         result = 1, sign = -1
+(      Save context!            [1, -1]    result = 0, sign = 1
+2      num = 2                  [1, -1]
++      result += 1*2 = 2        [1, -1]    result = 2, sign = 1
+3      num = 3                  [1, -1]
+)      result += 1*3 = 5        [1, -1]
+       Pop sign: result *= -1   []         result = -5
+       Pop old_result: += 1     []         result = -4
+```
+
+**Why Postfix (RPN) is Simpler**:
+```
+Infix:   2 + 3 * 4  (needs precedence rules)
+Postfix: 2 3 4 * +  (no precedence needed!)
+
+In postfix, operators come after their operands.
+Evaluation: read left-to-right, apply each operator to the top two stack values.
+
+2 3 4 * +
+  Stack: [2]
+  Stack: [2, 3]
+  Stack: [2, 3, 4]
+  * : pop 4, 3, push 3*4=12 → [2, 12]
+  + : pop 12, 2, push 2+12=14 → [14]
+```
+
+## When NOT to Use Stack-Based Evaluation
+
+Stack-based expression evaluation is wrong when:
+
+1. **Expressions Are Simple**: For just `+` and `-` (no precedence issues), you can evaluate left-to-right without a stack.
+
+2. **Expressions Are Parsed Already**: If you have an AST (abstract syntax tree), use recursive evaluation instead of stack manipulation.
+
+3. **You Need Optimization**: For repeated evaluation of the same expression, compiling to bytecode or machine code is faster.
+
+4. **Expressions Have Variables**: For expressions like `a + b * c`, you need a symbol table and more infrastructure.
+
+5. **Custom Operators Exist**: For user-defined operators with custom precedence, parsing becomes more complex than stacks can easily handle.
+
+**Alternative Approaches**:
+| Scenario | Better Approach |
+|----------|-----------------|
+| Simple +/- only | Linear scan |
+| Pre-parsed AST | Recursive tree traversal |
+| Repeated evaluation | Compile to bytecode |
+| Complex expressions | Parser generator (ANTLR, etc.) |
+
 ## Interview Context
 
 Expression evaluation is a **classic interview topic** at FANG+ companies because:

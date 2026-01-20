@@ -2,6 +2,84 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md)
 
+## Overview
+
+The Min Stack problem asks you to design a stack that supports push, pop, top, and retrieving the minimum element—all in O(1) time. The key insight is that we can trade space for time by tracking the minimum at each "level" of the stack, since the minimum only changes when we push or pop.
+
+## Building Intuition
+
+**Why is tracking the minimum hard?**
+
+In a normal stack, finding the minimum requires scanning all elements—O(n). The challenge is maintaining O(1) access to the minimum as elements come and go.
+
+**The Key Insight**:
+```
+The minimum of a stack only depends on what's currently in the stack.
+If we know the minimum when there are k elements, and we pop one,
+the minimum of the remaining k-1 elements is what it was before we
+pushed that element.
+
+We can "remember" the minimum at each stack level!
+```
+
+**Why an Auxiliary Stack Works**:
+
+Imagine we push elements 3, 2, 5, 1:
+```
+Main stack:    Min stack:
+[3]            [3]         ← min is 3
+[3,2]          [3,2]       ← min is 2
+[3,2,5]        [3,2,2]     ← min is still 2 (5 didn't change it)
+[3,2,5,1]      [3,2,2,1]   ← min is 1
+
+If we pop 1:
+[3,2,5]        [3,2,2]     ← min is back to 2 (from min_stack top)
+```
+
+The min_stack tracks "what was the minimum at this stack height?" When we pop, both stacks shrink together, and the min_stack top is always the current minimum.
+
+**Why NOT Just Track a Single Min Variable?**
+
+Single variable fails on pop:
+```
+Push 3: min = 3
+Push 2: min = 2
+Push 1: min = 1
+Pop 1:  min = ??? (we forgot that 2 was the previous min!)
+```
+
+By tracking min at each level, we never "forget" previous minimums.
+
+**Space Optimization Intuition**:
+
+If we push 5, 4, 3, 2, 1, each is a new minimum → min_stack = [5,4,3,2,1].
+But if we push 1, 2, 3, 4, 5, only 1 is ever a minimum → min_stack = [1,1,1,1,1].
+
+The optimized version only pushes to min_stack when the value is ≤ current min, saving space when values are mostly increasing.
+
+## When NOT to Use This Pattern
+
+The auxiliary stack pattern is wrong when:
+
+1. **Need Other Statistics**: If you need median, mode, or percentiles (not just min/max), you need different structures like balanced BSTs or multiple heaps.
+
+2. **Memory is Critical**: The auxiliary stack doubles memory usage. In memory-constrained environments, the mathematical encoding trick (storing differences) uses O(1) extra space.
+
+3. **Need to Pop Specific Values**: If you need `popMin()` or `popMax()` (remove the min/max element wherever it is), you need sorted structures like balanced BSTs with lazy deletion.
+
+4. **Queue Instead of Stack**: For a min queue, you need a monotonic deque instead, since FIFO ordering changes which elements can be removed.
+
+5. **Multiple Data Structures Share Min**: If multiple containers need a shared minimum, consider a global priority queue instead.
+
+**Alternatives by Use Case**:
+| Need | Structure |
+|------|-----------|
+| Min/Max of stack | Auxiliary stack |
+| Min/Max of queue | Monotonic deque |
+| PopMin/PopMax | Sorted list or heap |
+| Median | Two heaps |
+| kth smallest | Balanced BST or order statistic tree |
+
 ## Interview Context
 
 The Min Stack problem is a **classic design question** at FANG+ companies because:

@@ -2,6 +2,96 @@
 
 > **Prerequisites:** [04-monotonic-stack](./04-monotonic-stack.md)
 
+## Overview
+
+Histogram problems ask you to find the largest rectangle that can be inscribed in a histogram (bar chart). The key insight is that for any rectangle to be valid, it must use one of the bar heights as its limiting height. A monotonic stack efficiently finds, for each bar, how far left and right it can extend before hitting a shorter bar.
+
+## Building Intuition
+
+**Why is finding the largest rectangle hard?**
+
+The brute force approach: For each bar, expand left and right until you hit a shorter bar. This is O(n) per bar = O(n²) total.
+
+**The Key Insight**:
+```
+For any bar to be the height of a rectangle, it can extend left
+until it hits a shorter bar, and extend right until it hits a shorter bar.
+
+If we know the "first shorter bar on the left" and "first shorter bar
+on the right" for each bar, we can compute the rectangle width!
+```
+
+**Why Monotonic Stack?**
+
+Finding "first shorter on left/right" is exactly what monotonic stacks do!
+
+```
+heights = [2, 1, 5, 6, 2, 3]
+
+For bar at index 2 (height 5):
+- First shorter on left: index 1 (height 1)
+- First shorter on right: index 4 (height 2)
+- Width: 4 - 1 - 1 = 2
+- Area: 5 × 2 = 10
+
+This is the maximum rectangle!
+```
+
+**The Elegant Single-Pass Solution**:
+
+Instead of two passes (one for left boundaries, one for right), we can do it in one pass:
+
+```
+Key observation: When we pop a bar from the stack, the current
+index is its right boundary, and the new stack top is its left boundary!
+
+heights = [2, 1, 5, 6, 2, 3] + [0] (sentinel)
+
+i=0: push 0, stack=[0]
+i=1: height[0]=2 > 1, pop 0
+     Right boundary: 1, Left boundary: none → width = 1
+     Area = 2 × 1 = 2
+     push 1, stack=[1]
+i=2: push 2, stack=[1,2]
+i=3: push 3, stack=[1,2,3]
+i=4: height[3]=6 > 2, pop 3
+     Right: 4, Left: 2 → width = 4-2-1 = 1
+     Area = 6 × 1 = 6
+     height[2]=5 > 2, pop 2
+     Right: 4, Left: 1 → width = 4-1-1 = 2
+     Area = 5 × 2 = 10  ← Maximum!
+     push 4, stack=[1,4]
+...
+```
+
+**Mental Model**: Imagine you're stacking people by height (increasing from bottom). When a short person joins:
+1. All taller people in front get their "rightmost extent" (they can't extend past the short person)
+2. Their "leftmost extent" is whoever was behind them in the stack
+3. You calculate each tall person's rectangle as they leave
+
+## When NOT to Use This Pattern
+
+The histogram rectangle pattern is wrong when:
+
+1. **Rectangles Don't Need to Be Axis-Aligned**: If rectangles can be rotated, this approach doesn't apply.
+
+2. **Non-Integer Heights**: For continuous functions, you need calculus-based optimization or discretization.
+
+3. **Bars Can Have Gaps**: The standard approach assumes all bars are adjacent. Gaps require modifications.
+
+4. **2D Without Row Structure**: The maximal rectangle in matrix works by treating each row as a histogram. If there's no natural row structure, this doesn't apply.
+
+5. **You Need All Rectangles**: If you need to enumerate all possible rectangles (not just the largest), different approaches are needed.
+
+**Related Problems and Their Approaches**:
+| Problem | Approach |
+|---------|----------|
+| Largest rectangle in histogram | Monotonic stack |
+| Maximal rectangle in binary matrix | Per-row histograms + monotonic stack |
+| Trapping rain water | Monotonic stack OR two pointers |
+| Container with most water | Two pointers (not monotonic stack) |
+| Maximal square in binary matrix | Dynamic programming (not stack) |
+
 ## Interview Context
 
 Histogram problems are **classic hard problems** at FANG+ companies because:

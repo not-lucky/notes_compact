@@ -2,6 +2,97 @@
 
 > **Prerequisites:** [01-stack-basics](./01-stack-basics.md), [02-queue-basics](./02-queue-basics.md)
 
+## Overview
+
+This problem asks you to implement a queue (FIFO) using only stack (LIFO) operations. Unlike stack-with-queues, this problem has an elegant O(1) amortized solution! The key insight is that two stacks can simulate a queue: reversing LIFO ordering twice gives FIFO ordering.
+
+## Building Intuition
+
+**Why two stacks work for a queue**:
+
+The magic: LIFO + LIFO = FIFO
+
+```
+Push A, B, C to a stack:
+  Stack: [A, B, C] (C on top)
+  Pop order: C, B, A (LIFO)
+
+Now push those to another stack:
+  Stack2: [C, B, A] (A on top)
+  Pop order: A, B, C (FIFO!)
+```
+
+Reversing the order twice gives us the original order. This is the foundation of the two-stack queue.
+
+**The Key Insight**:
+```
+- Input stack: New elements go here (like a holding area)
+- Output stack: Pop from here (elements are in FIFO order)
+- Transfer: When output is empty, reverse input to output
+```
+
+**Worked Example**:
+```
+Operations: push(1), push(2), pop(), push(3), pop(), pop()
+
+push(1): input=[1], output=[]
+push(2): input=[1,2], output=[]
+pop():   output empty → transfer!
+         pop from input to output: input=[], output=[2,1]
+         (1 is now on top - first in, first out!)
+         return 1, output=[2]
+push(3): input=[3], output=[2]
+pop():   output not empty, return 2, output=[]
+pop():   output empty → transfer!
+         input=[], output=[3]
+         return 3
+```
+
+**Why O(1) Amortized?**
+
+The clever part: we only transfer when output is empty.
+
+```
+Trace for n pushes followed by n pops:
+- Push phase: n × O(1) = O(n)
+- First pop: Transfer n elements O(n) + pop O(1)
+- Next n-1 pops: (n-1) × O(1) = O(n-1)
+
+Total: O(n) + O(n) + O(n) = O(3n)
+Average per operation: O(3n) / 2n = O(1) amortized!
+```
+
+Each element moves at most 3 times total:
+1. Push to input: O(1)
+2. Transfer to output: O(1) per element
+3. Pop from output: O(1)
+
+**Mental Model**: Think of two buckets connected by a pipe. New balls go in the left bucket (input stack). When you need a ball from the right bucket (output stack) and it's empty, you flip the left bucket over into the right bucket. Now the balls are in FIFO order in the right bucket!
+
+## When NOT to Use This Pattern
+
+The two-stack queue is wrong when:
+
+1. **You Have a Queue Available**: Like stack-with-queues, this is educational. Use `collections.deque` in production.
+
+2. **Worst-Case O(1) is Required**: While amortized O(1), individual operations can be O(n) during transfer. For real-time systems, use a linked-list queue.
+
+3. **Memory Locality Matters**: Two stacks = two arrays = poor cache performance compared to a single circular buffer.
+
+4. **You Need Both Ends**: If you need a deque (double-ended queue), this approach doesn't extend well.
+
+**Why This IS Useful**:
+- Demonstrates amortized analysis beautifully
+- Common interview problem
+- Shows that LIFO + LIFO = FIFO
+
+**Comparison with Stack-with-Queues**:
+| Aspect | Queue with Stacks | Stack with Queues |
+|--------|-------------------|-------------------|
+| Best amortized | O(1) ✓ | O(n) ✗ |
+| Key insight | Lazy transfer | Must rotate |
+| Practicality | More elegant | Less elegant |
+
 ## Interview Context
 
 This problem is a **classic design question** at FANG+ companies because:
