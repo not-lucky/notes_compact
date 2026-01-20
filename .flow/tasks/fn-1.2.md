@@ -1,48 +1,40 @@
-# fn-1.2 Create root README.md with study plan and learning roadmaps
+# fn-1.2 Enhance 08-graphs chapter (10 files)
 
 ## Description
-Create the master README.md with:
 
-## Content:
-1. **Title & Introduction**: FANG+ Interview DSA Guide purpose and scope
-2. **Study Plans**:
-   - 4-week intensive plan
-   - 8-week comprehensive plan
-   - Topic-based study (by data structure or algorithm type)
-3. **How to Use This Guide**: Study tips and approach
-4. **Chapter Overview**: Brief description of each chapter with links
-5. **Prerequisites**: What you need to know before starting
-6. **Resources**: Recommended additional resources (LeetCode patterns, etc.)
+Enhance all 10 markdown files in `08-graphs/` with deep explanations:
 
-## Format:
-- Clear hierarchical structure
-- Links to all chapter READMEs
-- Visual study roadmap table
+**Files to enhance:**
+1. `01-graph-representations.md` - When to use adjacency list vs matrix
+2. `02-bfs-basics.md` - Level-by-level intuition, wave propagation mental model
+3. `03-dfs-basics.md` - Recursion tree visualization, backtracking concept
+4. `04-topological-sort.md` - Dependency resolution intuition
+5. `05-shortest-path.md` - Dijkstra/Bellman-Ford comparison and proof
+6. `06-union-find.md` - Tree compression intuition, amortized analysis
+7. `07-minimum-spanning-tree.md` - Cut property proof, Kruskal vs Prim
+8. `08-graph-coloring.md` - Bipartite detection intuition
+9. `09-strongly-connected.md` - Kosaraju/Tarjan explanation
+10. `10-advanced-graph.md` - Network flow intuition
+
+**Enhancements per file:**
+- Add "Building Intuition" section with mental models (wave propagation for BFS, etc.)
+- Add "When NOT to Use" section covering when simpler approaches work
+- Expand all variations to 20-40 lines each
+- Add step-by-step graph traversal traces with ASCII diagrams
+- Include complexity derivation with proofs
+
 ## Acceptance
-- [ ] README.md contains clear introduction
-- [ ] 4-week intensive study plan included
-- [ ] 8-week comprehensive study plan included
-- [ ] All 17 chapters linked correctly
-- [ ] All 3 appendices linked correctly
-- [ ] Prerequisites section exists
-- [ ] Study tips and approach explained
+
+- [ ] All 10 files have "Building Intuition" section before code
+- [ ] All 10 files have "When NOT to Use" section
+- [ ] All variation sections expanded to 20+ lines
+- [ ] ASCII graph traversal traces added
+- [ ] Complexity proofs included
+
 ## Done summary
-## What changed
-- Replaced placeholder README.md with comprehensive study guide
-- Added complete 4-week intensive and 8-week comprehensive study plans
-- Added chapter overview with descriptions and links for all 17 chapters + 3 appendices
+TBD
 
-## Why
-- Users need clear learning roadmaps to structure their interview preparation
-- Study plans provide concrete daily/weekly goals for accountability
-- Chapter descriptions help users navigate to relevant content
-
-## Verification
-- All 17 chapter directories verified to exist
-- All 3 appendix directories verified to exist
-- Quick commands from epic spec executed successfully
-- Manual review of all acceptance criteria completed
 ## Evidence
-- Commits: 2d270795b9fc54eff26b822be144b500db4d2fd0
-- Tests: find . -name 'README.md' | wc -l (22 files), directory existence verification (all 21 dirs exist)
+- Commits:
+- Tests:
 - PRs:

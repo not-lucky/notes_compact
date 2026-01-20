@@ -1,25 +1,14 @@
 {
-  "assignee": "ayushrwt801@gmail.com",
+  "assignee": null,
   "claim_note": "",
-  "claimed_at": "2026-01-19T18:01:14.712771Z",
-  "created_at": "2026-01-19T05:30:30.312118Z",
-  "depends_on": [
-    "fn-1.1"
-  ],
+  "claimed_at": null,
+  "created_at": "2026-01-20T06:54:31.478444Z",
+  "depends_on": [],
   "epic": "fn-1",
-  "evidence": {
-    "commits": [
-      "d1643a24fbc6bb55ecb3c5990bf385a3c4a74427"
-    ],
-    "prs": [],
-    "tests": [
-      "file count verified: 9 files"
-    ]
-  },
   "id": "fn-1.14",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.14.md",
-  "status": "done",
-  "title": "Create Chapter 12: Greedy Algorithms (8-10 files)",
-  "updated_at": "2026-01-19T18:10:56.244900Z"
+  "status": "todo",
+  "title": "Enhance 15-intervals chapter (5 files)",
+  "updated_at": "2026-01-20T06:54:31.478455Z"
 }

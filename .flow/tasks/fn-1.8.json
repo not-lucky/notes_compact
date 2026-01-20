@@ -1,25 +1,14 @@
 {
-  "assignee": "ayushrwt801@gmail.com",
+  "assignee": null,
   "claim_note": "",
-  "claimed_at": "2026-01-19T15:31:03.448263Z",
-  "created_at": "2026-01-19T05:29:40.683906Z",
-  "depends_on": [
-    "fn-1.1"
-  ],
+  "claimed_at": null,
+  "created_at": "2026-01-20T06:54:20.703344Z",
+  "depends_on": [],
   "epic": "fn-1",
-  "evidence": {
-    "commits": [
-      "7d2f6db1aacf333ffa34047f87d3d6115b39806c"
-    ],
-    "prs": [],
-    "tests": [
-      "find 06-trees -name '*.md' | wc -l"
-    ]
-  },
   "id": "fn-1.8",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.8.md",
-  "status": "done",
-  "title": "Create Chapter 06: Trees (15-18 files)",
-  "updated_at": "2026-01-19T15:46:56.436798Z"
+  "status": "todo",
+  "title": "Enhance 05-hash-tables chapter (7 files)",
+  "updated_at": "2026-01-20T06:54:20.703377Z"
 }

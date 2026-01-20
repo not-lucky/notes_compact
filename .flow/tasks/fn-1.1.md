@@ -1,67 +1,39 @@
-# fn-1.1 Create repository skeleton with chapter folders and README placeholders
+# fn-1.1 Enhance 09-dynamic-programming chapter (9 files)
 
 ## Description
-Create the directory structure for the FANG+ Interview DSA Guide:
 
-## Directories to create:
-- 01-complexity-analysis/
-- 02-arrays-strings/
-- 03-hashmaps-sets/
-- 04-linked-lists/
-- 05-stacks-queues/
-- 06-trees/
-- 07-heaps-priority-queues/
-- 08-graphs/
-- 09-dynamic-programming/
-- 10-binary-search/
-- 11-recursion-backtracking/
-- 12-greedy/
-- 13-tries/
-- 14-union-find/
-- 15-bit-manipulation/
-- 16-math-basics/
-- 17-system-design-basics/
-- A-python-cheatsheet/
-- B-problem-patterns/
-- C-company-specific/
-- solutions/
+Enhance all 9 markdown files in `09-dynamic-programming/` with deep explanations:
 
-## For each chapter directory:
-Create a README.md placeholder with:
-- Chapter title
-- "Content coming soon" placeholder
-- Section links placeholder
+**Files to enhance:**
+1. `01-dp-fundamentals.md` - Add intuition for recognizing DP problems
+2. `02-1d-dp.md` - Expand with visual state transitions
+3. `03-2d-dp.md` - Add grid traversal visualizations
+4. `04-dp-on-strings.md` - Explain edit distance intuition deeply
+5. `05-knapsack-patterns.md` - Full derivation of bounded/unbounded variants
+6. `06-subsequence-dp.md` - LIS/LCS with step-by-step traces
+7. `07-state-machine-dp.md` - State diagrams and transitions
+8. `08-interval-dp.md` - Matrix chain intuition
+9. `09-dp-optimization.md` - When and why optimizations work
 
-## Root files:
-- README.md placeholder
-- .gitignore for Python
+**Enhancements per file:**
+- Add "Building Intuition" section (10-20 lines) explaining WHY the approach works
+- Add "When NOT to Use" section (5-10 lines) covering anti-patterns
+- Expand all variations to 20-40 lines each (not 2-3 lines)
+- Add complexity derivation with step-by-step proof
+- Add visual traces showing DP table fills
+
 ## Acceptance
-- [ ] 17 chapter directories created with proper numbering (01-17)
-- [ ] 3 appendix directories created (A, B, C)
-- [ ] solutions/ directory created
-- [ ] Each chapter has README.md placeholder
-- [ ] Root README.md placeholder exists
-- [ ] .gitignore for Python exists
-- [ ] Directory structure matches spec exactly
+
+- [ ] All 9 files have "Building Intuition" section before code
+- [ ] All 9 files have "When NOT to Use" section
+- [ ] All variation sections expanded to 20+ lines
+- [ ] Complexity sections include derivation
+- [ ] Visual DP table traces added where applicable
+
 ## Done summary
-- Created 17 chapter directories (01-complexity-analysis through 17-system-design-basics)
-- Created 3 appendix directories (A-python-cheatsheet, B-problem-patterns, C-company-specific)
-- Created solutions/ directory for problem solutions
-- Added README.md placeholder in each directory (21 total) with chapter title and sections placeholder
-- Added root README.md with table of contents and chapter navigation
-- Added comprehensive Python .gitignore
+TBD
 
-**Why:**
-- Establishes foundational directory structure per epic specification
-- Enables subsequent tasks to add content to proper locations
-
-**Verification:**
-- Ran `find . -name "README.md" | wc -l` → 22 files (21 in directories + 1 root)
-- Verified 17 chapter directories with numbered prefixes (01-17)
-- Verified 3 appendix directories with letter prefixes (A-C)
-- Verified solutions/ directory exists
-- All acceptance criteria met
 ## Evidence
-- Commits: 93b3e21f47668430e48819641efcb1443a2242b5
-- Tests: find . -name README.md | wc -l (22 files), ls -d */ | grep -E '^[0-9]{2}-' | wc -l (17 chapters), ls -d */ | grep -E '^[A-C]-' | wc -l (3 appendices)
+- Commits:
+- Tests:
 - PRs:

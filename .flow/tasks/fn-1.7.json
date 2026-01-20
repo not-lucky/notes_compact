@@ -1,25 +1,14 @@
 {
-  "assignee": "ayushrwt801@gmail.com",
+  "assignee": null,
   "claim_note": "",
-  "claimed_at": "2026-01-19T15:08:20.403935Z",
-  "created_at": "2026-01-19T05:29:40.603936Z",
-  "depends_on": [
-    "fn-1.1"
-  ],
+  "claimed_at": null,
+  "created_at": "2026-01-20T06:54:20.602746Z",
+  "depends_on": [],
   "epic": "fn-1",
-  "evidence": {
-    "commits": [
-      "5d74df4a78d50c55a26ac4ae11f96d9034162f4e"
-    ],
-    "prs": [],
-    "tests": [
-      "ls -la 05-stacks-queues/ | wc -l"
-    ]
-  },
   "id": "fn-1.7",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.7.md",
-  "status": "done",
-  "title": "Create Chapter 05: Stacks & Queues (10-12 files)",
-  "updated_at": "2026-01-19T15:20:41.518140Z"
+  "status": "todo",
+  "title": "Enhance 07-heaps chapter (7 files)",
+  "updated_at": "2026-01-20T06:54:20.602767Z"
 }

@@ -1,25 +1,14 @@
 {
-  "assignee": "ayushrwt801@gmail.com",
+  "assignee": null,
   "claim_note": "",
-  "claimed_at": "2026-01-19T19:55:42.593433Z",
-  "created_at": "2026-01-19T05:32:26.479294Z",
-  "depends_on": [
-    "fn-1.1"
-  ],
+  "claimed_at": null,
+  "created_at": "2026-01-20T06:54:31.722021Z",
+  "depends_on": [],
   "epic": "fn-1",
-  "evidence": {
-    "commits": [
-      "dc217c79a3683a1f9eecad449e9dc9e0183daa05"
-    ],
-    "prs": [],
-    "tests": [
-      "find 15-bit-manipulation/ -name '*.md' | wc -l"
-    ]
-  },
   "id": "fn-1.17",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.17.md",
-  "status": "done",
-  "title": "Create Chapter 15: Bit Manipulation (6-8 files)",
-  "updated_at": "2026-01-19T20:03:53.073446Z"
+  "status": "todo",
+  "title": "Enhance 17-system-design chapter (5 files)",
+  "updated_at": "2026-01-20T06:54:31.722033Z"
 }

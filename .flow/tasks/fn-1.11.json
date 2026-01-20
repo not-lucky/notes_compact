@@ -1,31 +1,14 @@
 {
-  "assignee": "ayushrwt801@gmail.com",
+  "assignee": null,
   "claim_note": "",
-  "claimed_at": "2026-01-19T16:32:23.474666Z",
-  "created_at": "2026-01-19T05:30:30.067070Z",
-  "depends_on": [
-    "fn-1.1"
-  ],
+  "claimed_at": null,
+  "created_at": "2026-01-20T06:54:31.237609Z",
+  "depends_on": [],
   "epic": "fn-1",
-  "evidence": {
-    "acceptance_criteria": {
-      "1d_2d_patterns_covered": true,
-      "dp_fundamentals_explained": true,
-      "file_count_18_to_22": true,
-      "knapsack_variations": true,
-      "memoization_vs_tabulation": true,
-      "palindrome_dp_problems": true,
-      "state_machine_dp": true,
-      "string_dp_problems": true
-    },
-    "commit": "de01634",
-    "files_created": 19,
-    "tests_passed": true
-  },
   "id": "fn-1.11",
   "priority": null,
   "spec_path": ".flow/tasks/fn-1.11.md",
-  "status": "done",
-  "title": "Create Chapter 09: Dynamic Programming (18-22 files)",
-  "updated_at": "2026-01-19T16:48:55.304368Z"
+  "status": "todo",
+  "title": "Enhance 10-greedy chapter (6 files)",
+  "updated_at": "2026-01-20T06:54:31.237622Z"
 }
