@@ -2,6 +2,106 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md)
 
+## Overview
+
+A dummy node (sentinel node) is a placeholder node placed before the actual head of a list. It eliminates special-case handling for head modifications, resulting in cleaner code with fewer conditionals. The pattern is simple: create dummy, work with dummy.next, return dummy.next.
+
+## Building Intuition
+
+**Why do we need dummy nodes?**
+
+Consider deleting nodes that match a value. Without a dummy node:
+```python
+# What if head itself needs to be deleted?
+while head and head.val == target:
+    head = head.next  # Special case for head!
+
+# Now handle the rest
+current = head
+while current and current.next:
+    if current.next.val == target:
+        current.next = current.next.next
+    else:
+        current = current.next
+```
+
+Two different code paths! One for head, one for rest. This is a bug magnet.
+
+With a dummy node:
+```python
+dummy = ListNode(0)
+dummy.next = head
+current = dummy
+
+while current.next:
+    if current.next.val == target:
+        current.next = current.next.next
+    else:
+        current = current.next
+
+return dummy.next  # The real head (might have changed!)
+```
+
+One unified code path. The dummy "absorbs" the head edge case.
+
+**The Mental Model**:
+Think of the dummy as a "pre-head anchor." No matter what happens to the actual head, you always have a stable reference point:
+```
+dummy → [head] → [next] → [next] → None
+  ↑
+  You always have this
+
+# Even if head is deleted:
+dummy → [new_head] → [next] → None
+  ↑
+  Still stable!
+```
+
+**The Pattern**:
+```python
+dummy = ListNode(0)  # Value doesn't matter
+dummy.next = head    # Point to actual list
+# ... do your work ...
+return dummy.next    # Return the real head
+```
+
+**Why `return dummy.next` is Critical**:
+After modifications, `head` might be stale (pointing to a deleted node). But `dummy.next` always points to the current first real node.
+
+**Multiple Dummies for Partitioning**:
+When splitting a list (like partition around a pivot):
+```python
+before_dummy = ListNode(0)  # For nodes < pivot
+after_dummy = ListNode(0)   # For nodes >= pivot
+before = before_dummy
+after = after_dummy
+
+# Add nodes to appropriate list...
+
+# Connect the partitions
+after.next = None              # Terminate second list
+before.next = after_dummy.next # Link first to second
+return before_dummy.next       # Head of merged result
+```
+
+Two dummies let you build two separate lists, then join them seamlessly.
+
+## When NOT to Use Dummy Nodes
+
+1. **Read-Only Operations**: If you're only traversing or searching (not modifying structure), dummy adds unnecessary overhead.
+
+2. **Head Never Changes**: If the operation guarantees head stays the same (like removing duplicates where you keep first occurrence), dummy is optional.
+
+3. **When You Need the Original Head**: Sometimes you need to return to the original head after operations. With a dummy, you lose direct access to the original head.
+
+4. **Very Memory-Constrained**: In extreme cases, even one extra node matters. But this is rare in practice.
+
+5. **Non-Linked-List Problems**: Don't force the pattern. For arrays or trees, different techniques apply.
+
+**The Key Question**: "Could the head node change during this operation?" If yes, use a dummy. If definitely not, it's optional.
+
+**Common Mistake**: Forgetting to return `dummy.next`. Returning `head` after modifications can return a deleted node or skip newly prepended nodes.
+
 ## Interview Context
 
 The dummy node (also called sentinel node) technique is a **critical pattern** because:

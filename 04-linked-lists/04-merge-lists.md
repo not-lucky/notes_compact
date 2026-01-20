@@ -2,6 +2,64 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md)
 
+## Overview
+
+Merge operations combine two or more sorted linked lists into one sorted list by comparing heads and stitching nodes together. The two-pointer merge is O(n+m) with O(1) extra space, and extends to merge sort and k-way merges using divide-and-conquer or heaps.
+
+## Building Intuition
+
+**Why is merging linked lists so elegant?**
+
+Unlike arrays, merging linked lists requires no extra space for the result. You're just rearranging pointers—the nodes already exist in memory. This is why merge sort on linked lists uses O(1) auxiliary space (vs O(n) for arrays).
+
+**The Two-Finger Technique**:
+Imagine you have two sorted stacks of papers and want to combine them:
+1. Compare the top paper of each stack
+2. Take the smaller one and put it in your result pile
+3. Repeat until both stacks are empty
+4. If one stack empties first, dump the rest of the other
+
+This is exactly what the algorithm does, but with pointers instead of physical movement.
+
+**Why a Dummy Node?**
+```python
+dummy = ListNode(0)
+current = dummy
+# ... build the list ...
+return dummy.next  # The real head
+```
+Without a dummy, you'd need special logic for "which list's head becomes the result's head?" The dummy eliminates this edge case—you always append to `current`, and `dummy.next` is your answer.
+
+**Merge K Lists: Two Approaches**
+
+1. **Divide and Conquer**: Like a tournament bracket. Pair up lists, merge each pair, repeat. Each "round" halves the number of lists. log(k) rounds × O(N) work per round = O(N log k).
+
+2. **Min-Heap**: Keep the smallest element from each list in a heap. Pop the minimum, push its successor. Each of N total elements does one push and one pop, each O(log k) = O(N log k).
+
+Which is better? Heap has consistent O(log k) per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
+
+**The Index Trick for Heaps**:
+```python
+# Why (val, index, node) instead of (val, node)?
+heappush(heap, (5, 0, node_a))
+heappush(heap, (5, 1, node_b))  # Same val, different index
+```
+Python's heap compares tuples element-by-element. If two nodes have the same value, it tries to compare the nodes themselves—which fails! The index is a tiebreaker that makes equal values distinguishable.
+
+## When NOT to Use Linked List Merge
+
+1. **Data Isn't Already Sorted**: Merging assumes sorted input. Unsorted? Sort first (O(n log n)) or use different algorithms.
+
+2. **Random Access is Available**: For arrays, in-place merge is possible but tricky. Often simpler to use extra space or built-in sorts.
+
+3. **Single Large List to Sort**: If you're sorting one list, merge sort works. But if the list fits in memory, converting to array, sorting, and converting back might be faster due to cache effects.
+
+4. **Frequent Insertions During Merge**: If you're inserting new elements while merging, a balanced BST or skip list might be better.
+
+5. **K is Very Large**: With k=1000 lists of 10 elements each, heap overhead dominates. Consider concatenate-then-sort for extreme cases.
+
+**Common Mistake**: Using merge when lists aren't sorted. The algorithm assumes sorted input—unsorted input produces garbage.
+
 ## Interview Context
 
 Merge operations on linked lists are **essential interview topics** because:

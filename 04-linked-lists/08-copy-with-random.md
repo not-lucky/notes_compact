@@ -2,6 +2,108 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md), [03-hashmaps-sets](../03-hashmaps-sets/README.md)
 
+## Overview
+
+Deep copying a linked list with random pointers requires creating entirely new nodes where both `next` and `random` pointers reference the new nodes, not the originals. The challenge is mapping old nodes to new nodes. HashMap gives O(n) time/space; the interleaving technique achieves O(1) extra space.
+
+## Building Intuition
+
+**Why is this problem tricky?**
+
+Simple linked list copying is straightforward—traverse and create nodes. But random pointers create a chicken-and-egg problem:
+
+```
+When copying node A, A.random might point to node C.
+But C's copy might not exist yet!
+
+Original:  [A] → [B] → [C] → None
+            ↓           ↑
+            └───────────┘  (A.random = C)
+
+We need: [A'] → [B'] → [C'] → None
+          ↓            ↑
+          └────────────┘  (A'.random = C', not C!)
+```
+
+You can't set random pointers until all copy nodes exist. But you can't create all nodes without losing track of which copy corresponds to which original.
+
+**Solution 1: HashMap as a Translation Table**
+
+```
+old_to_new = {A: A', B: B', C: C'}
+
+# Now setting random is easy:
+A'.random = old_to_new[A.random]
+         = old_to_new[C]
+         = C'
+```
+
+The hashmap acts as a translator between the old world and the new world. Every old node maps to its corresponding new node.
+
+**Solution 2: Interleaving—The O(1) Space Magic**
+
+Instead of a separate data structure, embed the mapping in the list itself:
+
+```
+Step 1: Interleave copies
+Original:  [A] → [B] → [C] → None
+Becomes:   [A] → [A'] → [B] → [B'] → [C] → [C'] → None
+
+Now: A.next = A' (the copy is always right after the original!)
+
+Step 2: Set random pointers
+A.random = C
+A'.random = A.random.next = C.next = C'
+
+The pattern: copy.random = original.random.next
+
+Step 3: Unweave the lists
+Extract: [A'] → [B'] → [C'] → None
+Restore: [A] → [B] → [C] → None
+```
+
+The interleaving uses the list structure itself as the hashmap!
+
+**Why the Index Matters in Heap-Based Deep Copy**:
+If you try to put nodes in a heap (for other reasons):
+```python
+heappush(heap, (node.val, node))  # FAILS if two nodes have same value
+heappush(heap, (node.val, index, node))  # Works—index is tiebreaker
+```
+
+Python compares tuples left-to-right. If values are equal, it tries to compare nodes, which raises TypeError. An index ensures unique ordering.
+
+**What "Deep Copy" Really Means**:
+```python
+# Shallow copy: new list, same nodes
+copy_head = original_head  # Just copying reference
+
+# Deep copy: new list, new nodes
+# No node in copy_list is the same object as any node in original_list
+assert all(copy_node is not orig_node for ...)
+```
+
+Deep copy means complete independence. Modifying the copy doesn't affect the original.
+
+## When NOT to Use These Techniques
+
+1. **No Random Pointers**: For simple linked lists, just traverse and copy. No need for hashmaps or interleaving.
+
+2. **Immutable/Read-Only Lists**: Interleaving modifies the original list temporarily. If the list can't be modified (concurrent access, immutability requirements), use the hashmap approach.
+
+3. **Memory is More Important than Clarity**: Interleaving is O(1) space but harder to understand and debug. If O(n) space is acceptable, hashmap is cleaner.
+
+4. **Graph Structures (Not Just Lists)**: For general graphs with cycles, DFS/BFS with hashmap is the standard approach. Interleaving doesn't generalize beyond linked lists.
+
+5. **When the Node Type Isn't Hashable**: The hashmap approach requires nodes to be valid dict keys. Custom `__hash__` might be needed for unusual node types.
+
+**Common Mistake**: Forgetting that `node.random` could be `None`. Always check before doing `node.random.next`:
+```python
+if current.random:
+    current.next.random = current.random.next
+# else: copy.random stays None (default)
+```
+
 ## Interview Context
 
 Deep copying a linked list with random pointers is a **challenging interview favorite** because:

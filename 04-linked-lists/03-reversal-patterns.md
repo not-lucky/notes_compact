@@ -2,6 +2,66 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md)
 
+## Overview
+
+Linked list reversal is the process of making each node point to its predecessor instead of its successor. It's a fundamental building block for palindrome checks, reordering lists, and many other operations. Mastering the iterative three-pointer technique is essential.
+
+## Building Intuition
+
+**Why is reversal so important?**
+
+Reversal is like learning multiplication tables—it's used everywhere as a building block:
+- Palindrome check? Reverse half and compare.
+- Add two numbers (most significant first)? Reverse, add, reverse back.
+- Reorder list (L0→Ln→L1→Ln-1...)? Split, reverse second half, interleave.
+
+**The Core Insight: You Only Need Three Pointers**
+
+At any moment during reversal, you need to track:
+1. **prev**: The already-reversed portion (or None initially)
+2. **current**: The node you're currently reversing
+3. **next_temp**: Saved reference to the rest of the list
+
+Why save `next_temp`? Because once you point `current.next = prev`, you've lost your only link to the rest of the list! It's like walking across a bridge while dismantling it behind you—you need to know where the next plank is before removing the current one.
+
+**Visual Mental Model**:
+```
+Before: None ← [A] ← [B]   [C] → [D] → [E]
+               prev  curr   next_temp
+
+One step:
+1. Save next_temp = C
+2. Point C.next = B (current.next = prev)
+3. Move prev = C
+4. Move current = D (current = next_temp)
+
+After:  None ← [A] ← [B] ← [C]   [D] → [E]
+                     prev  curr   next_temp
+```
+
+**Why Does Recursive Reversal Use O(n) Space?**
+
+The call stack holds n frames (one per node). Each frame remembers "where to return" and the local variables. Iterative reversal uses O(1) space because we explicitly manage the pointers ourselves.
+
+**Partial Reversal Insight**: When reversing positions left to right, the trick is:
+1. Find the node BEFORE position left (this anchors the reversed segment)
+2. The node originally at position left becomes the TAIL of the reversed segment
+3. Keep moving nodes from "after current" to "right after anchor"
+
+## When NOT to Use Reversal
+
+1. **When Order Must Be Preserved**: If the problem requires maintaining original order (like filtering by condition), reversal is overkill.
+
+2. **When a Stack/Recursion is Clearer**: Sometimes pushing to a stack and popping achieves the same "reverse processing" with clearer code, especially for value-based operations (not structural changes).
+
+3. **When Random Access Exists**: For arrays, `arr[::-1]` or index arithmetic is simpler than explicit reversal.
+
+4. **When You Need the Original List**: Reversal modifies the list in-place. If you need both versions, you must copy first (O(n) space anyway).
+
+5. **For Doubly-Linked Lists**: Just traverse backwards using `.prev` instead of reversing.
+
+**Common Mistake**: Reversing when you only need to traverse backwards. For "print in reverse order," use recursion or a stack—don't actually reverse the structure.
+
 ## Interview Context
 
 Linked list reversal is a **fundamental interview skill** because:

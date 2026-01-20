@@ -2,6 +2,77 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md)
 
+## Overview
+
+Finding the intersection point of two linked lists determines where two separate chains merge into one shared tail. The elegant two-pointer technique solves this in O(n+m) time with O(1) space by having each pointer traverse both lists, equalizing their total travel distances.
+
+## Building Intuition
+
+**Why does the two-pointer switch technique work?**
+
+This is one of the most elegant algorithms in computer science. The magic lies in distance equalization.
+
+**The Distance Equalization Insight**:
+```
+List A: ─────•─────────────•─────────• (length a + shared)
+             ↑              intersection
+List B: ──•──•─────────────•─────────• (length b + shared)
+          ↑                 intersection
+```
+
+If A and B have different lengths, a pointer starting at A will reach the intersection at a different time than one starting at B. But here's the trick:
+
+- Pointer A travels: a + shared + b (traverse A, then B)
+- Pointer B travels: b + shared + a (traverse B, then A)
+
+Both travel the same total distance: a + b + shared. They arrive at the intersection simultaneously!
+
+**The Mental Model**:
+Imagine two people walking toward each other on different roads that merge:
+- Alice walks road A (3 miles), reaches the merge, continues on road B (5 miles)
+- Bob walks road B (5 miles), reaches the merge, continues on road A (3 miles)
+
+Both walk exactly 8 miles. If there's a meeting point, they arrive together. If not, they both reach the end at the same time (both become None).
+
+**Why This Beats Hash Set**:
+- Hash set: O(n) space to store all nodes from one list
+- Two pointers: O(1) space, same time complexity
+
+**The Length-Alignment Alternative**:
+```
+1. Count length of A (len_a), length of B (len_b)
+2. Advance the longer list's pointer by |len_a - len_b|
+3. Now both are equidistant from intersection (if exists)
+4. Walk together until they meet or both hit None
+```
+
+This is more intuitive but requires two passes over each list (count + walk) vs the single-pass elegance of the switch technique.
+
+**Critical Point: Reference vs Value**
+```python
+# WRONG: Comparing values
+if node_a.val == node_b.val:  # Different nodes can have same value!
+
+# RIGHT: Comparing identity
+if node_a is node_b:  # Same object in memory
+```
+
+Intersection means the same physical node in memory, not just equal values.
+
+## When NOT to Use Intersection Detection
+
+1. **Looking for Value Equality**: If you want to find where two lists have the same values (not the same nodes), this algorithm doesn't apply.
+
+2. **Lists That Diverge After "Meeting"**: Standard intersection assumes once lists meet, they never diverge. For DAG-like structures, use different approaches.
+
+3. **Need All Common Nodes**: This finds the first intersection point. If you need all nodes that appear in both lists (by value), use a hash set.
+
+4. **Circular Lists**: If either list is circular, the algorithm may loop infinitely. Detect cycles first.
+
+5. **When Modifying Lists is OK**: If you can modify the lists, simpler approaches exist (mark visited nodes, use negative values as flags, etc.).
+
+**Common Mistake**: Forgetting to handle the no-intersection case. The two-pointer technique naturally returns None when lists don't intersect—both pointers reach None at the same time.
+
 ## Interview Context
 
 Finding the intersection point of two linked lists is a **classic interview question** because:

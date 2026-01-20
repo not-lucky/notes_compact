@@ -2,6 +2,55 @@
 
 > **Prerequisites:** [01-linked-list-basics](./01-linked-list-basics.md)
 
+## Overview
+
+The fast-slow pointer technique (tortoise and hare) uses two pointers moving at different speeds to solve linked list problems in O(1) space. It's the key to cycle detection, finding midpoints, and locating elements relative to the end—all without knowing the list length upfront.
+
+## Building Intuition
+
+**Why do two pointers at different speeds work?**
+
+1. **The Racing Analogy**: Imagine two runners on a circular track. If runner A is twice as fast as runner B, they will meet again after A completes one full lap more than B. This is the foundation of cycle detection—if there's a loop, fast will "lap" slow.
+
+2. **The Midpoint Discovery**: If fast moves 2 steps per iteration and slow moves 1 step, when fast reaches the end (n steps), slow is at n/2. No need to count the length first!
+
+3. **The Mathematical Invariant**: At any point, fast has traveled exactly 2× the distance of slow. This ratio is maintained throughout, which is why:
+   - For midpoint: fast at end → slow at middle
+   - For nth from end: create a gap of n, then move together
+
+**Why O(1) Space?**: We only use two pointers, no matter the list size. Alternatives like "convert to array then analyze" use O(n) space.
+
+**The Cycle Detection Proof** (simplified):
+```
+If there's a cycle of length C, and slow enters the cycle:
+- Both pointers are now on the cycle
+- Their distance decreases by 1 each step (fast gains 1 step on slow)
+- After at most C steps, distance becomes 0 → they meet
+
+The key insight: once both are on the cycle, the "gap" shrinks every iteration.
+```
+
+**Mental Model for Cycle Start**: After detecting a cycle, why does resetting one pointer to head work? Because the distance from head to cycle start equals the distance from meeting point to cycle start (plus some complete cycles). It's like two people walking around a track—if they start at the right positions and walk at the same speed, they'll meet at the cycle entrance.
+
+## When NOT to Use Fast-Slow Pointers
+
+This pattern isn't always the answer:
+
+1. **Need to Preserve Positions**: Fast-slow for palindrome check reverses half the list. If you can't modify the list, use a stack or recursion instead (O(n) space).
+
+2. **Need All Elements, Not Just Relative Positions**: If you need to process every element (not just find a special one), a simple traversal is clearer.
+
+3. **Array Problems with Random Access**: For arrays, using indices is usually cleaner. Fast-slow shines when you can't use indices (linked lists) or want O(1) space (Floyd's cycle in arrays).
+
+4. **When a Hash Set is Simpler**: Cycle detection can also use a hash set—O(n) space but conceptually simpler. Choose based on constraints.
+
+5. **When Length is Readily Available**: If you already know the list length, direct calculation is cleaner than fast-slow for midpoint/nth-from-end.
+
+**Red Flags**:
+- "Return all positions of X" → Simple traversal
+- "Memory doesn't matter" → Consider hash-based approaches for clarity
+- "Need to backtrack" → Doubly-linked list or stack
+
 ## Interview Context
 
 The fast-slow pointer technique (also called the "tortoise and hare" algorithm) is one of the **most important patterns** in linked list problems because:

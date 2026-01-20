@@ -2,6 +2,54 @@
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)
 
+## Overview
+
+A linked list is a fundamental linear data structure where elements are stored in nodes connected by pointers. Unlike arrays, nodes can be scattered throughout memory, making insertions and deletions O(1) at known positions, but requiring O(n) traversal for access.
+
+## Building Intuition
+
+**Why do linked lists exist when we have arrays?**
+
+Think of the difference between a train and a marching band:
+
+1. **Arrays are like a marching band**: Everyone must stay in formation. If someone in the middle needs to leave, everyone behind them must shift forward. Adding someone in the middle? Everyone behind must step back. The positions are fixed and contiguous.
+
+2. **Linked lists are like a train**: Each car (node) only knows about the car behind it. Want to remove a car in the middle? Just reconnect the links—the cars before and after don't need to move at all. Adding a new car? Just update two connections.
+
+**The Core Trade-off**:
+```
+Arrays:   Fast access (O(1)) | Slow insert/delete at middle (O(n))
+Linked:   Slow access (O(n)) | Fast insert/delete at known position (O(1))
+```
+
+**Why O(1) insertion is a big deal**: In arrays, inserting at position i requires shifting all n-i elements. With linked lists, you just update 2 pointers, regardless of list size. This matters enormously for:
+- Implementing stacks/queues (constant-time push/pop)
+- LRU caches (move recently used items to front)
+- Real-time systems where worst-case matters
+
+**The Hidden Cost**: That O(1) insertion comes with a catch—you need a reference to the insertion point first. Finding that point is O(n), so "insert at position k" is still O(n) overall. The win is when you already have the reference (like maintaining a "current" pointer as you traverse).
+
+**Mental Model for Pointers**: Think of `.next` as an arrow drawn on a post-it note. The arrow points to another post-it, not to a position. When you "update a pointer," you're erasing an arrow and drawing a new one. The post-it it used to point to still exists—it just became unreachable if nothing else points to it.
+
+## When NOT to Use Linked Lists
+
+Linked lists are often the wrong choice:
+
+1. **Random Access Needed**: If you frequently access elements by index (`arr[i]`), arrays are O(1) vs linked lists O(n). Example: binary search requires random access.
+
+2. **Memory is Constrained**: Each node carries pointer overhead (8 bytes per pointer on 64-bit systems). A list of 1-byte values uses 9x more memory than an array.
+
+3. **Cache Performance Matters**: Arrays are cache-friendly (sequential memory). Linked lists cause cache misses (scattered memory). In practice, iterating an array is 10-100x faster than an equivalent linked list due to prefetching.
+
+4. **Parallelism is Required**: Linked lists are hard to parallelize. You can't easily split a linked list into chunks without traversing it first.
+
+5. **Simple Stack/Queue is Enough**: Python's `collections.deque` uses a block-based approach that's faster than a pure linked list for most use cases.
+
+**Red Flags in Interviews**:
+- "Find the kth element frequently" → Use array
+- "Sort the data structure" → Arrays sort faster (cache effects)
+- "Need to access by index" → Definitely array
+
 ## Interview Context
 
 Linked lists are fundamental because:

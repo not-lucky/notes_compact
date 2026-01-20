@@ -2,6 +2,89 @@
 
 > **Prerequisites:** [02-fast-slow-pointers](./02-fast-slow-pointers.md), [03-reversal-patterns](./03-reversal-patterns.md)
 
+## Overview
+
+Checking if a linked list is a palindrome requires comparing the first half with the reversed second half. The O(1) space solution combines fast-slow pointers (to find the middle) with in-place reversal—a beautiful synthesis of two fundamental patterns.
+
+## Building Intuition
+
+**Why is this problem a perfect test of fundamentals?**
+
+This problem requires combining two techniques you've already learned:
+1. Fast-slow pointers → find the middle
+2. Reversal → reverse the second half
+3. Comparison → walk both halves together
+
+It's like a cooking challenge where you must combine basic techniques into a complete dish.
+
+**The Core Strategy**:
+```
+Original:    [1] → [2] → [3] → [2] → [1]
+
+Step 1: Find middle (fast-slow)
+         [1] → [2] → [3] → [2] → [1]
+                      ↑
+                    middle
+
+Step 2: Reverse second half
+         [1] → [2] → [3] → None
+         [1] → [2]              (reversed second half, starting from end)
+
+Step 3: Compare
+         [1] vs [1] ✓
+         [2] vs [2] ✓
+         Second half exhausted → Palindrome!
+```
+
+**Why Does the Middle Node Not Affect the Result?**
+
+For odd-length lists, the middle element is compared with itself (via the reversal). For even-length lists, there's no true middle—both halves have equal length. Either way, the algorithm handles it correctly because:
+- We only compare until the shorter half is exhausted
+- The middle of an odd list ends up in the first half, not compared
+
+**Why O(1) Space Matters**:
+- Array conversion: O(n) space for storing values
+- Stack approach: O(n) space for the stack
+- Fast-slow + reversal: O(1) extra space (just pointers!)
+
+**The Restoration Question**:
+```python
+# After checking, the list is: [1] → [2] → [3] → None  [1] ← [2]
+# Should we restore it?
+slow.next = reverse_list(second_half)
+# Now: [1] → [2] → [3] → [2] → [1]  (original structure)
+```
+In interviews, always ask: "Should I preserve the original list?" Good practice is to restore it, showing attention to side effects.
+
+**Odd vs Even Length Handling**:
+```
+Odd (5 elements):  [1, 2, 3, 2, 1]
+  First half:  [1, 2, 3]  (middle included)
+  Second half: [2, 1] reversed = [1, 2]
+  Compare: [1,2,3] vs [1,2] → compare first 2 elements
+
+Even (4 elements): [1, 2, 2, 1]
+  First half:  [1, 2]
+  Second half: [2, 1] reversed = [1, 2]
+  Compare: [1,2] vs [1,2] → exact match
+```
+
+The fast.next and fast.next.next condition in the while loop naturally handles this split.
+
+## When NOT to Use the O(1) Space Approach
+
+1. **List Cannot Be Modified**: If the list is read-only or modifications cause issues (concurrent access, persistence requirements), use the array or stack approach.
+
+2. **Need to Know Position of Mismatch**: The O(1) approach tells you true/false, not where the mismatch occurred. For debugging or partial matches, array comparison is easier.
+
+3. **Very Short Lists**: For lists under 10 elements, the overhead of careful pointer manipulation isn't worth it. Just copy to an array.
+
+4. **Combined with Other Operations**: If you need the original list for subsequent operations in the same problem, the restoration step adds complexity. Consider O(n) space instead.
+
+5. **Doubly-Linked Lists**: With `.prev` pointers, you don't need reversal—just walk from both ends simultaneously.
+
+**Common Mistake**: Forgetting the condition difference between finding middle for reversal vs. other uses. For palindrome, we want slow at the last node of the first half, not the first node of the second half.
+
 ## Interview Context
 
 Checking if a linked list is a palindrome is a **popular interview problem** because:
