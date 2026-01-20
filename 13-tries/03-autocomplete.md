@@ -8,6 +8,133 @@ Design Search Autocomplete System (LeetCode 642) is a classic problem that appea
 
 ---
 
+## Building Intuition
+
+**The Core Problem: Speed vs Relevance**
+
+When you type "app" in a search box, you want suggestions INSTANTLY—under 100ms. But you also want the BEST suggestions (most popular, most relevant). These goals conflict:
+
+```
+Speed:     Just return first 3 words starting with "app"
+Relevance: Score all 10,000 matching words, sort, return top 3
+
+The challenge: How do we get BOTH speed AND relevance?
+```
+
+**Why Tries are Perfect for "Typeahead"**
+
+Each keystroke is an incremental query. You don't search from scratch each time:
+
+```
+User types: "a" → "ap" → "app"
+
+Naive approach:
+  "a":   Scan all words for 'a' prefix
+  "ap":  Scan all words for 'ap' prefix  (wasteful!)
+  "app": Scan all words for 'app' prefix (wasteful!)
+
+Trie approach:
+  "a":   Move to child 'a' of root, collect results from subtree
+  "ap":  Move to child 'p' of current node (already at 'a')
+  "app": Move to child 'p' of current node (already at 'ap')
+
+You're EXTENDING your position, not starting over!
+```
+
+**The Trade-off Triangle**
+
+```
+                    SPEED
+                      ↑
+                     / \
+                    /   \
+                   /     \
+            MEMORY ←------→ FRESHNESS
+
+Pre-compute everything → Fast queries, lots of memory, stale data
+Compute on-demand     → Slow queries, less memory, fresh data
+Hybrid (trie + cache) → Balanced trade-off
+```
+
+**Three Design Levels**
+
+1. **Terminal Storage Only**: Store sentence + frequency at end of word
+   - Query: O(L + m log m) where L = prefix, m = matches
+   - Space: O(total characters)
+
+2. **Path Storage**: Store sentences at EVERY node along path
+   - Query: O(k log k) just sort top-k at current node
+   - Space: O(total chars × average word length)—much more!
+
+3. **Pre-computed Top-K**: Store sorted top-k at each node
+   - Query: O(1)—just return cached list
+   - Space: O(nodes × k)
+   - Downside: Updates are expensive (must update entire path)
+
+**Frequency as Priority**
+
+The heap insight: you don't need to sort ALL matches. You only need top-3:
+
+```python
+# Don't do this (sorts everything):
+all_matches = collect_all(node)
+all_matches.sort(key=lambda x: -x.freq)
+return all_matches[:3]
+
+# Do this (stops after 3):
+heap = []  # Min-heap of size 3
+for match in collect_all(node):
+    if len(heap) < 3:
+        heappush(heap, match)
+    elif match.freq > heap[0].freq:
+        heapreplace(heap, match)
+return sorted(heap, reverse=True)
+```
+
+For 100,000 matches, sorting is O(100,000 log 100,000). Heap is O(100,000 log 3).
+
+---
+
+## When NOT to Use This Pattern
+
+**1. Static, Small Datasets**
+
+If you have 100 sentences that never change, a sorted list with binary search is simpler:
+
+```python
+sentences.sort()
+# For prefix "app", binary search to find range, return first 3
+```
+
+Trie overhead isn't justified.
+
+**2. Full-Text Search (Not Just Prefix)**
+
+Autocomplete is PREFIX matching. If you need:
+- "Find sentences containing 'apple'" (not just starting with)
+- Fuzzy matching ("aple" → "apple")
+- Synonym matching ("car" → also show "automobile")
+
+...then you need an inverted index, not a trie.
+
+**3. Highly Personalized Results**
+
+If suggestions depend heavily on user history, location, time of day, etc., you can't pre-compute effectively. ML-based ranking with a candidate retrieval step is more appropriate.
+
+**4. Rapidly Changing Data**
+
+If sentences and frequencies change every second, maintaining trie consistency becomes expensive. Consider:
+- Streaming updates with eventual consistency
+- Separate hot/cold trie paths
+
+**Red Flags:**
+- "Search by keyword anywhere in text" → Inverted index
+- "Correct typos in query" → Edit distance / fuzzy matching
+- "Personalized per user" → User-specific tries or ML ranking
+- "Real-time trending" → Streaming architecture needed
+
+---
+
 ## Problem Statement
 
 Design a search autocomplete system that:

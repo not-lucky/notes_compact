@@ -8,6 +8,143 @@
 
 ---
 
+## Building Intuition
+
+**Why Wildcards Break the Trie's Speed Guarantee**
+
+Normal trie operations are O(L) because you follow ONE path:
+
+```
+search("cat"): root → c → a → t → done (3 steps, always)
+```
+
+But with wildcards, a single '.' can branch into 26 paths:
+
+```
+search(".at"): root → a? b? c? ... z? (try ALL 26)
+                       ↓
+               each leads to 'a'? check...
+                       ↓
+               each leads to 't'? check...
+```
+
+**The Key Insight: DFS at Wildcard Positions**
+
+For regular characters, follow the path. For '.', explore ALL children:
+
+```python
+def search(node, word, i):
+    if i == len(word):
+        return node.is_end
+
+    char = word[i]
+
+    if char == '.':
+        # Must try ALL children
+        for child in node.children.values():
+            if search(child, word, i + 1):
+                return True  # Found via some path
+        return False
+    else:
+        # Normal trie traversal
+        if char not in node.children:
+            return False
+        return search(node.children[char], word, i + 1)
+```
+
+**Worst Case: All Wildcards**
+
+```
+search("....."):  # 5 wildcards
+Level 0: 26 branches
+Level 1: 26 × 26 = 676 branches
+Level 2: 26³ = 17,576 branches
+Level 3: 26⁴ = 456,976 branches
+Level 4: 26⁵ = 11,881,376 branches
+
+This is O(26^L) — exponential!
+```
+
+But in practice, tries are sparse. If only 1000 5-letter words exist, you can't possibly explore 11 million paths—most branches are dead ends.
+
+**Why It's Still Better Than Brute Force**
+
+```
+Brute force with n words and wildcards:
+  For each of n words: check if pattern matches → O(n × L)
+
+Trie with wildcards:
+  Traverse trie, branching at wildcards → O(26^k × L)
+  where k = number of wildcards
+
+If n = 100,000 and k = 2:
+  Brute force: 100,000 × L = 500,000 operations
+  Trie:        26² × L = 3,380 operations
+
+Trie wins when n >> 26^k (many words, few wildcards).
+```
+
+**Mental Model: Wildcards as "Parallel Universes"**
+
+Think of each '.' as spawning parallel searches:
+
+```
+Pattern: "b.d"
+
+Universe 1: b-a-d  → explore
+Universe 2: b-b-d  → explore
+...
+Universe 26: b-z-d → explore
+
+If ANY universe finds a match, return True.
+```
+
+---
+
+## When NOT to Use This Pattern
+
+**1. All Wildcards or Wildcards at Start**
+
+If the pattern is "....." or ".....xyz", you're essentially scanning the entire trie. A hashset with linear scan might be simpler:
+
+```python
+# Simpler for "....." (any 5-letter word)
+any(len(word) == 5 for word in words)
+```
+
+**2. Wildcard Matching Multiple Characters**
+
+This pattern handles '.' (single char). For '*' (zero or more), you need different logic:
+
+```
+"b*d" should match: "bd", "bad", "bread", "bd"
+This requires regex-like NFA simulation, not simple trie DFS.
+```
+
+**3. When Dictionary is Small**
+
+For 100 words, regex matching on a list is simpler:
+
+```python
+import re
+pattern = re.compile("^b.d$")
+any(pattern.match(word) for word in words)
+```
+
+Trie setup overhead isn't justified.
+
+**4. Substring Wildcards (Not Prefix)**
+
+"Find words containing pattern 'a.c' anywhere" requires suffix tree or inverted index, not prefix trie.
+
+**Red Flags:**
+- Pattern length unrestricted → Could be exponential
+- "Match anywhere in string" → Not a prefix problem
+- "Match zero or more" → Needs regex/NFA
+- Very short dictionary → Linear scan is fine
+
+---
+
 ## Problem Statement
 
 Design a data structure that supports:

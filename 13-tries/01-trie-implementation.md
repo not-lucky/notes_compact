@@ -8,6 +8,123 @@
 
 ---
 
+## Building Intuition
+
+**Why Does a Trie Work?**
+
+Imagine you're organizing a dictionary. If you store words in a list, finding "apple" means checking every word—O(n). If you store them in a hashmap, you get O(1) lookup but lose the ability to find "all words starting with 'app'" efficiently.
+
+A trie is like a physical dictionary's edge-indexed tabs, but taken to the extreme: instead of tabs for A, B, C..., you have a branching path for EVERY character position.
+
+**The Key Insight: Shared Prefixes**
+
+```
+Words: "apple", "app", "application", "apply"
+
+Without sharing (list): 5 + 3 + 11 + 5 = 24 characters stored
+With sharing (trie):    a-p-p-l-e (5) + l-i-c-a-t-i-o-n (8) + y (1) = 14 nodes
+
+The prefix "appl" is stored ONCE and shared by all four words.
+```
+
+This sharing is why tries excel at prefix operations. When you traverse to node "app", you've already found ALL words starting with "app"—they're all in the subtree below!
+
+**Why O(L) for Everything?**
+
+Every operation (insert, search, prefix) is exactly L steps, where L is the word length. You're not comparing against n words; you're walking down a fixed path:
+
+```
+insert("cat"):   root → c → a → t → mark end   (3 steps)
+search("cat"):   root → c → a → t → is_end?    (3 steps)
+startsWith("ca"): root → c → a → exists?        (2 steps)
+
+No matter if the trie has 10 or 10 million words, "cat" is always 3 steps.
+```
+
+**The is_end Flag: A Subtle But Critical Detail**
+
+Here's a trap that catches many people:
+
+```
+Insert "app" and "apple" into trie.
+Search for "app" → Should return True
+Search for "ap"  → Should return False (not a word, just a prefix)
+
+The path to "ap" EXISTS (it's on the way to "app" and "apple"),
+but "ap" was never inserted as a word.
+
+Solution: is_end flag marks "this node completes a word"
+```
+
+**Mental Model: The Node as a Question**
+
+Think of each trie node as asking: "What's the next character?"
+
+```
+     "What's first?"
+           |
+    a  b  c  ...  z
+   /   |   \
+"After 'a'?"  "After 'b'?"  ...
+     |
+  p  r  t
+ /   |   \
+...
+```
+
+At any point, you can ask "Is there a word that starts with the path I've taken?" (startsWith) or "Is the path I've taken exactly a word?" (search with is_end check).
+
+---
+
+## When NOT to Use Tries
+
+**1. Exact Match Only**
+
+If you only need to check "is this word in the dictionary?" without any prefix operations, a hashset is simpler and faster:
+
+```python
+# Trie: ~50 lines of code, O(L) lookup
+# HashSet: 1 line, O(L) lookup but lower constant factor
+
+words = {"apple", "banana", "cherry"}
+"apple" in words  # Simple, fast, sufficient
+```
+
+**2. Memory-Constrained Environments**
+
+Tries can be memory-hungry. Each node stores either:
+- HashMap: Python dict overhead (~200+ bytes per node)
+- Array: 26 pointers × 8 bytes = 208 bytes per node
+
+For 10,000 short words, a hashset might use 1MB while a trie uses 10MB+.
+
+**3. Highly Sparse Character Sets**
+
+If your strings use Unicode with rare characters, most array slots are empty:
+
+```
+Words: ["你好", "世界"]  (Chinese characters)
+Using array[65536] per node? Massive waste.
+HashMap-based trie works, but consider specialized structures.
+```
+
+**4. When Insertion is Rare and Prefix Queries Don't Exist**
+
+Tries shine when you need prefix operations OR when you're building once and querying many times. If you're:
+- Doing one-off word checks
+- Inserting and deleting frequently
+- Never using prefix operations
+
+...then a hashset is cleaner.
+
+**Red Flags (Don't Use Trie):**
+- "Find exact match" with no prefix requirement
+- "Count occurrences of X" (Counter/hashmap better)
+- "Find substring" (not prefix—consider suffix tree or KMP)
+- Memory limits mentioned in problem constraints
+
+---
+
 ## Pattern: Standard Trie
 
 A Trie is a tree where each node represents a single character, and paths from root to nodes represent prefixes/words.

@@ -8,6 +8,155 @@
 
 ---
 
+## Building Intuition
+
+**Why XOR is Special**
+
+XOR has a beautiful property: the result is 1 when bits differ:
+
+```
+0 XOR 0 = 0  (same → 0)
+0 XOR 1 = 1  (different → 1)
+1 XOR 0 = 1  (different → 1)
+1 XOR 1 = 0  (same → 0)
+```
+
+To MAXIMIZE XOR, you want as many 1s as possible in the result. That means you want OPPOSITE bits at each position.
+
+**The Greedy Insight: MSB First**
+
+Higher bits matter exponentially more:
+
+```
+Bit 7 = 128    (2^7)
+Bit 6 = 64     (2^6)
+...
+Bit 0 = 1      (2^0)
+
+Getting bit 7 right is worth more than ALL lower bits combined:
+  10000000 = 128 > 01111111 = 127
+
+Therefore: Maximize from the most significant bit (MSB) down.
+```
+
+**Why a Trie?**
+
+The naive approach compares all pairs: O(n²). But we can do better by thinking about it differently:
+
+For each number X, we want to find Y such that X XOR Y is maximized. If we know all bits of X, we can greedily pick Y bit-by-bit:
+
+```
+X = 10110 (binary)
+
+To maximize X XOR Y:
+  Bit 4 of X is 1 → Want bit 4 of Y to be 0
+  Bit 3 of X is 0 → Want bit 3 of Y to be 1
+  Bit 2 of X is 1 → Want bit 2 of Y to be 0
+  ... and so on
+
+The trie lets us check "Does any number have bit 0 at position 4?"
+in O(1) per bit check.
+```
+
+**Visualizing the Bitwise Trie**
+
+Numbers become binary paths:
+
+```
+Numbers: 3 (011), 5 (101), 7 (111)
+
+Trie (MSB first, 3 bits):
+        root
+       /    \
+      0      1
+      |     / \
+      1    0   1
+      |    |   |
+      1    1   1
+     (3)  (5) (7)
+
+Each root-to-leaf path is a number's binary representation.
+```
+
+**The Query Process**
+
+For X = 5 (101), find Y that maximizes XOR:
+
+```
+Bit 2: X has 1, want 0. Is there a 0 child? YES → take it, XOR gets 1
+Bit 1: X has 0, want 1. Is there a 1 child? YES → take it, XOR gets 1
+Bit 0: X has 1, want 0. Is there a 0 child? NO → take 1, XOR gets 0
+
+Path taken: 011 = 3
+XOR = 101 XOR 011 = 110 = 6
+```
+
+**Why This is O(n × L) Instead of O(n²)**
+
+```
+Brute force: Compare all pairs
+  n numbers → n(n-1)/2 pairs → O(n²)
+
+Trie approach:
+  Build trie: n numbers × L bits = O(n × L)
+  Query each: n numbers × L bits = O(n × L)
+  Total: O(n × L) where L = 32 for integers
+
+For n = 100,000 and L = 32:
+  Brute force: 5 × 10⁹ comparisons
+  Trie: 3.2 × 10⁶ operations
+
+~1500x faster!
+```
+
+---
+
+## When NOT to Use This Pattern
+
+**1. Finding XOR of Consecutive Range**
+
+For "XOR of numbers from L to R", use the mathematical property:
+
+```python
+def xor_range(L, R):
+    # XOR from 1 to n has a pattern based on n % 4
+    def xor_1_to_n(n):
+        if n % 4 == 0: return n
+        if n % 4 == 1: return 1
+        if n % 4 == 2: return n + 1
+        return 0
+
+    return xor_1_to_n(R) ^ xor_1_to_n(L - 1)
+```
+
+No trie needed—this is O(1).
+
+**2. XOR Sum of All Pairs**
+
+If you need the total XOR of all pairs (not maximum), use bit counting:
+
+```python
+# For each bit position, count how many numbers have 1 there
+# Pairs with different bits contribute to that bit's sum
+# This is O(n × L), but simpler than trie
+```
+
+**3. Small n Where O(n²) is Acceptable**
+
+For n = 100, brute force is 5,000 comparisons. Trie setup might have higher constant factor.
+
+**4. Negative Numbers**
+
+XOR on signed integers is tricky. The sign bit can mess up the MSB-first greedy approach. You'd need to handle two's complement carefully.
+
+**Red Flags:**
+- "XOR of range" → Use mathematical formula
+- "Count pairs with XOR = K" → Hashmap counting better
+- "XOR exists/doesn't exist" → Hashmap sufficient
+- Negative numbers without clarification → Ask interviewer
+
+---
+
 ## Problem Statement
 
 Given an integer array `nums`, return the maximum result of `nums[i] XOR nums[j]`, where `0 <= i <= j < n`.

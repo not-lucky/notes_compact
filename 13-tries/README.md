@@ -11,6 +11,108 @@ A Trie (prefix tree) is a specialized tree data structure used for efficient ret
 
 ---
 
+## Building Intuition
+
+**What Problem Does a Trie Solve?**
+
+Imagine you're building a phone's keyboard autocomplete. As the user types "app", you need to instantly suggest "apple", "application", "applesauce". With 100,000 words in your dictionary:
+
+- **Hashset**: Can check "does 'apple' exist?" but can't find "all words starting with 'app'" without scanning everything
+- **Sorted list + binary search**: Can find the range of 'app-' words in O(log n), but then must scan the range
+- **Trie**: Navigate directly to the 'app' node; everything below is your answer
+
+**The Core Insight: Shared Prefixes**
+
+English words share prefixes heavily. "apple", "application", "apply" all share "appl". Instead of storing this 4 times, a trie stores it ONCE:
+
+```
+a → p → p → l → (branches to e, i, y)
+
+4 nodes for "appl" shared by all 3 words.
+Without sharing: 5 + 11 + 5 = 21 characters
+With sharing: 4 + 1 + 7 + 1 = 13 characters (38% savings)
+```
+
+**Why O(L) for Everything?**
+
+The magic of a trie: your query time depends on word length L, NOT dictionary size n.
+
+```
+Dictionary of 1 million words:
+  Hashset lookup: O(L) average — must hash the whole word
+  Trie lookup: O(L) guaranteed — just walk L nodes
+
+They're the same for exact lookup! But for prefixes...
+
+"Find all words starting with 'app'":
+  Hashset: O(n × L) — must check every word
+  Trie: O(L + k) — walk 3 nodes to 'app', then collect k results
+```
+
+**Mental Model: A Branching Path**
+
+Think of a trie like a choose-your-own-adventure book where each page is a letter:
+
+```
+Page 1: "What's your first letter?" → Turn to page A, B, C, ...
+Page A: "After 'a', what's next?" → Turn to page AP, AR, AT, ...
+Page AP: "After 'ap', what's next?" → Turn to page APP, APT, ...
+...
+```
+
+At any page (node), you can ask:
+- "Have I finished a valid word?" (check is_end flag)
+- "What continuations exist?" (check children)
+- "How many words start here?" (count descendants)
+
+---
+
+## When NOT to Use Tries
+
+**1. Exact Match Only (No Prefix Operations)**
+
+If you only need "does this word exist?", a hashset is simpler:
+
+```python
+# Hashset: 1 line, O(1) average lookup
+words = {"apple", "banana"}
+"apple" in words  # True
+
+# Trie: 50+ lines of code for the same result
+```
+
+Trie shines when you need prefix operations.
+
+**2. Memory-Constrained Environments**
+
+Each trie node carries overhead:
+- HashMap-based: ~200+ bytes per node (Python dict overhead)
+- Array-based: 26 × 8 = 208 bytes per node
+
+For a million short words, a hashset uses ~50MB; a trie might use 500MB+.
+
+**3. Numeric or High-Cardinality Alphabets**
+
+26-letter alphabet: 26 possible children per node (manageable)
+Unicode: 65,536+ possible children per node (explosion!)
+
+For numeric data, segment trees or other structures often work better.
+
+**4. Substring Search (Not Prefix)**
+
+"Find words CONTAINING 'cat'" is not a prefix problem. You'd need:
+- Inverted index
+- Suffix tree/array
+- Full-text search (like Lucene)
+
+**Red Flags That Suggest NOT Using Trie:**
+- "Find exact matches only"
+- "Memory limit is tight"
+- "Search for substring" (not prefix)
+- "Unicode/arbitrary alphabet"
+
+---
+
 ## Trie vs Other Data Structures
 
 | Operation | Trie | HashMap | BST | Sorted Array |

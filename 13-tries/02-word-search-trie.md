@@ -8,6 +8,112 @@ Word Search II (LeetCode 212) is a hard problem that combines trie with DFS/back
 
 ---
 
+## Building Intuition
+
+**The Naive Approach and Why It Fails**
+
+Given a grid and k words, the brute force is: for each word, search the entire grid. This means k complete grid traversals, each potentially exploring 4^L paths (4 directions, L = word length).
+
+```
+10,000 words × 12×12 grid × 4^10 paths = astronomical
+```
+
+**The Key Insight: Search All Words Simultaneously**
+
+Instead of asking "Does this grid contain word X?" k times, ask "As I walk through this grid, which words can I form?"
+
+The trie transforms this from:
+```
+For each of 10,000 words:
+    For each of 144 cells:
+        DFS up to 10 levels deep
+```
+
+To:
+```
+For each of 144 cells:
+    DFS up to 10 levels, but prune if path not in ANY word
+```
+
+**Why a Trie is Perfect Here**
+
+Consider searching for ["oath", "pea", "eat", "rain"]. When you start DFS from cell 'o':
+
+Without trie:
+- Check if path matches "oath" → Yes? Continue. No? Check next word.
+- Check if path matches "pea" → ...
+- Check if path matches "eat" → ...
+- Repeat for every step!
+
+With trie:
+- Is 'o' a valid prefix? Check ONE node. Yes → continue. No → prune entirely.
+- At 'oa', is 'oa' valid? Check ONE node.
+- At 'oat', is 'oat' valid? Check ONE node.
+
+The trie gives a SINGLE O(1) check that answers "does ANY word start with this path?"
+
+**The Pruning Power**
+
+```
+Grid position: currently at 'o', next cells are 'a', 'e', 'i', 't'
+
+Without trie: Must explore all 4 directions for EACH word
+With trie:    Check which directions have children in trie
+              If trie node for 'o' only has child 'a', skip e, i, t entirely
+
+This compounds exponentially. At depth 10, 4^10 ≈ 1 million.
+But with pruning, maybe only 1-2 paths are valid → massive speedup.
+```
+
+**Storing the Word at Terminal Nodes**
+
+A clever optimization: instead of reconstructing the word from the path, store the complete word at the terminal node:
+
+```python
+# During trie construction:
+node['$'] = "oath"  # Store the word itself
+
+# During DFS:
+if '$' in node:
+    result.append(node['$'])  # Instant retrieval!
+    del node['$']  # Avoid duplicates
+```
+
+---
+
+## When NOT to Use This Pattern
+
+**1. Single Word Search**
+
+If you only need to find ONE word in the grid, skip the trie. Simple DFS is sufficient:
+
+```python
+# Word Search I: Single word, no trie needed
+def exist(board, word):
+    # Just DFS checking word[i] at each step
+```
+
+Trie overhead isn't worth it for k=1.
+
+**2. Very Short Word List**
+
+If you have 5-10 words, the trie construction overhead might exceed the savings. Profile first.
+
+**3. Dense Grid with Many Matches**
+
+If almost every path matches some word, pruning provides little benefit. The trie still helps with duplicate detection, but less dramatically.
+
+**4. When Grid is Tiny**
+
+For a 3×3 grid with 5-letter words? Brute force might be faster due to lower constant factors.
+
+**Red Flags:**
+- "Find if ANY path matches pattern" → Regex/DP might be better
+- "Find longest word in grid" → Similar but may need different termination
+- "Find all substrings" (not starting from each cell) → Different problem entirely
+
+---
+
 ## Problem Statement
 
 Given an `m x n` board of characters and a list of words, find all words that can be formed by sequentially adjacent cells (horizontal or vertical). Each cell may only be used once per word.
