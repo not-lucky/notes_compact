@@ -2,6 +2,65 @@
 
 This appendix covers Python-specific knowledge that gives you an edge in technical interviews. While algorithms are language-agnostic, knowing Python's standard library can help you write cleaner, faster solutions.
 
+## Building Intuition
+
+### Why Learn Python's Standard Library?
+
+The difference between a good solution and a great solution often lies in knowing what tools already exist. Consider this scenario:
+
+**Without standard library knowledge:**
+```python
+# Count character frequencies - manual approach
+def count_chars(s):
+    freq = {}
+    for c in s:
+        if c in freq:
+            freq[c] += 1
+        else:
+            freq[c] = 1
+    return freq
+```
+
+**With standard library knowledge:**
+```python
+from collections import Counter
+def count_chars(s):
+    return Counter(s)
+```
+
+Both solutions work. But the second one:
+- Takes 10 seconds to write instead of 60
+- Has zero chance of bugs
+- Shows the interviewer you know Python
+- Lets you focus on the actual algorithm, not boilerplate
+
+### The Mental Model
+
+Think of Python's standard library as a "solved problems" catalog:
+
+| Problem Type | Solved By |
+|--------------|-----------|
+| "I need to count things" | `Counter` |
+| "I need a dictionary that auto-initializes" | `defaultdict` |
+| "I need fast operations at both ends" | `deque` |
+| "I need the k largest/smallest" | `heapq.nlargest/nsmallest` |
+| "I need to find where an element goes in sorted list" | `bisect` |
+| "I need all combinations/permutations" | `itertools` |
+
+When you recognize a pattern, reach for the right tool automatically.
+
+## When NOT to Use These Modules
+
+1. **When the interview explicitly asks you to implement the data structure**: If asked to "implement a heap", don't use `heapq` - they want to see you understand the mechanics
+
+2. **When it obscures the core algorithm**: If the interesting part is the algorithm itself, using a one-liner might hide what you understand
+
+3. **When simpler is clearer**: Don't use `Counter` when you only need to check if something exists (use a set)
+
+4. **When learning**: Build things from scratch first to understand the internals, then use the library
+
+5. **When interviewing at companies that want low-level knowledge**: Some roles (systems, embedded) may value seeing you implement fundamentals
+
 ## Why Python for Interviews
 
 1. **Concise syntax**: Write less code, fewer bugs

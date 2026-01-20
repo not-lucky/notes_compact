@@ -2,6 +2,123 @@
 
 > **Prerequisites:** Basic Python knowledge
 
+## Building Intuition
+
+### Why Does itertools Exist?
+
+Generating combinations, permutations, and products is tedious and error-prone. `itertools` provides these as lazy iterators - they generate values on-demand, not all at once in memory.
+
+**The core insight**: Many brute-force solutions require "try all combinations" or "try all orderings." `itertools` makes this a one-liner, letting you focus on the filtering logic.
+
+### The Combinatorial Zoo
+
+Here's the key distinction between the main functions:
+
+```
+Given [A, B, C], choose 2:
+
+permutations: Order matters, no replacement
+  → (A,B), (A,C), (B,A), (B,C), (C,A), (C,B)  [6 results]
+
+combinations: Order doesn't matter, no replacement
+  → (A,B), (A,C), (B,C)                        [3 results]
+
+combinations_with_replacement: Order doesn't matter, replacement allowed
+  → (A,A), (A,B), (A,C), (B,B), (B,C), (C,C)   [6 results]
+
+product: All combinations of choices (Cartesian product)
+  product([A,B], [1,2]) → (A,1), (A,2), (B,1), (B,2)
+```
+
+### Visual Mental Model
+
+**Permutations** - "Arrange people in a line"
+```
+3 people, 3 positions: 3! = 6 ways
+┌─┐┌─┐┌─┐
+│A││B││C│  ABC, ACB, BAC, BCA, CAB, CBA
+└─┘└─┘└─┘
+```
+
+**Combinations** - "Choose a committee"
+```
+3 people, pick 2: C(3,2) = 3 ways
+Who's on the team, not who sits where
+{A,B}, {A,C}, {B,C}
+```
+
+**Product** - "Menu choices"
+```
+Entree: [pasta, steak]
+Side:   [salad, soup]
+
+All meals: (pasta,salad), (pasta,soup), (steak,salad), (steak,soup)
+```
+
+### Why Lazy Iterators?
+
+`permutations(range(10))` generates 3,628,800 items. Loading all into memory is wasteful if you only need to find one that satisfies a condition.
+
+```python
+# Memory-efficient: stops at first match
+for p in permutations(range(10)):
+    if is_valid(p):
+        print(p)
+        break  # Didn't generate all 3.6M permutations!
+
+# Memory-wasteful: generates everything
+all_perms = list(permutations(range(10)))  # Uses ~300MB
+```
+
+## When NOT to Use
+
+### Avoid itertools when:
+- **Output is huge and you'll consume it all**: `list(permutations(range(12)))` is 479 million items - you'll run out of memory
+- **A mathematical formula exists**: Don't generate all permutations just to count them (use `math.factorial`)
+- **Smarter algorithms exist**: Don't brute-force when DP or greedy works
+
+### Common mistakes:
+```python
+# WRONG: Converting to list unnecessarily
+all_combos = list(combinations(range(20), 10))  # 184,756 items in memory
+for c in all_combos:  # Should iterate directly!
+    process(c)
+
+# CORRECT: Iterate directly
+for c in combinations(range(20), 10):
+    process(c)
+
+# WRONG: Forgetting iterators are consumed
+perms = permutations([1, 2, 3])
+list(perms)  # [(1,2,3), (1,3,2), ...]
+list(perms)  # [] - empty! Iterator exhausted
+
+# CORRECT: Create new iterator or store in list
+perms_list = list(permutations([1, 2, 3]))  # Reusable
+
+# WRONG: groupby on unsorted data
+data = [1, 2, 1, 2]
+for k, g in groupby(data):
+    print(k, list(g))
+# 1 [1]
+# 2 [2]
+# 1 [1]  <- Not merged!
+# 2 [2]
+
+# CORRECT: Sort first for full grouping
+for k, g in groupby(sorted(data)):
+    print(k, list(g))
+# 1 [1, 1]
+# 2 [2, 2]
+```
+
+### Performance considerations:
+- **n matters a lot**: `permutations(range(10))` = 3.6M items, `permutations(range(13))` = 6.2 billion
+- **Use early termination**: `any()`, `all()`, or explicit `break` when you find what you need
+- **Consider backtracking**: For constrained problems, backtracking prunes invalid paths earlier than filtering all permutations
+
+---
+
 ## Interview Context
 
 The `itertools` module provides efficient iterators for combinatorial tasks. Essential for:

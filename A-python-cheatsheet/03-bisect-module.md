@@ -2,6 +2,106 @@
 
 > **Prerequisites:** Understanding of binary search
 
+## Building Intuition
+
+### Why Does bisect Exist?
+
+Binary search is fundamental but error-prone. The off-by-one errors, the "should I use `<=` or `<`" decisions, the "left or right?" confusion - these cause bugs even for experienced programmers. `bisect` handles these edge cases correctly, every time.
+
+**The core insight**: Most binary search problems reduce to "find where this value belongs in a sorted list." That's exactly what `bisect` does.
+
+### The Key Mental Model
+
+Imagine a sorted list as a number line with positions:
+
+```
+Values:    [1, 3, 5, 5, 5, 7, 9]
+Positions:  0  1  2  3  4  5  6  7
+                 ↑        ↑
+            bisect_left(5)=2  bisect_right(5)=5
+```
+
+- **bisect_left(x)**: "Where would x go if we want it BEFORE any equal elements?"
+- **bisect_right(x)**: "Where would x go if we want it AFTER any equal elements?"
+
+### Why Two Functions?
+
+They answer different questions:
+
+```python
+arr = [1, 3, 5, 5, 5, 7, 9]
+
+# "How many elements are < 5?"
+bisect.bisect_left(arr, 5)   # 2 (elements 1, 3)
+
+# "How many elements are <= 5?"
+bisect.bisect_right(arr, 5)  # 5 (elements 1, 3, 5, 5, 5)
+
+# "How many 5s are there?"
+bisect.bisect_right(arr, 5) - bisect.bisect_left(arr, 5)  # 3
+```
+
+### Visual Trace: What bisect Actually Does
+
+```
+bisect_left([1, 3, 5, 7, 9], 4):
+
+Step 1: lo=0, hi=5, mid=2, arr[2]=5
+        4 < 5, so hi = 2
+
+Step 2: lo=0, hi=2, mid=1, arr[1]=3
+        4 > 3, so lo = 2
+
+Step 3: lo=2, hi=2, lo >= hi, return 2
+
+Result: 2 (4 would be inserted between 3 and 5)
+```
+
+### insort: Insert + Sort in One Step
+
+`insort` combines finding the position and inserting:
+
+```python
+arr = [1, 3, 5, 7]
+bisect.insort(arr, 4)
+# arr is now [1, 3, 4, 5, 7]
+```
+
+**But note**: The insertion itself is O(n) because it shifts elements. The binary search is O(log n), but the total is O(n). For true O(log n) insertion, use `sortedcontainers.SortedList`.
+
+## When NOT to Use
+
+### Don't use bisect when:
+- **Data isn't sorted**: bisect assumes sorted input. Using it on unsorted data gives garbage results (silently!)
+- **You need O(log n) insertion**: `insort` is O(n) due to list shifting
+- **You're searching once**: A simple `in` check or linear scan may be clearer for one-time lookups
+- **The list is tiny**: Binary search has overhead; for 10 elements, linear is fine
+
+### Use different approaches when:
+- **You need frequent insertions + lookups**: Use `sortedcontainers.SortedList` or a balanced tree
+- **You're finding min/max dynamically**: Use a heap
+- **Data arrives unsorted**: Sort first, or use a self-balancing structure
+
+### Common mistakes:
+```python
+# WRONG: Forgetting to check bounds
+arr = [1, 3, 5, 7]
+i = bisect.bisect_left(arr, 10)
+# i = 4, but arr[4] raises IndexError!
+# Always check: if i < len(arr) and arr[i] == target
+
+# WRONG: Using on unsorted list
+arr = [5, 1, 3, 7]  # Not sorted!
+bisect.bisect_left(arr, 4)  # Returns 2, but that's meaningless
+
+# WRONG: Confusing bisect_left and bisect_right for existence check
+arr = [1, 3, 5, 7]
+i = bisect.bisect_right(arr, 5)  # Returns 3
+# arr[3] is 7, not 5! Use bisect_left for "find element"
+```
+
+---
+
 ## Interview Context
 
 The `bisect` module provides binary search utilities for maintaining sorted lists. It's useful for:

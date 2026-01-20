@@ -2,6 +2,63 @@
 
 > **Prerequisites:** Basic Python knowledge
 
+## Building Intuition
+
+### Why Does collections Exist?
+
+Python's built-in containers (`list`, `dict`, `set`) are general-purpose. They work for everything, but they're not optimized for anything specific. The `collections` module provides **specialized** containers that solve common problems more elegantly.
+
+**The core insight**: Every time you write boilerplate code to handle a missing key, count elements, or pop from the front of a list, you're solving a problem that thousands of developers solve daily. `collections` provides battle-tested solutions.
+
+### The Philosophy Behind Each Container
+
+**Counter**: Counting is everywhere in algorithms. Rather than writing `if key in dict: dict[key] += 1; else: dict[key] = 1` over and over, `Counter` makes counting a first-class operation.
+
+**defaultdict**: The most common dictionary pattern is "get value, or initialize with default if missing." Why not bake that into the container itself? That's `defaultdict`.
+
+**deque**: Lists are arrays. Removing from the front requires shifting every element - O(n). A double-ended queue (deque) is implemented as a doubly-linked list of blocks, making both ends O(1).
+
+**OrderedDict**: Before Python 3.7, dictionaries didn't preserve insertion order. `OrderedDict` was essential. Now it's mainly useful for its `move_to_end()` method for LRU caches.
+
+### Visual Model
+
+```
+Counter:     "aabbbc" → {'a': 2, 'b': 3, 'c': 1}
+              Think: histogram/frequency table
+
+defaultdict: graph['new_node']  → [] automatically
+              Think: dictionary with infinite default values
+
+deque:       ←[1, 2, 3, 4]→
+              Think: list with O(1) at BOTH ends
+
+OrderedDict: {a: 1, b: 2} with .move_to_end('a') → {b: 2, a: 1}
+              Think: dictionary + doubly-linked list
+```
+
+## When NOT to Use
+
+### Counter
+- **Don't use for existence checks**: Use a `set` if you only care whether something exists, not how many times
+- **Don't use when you need the original order**: Counter sorts by frequency, not insertion
+- **Don't use for memory-constrained counting**: For very large streams, consider probabilistic structures like Count-Min Sketch
+
+### defaultdict
+- **Don't use when you need explicit KeyError**: Sometimes a missing key is a bug you want to catch
+- **Don't use with expensive default factories**: `defaultdict(lambda: compute_expensive_default())` runs on every access
+- **Don't use when you need to check key existence**: `if key in d` works, but `d[key]` creates the key
+
+### deque
+- **Don't use for random access**: `deque[i]` is O(n), not O(1) - use list instead
+- **Don't use when you only need LIFO**: A list is fine for stack operations (append/pop)
+- **Don't use for small collections**: The overhead isn't worth it for 10 elements
+
+### OrderedDict
+- **Don't use in Python 3.7+**: Regular dicts preserve order now
+- **Only use if you need `move_to_end()` or `popitem(last=False)`**
+
+---
+
 ## Interview Context
 
 The `collections` module provides specialized container datatypes that are more efficient and convenient than built-in containers. Knowing these can save significant time in interviews:

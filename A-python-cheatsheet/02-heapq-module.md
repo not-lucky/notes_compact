@@ -2,6 +2,90 @@
 
 > **Prerequisites:** Understanding of heap data structure
 
+## Building Intuition
+
+### Why Does heapq Exist?
+
+Many algorithms need to repeatedly find the minimum (or maximum) element. Scanning a list is O(n), but a heap gives you O(log n) for insertion and O(1) for finding the minimum. `heapq` provides this without you implementing the tricky sift-up/sift-down logic.
+
+**The core insight**: A heap is a "partially sorted" structure. It doesn't maintain full order (that would be expensive), but it guarantees the minimum is always at the top. This is the sweet spot for many problems.
+
+### The Heap Property Visualized
+
+```
+           1              Heap property: parent ≤ children
+         /   \
+        3     2           Array representation: [1, 3, 2, 7, 4, 5, 6]
+       / \   / \
+      7   4 5   6         For index i:
+                          - Left child: 2i + 1
+                          - Right child: 2i + 2
+                          - Parent: (i - 1) // 2
+```
+
+**Why O(n) for heapify, not O(n log n)?**
+Most elements are leaves. Leaves don't need to sift down. Only half the elements sift 1 level, a quarter sift 2 levels, etc. The sum is O(n), not O(n log n).
+
+### Mental Model for heapq
+
+Think of a heap as a "minimum-finder-machine":
+- Put things in → they settle to their natural level
+- Ask for minimum → instantly available at top
+- Remove minimum → next smallest bubbles up
+
+**For k-largest problems**: Keep a min-heap of size k. The smallest element in the heap is the kth largest overall. Anything smaller gets rejected.
+
+```
+Finding 3 largest from [5, 1, 8, 3, 9, 2]:
+
+Process 5: heap = [5]          (size < 3, add it)
+Process 1: heap = [1, 5]       (size < 3, add it)
+Process 8: heap = [1, 5, 8]    (size = 3 now)
+Process 3: heap = [3, 5, 8]    (3 > 1, replace 1)
+Process 9: heap = [5, 9, 8]    (9 > 3, replace 3)
+Process 2: heap = [5, 9, 8]    (2 < 5, reject)
+
+Result: [5, 8, 9] (the 3 largest)
+```
+
+## When NOT to Use
+
+### Use sorting instead when:
+- **k is close to n**: `heapq.nlargest(n-1, items)` is slower than `sorted(items)[1:]`
+- **k is 1**: Just use `min()` or `max()` - O(n) with tiny constant
+- **You need the elements sorted**: Heap gives you k elements in heap order, not sorted order
+
+### Use other structures when:
+- **You need both min and max**: Use a sorted container or two heaps
+- **You need to delete arbitrary elements**: Heaps only efficiently remove the min; use a balanced BST instead
+- **You need random access**: Heaps are for min-extraction, not indexing
+
+### Be careful when:
+- **Using with mutable objects**: If you modify an object after insertion, heap property breaks
+- **Forgetting it's min-heap only**: Python has no max-heap. Negate values or use a wrapper class
+- **Confusing heap with sorted array**: `heap[1]` is NOT the second smallest
+
+### Python-specific gotchas:
+```python
+# WRONG: Assuming heap is sorted
+heap = [3, 1, 4, 1, 5]
+heapq.heapify(heap)
+print(heap)  # [1, 1, 4, 3, 5] - NOT fully sorted!
+
+# WRONG: Direct list operations
+heap = [1, 2, 3]
+heap.append(0)  # Breaks heap property!
+# Use heappush instead
+
+# WRONG: Max-heap attempt
+heap = [1, 2, 3]
+heapq.heapify(heap)
+largest = heap[-1]  # NOT how it works! Could be anything
+# Use -x for max-heap or heapq.nlargest
+```
+
+---
+
 ## Interview Context
 
 Python's `heapq` module implements a min-heap. It's essential for:

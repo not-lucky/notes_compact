@@ -2,6 +2,73 @@
 
 > **Prerequisites:** Basic Python knowledge
 
+## Building Intuition
+
+### Why Python Has Gotchas
+
+Every language design involves trade-offs. Python's gotchas often stem from choices that make the common case simpler:
+
+1. **Mutable default arguments**: Default values are evaluated once at function definition. This is fast and usually fine - it only surprises you when the default is mutable.
+
+2. **Shallow copy by default**: Deep copying is expensive. Most of the time, you don't need it. Python optimizes for the common case.
+
+3. **Integer caching**: Creating integer objects is slow. Caching small integers speeds up common operations at no visible cost - until you use `is` instead of `==`.
+
+4. **Late binding closures**: Variables in closures bind to names, not values. This enables powerful patterns but requires understanding.
+
+**The theme**: Python optimizes for readability and the common case. Gotchas appear at the edges.
+
+### Mental Model: What's Actually Happening
+
+Most Python gotchas stem from one concept: **everything is a reference**.
+
+```python
+# Assignment binds a name to an object
+a = [1, 2, 3]  # 'a' points to a list object
+
+# Assignment doesn't copy - it creates another reference
+b = a          # 'b' points to the SAME list object
+
+# Mutation through any reference affects all
+b.append(4)
+print(a)       # [1, 2, 3, 4] - a and b are the same list!
+```
+
+Understanding this model predicts behavior:
+- Why shallow copy doesn't copy nested objects (they're references too)
+- Why mutable defaults are shared (the default is a reference stored once)
+- Why `is` and `==` differ (identity vs. value of referenced objects)
+
+### The Gotcha Categories
+
+1. **Reference gotchas**: Mutable defaults, shallow copy, list aliasing
+2. **Comparison gotchas**: `is` vs `==`, integer caching, float precision
+3. **Scope gotchas**: Closure late binding, `nonlocal` requirement
+4. **Iteration gotchas**: Modifying while iterating, iterator exhaustion
+5. **Container gotchas**: Tuple syntax, empty container truthiness
+
+## When NOT to Worry About These Gotchas
+
+### Mutable defaults
+- **Don't worry** if your default is immutable: `def f(x=5)`, `def f(x="hello")`
+- **Don't worry** if you never mutate the parameter inside the function
+
+### Shallow copy
+- **Don't worry** if your list contains only immutables: `[1, 2, 3].copy()` is fine
+- **Don't worry** if you're making a new list anyway: `[x for x in original]`
+
+### Integer caching
+- **Don't worry** if you always use `==` for comparisons (as you should)
+- The only time you need `is` is for `None` checks: `if x is None`
+
+### These gotchas matter most in:
+- **Interviews**: Interviewers love testing edge case knowledge
+- **Long-running processes**: Mutable defaults accumulate state across calls
+- **Multithreaded code**: Shared mutable state compounds these issues
+- **Debugging**: When code behaves unexpectedly, check these first
+
+---
+
 ## Interview Context
 
 Python's design choices can trip you up in interviews. Knowing these gotchas helps you:
