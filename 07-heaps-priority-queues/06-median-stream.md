@@ -15,6 +15,157 @@ This problem frequently appears at Google, Facebook, and Amazon.
 
 ---
 
+## Building Intuition
+
+**What Is the Median, Really?**
+
+The median is the "middle" value that splits the data into two equal halves:
+
+```
+Sorted: [1, 2, 3, 4, 5, 6, 7]
+              ↑ median = 4
+
+Left half:  [1, 2, 3]    (smaller than median)
+Right half: [5, 6, 7]    (larger than median)
+
+For even count: [1, 2, 3, 4, 5, 6]
+                   ↑   ↑
+                   3   4
+                median = 3.5 = (3+4)/2
+```
+
+**Why Two Heaps?**
+
+The insight: We don't need the entire sorted array—just the boundary between the two halves.
+
+```
+If we know:
+- Maximum of the smaller half (left max)
+- Minimum of the larger half (right min)
+
+Then median = left_max  (if odd)
+          or (left_max + right_min) / 2  (if even)
+
+What gives O(1) access to max? → Max heap
+What gives O(1) access to min? → Min heap
+
+Two heaps, each tracking one half!
+```
+
+**Mental Model: Two Buckets on a Scale**
+
+Imagine a balance scale with two buckets:
+- Left bucket: holds the smaller numbers (max at top)
+- Right bucket: holds the larger numbers (min at top)
+
+Rules:
+1. Buckets must be balanced (same size, or left has one extra)
+2. Everything in left bucket ≤ everything in right bucket
+
+```
+     Left (max heap)        Right (min heap)
+        [3]                    [5]
+       /   \                  /   \
+      [1]   [2]              [7]   [6]
+
+Max of left = 3, Min of right = 5
+If balanced (same size): median = (3 + 5) / 2 = 4
+If left has extra: median = left max
+```
+
+**The "Always Add Left First" Trick**
+
+The implementation uses a clever dance:
+
+```
+1. Push to left heap (might violate "left ≤ right")
+2. Pop left's max, push to right (now left max ≤ right min)
+3. If right is bigger, move one back to left
+
+This ensures:
+- Invariant 1: left max ≤ right min (step 2 guarantees)
+- Invariant 2: left size ≥ right size (step 3 guarantees)
+```
+
+**Why Not Just Sort Each Time?**
+
+```
+Insert then sort: O(n log n) per findMedian
+Binary search insert: O(n) per addNum (shift elements)
+Two heaps: O(log n) per addNum, O(1) per findMedian ← Winner!
+
+For n insertions + n finds:
+- Sort each time: O(n² log n)
+- Two heaps: O(n log n)
+```
+
+---
+
+## When NOT to Use Two Heaps
+
+**1. You Need to Remove Arbitrary Elements**
+
+Standard two-heap can't efficiently remove non-extremal elements:
+
+```python
+# Can't do this efficiently:
+median_finder.remove(specific_value)
+
+# Would need O(n) search + O(log n) reheapify
+```
+
+Use instead: Two heaps with lazy deletion (see sliding window variant)
+
+**2. You Need the Kth Element (Not Median)**
+
+Two heaps are optimized for the exact middle:
+
+```python
+# For k != n/2, heap sizes would need adjustment
+# More complex to maintain
+
+# Alternative: Order statistic tree
+```
+
+**3. Data Is Static (Not Streaming)**
+
+If all data is known upfront:
+
+```python
+# Simpler: just sort once
+sorted_data = sorted(nums)
+median = sorted_data[len(nums) // 2]
+# O(n log n) one-time vs O(n log n) for n insertions
+```
+
+**4. Space Is Extremely Limited**
+
+Two heaps require O(n) space:
+
+```python
+# If you can sort in-place and data is static:
+nums.sort()  # O(1) extra space
+# No heap needed
+```
+
+**5. Need Other Percentiles Dynamically**
+
+Two heaps give the 50th percentile (median). For arbitrary percentiles:
+
+```python
+# 25th, 75th, 90th percentile?
+# Would need different heap size ratios
+# Consider: sorted containers or skip lists
+```
+
+**Red Flags:**
+- "Remove specific elements from the stream" → Need lazy deletion
+- "Find the kth percentile" → Need modified heap ratios or different structure
+- "All data available at once" → Just sort
+- "Very limited memory" → Consider external algorithms
+
+---
+
 ## Problem Statement
 
 Design a data structure that supports:

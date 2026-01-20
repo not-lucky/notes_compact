@@ -15,6 +15,162 @@ Using heapq correctly shows you're a practical Python programmer, not just theor
 
 ---
 
+## Building Intuition
+
+**Why Does Python Only Have Min Heap?**
+
+Design simplicity. One heap type means one mental model. Max heap is trivially achieved by negating values—the sorted order inverts:
+
+```
+Values:   5   3   8   1   2
+Negated: -5  -3  -8  -1  -2
+
+Min of negated = -8 → corresponds to max of original (8)
+```
+
+**The Negation Pattern Deeply Explained**
+
+```python
+# What you want: max heap that pops largest first
+# What heapq does: min heap that pops smallest first
+
+# Solution: Store -x, pop -result
+#
+# Original values: [5, 3, 8]
+# Stored as:       [-5, -3, -8]
+# Min of stored:   -8
+# Negate result:   8  ← This IS the max!
+
+# Push 10: store -10
+# [-10, -5, -3, -8]
+# Min = -10 → negate → 10 (correct max)
+```
+
+**Why Tuples Work as Priority Queues**
+
+Python compares tuples lexicographically (element by element):
+
+```python
+(1, "zebra") < (2, "apple")  # True: 1 < 2, stop comparing
+(1, "apple") < (1, "zebra")  # True: 1 == 1, so compare "apple" < "zebra"
+(1, 100) < (1, 200)          # True: 1 == 1, so compare 100 < 200
+```
+
+So `(priority, data)` naturally sorts by priority first. But there's a trap:
+
+```python
+(1, {"a": 1}) < (1, {"b": 2})  # ERROR! Dicts aren't comparable
+
+# Fix: (priority, tiebreaker, data) where tiebreaker is always unique
+(1, 0, {"a": 1}) < (1, 1, {"b": 2})  # True: priority tie, 0 < 1, never compares dicts
+```
+
+**Mental Model: The Hospital Waiting Room**
+
+Think of heapq as a hospital triage system:
+- Lower number = higher priority (more urgent)
+- When you call `heappop()`, the most urgent patient (lowest number) leaves
+- Ties are broken by arrival order (that's why we use counter)
+
+```python
+# (severity, arrival_order, patient)
+(1, 0, "heart attack")    # Seen first
+(1, 1, "stroke")          # Same severity, but arrived later
+(3, 2, "broken finger")   # Seen last
+```
+
+**heappushpop vs heapreplace: What's the Difference?**
+
+Both do two operations in one, but the order differs:
+
+```python
+# heappushpop: PUSH first, then POP
+# Returns min(new_item, current_min)
+heap = [2, 3, 5]
+heappushpop(heap, 1)  # Push 1, pop min → returns 1 (the item we just pushed!)
+
+# heapreplace: POP first, then PUSH
+# Always returns what was the minimum
+heap = [2, 3, 5]
+heapreplace(heap, 1)  # Pop 2, push 1 → returns 2
+
+# Use heapreplace for "sliding window minimum" patterns
+# Use heappushpop for "keep k largest" patterns
+```
+
+---
+
+## When NOT to Use heapq
+
+**1. You Need a Max Heap and Code Clarity Matters**
+
+Negation works but clutters code. For complex logic:
+
+```python
+# Confusing with negation everywhere
+if -heap[0] > threshold:
+    result = -heappop(heap)
+    heappush(heap, -new_val)
+
+# Consider: wrapper class or different data structure
+```
+
+**2. You Need to Update Priorities**
+
+heapq has no decrease-key or increase-key operation:
+
+```python
+# Can't do this efficiently:
+# "Change task X's priority from 5 to 2"
+
+# Options:
+# 1. Lazy deletion: mark old entry invalid, push new entry
+# 2. Use sortedcontainers.SortedList instead
+# 3. Implement indexed heap yourself
+```
+
+**3. You Need Thread Safety**
+
+heapq is not thread-safe. For concurrent access:
+
+```python
+# Use queue.PriorityQueue instead
+from queue import PriorityQueue
+pq = PriorityQueue()  # Thread-safe, but slower
+```
+
+**4. You Need K ≈ N Elements**
+
+For large K relative to N, sorting is better:
+
+```python
+# K = 1: just use min() or max()
+# K = N/2 or more: just sort the array
+
+# heapq.nlargest(k, arr) internally checks this and may sort anyway
+```
+
+**5. You Need the Heap to Stay Sorted**
+
+heapq only guarantees heap property, not full sorting:
+
+```python
+heap = [1, 3, 2, 7, 4]
+heapq.heapify(heap)
+print(heap)  # [1, 3, 2, 7, 4] - NOT [1, 2, 3, 4, 7]!
+
+# To get sorted: list(heapq.nsmallest(len(heap), heap))
+# Or: [heappop(heap) for _ in range(len(heap))]
+```
+
+**Red Flags:**
+- "Need to look up or modify specific elements" → Use dict + sorted structure
+- "Multiple threads accessing heap" → Use queue.PriorityQueue
+- "Need sorted order at all times" → Use sortedcontainers.SortedList
+- "K is close to N" → Just sort the array
+
+---
+
 ## heapq Basics
 
 Python's heapq module provides heap operations on regular lists.

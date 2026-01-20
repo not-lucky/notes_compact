@@ -15,6 +15,134 @@ This problem appears frequently at Amazon, Facebook, and Google.
 
 ---
 
+## Building Intuition
+
+**What Are We Really Looking For?**
+
+We want the k points with the smallest distances to origin. This is a Top-K Smallest problem:
+
+```
+Points:    A(1,3)  B(-2,2)  C(3,3)
+Distances: √10    √8       √18
+           ≈3.16  ≈2.83    ≈4.24
+
+K=2 closest: B and A (smallest distances)
+```
+
+**Why Use MAX Heap (Not Min)?**
+
+Same reasoning as Top-K Smallest:
+- We want the k CLOSEST (smallest distance)
+- We need to EVICT the furthest candidate when we find a closer one
+- MAX heap gives O(1) access to the furthest in our candidate set
+
+```
+K=2, processing points in order:
+
+A(dist=10) → heap = [A]
+B(dist=8)  → heap = [A, B], max=A
+C(dist=18) → 18 > 10 (max), skip C
+D(dist=5)  → 5 < 10 (max), evict A, heap = [B, D]
+
+Final: B and D are k closest
+```
+
+**Why Skip the Square Root?**
+
+Square root is:
+1. Computationally expensive
+2. Introduces floating-point errors
+3. UNNECESSARY for comparisons!
+
+```
+If √a < √b, then a < b (sqrt is monotonic)
+
+So instead of:
+√(x₁² + y₁²) < √(x₂² + y₂²)
+
+Just use:
+x₁² + y₁² < x₂² + y₂²
+```
+
+**Mental Model: Lifeguard Rescue Priority**
+
+Imagine a lifeguard at the origin who needs to rescue k swimmers. They can only save k people (limited boat capacity).
+
+- New swimmer spotted → Is this swimmer closer than my furthest planned rescue?
+- If yes → Drop the furthest one, add this swimmer to my list
+- MAX heap = "Who is the furthest person I'm currently planning to save?"
+
+**The Heap Stores Negated Distances**
+
+Python heapq is min heap. For max heap behavior:
+```python
+# Store (-distance, point)
+# Min of -distance = Max of distance
+# heap[0] gives the FURTHEST point (what we might evict)
+```
+
+---
+
+## When NOT to Use Heap for K Closest
+
+**1. K = 1 (Just Find Closest)**
+
+Don't use heap for a single point:
+
+```python
+# Overkill:
+heapq.nsmallest(1, points, key=lambda p: p[0]**2 + p[1]**2)
+
+# Simpler:
+min(points, key=lambda p: p[0]**2 + p[1]**2)
+```
+
+**2. K ≈ N (Most Points)**
+
+When k is close to n, just sort:
+
+```python
+# If k > n/2, sorting might be faster
+sorted_points = sorted(points, key=lambda p: p[0]**2 + p[1]**2)
+return sorted_points[:k]
+```
+
+**3. Points Are Already Sorted by Distance**
+
+If input is pre-sorted by distance:
+```python
+# Just slice
+return points[:k]
+```
+
+**4. Need Exact Distances (Not Just Ranking)**
+
+If you need actual distance values:
+```python
+# Can't skip sqrt if you need the actual number
+actual_distance = math.sqrt(x**2 + y**2)
+```
+
+**5. Points in Special Structures (KD-Tree Available)**
+
+For repeated queries on same point set:
+```python
+# KD-tree gives O(k log n) per query after O(n log n) build
+# Better if you'll do many queries
+from scipy.spatial import KDTree
+tree = KDTree(points)
+distances, indices = tree.query([0, 0], k=k)
+```
+
+**Red Flags:**
+- "K is 1" → Use min()
+- "K equals n" → Return all points
+- "Multiple queries on same points" → Consider KD-tree
+- "Need exact distance values" → Must compute sqrt
+- "3D or higher dimensions" → Same approach, but consider KD-tree
+
+---
+
 ## Problem Statement
 
 Given an array of `points` where `points[i] = [xi, yi]` represents a point on the X-Y plane and an integer `k`, return the `k` closest points to the origin `(0, 0)`.

@@ -15,6 +15,174 @@ Interviewers expect you to know heap properties and operations, even if you use 
 
 ---
 
+## Building Intuition
+
+**Why Store a Tree as an Array?**
+
+The heap's brilliance is using array indices as implicit pointers. No node objects, no left/right references—just math:
+
+```
+Parent of i:     (i - 1) // 2
+Left child of i:  2*i + 1
+Right child of i: 2*i + 2
+
+For index 3:
+- Parent: (3-1)//2 = 1
+- Left child: 2*3+1 = 7
+- Right child: 2*3+2 = 8
+
+This works because a complete binary tree has NO GAPS.
+Level 0: 1 node  (indices 0)
+Level 1: 2 nodes (indices 1-2)
+Level 2: 4 nodes (indices 3-6)
+Level 3: 8 nodes (indices 7-14)
+```
+
+**Mental Model: The Tournament Bracket**
+
+Think of a min heap as an ongoing tournament where smaller values win:
+
+```
+Round 1 (leaves):    7   4   6   5
+                      \ /     \ /
+Round 2:              4       5
+                       \     /
+Finals:                  4 (winner = minimum)
+```
+
+Each parent "won" against both children. The root is the ultimate winner (smallest value). When you remove the winner, you run a new tournament from that position down.
+
+**Why Heapify Up vs Heapify Down?**
+
+- **Heapify UP**: New element enters at bottom, might be "too good" (too small for min heap), bubbles up to its rightful place
+- **Heapify DOWN**: Element at top might be "not good enough", sinks down as better elements rise
+
+```
+Insert 1 into [3, 5, 4, 7, 8]:
+
+  3          3          1     ← 1 bubbles UP
+ / \   →    / \    →   / \
+5   4      1   4      3   4
+/\        / \        / \
+7 8 1    7 8 5      7 8 5
+
+Pop from [1, 3, 4, 7, 8, 5]:
+
+  1          5          3     ← 5 sinks DOWN
+ / \   →    / \    →   / \
+3   4      3   4      5   4
+/\ /      /\ /       /\ /
+7 8 5    7 8        7 8
+         (5 moved)
+```
+
+**Why O(n) Build Heap Is Not Intuitive**
+
+Most people think: "n elements × O(log n) per insert = O(n log n)". But building bottom-up is different:
+
+```
+Heap of height h has 2^h nodes at bottom level.
+
+Work done at each level:
+- Level h (leaves): 2^h nodes × 0 swaps = 0
+- Level h-1:        2^(h-1) nodes × 1 swap max
+- Level h-2:        2^(h-2) nodes × 2 swaps max
+- ...
+- Level 0 (root):   1 node × h swaps max
+
+Total = Σ (nodes at level) × (distance to bottom)
+      = O(n) by mathematical analysis
+
+KEY INSIGHT: Half the nodes are leaves doing ZERO work!
+```
+
+**When to Use Heap vs Sorted Structure**
+
+```
+Need                          | Use
+------------------------------|----------------
+Only min OR max repeatedly    | Heap
+Range queries (all in [5,10]) | Sorted array/BST
+Find kth element once         | QuickSelect
+Find kth repeatedly (dynamic) | Heap or BST
+```
+
+---
+
+## When NOT to Use a Heap
+
+**1. You Need to Search for Arbitrary Elements**
+
+Heap has O(n) search—it only orders parent-child, not siblings:
+
+```
+Min Heap:
+      1
+     / \
+    5   2    ← 5 and 2 are NOT ordered relative to each other
+   / \
+  7   6      ← 7 and 6 are NOT ordered either
+
+To find "is 6 in the heap?" → Must check every element
+```
+
+Use instead: Hash set O(1), BST O(log n), sorted array O(log n)
+
+**2. You Need Both Min AND Max**
+
+A min heap gives O(1) min but O(n) max (and vice versa). If you need both:
+
+```python
+# Bad: two separate heaps get out of sync when removing
+
+# Good: Use a min-max heap (complex) or just sorted structure
+```
+
+Use instead: Balanced BST, or two heaps with lazy deletion
+
+**3. You Need the Kth Element (Not Just First)**
+
+Heap only guarantees the root. Getting kth smallest requires k pops:
+
+```python
+# To get 5th smallest: pop 5 times = O(k log n)
+# Not efficient for large k
+```
+
+Use instead: Order statistic tree, sorted array with index access
+
+**4. You Need to Modify Priorities Efficiently**
+
+Standard heap has O(n) to find an element before changing its priority:
+
+```python
+# Change priority of "task_x" from 5 to 2?
+# Step 1: Find "task_x" → O(n) scan
+# Step 2: Update and reheapify → O(log n)
+# Total: O(n)
+```
+
+Use instead: Indexed heap (heap + hash map), or Fibonacci heap
+
+**5. Data Is Already Sorted**
+
+If input is sorted and you just need min/max:
+
+```python
+sorted_arr = [1, 2, 3, 4, 5]
+min_val = sorted_arr[0]   # O(1)
+max_val = sorted_arr[-1]  # O(1)
+# No heap needed!
+```
+
+**Red Flags:**
+- "Find if X exists in the heap" → Need hash set or BST
+- "Get both minimum and maximum" → Need different structure
+- "Update priority of specific item" → Need indexed priority queue
+- "Get kth smallest without removing" → Need order statistic tree
+
+---
+
 ## Core Concept: What is a Heap?
 
 A **heap** is a complete binary tree stored as an array where each parent satisfies the **heap property** with its children.

@@ -15,6 +15,164 @@ Mastering this pattern unlocks many medium-difficulty problems.
 
 ---
 
+## Building Intuition
+
+**Why Use the OPPOSITE Heap Type?**
+
+This is the most counterintuitive part. Let's think about it step by step:
+
+```
+Goal: Find 3 LARGEST from [5, 3, 8, 1, 9, 2, 7]
+
+Naive thought: "I want largest, so use max heap?"
+Problem: Max heap of ALL n elements + pop 3 = O(n + 3 log n) space O(n)
+
+Better: Keep only 3 candidates, evict the WORST candidate when we find better.
+
+Key insight: What makes a candidate "worst" for "3 largest"?
+→ The SMALLEST of the candidates! (It's the one least deserving of being in top 3)
+
+So we need quick access to the SMALLEST of our k candidates
+→ MIN heap of size k!
+```
+
+**Mental Model: The VIP List**
+
+Imagine you're a bouncer with a VIP list that can only hold k people. You track "net worth" (higher = more VIP).
+
+```
+VIP list capacity: 3
+Current VIPs: [$5M, $8M, $10M]
+
+New person arrives: $12M
+Who do you kick out? The POOREST current VIP ($5M)!
+
+You need quick access to the poorest VIP → min heap by net worth
+```
+
+For "k poorest people" (k smallest), you'd kick out the RICHEST → max heap.
+
+**The Eviction Rule Made Simple**
+
+```
+Finding K largest:
+- New candidate vs SMALLEST current candidate
+- If new > smallest: evict smallest, add new
+- Need quick access to smallest → MIN heap
+
+Finding K smallest:
+- New candidate vs LARGEST current candidate
+- If new < largest: evict largest, add new
+- Need quick access to largest → MAX heap
+
+The heap root is ALWAYS what you might evict!
+```
+
+**Why Size K and Not Size N?**
+
+```
+Size N heap + k pops:  O(n + k log n) time, O(n) space
+Size K heap:           O(n log k) time,    O(k) space
+
+When k << n:
+- n log k << n log n (less work per element)
+- O(k) << O(n) (less space)
+
+When k ≈ n:
+- Just sort the array instead!
+```
+
+**Visual: The Heap as a "Threshold Keeper"**
+
+```
+Finding 3 largest from stream: [5, 3, 8, 1, 9, 2, 7]
+
+MIN heap of size 3, root = "entry threshold"
+
+[5]         threshold=5 (only one so far)
+[3,5]       threshold=3
+[3,5,8]     threshold=3 (heap full)
+1 < 3?      Yes, skip (not good enough)
+9 > 3?      Yes, evict 3, add 9 → [5,8,9], threshold=5
+2 < 5?      Yes, skip
+7 > 5?      Yes, evict 5, add 7 → [7,8,9], threshold=7
+
+Final threshold=7, heap contains [7,8,9] = 3 largest
+```
+
+---
+
+## When NOT to Use Top-K with Heap
+
+**1. K Is Close to N**
+
+When k ≈ n, just sort:
+
+```python
+# If k > n/2, sorting is often faster
+# O(n log n) sort vs O(n log k) heap... when k = n/2: same complexity!
+
+# Rule of thumb:
+if k > len(nums) // 2:
+    return sorted(nums, reverse=True)[:k]
+```
+
+**2. You Only Need the Kth Element (Not All K)**
+
+If you just need the single kth value, not all k values:
+
+```python
+# Top-K heap gives all k elements: O(n log k)
+# QuickSelect gives just kth element: O(n) average
+
+# For single value, QuickSelect is faster
+```
+
+**3. Data Needs to Be Updated Dynamically**
+
+Heap doesn't efficiently support:
+
+```python
+# "Remove element X from top-K"
+# "Update element X's value"
+
+# These require O(n) search + O(log n) reheapify
+# Consider: indexed heap or balanced BST instead
+```
+
+**4. You Need Sorted Order Immediately**
+
+Heap doesn't maintain full sorted order:
+
+```python
+heap = [3, 5, 4]  # Valid min heap, but not sorted!
+
+# To get sorted top-K:
+# Option 1: sort the heap result O(k log k)
+# Option 2: pop k times O(k log k)
+# heapq.nlargest already returns sorted!
+```
+
+**5. K = 1 (Just Min or Max)**
+
+Don't use heap for finding single min or max:
+
+```python
+# Overkill:
+heapq.nlargest(1, nums)[0]  # O(n log 1) = O(n), but with overhead
+
+# Simple:
+max(nums)  # O(n), less overhead
+```
+
+**Red Flags:**
+- "K is greater than half the array" → Just sort
+- "Need only the kth value, not all k" → QuickSelect
+- "Elements change after initial query" → Need different structure
+- "K is 1" → Use min()/max()
+
+---
+
 ## Core Insight: Which Heap for Which Problem?
 
 This is **the most common mistake** in heap interviews:

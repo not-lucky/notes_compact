@@ -15,6 +15,132 @@ This problem appears in Amazon, Google, and Facebook interviews frequently.
 
 ---
 
+## Building Intuition
+
+**The Core Question: What's the Next Smallest Element?**
+
+When merging sorted lists, at any moment the next element in the result MUST be the smallest among all current "heads":
+
+```
+Lists:
+List 0: [1, 4, 5]    ← head is 1
+List 1: [1, 3, 4]    ← head is 1
+List 2: [2, 6]       ← head is 2
+
+Next element = min(1, 1, 2) = 1 (from list 0 or 1)
+```
+
+**Why Heap? The Candidate Pool**
+
+Think of it as a competition with k contestants, where each list sends one representative:
+
+```
+Round 1: Representatives = [1, 1, 2] from lists [0, 1, 2]
+Winner: 1 from list 0
+List 0 sends new representative: 4
+
+Round 2: Representatives = [4, 1, 2]
+Winner: 1 from list 1
+List 1 sends new representative: 3
+
+...and so on
+```
+
+The heap is our "judging panel" that quickly finds the winner (O(log k)).
+
+**Why O(n log k) and Not O(nk)?**
+
+```
+Naive approach: For each of n elements, scan all k heads → O(nk)
+
+Heap approach: For each of n elements, do one heap operation → O(n log k)
+
+With k=1000 lists and n=1,000,000 elements:
+- Naive: 1,000,000 × 1,000 = 1 billion comparisons
+- Heap: 1,000,000 × log₂(1000) ≈ 10 million comparisons
+```
+
+**Mental Model: K Conveyor Belts**
+
+Imagine k conveyor belts, each holding a sorted sequence of boxes. You have one "output" belt where you place boxes in sorted order.
+
+- You can only see the first box on each belt (the heads)
+- To find the next box for output, compare all visible boxes and take the smallest
+- That belt advances, revealing its next box
+
+The heap is like a "quick-glance display" showing which belt currently has the smallest visible box.
+
+**Why the Tiebreaker Index Matters**
+
+```python
+# When two heads have equal values:
+(1, node_from_list_0)  vs  (1, node_from_list_1)
+
+# Python tries to compare nodes → Error!
+# Solution: (value, list_index, node)
+(1, 0, node_from_list_0)  vs  (1, 1, node_from_list_1)
+# Now: 0 < 1, comparison succeeds
+```
+
+---
+
+## When NOT to Use Heap for Merge K Sorted
+
+**1. K = 2 (Just Two Lists)**
+
+For two lists, a simple two-pointer merge is cleaner:
+
+```python
+# Overkill for k=2:
+heap = [(lists[0].val, 0, lists[0]), (lists[1].val, 1, lists[1])]
+
+# Simpler:
+while l1 and l2:
+    if l1.val < l2.val:
+        result.append(l1.val)
+        l1 = l1.next
+    else:
+        result.append(l2.val)
+        l2 = l2.next
+```
+
+**2. Lists Are Very Short**
+
+If average list length is small, divide-and-conquer might have better constants:
+
+```
+10 lists of 5 elements each:
+- Heap: overhead of heap operations for 50 elements
+- D&C: simple merge of pairs, no heap overhead
+```
+
+**3. Lists Are on Disk (External Merge Sort)**
+
+For disk-based merge, you need buffered I/O:
+
+```python
+# Can't use standard heap approach directly
+# Need: buffer chunks from each file, merge buffers, write output buffer
+# The principle is same, but implementation differs
+```
+
+**4. You Don't Need Fully Sorted Output**
+
+If you just need, say, the first 10 elements from the merged result:
+
+```python
+# Heap is fine, but stop after 10 elements
+# No need to process all n elements
+```
+
+**Red Flags:**
+- "K is always 2" → Use simple two-pointer merge
+- "Files don't fit in memory" → Need external merge sort
+- "Only need first m elements" → Stop early (heap still works)
+- "Lists are actually linked lists" → Make sure to handle None carefully
+
+---
+
 ## Problem Statement
 
 Merge `k` sorted linked lists into one sorted list.

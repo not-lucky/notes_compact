@@ -15,6 +15,139 @@ Interviewers often start with heap, then ask about QuickSelect.
 
 ---
 
+## Building Intuition
+
+**What Does "Kth Largest" Actually Mean?**
+
+```
+Array: [3, 2, 1, 5, 6, 4]
+Sorted descending: [6, 5, 4, 3, 2, 1]
+                    1st 2nd 3rd 4th 5th 6th largest
+
+k=2 → 5 (second position in descending order)
+
+Alternative view:
+Sorted ascending: [1, 2, 3, 4, 5, 6]
+                   0  1  2  3  4  5  ← indices
+
+kth largest = element at index (n - k) when sorted ascending
+k=2, n=6 → index 4 → value 5 ✓
+```
+
+**Why Min Heap of Size K Works**
+
+Imagine a competition where only k winners advance:
+
+```
+Top 3 competition, contestants arrive one by one:
+
+[3] → Qualify (only 1 so far)
+[3,2] → Both qualify (only 2 so far)
+[3,2,1] → All qualify (exactly 3 now)
+[5] arrives, beats current worst (1) → [3,2,5]
+[6] arrives, beats current worst (2) → [3,5,6]
+[4] arrives, beats current worst (3) → [4,5,6]
+
+Final 3: [4,5,6]
+Kth (3rd) largest = smallest of the 3 = 4 ← That's the root!
+```
+
+The heap root is always the "weakest winner" — the kth largest.
+
+**QuickSelect: Partial Sorting Insight**
+
+QuickSelect asks: "What if we could stop sorting early?"
+
+```
+Full QuickSort: Partition everything, recurse both sides, O(n log n)
+QuickSelect: Partition, but only recurse ONE side, O(n)
+
+Why one side? After partitioning:
+[elements < pivot] [pivot] [elements > pivot]
+         left                    right
+
+If pivot lands at index k-1, we're done!
+If pivot is left of target, search right.
+If pivot is right of target, search left.
+
+We halve the problem each time (on average):
+n + n/2 + n/4 + ... = 2n = O(n)
+```
+
+**Mental Model: Finding Median Height in a Crowd**
+
+Imagine finding the 5th tallest person among 100 people.
+
+**Sorting approach**: Line everyone up by height, count to 5th. (O(n log n))
+
+**Heap approach**: Keep a "short list" of 5 tallest seen so far. Anyone taller than the shortest on your list gets swapped in. At the end, the shortest on your list is the answer. (O(n log k))
+
+**QuickSelect approach**: Ask everyone to stand left/right of a random person. Count how many are taller. Repeat only with the relevant group. (O(n) average)
+
+**When Each Approach Wins**
+
+```
+Sorting O(n log n):
+- Simple, stable, no surprises
+- Good when k ≈ n (need most of the array)
+- Works well with sorted input
+
+Heap O(n log k):
+- Excellent when k << n
+- Natural for streaming data
+- Easy to implement correctly
+
+QuickSelect O(n) average:
+- Best single-query performance
+- Modifies the array (usually OK)
+- O(n²) worst case needs random pivot
+```
+
+---
+
+## When NOT to Use Each Approach
+
+**Don't Use Sorting When:**
+
+```python
+# K is very small relative to N
+# O(n log n) is overkill for finding single element
+
+nums = list(range(1000000))
+k = 5
+sorted(nums)[-k]  # Sorts 1M elements to find 5th largest!
+```
+
+**Don't Use Heap When:**
+
+```python
+# K = 1 (just use max())
+max(nums)  # O(n), simpler than heap
+
+# K ≈ N (sorting is similar or better)
+# O(n log k) ≈ O(n log n) when k ≈ n
+
+# You can't modify data and need O(n) time
+# Heap is O(n log k), not O(n)
+```
+
+**Don't Use QuickSelect When:**
+
+```python
+# 1. Array can't be modified (QuickSelect partitions in-place)
+# 2. Need worst-case guarantee (O(n²) possible without median-of-medians)
+# 3. Data is streaming (can't partition what you haven't seen)
+# 4. Need multiple different k values (re-run for each k)
+```
+
+**Red Flags:**
+- "Array is read-only" → Can't use QuickSelect without copy
+- "Need guaranteed O(n)" → QuickSelect is O(n) average, not worst
+- "Data arrives as stream" → Heap is the answer
+- "Need k=1" → Just use max()/min()
+
+---
+
 ## Problem Statement
 
 Given an integer array `nums` and integer `k`, return the **kth largest** element.

@@ -15,6 +15,146 @@ This problem appears frequently at Facebook and Amazon interviews.
 
 ---
 
+## Building Intuition
+
+**The Core Problem: Managing Cooldowns**
+
+Tasks of the same type need separation. This creates "slots" that may be empty:
+
+```
+Tasks: [A, A, A], cooldown n=2
+
+Without cooldown: A A A (3 slots)
+With cooldown:    A _ _ A _ _ A (7 slots)
+                    ^-^   ^-^
+                  2 slots between each A
+```
+
+**Why Prioritize High-Frequency Tasks?**
+
+High-frequency tasks are the bottleneck. If you don't handle them first, you'll have more idles at the end:
+
+```
+Tasks: [A, A, A, B], n=2
+
+Bad order (B first):
+B A _ _ A _ _ A  = 8 slots (2 idles)
+
+Good order (A first):
+A B _ A _ _ A    = 7 slots (2 idles)
+A _ B A _ _ A    = 7 slots
+
+Actually both have idles, but:
+A B _ A B _ A    Wait, we only have 1 B!
+
+Key: Always do the most frequent available task.
+```
+
+**Mental Model: Radio Station Playlist**
+
+Imagine a radio station that can't repeat a song within n songs. The DJ has a stack of requests:
+- Prioritize most-requested songs (highest frequency)
+- After playing a song, it goes on "cooldown" for n songs
+- If no song is available, play an ad (idle)
+
+```
+Requests: A(3), B(2), n=2
+Play A → cooldown [A expires at song 3]
+Play B → cooldown [A:3, B:4]
+No available songs → idle
+A available again → Play A
+...
+```
+
+**The Two Approaches Deeply Explained**
+
+**Approach 1: Simulation with Heap + Queue**
+
+```
+Max Heap: Tracks frequencies of available tasks
+Cooldown Queue: Tracks (remaining_count, when_available)
+
+At each time step:
+1. If heap not empty → pop highest frequency, decrement, add to cooldown
+2. If queue front is ready → move back to heap
+3. If nothing to do → idle
+```
+
+**Approach 2: Formula (Math)**
+
+```
+tasks = [A,A,A,B,B], n=2
+max_freq = 3 (A appears 3 times)
+num_at_max = 1 (only A)
+
+Visualize as a grid:
+A _ _
+A _ _
+A
+
+(max_freq - 1) complete rows of (n + 1) slots + final row with num_at_max tasks
+
+= (3-1) * (2+1) + 1 = 7
+
+But if we have many tasks:
+tasks = [A,A,A,B,B,B,C,C,C], n=2
+max_freq = 3, num_at_max = 3
+
+Grid:
+A B C
+A B C
+A B C
+
+= (3-1) * (2+1) + 3 = 9
+
+But we have 9 tasks, so max(9, 9) = 9. No idles!
+```
+
+---
+
+## When NOT to Use Each Approach
+
+**Don't Use Heap When:**
+
+1. **n = 0 (no cooldown)**: Just return len(tasks)
+```python
+if n == 0:
+    return len(tasks)  # No scheduling needed
+```
+
+2. **Simple cases where formula works**: The formula is O(n) vs O(n log k) for heap
+
+3. **You need exact schedule, not just count**: Heap gives count; building actual schedule needs more work
+
+**Don't Use Formula When:**
+
+1. **You need the actual schedule (not just count)**:
+```python
+# Formula gives: 8 slots needed
+# But interviewer asks: "What's the actual order?"
+# Need heap approach to generate the sequence
+```
+
+2. **Tasks have different execution times**: Formula assumes 1 time unit per task
+
+3. **There are precedence constraints**: Tasks must execute in certain order
+
+**Don't Use Either When:**
+
+1. **Tasks have dependencies**: This becomes a topological sort + scheduling problem
+
+2. **Multiple processors/cores**: Becomes parallel scheduling problem
+
+3. **Tasks have deadlines**: Becomes real-time scheduling (EDF algorithm)
+
+**Red Flags:**
+- "What's the actual execution order?" → Need heap simulation
+- "Tasks take different amounts of time" → Modified problem
+- "Some tasks depend on others" → Topological sort
+- "Minimize idle time AND finish by deadline" → Different algorithm
+
+---
+
 ## Problem Statement
 
 Given a list of tasks represented by characters and a cooling interval `n`, return the minimum time needed to complete all tasks.
