@@ -18,8 +18,17 @@ Create a dedicated module for Concurrency and Parallelism, a critical differenti
     *   Dining Philosophers (demonstrating deadlock avoidance).
 
 ## Definition of Done
-- [ ] Directory `20-concurrency` created.
-- [ ] `01-concurrency-basics.md` (Concepts + GIL).
-- [ ] `02-synchronization-primitives.md` (Locks, Semaphores, Conditions).
-- [ ] `03-producer-consumer.md` (Queue implementation).
-- [ ] `04-common-concurrency-problems.md` (BlockingQueue, RateLimiter).
+- [x] Directory `20-concurrency` created.
+- [x] `01-concurrency-basics.md` (Concepts + GIL).
+- [x] `02-synchronization-primitives.md` (Locks, Semaphores, Conditions).
+- [x] `03-producer-consumer.md` (Queue implementation).
+- [x] `04-common-concurrency-problems.md` (BlockingQueue, RateLimiter).
+
+## Done summary
+# Task Summary: fn-2-knl.3
+
+Implemented a comprehensive concurrency module covering Python internals (GIL), synchronization primitives (Locks, Semaphores, Conditions), and classic architectural patterns (Producer-Consumer, Rate Limiting).
+## Evidence
+- Commits:
+- Tests:
+- PRs:

@@ -4,6 +4,17 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    T8["Tree[8] (1-8)"]
+    T8 --> T4["Tree[4] (1-4)"]
+    T8 --> T6["Tree[6] (5-6)"]
+    T8 --> T7["Tree[7] (7)"]
+    T4 --> T2["Tree[2] (1-2)"]
+    T4 --> T3["Tree[3] (3)"]
+    T2 --> T1["Tree[1] (1)"]
+```
+
 A Fenwick Tree, also known as a Binary Indexed Tree (BIT), is a data structure that provides efficient methods for calculation and manipulation of the prefix sums of an array of values.
 
 Compared to a Segment Tree, a BIT is:

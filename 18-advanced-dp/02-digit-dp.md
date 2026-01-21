@@ -4,6 +4,15 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    A[Number: 123] --> B["Digit 1 (Tight)"]
+    B --> C["Digit 2 (Tight if prev was 1)"]
+    C --> D["Digit 3 (Tight if prev was 2)"]
+    B --> E["Digit 0 (Not Tight)"]
+    E --> F["Digit 0-9 (Free)"]
+```
+
 Digit DP is used to solve problems that ask for the count (or sum) of integers in a range $[L, R]$ that satisfy a specific property. Instead of iterating through every number (which is $O(R)$), we construct the number digit by digit from left to right.
 
 The range $[L, R]$ is usually handled as: `count(R) - count(L - 1)`.

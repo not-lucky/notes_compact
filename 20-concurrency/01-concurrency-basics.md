@@ -5,8 +5,36 @@ In Senior/Staff level interviews, concurrency isn't just about "using threads." 
 ## 1. Core Concepts
 
 ### Concurrency vs. Parallelism
+
+```mermaid
+graph TD
+    subgraph "Concurrency (1 Core)"
+    C1[Task A] -.-> C2[Task B] -.-> C3[Task A]
+    end
+    subgraph "Parallelism (2 Cores)"
+    P1[Task A]
+    P2[Task B]
+    end
+```
+
 *   **Concurrency**: Dealing with multiple tasks at once. It's about *structure*. Two tasks are concurrent if their start and end times overlap. On a single-core CPU, this is achieved via **Context Switching**.
 *   **Parallelism**: Doing multiple tasks at once. It's about *execution*. It requires multi-core hardware where tasks literally run at the same physical time.
+
+### Deadlock Visualization
+
+```mermaid
+sequenceDiagram
+    participant T1 as Thread 1
+    participant T2 as Thread 2
+    participant L1 as Lock A
+    participant L2 as Lock B
+
+    T1->>L1: Acquire
+    T2->>L2: Acquire
+    Note over T1,L2: Deadlock Point
+    T1-->>L2: Wait for Lock B...
+    T2-->>L1: Wait for Lock A...
+```
 
 ### Context Switching
 The process of storing the state of a process or thread so that it can be restored and resume execution at a later point.

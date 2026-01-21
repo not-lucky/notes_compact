@@ -15,6 +15,21 @@ This directory covers advanced DP patterns frequently encountered in Senior/Staf
 3.  Study **DP on Trees**, specifically the **Rerooting** technique, which is a common differentiator for Senior roles.
 4.  Learn **Digit DP** if you are targeting top-tier firms (Google, Meta) or competitive programming.
 
+---
+
+## DP Type Decision Tree
+
+```mermaid
+graph TD
+    A[Hard DP Problem] --> B{What is the input?}
+    B -- "N <= 20" --> C[Bitmask DP]
+    B -- "Range [L, R]" --> D[Digit DP]
+    B -- "Tree/Graph" --> E[Tree DP]
+    B -- "Arrays/Strings" --> F{Dependency?}
+    F -- "Subarray/Subseq" --> G[Linear/Interval DP]
+    F -- "States like capacity" --> H[Knapsack/Resource DP]
+```
+
 ## Common Complexity Classes
 
 | Technique | Common Time Complexity | Common Constraint |

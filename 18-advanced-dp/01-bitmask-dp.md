@@ -4,6 +4,16 @@
 
 ## Overview
 
+```mermaid
+graph LR
+    subgraph "States (Masks)"
+    S0["000 (Empty)"] --> S1["001 (A)"]
+    S0 --> S2["010 (B)"]
+    S1 --> S3["011 (A,B)"]
+    S2 --> S3
+    end
+```
+
 Bitmask Dynamic Programming is a technique where we use a bitmask (an integer treated as a set of bits) to represent a state of items, visited nodes, or selected elements. This is typically used when the number of elements is small ($N \le 20$), as the number of states is $2^N$.
 
 ## Building Intuition

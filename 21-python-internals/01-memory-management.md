@@ -4,6 +4,16 @@ For Senior and Staff engineers, understanding Python's memory management is crit
 
 ## 1. The Python Object Model
 
+```mermaid
+graph TD
+    subgraph "PyObject (CPython)"
+    H[Header] --> RC[ob_refcnt: 8 bytes]
+    H --> TP[ob_type: 8 bytes]
+    end
+    RC -.->|Reference Counting| GC[Garbage Collector]
+    TP --> TM[Type Metadata]
+```
+
 In CPython, everything is an `PyObject`.
 
 ```c

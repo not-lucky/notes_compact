@@ -28,6 +28,16 @@ Can be acquired multiple times by the same thread. It maintains an internal coun
 
 ## 2. Semaphores
 
+```mermaid
+graph TD
+    A[Client Request] --> B{Semaphore > 0?}
+    B -- Yes --> C[Decrement & Proceed]
+    B -- No --> D[Block/Wait]
+    C --> E[Critical Section]
+    E --> F[Increment & Release]
+    F --> G[Signal Waiters]
+```
+
 A Semaphore maintains an internal counter. `acquire()` decrements it; `release()` increments it. If the counter is zero, `acquire()` blocks.
 
 *   **BoundedSemaphore**: A version that raises an error if `release()` is called too many times (exceeding the initial value).

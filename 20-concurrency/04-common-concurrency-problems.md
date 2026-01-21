@@ -39,6 +39,16 @@ class BoundedBlockingQueue:
 ---
 
 ## 2. Rate Limiter (Token Bucket)
+
+```mermaid
+graph TD
+    A[Timer/Clock] -->|Refill Rate| B[(Token Bucket)]
+    C[Client Request] --> D{Tokens Available?}
+    D -- Yes --> E[Consume Token & Allow]
+    D -- No --> F[Reject/Drop Request]
+    E --> B
+```
+
 Allows bursts up to a capacity, but limits the average rate of requests.
 
 ### Intuition

@@ -25,6 +25,19 @@ while True:
 
 ## 2. Generators: The `yield` Keyword
 
+```mermaid
+sequenceDiagram
+    participant C as Caller
+    participant G as Generator
+    C->>G: next(gen)
+    G->>G: Resume execution
+    G-->>C: yield value
+    Note over G: Execution suspended
+    C->>G: next(gen)
+    G->>G: Resume from last yield
+    G-->>C: yield value
+```
+
 Generators are a simple way to create iterators using functions. When a function contains the `yield` keyword, it becomes a **Generator Function**.
 
 ### State Preservation

@@ -15,16 +15,21 @@ A Segment Tree is a versatile data structure used for storing information about 
 
 ## Visual Representation
 
-For an array `[1, 3, 5, 7, 9, 11]`:
-```text
-          [1-11, sum=36]
-         /              \
-    [1-5, sum=9]      [7-11, sum=27]
-    /        \         /          \
- [1-3, s=4]  [5]    [7-9, s=16]   [11]
- /    \             /     \
-[1]   [3]         [7]     [9]
+```mermaid
+graph TD
+    N1["[0-5] sum=36"] --> N2["[0-2] sum=9"]
+    N1 --> N3["[3-5] sum=27"]
+    N2 --> N4["[0-1] sum=4"]
+    N2 --> N5["[2-2] sum=5"]
+    N3 --> N6["[3-4] sum=16"]
+    N3 --> N7["[5-5] sum=11"]
+    N4 --> N8["[0-0] sum=1"]
+    N4 --> N9["[1-1] sum=3"]
+    N6 --> N10["[3-3] sum=7"]
+    N6 --> N11["[4-4] sum=9"]
 ```
+
+For an array `[1, 3, 5, 7, 9, 11]` (indices 0-5):
 
 ---
 

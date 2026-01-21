@@ -4,6 +4,16 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    subgraph "Strongly Connected Component"
+    A --> B
+    B --> C
+    C --> A
+    end
+    C --> D[Next Component]
+```
+
 Tarjan's algorithm is a powerful DFS-based approach to find structural properties of a graph in $O(V + E)$ time.
 
 ### Key Concepts

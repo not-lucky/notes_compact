@@ -4,6 +4,21 @@ Even experienced developers fall into these common traps. Understanding *why* th
 
 ## 1. Mutable Default Arguments
 
+```mermaid
+graph TD
+    subgraph "Function Definition Time"
+    FD[Define function] --> CA[Create 'box' list in memory]
+    end
+    subgraph "Call 1"
+    C1[add_item(1)] --> M1[Append 1 to 'box']
+    end
+    subgraph "Call 2"
+    C2[add_item(2)] --> M2[Append 2 to 'box']
+    end
+    CA --> M1
+    M1 --> M2
+```
+
 This is perhaps the most famous Python trap.
 
 ```python

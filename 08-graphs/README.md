@@ -94,6 +94,35 @@ At FANG+ companies, expect at least one graph problem, often disguised as a grid
 
 ---
 
+## System Design Connectors
+
+Graphs are the skeleton of the internet and distributed systems.
+
+| DSA Pattern | System Design Application | Why it works |
+| :--- | :--- | :--- |
+| **BFS** | **Web Crawlers** | Discovering pages level-by-level to ensure breadth before depth. |
+| **Dijkstra's** | **Network Routing** | OSPF/IS-IS protocols use shortest-path-first to route packets. |
+| **Topological Sort** | **Build Systems (Bazel/Make)** | Determining the exact order to compile files based on dependencies. |
+| **DAGs (Directed Acyclic Graphs)** | **Airflow / Data Pipelines** | Orchestrating complex data tasks with dependencies. |
+| **SCC (Tarjan's)** | **Microservice Dependency Analysis** | Finding circular dependencies in large-scale service meshes. |
+
+---
+
+## Shortest Path Decision Tree
+
+```mermaid
+graph TD
+    A[Find Shortest Path] --> B{Weighted?}
+    B -- No --> C[BFS]
+    B -- Yes --> D{Negative Weights?}
+    D -- No --> E[Dijkstra's]
+    D -- Yes --> F{Cycles?}
+    F -- No --> G[DAG DP / Bellman-Ford]
+    F -- Yes --> H[Bellman-Ford / SPFA]
+```
+
+---
+
 ## Graph Representations
 
 ```python

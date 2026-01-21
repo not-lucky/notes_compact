@@ -2,6 +2,16 @@
 
 ## Overview
 
+```mermaid
+graph LR
+    subgraph "Query [L, R]"
+    Q1["st[L][k] (covers first half)"]
+    Q2["st[R-2^k+1][k] (covers second half)"]
+    Q1 --- Q2
+    end
+    Note over Q1,Q2: Overlap is fine for idempotent ops (min/max)
+```
+
 Sparse Table is a data structure that answers Range Minimum Query (RMQ) on a static array in $O(1)$ time after $O(N \log N)$ preprocessing. It works for any idempotent operation (an operation $f$ where $f(x, x) = x$), such as `min`, `max`, and `gcd`.
 
 ## Core Logic

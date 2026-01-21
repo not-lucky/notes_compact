@@ -20,6 +20,15 @@ hi_func()  # Remembers "Hi" via __closure__ attribute
 
 ## 2. Decorators
 
+```mermaid
+graph LR
+    C[Caller] --> D[Decorator/Wrapper]
+    D --> Pre[Pre-processing]
+    Pre --> F[Original Function]
+    F --> Post[Post-processing]
+    Post --> C
+```
+
 Decorators allow you to "wrap" another function to extend its behavior without permanently modifying it.
 
 ### Standard Decorator

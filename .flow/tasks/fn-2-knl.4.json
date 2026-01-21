@@ -1,14 +1,23 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-21T03:55:46.738690Z",
   "created_at": "2026-01-21T03:05:21.775858Z",
   "depends_on": [],
   "epic": "fn-2-knl",
+  "evidence": {
+    "files": [
+      "21-python-internals/01-memory-management.md",
+      "21-python-internals/02-generators-and-iterators.md",
+      "21-python-internals/03-decorators-and-managers.md",
+      "21-python-internals/04-python-gotchas.md"
+    ],
+    "status": "completed"
+  },
   "id": "fn-2-knl.4",
   "priority": null,
   "spec_path": ".flow/tasks/fn-2-knl.4.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement Python Internals Module",
-  "updated_at": "2026-01-21T03:05:21.775871Z"
+  "updated_at": "2026-01-21T03:59:20.466404Z"
 }

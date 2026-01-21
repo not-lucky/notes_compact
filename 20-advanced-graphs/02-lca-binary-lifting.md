@@ -4,6 +4,18 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    R[Root] --> A[A]
+    R --> B[B]
+    A --> C[C]
+    A --> D[D]
+    B --> E[E]
+    C --> F[F]
+    F -.->|Jump 2^1| A
+    F -.->|Jump 2^0| C
+```
+
 Binary Lifting is a technique used to find the Lowest Common Ancestor (LCA) of two nodes in a tree in $O(\log N)$ time with $O(N \log N)$ preprocessing. It can also be extended to answer path queries (e.g., "minimum edge on path from $u$ to $v$").
 
 ## Core Logic

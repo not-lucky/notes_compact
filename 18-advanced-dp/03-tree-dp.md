@@ -4,6 +4,16 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    A[Root] --> B[Child 1]
+    A --> C[Child 2]
+    B --> D[Leaf]
+    C --> E[Leaf]
+    C --> F[Leaf]
+    Note over A,F: Result(Root) = Combine(Result(Child 1), Result(Child 2))
+```
+
 Tree DP involves solving optimization problems on tree structures. Since a tree is a naturally recursive structure, DP is often implemented using DFS.
 
 ## Building Intuition

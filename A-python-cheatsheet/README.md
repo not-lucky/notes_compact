@@ -90,6 +90,7 @@ When you recognize a pattern, reach for the right tool automatically.
 | 03 | [Bisect Module](./03-bisect-module.md) | Binary search, sorted containers |
 | 04 | [Itertools Module](./04-itertools-module.md) | Permutations, combinations, product |
 | 05 | [Common Gotchas](./05-common-gotchas.md) | Python-specific pitfalls |
+| 06 | [Constraint Analysis](./constraint_analysis.md) | $N$ to Complexity mapping |
 
 ---
 

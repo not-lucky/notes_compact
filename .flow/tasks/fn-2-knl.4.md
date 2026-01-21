@@ -19,8 +19,17 @@ Deep dive into Python's implementation details. Essential for interviews where "
     *   Context Managers: `__enter__`, `__exit__`.
 
 ## Definition of Done
-- [ ] Directory `21-python-internals` created.
-- [ ] `01-memory-management.md` created.
-- [ ] `02-generators-and-iterators.md` created.
-- [ ] `03-decorators-and-managers.md` created.
-- [ ] `04-python-gotchas.md` (e.g., mutable default args).
+- [x] Directory `21-python-internals` created.
+- [x] `01-memory-management.md` created.
+- [x] `02-generators-and-iterators.md` created.
+- [x] `03-decorators-and-managers.md` created.
+- [x] `04-python-gotchas.md` (e.g., mutable default args).
+
+## Done summary
+# Task Summary: fn-2-knl.4
+
+Implemented a comprehensive Python Internals module covering memory management, generators/iterators, decorators, context managers, and common language pitfalls.
+## Evidence
+- Commits:
+- Tests:
+- PRs:

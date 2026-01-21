@@ -4,6 +4,16 @@
 
 ## Overview
 
+```mermaid
+graph TD
+    A[A] --> B[B]
+    A --> C[C]
+    B --> D[D]
+    B --> E[E]
+    Note over A,E: DFS Order: A, B, D, E, C
+    Note over A,E: [tin, tout] ranges define subtrees
+```
+
 Euler Tour is a technique to represent a tree as a linear array by recording the entry and exit times of each node during a DFS traversal. This "flattens" the tree, allowing subtree queries and path queries to be handled by linear data structures like Segment Trees or Fenwick Trees.
 
 ## Core Logic

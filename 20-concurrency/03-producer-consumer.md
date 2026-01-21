@@ -3,6 +3,16 @@
 The Producer-Consumer pattern decouples the processes that produce data from the processes that consume it, using a shared buffer (Queue).
 
 ## 1. Why use it?
+
+```mermaid
+graph LR
+    P1[Producer 1] --> Q[(Shared Queue)]
+    P2[Producer 2] --> Q
+    Q --> C1[Consumer 1]
+    Q --> C2[Consumer 2]
+    Q --> C3[Consumer 3]
+```
+
 1.  **Load Balancing**: Handles bursts of traffic. Producers can work at their own pace.
 2.  **Decoupling**: The producer doesn't need to know who the consumer is or how many there are.
 3.  **Throttling**: Naturally limits the rate of production if the queue is bounded.
