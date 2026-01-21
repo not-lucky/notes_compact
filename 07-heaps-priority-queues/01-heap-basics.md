@@ -217,15 +217,15 @@ A heap is stored as an array where:
   - **Parent**: `(i - 1) // 2`
 
 ```
-Array:  [1,  3,  2,  7,  4]
-Index:   0   1   2   3   4
+Array:  [  1,    3,    2,    7,    4  ]
+Index:     0     1     2     3     4
 
 Tree:
-         1 (i=0)
-        / \
-   (i=1) 3   2 (i=2)
-        / \
-  (i=3) 7   4 (i=4)
+             1 [idx:0]
+           /   \
+  [idx:1] 3     2 [idx:2]
+         / \
+[idx:3] 7   4 [idx:4]
 
 Parent of index 3: (3-1)//2 = 1 → value 3 ✓
 Left child of index 1: 2*1+1 = 3 → value 7 ✓

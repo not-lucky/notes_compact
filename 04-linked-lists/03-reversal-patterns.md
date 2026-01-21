@@ -26,17 +26,19 @@ Why save `next_temp`? Because once you point `current.next = prev`, you've lost 
 
 **Visual Mental Model**:
 ```
-Before: None ← [A] ← [B]   [C] → [D] → [E]
-               prev  curr   next_temp
+Step N:
+None ← [A] ← [B]       [C] → [D] → [E]
+              prev      curr   next_temp (curr.next)
 
-One step:
-1. Save next_temp = C
-2. Point C.next = B (current.next = prev)
-3. Move prev = C
-4. Move current = D (current = next_temp)
+1. Reverse pointer: `curr.next = prev`
+None ← [A] ← [B] ← [C]       [D] → [E]
+              prev  curr      next_temp
 
-After:  None ← [A] ← [B] ← [C]   [D] → [E]
-                     prev  curr   next_temp
+2. Move forward: `prev = curr`, `curr = next_temp`
+None ← [A] ← [B] ← [C]       [D] → [E]
+                    prev      curr   next_temp (new curr.next)
+
+Key: At each step, `curr` points BACK to `prev`, then everyone moves forward one spot.
 ```
 
 **Why Does Recursive Reversal Use O(n) Space?**

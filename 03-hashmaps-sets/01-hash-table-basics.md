@@ -164,10 +164,12 @@ Hash Function: key → index
     "fish"   →      414     →      4  ← Collision with "cat"!
 
 Bucket Array (size=10):
-    ┌───┬───┬──────┬───┬────────────┬───┬───┬─────┬───┬───┐
-    │   │   │"bird"│   │"cat"→"fish"│   │   │"dog"│   │   │
-    └───┴───┴──────┴───┴────────────┴───┴───┴─────┴───┴───┘
-      0   1    2     3       4        5   6    7    8   9
+    ┌───┬───┬────────┬───┬──────────────┬───┬───┬────────┬───┬───┐
+    │   │   │ "bird" │   │ "cat"→"fish" │   │   │ "dog"  │   │   │
+    ├───┼───┼────────┼───┼──────────────┼───┼───┼────────┼───┼───┤
+    │ 0 │ 1 │   2    │ 3 │      4       │ 5 │ 6 │   7    │ 8 │ 9 │
+    └───┴───┴────────┴───┴──────────────┴───┴───┴────────┴───┴───┘
+              index       collision chain
 ```
 
 ---
@@ -220,7 +222,9 @@ When two keys hash to the same index, we have a **collision**. Two main strategi
 Each bucket stores a linked list of key-value pairs.
 
 ```
-Bucket 4: [("cat", 1)] → [("fish", 2)] → None
+Bucket 4 (at [0x500]):
+[ ("cat", 1) | next: 0x540 ] ──→ [ ("fish", 2) | next: None ]
+      [addr: 0x500]                    [addr: 0x540]
 
 Lookup "fish":
 1. hash("fish") % size = 4

@@ -93,11 +93,11 @@ A binary tree is a hierarchical data structure where each node has at most two c
 ```
 Binary Tree Structure:
 
-         1          ← root
+         1 [0x100]  ← root
         / \
-       2   3        ← children of 1
-      / \   \
-     4   5   6      ← leaves: 4, 5, 6
+ [0x140] 2   3 [0x180]  ← children of 1
+       / \   \
+[0x1C0] 4   5 [0x200]  6 [0x240] ← leaves: 4, 5, 6
 ```
 
 ### Key Terminology
