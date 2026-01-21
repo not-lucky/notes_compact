@@ -109,14 +109,15 @@ The flowchart systematizes this funnel so you don't waste time considering irrel
             ┌──────────┐ ┌────────────┐  │           ▼
             │   TWO    │ │  BINARY    │  │    ┌───────────────────┐
             │ POINTERS │ │  SEARCH    │  │    │ K largest/smallest│
-            └──────────┘ └────────────┘  │    └─────────┬─────────┘
-                                         │         ┌────┴────┐
+            │  [O(N)]  │ │ [O(log N)] │  │    └─────────┬─────────┘
+            └──────────┘ └────────────┘  │         ┌────┴────┐
                                          │        YES       NO
                                          │         │         │
                                          ▼         ▼         ▼
                                    ┌──────────┐ ┌──────┐ ┌──────────────┐
                                    │ SLIDING  │ │ HEAP │ │ See specific │
                                    │ WINDOW   │ │TOP-K │ │ patterns     │
+                                   │  [O(N)]  │ │[O(N log K)]│          │
                                    └──────────┘ └──────┘ └──────────────┘
 ```
 
@@ -177,22 +178,23 @@ Is array sorted?
                    ┌──────────┐   ┌─────────────────────┐
                    │ SLIDING  │   │ Character frequency?│
                    │ WINDOW   │   └──────────┬──────────┘
-                   └──────────┘         ┌────┴────┐
-                                       YES       NO
-                                        │         │
-                                        ▼         ▼
-                                   ┌─────────┐ ┌───────────────┐
-                                   │ HASHMAP │ │ Palindrome?   │
-                                   │ COUNT   │ └───────┬───────┘
-                                   └─────────┘    ┌────┴────┐
-                                                 YES       NO
-                                                  │         │
-                                                  ▼         ▼
-                                            ┌──────────┐ ┌────────────┐
-                                            │ EXPAND   │ │ Pattern    │
-                                            │ AROUND   │ │ matching?  │
-                                            │ CENTER   │ │ → DP/KMP   │
-                                            └──────────┘ └────────────┘
+                   │  [O(N)]  │        ┌────┴────┐
+                   └──────────┘       YES       NO
+                                       │         │
+                                       ▼         ▼
+                                  ┌─────────┐ ┌───────────────┐
+                                  │ HASHMAP │ │ Palindrome?   │
+                                  │ COUNT   │ └───────┬───────┘
+                                  │  [O(N)]  │    ┌────┴────┐
+                                  └─────────┘   YES       NO
+                                                 │         │
+                                                 ▼         ▼
+                                           ┌──────────┐ ┌────────────┐
+                                           │ EXPAND   │ │ Pattern    │
+                                           │ AROUND   │ │ matching?  │
+                                           │ CENTER   │ │ → DP/KMP   │
+                                           │  [O(N²)] │ │ [O(N+M)]   │
+                                           └──────────┘ └────────────┘
 ```
 
 ### String - Detailed Decision Points
@@ -249,20 +251,21 @@ String problem?
                    ┌──────────┐   ┌───────────────────┐
                    │ FAST/    │   │ Reverse needed?   │
                    │ SLOW     │   └─────────┬─────────┘
-                   │ POINTERS │        ┌────┴────┐
+                   │ [O(N)]   │        ┌────┴────┐
                    └──────────┘       YES       NO
                                        │         │
                                        ▼         ▼
                                  ┌──────────┐ ┌───────────────┐
                                  │ IN-PLACE │ │ Merge needed? │
                                  │ REVERSAL │ └───────┬───────┘
-                                 └──────────┘    ┌────┴────┐
-                                                YES       NO
+                                 │  [O(N)]  │    ┌────┴────┐
+                                 └──────────┘   YES       NO
                                                  │         │
                                                  ▼         ▼
                                            ┌──────────┐ ┌────────────┐
                                            │ MERGE    │ │ FAST/SLOW  │
                                            │ PATTERN  │ │ (middle)   │
+                                           │ [O(N+M)] │ │  [O(N)]    │
                                            └──────────┘ └────────────┘
 ```
 
@@ -320,12 +323,12 @@ Linked List problem?
                   YES       NO            YES         NO
                    │         │             │           │
                    ▼         ▼             ▼           ▼
-              ┌───────┐ ┌─────────┐   ┌────────┐ ┌──────────────┐
-              │  BFS  │ │  DFS    │   │  BFS   │ │ Connected    │
-              │       │ │ (paths, │   │(unwgt) │ │ components?  │
-              │       │ │ depth)  │   │Dijkstra│ │ → DFS/BFS    │
-              └───────┘ └─────────┘   │(wgt)   │ │ → UNION-FIND │
-                                      └────────┘ └──────────────┘
+              ┌──────────┐ ┌──────────┐   ┌────────────┐ ┌──────────────┐
+              │   BFS    │ │   DFS    │   │    BFS     │ │ Connected    │
+              │ [O(V+E)] │ │ [O(V+E)] │   │ (unwgt/wgt)│ │ components?  │
+              │          │ │ (paths,  │   │ Dijkstra:  │ │ → DFS/BFS    │
+              │          │ │  depth)  │   │ [O(ElogV)] │ │ → UNION-FIND │
+              └──────────┘ └──────────┘   └────────────┘ └──────────────┘
 ```
 
 ### Tree - Detailed Decision Points
