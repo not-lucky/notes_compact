@@ -44,15 +44,15 @@ Initial state (5 separate sets):
 
 After union(A,B) and union(C,D):
   A    C    E
-  |    |
+  │    │
   B    D
 
 After union(A,C):
       A
-     /|
-    B C
-      |
-      D
+     ┌┴┐
+     B C
+       │
+       D
 
 Now A, B, C, D are all in the same set (root = A)
 E is still in its own set (root = E)
@@ -128,32 +128,32 @@ After union(1, 2):
 parent = [0, 1, 1, 3, 4]    (2's parent becomes 1)
 
   0    1    3    4
-       |
+       │
        2
 
 After union(3, 4):
 parent = [0, 1, 1, 3, 3]    (4's parent becomes 3)
 
   0    1    3
-       |    |
+       │    │
        2    4
 
 After union(1, 3):
 parent = [0, 1, 1, 1, 3]    (3's root 3 -> parent becomes 1)
 
        1
-      /|\
-     2 3
-       |
-       4
+      ┌┴┐
+     2   3
+         │
+         4
 
 After union(0, 1):
 parent = [1, 1, 1, 1, 3]    (0's parent becomes 1)
 
        1
-      /|\\
+     ┌─┼─┐
      0 2 3
-         |
+         │
          4
 ```
 

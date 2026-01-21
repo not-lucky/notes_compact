@@ -12,13 +12,13 @@
 
 ```
 Maze:             DFS Exploration (string = recursion stack):
-+---+---+---+     Start at A, string at A
-| A | B | C |     Go to B, string: A→B
-+   +---+   +     Go to D, string: A→B→D
-| D | E | F |     Dead end! Backtrack to B
-+   +---+   +     E visited? No, go there: A→B→E
-| G | H | I |     Continue until all visited
-+---+---+---+
+┌───┬───┬───┐     Start at A, string at A
+│ A │ B │ C │     Go to B, string: A→B
+│   ├───┤   │     Go to D, string: A→B→D
+│ D │ E │ F │     Dead end! Backtrack to B
+│   ├───┤   │     E visited? No, go there: A→B→E
+│ G │ H │ I │     Continue until all visited
+└───┴───┴───┘
 ```
 
 **Why DFS uses a stack (or recursion)**:
