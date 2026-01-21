@@ -319,16 +319,16 @@ Linked List problem?
               ┌───────────────────┐  ┌─────────────────────┐
               │ Level-by-level?   │  │ Shortest path?      │
               └─────────┬─────────┘  └───────────┬─────────┘
-                   ┌────┴────┐             ┌─────┴─────┐
-                  YES       NO            YES         NO
-                   │         │             │           │
-                   ▼         ▼             ▼           ▼
-              ┌──────────┐ ┌──────────┐   ┌────────────┐ ┌──────────────┐
-              │   BFS    │ │   DFS    │   │    BFS     │ │ Connected    │
-              │ [O(V+E)] │ │ [O(V+E)] │   │ (unwgt/wgt)│ │ components?  │
-              │          │ │ (paths,  │   │ Dijkstra:  │ │ → DFS/BFS    │
-              │          │ │  depth)  │   │ [O(ElogV)] │ │ → UNION-FIND │
-              └──────────┘ └──────────┘   └────────────┘ └──────────────┘
+                ┌───────┴───────┐        ┌──────┴──────┐
+               YES             NO       YES           NO
+                │               │        │             │
+                ▼               ▼        ▼             ▼
+          ┌──────────┐    ┌──────────┐ ┌────────────┐ ┌──────────────┐
+          │   BFS    │    │   DFS    │ │    BFS     │ │ Connected    │
+          │ [O(V+E)] │    │ [O(V+E)] │ │ (unwgt/wgt)│ │ components?  │
+          │          │    │ (paths,  │ │ Dijkstra:  │ │ → DFS/BFS    │
+          │          │    │  depth)  │ │ [O(ElogV)] │ │ → UNION-FIND │
+          └──────────┘    └──────────┘ └────────────┘ └──────────────┘
 ```
 
 ### Tree - Detailed Decision Points
