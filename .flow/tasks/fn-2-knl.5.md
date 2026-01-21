@@ -15,7 +15,16 @@ Elevate the existing content by adding "Meta-Cognitive" strategies, "System Desi
     *   Add "Decision Trees" for choosing the right algorithm.
 
 ## Definition of Done
-- [ ] `A-python-cheatsheet/constraint_analysis.md` created.
-- [ ] Strategy sections ("Intuition", "When to use") audited and improved in core modules (Arrays, Graphs, DP).
-- [ ] System Design links added to corresponding data structures.
-- [ ] At least 10 major Mermaid.js diagrams added across the repo.
+- [x] `A-python-cheatsheet/constraint_analysis.md` created.
+- [x] Strategy sections ("Intuition", "When to use") audited and improved in core modules (Arrays, Graphs, DP).
+- [x] System Design links added to corresponding data structures.
+- [x] At least 10 major Mermaid.js diagrams added across the repo.
+
+## Done summary
+# Task Summary: fn-2-knl.5
+
+Completed the final strategy and polish layer. Added constraint analysis, system design connectors, and upgraded visuals with 10+ Mermaid.js diagrams across the repository.
+## Evidence
+- Commits:
+- Tests:
+- PRs:
