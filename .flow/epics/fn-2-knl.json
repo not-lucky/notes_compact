@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-2-knl",
+  "created_at": "2026-01-21T03:04:39.906433Z",
+  "depends_on_epics": [],
+  "id": "fn-2-knl",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-01-21T03:07:14.412098Z",
+  "spec_path": ".flow/specs/fn-2-knl.md",
+  "status": "open",
+  "title": "The Elite FANG 2026 Upgrade",
+  "updated_at": "2026-01-21T03:07:14.412107Z"
+}
