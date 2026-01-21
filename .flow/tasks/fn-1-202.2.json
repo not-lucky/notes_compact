@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-21T02:07:46.763505Z",
+  "depends_on": [
+    "fn-1-202.1"
+  ],
+  "epic": "fn-1-202",
+  "id": "fn-1-202.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1-202.2.md",
+  "status": "todo",
+  "title": "Standardize Unicode Glyphs and Fix Alignment",
+  "updated_at": "2026-01-21T02:10:07.249474Z"
+}
