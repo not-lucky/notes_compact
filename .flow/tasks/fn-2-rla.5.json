@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T05:50:44.741580Z",
+  "depends_on": [],
+  "epic": "fn-2-rla",
+  "id": "fn-2-rla.5",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-2-rla.5.md",
+  "status": "todo",
+  "title": "Implement Mirroring for Appendices A-C",
+  "updated_at": "2026-01-23T05:51:03.294865Z"
+}

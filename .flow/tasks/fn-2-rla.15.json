@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T05:58:47.087528Z",
+  "depends_on": [],
+  "epic": "fn-2-rla",
+  "id": "fn-2-rla.15",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-2-rla.15.md",
+  "status": "todo",
+  "title": "Mirror folder 14-union-find",
+  "updated_at": "2026-01-23T05:58:47.087539Z"
+}

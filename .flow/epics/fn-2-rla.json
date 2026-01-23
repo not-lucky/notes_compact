@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-2-rla",
+  "created_at": "2026-01-23T05:48:31.265675Z",
+  "depends_on_epics": [],
+  "id": "fn-2-rla",
+  "next_task": 2,
+  "plan_review_status": "reviewed",
+  "plan_reviewed_at": "2026-01-23T05:55:00Z",
+  "spec_path": ".flow/specs/fn-2-rla.md",
+  "status": "in_progress",
+  "title": "Mirror notes hierarchy to solutions with Python code blocks",
+  "updated_at": "2026-01-23T05:49:14.996855Z"
+}

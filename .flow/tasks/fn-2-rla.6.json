@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T05:50:44.832335Z",
+  "depends_on": [],
+  "epic": "fn-2-rla",
+  "id": "fn-2-rla.6",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-2-rla.6.md",
+  "status": "todo",
+  "title": "Verify Hierarchy and Code Syntax",
+  "updated_at": "2026-01-23T05:51:03.384066Z"
+}
