@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Implemented mirroring for folder 07-heaps-priority-queues, creating 8 solution files with Python code blocks and a README. All solutions follow best practices (type hints, complexity, doctests) and passed syntax verification.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 56541d8f584192a500803183d4df8c881f0d3063
+- Tests: python3 verify_syntax.py
 - PRs:
