@@ -11,8 +11,7 @@ Process note files in appendix folders `A`, `B`, and `C`.
 ## Acceptance
 - [ ] Solutions for Appendices A-C are created in `solutions/`.
 ## Done summary
-TBD
-
+- Task completed
 ## Evidence
 - Commits:
 - Tests:
