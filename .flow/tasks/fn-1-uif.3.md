@@ -9,9 +9,8 @@ Implement practice problem solutions for the 03-hashmaps-sets directory.
 - [x] `python verify_syntax.py` passes.
 
 ## Done summary
-Implemented 8 solution files in `solutions/03-hashmaps-sets/` mirroring the notes in `03-hashmaps-sets/`. Verified syntax using `verify_syntax.py`.
-
+- Task completed
 ## Evidence
 - Commits:
-- Tests: `python verify_syntax.py` passed with 40 blocks.
+- Tests:
 - PRs:

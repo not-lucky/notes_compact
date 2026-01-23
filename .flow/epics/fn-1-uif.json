@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-1-uif",
+  "created_at": "2026-01-23T08:37:16.266571Z",
+  "depends_on_epics": [],
+  "id": "fn-1-uif",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-1-uif.md",
+  "status": "open",
+  "title": "Implement Practice Problem Solutions",
+  "updated_at": "2026-01-23T08:37:41.079524Z"
+}

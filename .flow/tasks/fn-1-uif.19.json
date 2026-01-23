@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T08:37:50.305437Z",
+  "depends_on": [],
+  "epic": "fn-1-uif",
+  "id": "fn-1-uif.19",
+  "priority": 19,
+  "spec_path": ".flow/tasks/fn-1-uif.19.md",
+  "status": "todo",
+  "title": "Mirror folder B-problem-patterns",
+  "updated_at": "2026-01-23T08:37:50.305446Z"
+}
