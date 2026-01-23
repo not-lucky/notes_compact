@@ -5,10 +5,19 @@
   "created_at": "2026-01-23T05:50:44.655175Z",
   "depends_on": [],
   "epic": "fn-2-rla",
+  "evidence": {
+    "commits": [
+      "35fd407bab6dd6468d095f456ce1e868c5c5c5c5c"
+    ],
+    "prs": [],
+    "tests": [
+      "python3 migration_script.py"
+    ]
+  },
   "id": "fn-2-rla.4",
   "priority": null,
   "spec_path": ".flow/tasks/fn-2-rla.4.md",
-  "status": "in_progress",
+  "status": "done",
   "title": "Implement Mirroring for Folders 11-17",
-  "updated_at": "2026-01-23T06:46:23.335290Z"
+  "updated_at": "2026-01-23T07:00:06.402636Z"
 }

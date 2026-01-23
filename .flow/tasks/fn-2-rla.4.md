@@ -11,9 +11,8 @@ Process note files in folders `11` to `17`.
 ## Acceptance
 - [ ] Solutions for folders 11-17 are created in `solutions/`.
 ## Done summary
-TBD
-
+Implemented practice solutions for folders 11-17 by parsing notes and generating Python templates with doctest support. Folders covered include recursion, greedy, tries, union-find, bit manipulation, math, and system design.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 35fd407bab6dd6468d095f456ce1e868c5c5c5c5c
+- Tests: python3 migration_script.py
 - PRs:

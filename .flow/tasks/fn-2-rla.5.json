@@ -1,14 +1,14 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-23T07:00:44.190392Z",
   "created_at": "2026-01-23T05:50:44.741580Z",
   "depends_on": [],
   "epic": "fn-2-rla",
   "id": "fn-2-rla.5",
   "priority": null,
   "spec_path": ".flow/tasks/fn-2-rla.5.md",
-  "status": "todo",
+  "status": "in_progress",
   "title": "Implement Mirroring for Appendices A-C",
-  "updated_at": "2026-01-23T05:51:03.294865Z"
+  "updated_at": "2026-01-23T07:00:44.190402Z"
 }
