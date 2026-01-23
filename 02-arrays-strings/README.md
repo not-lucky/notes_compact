@@ -86,32 +86,6 @@ At top companies, you'll face 1-2 array/string problems in almost every coding r
 
 ---
 
-## System Design Connectors
-
-DSA patterns aren't just for interviews; they power the infrastructure we use daily.
-
-| DSA Pattern | System Design Application | Why it works |
-| :--- | :--- | :--- |
-| **Prefix Sums** | **Time-Series Monitoring** | Efficiently calculate average metrics over any time window in $O(1)$. |
-| **Sliding Window** | **Rate Limiters** | Tracking requests in the last $T$ seconds to prevent API abuse. |
-| **Difference Arrays** | **Video Encoding / Delta Encoding** | Storing only the change between frames/versions rather than full state. |
-| **Two Pointers** | **Database Buffer Pools** | Managing LRU-style eviction policies in memory buffers. |
-| **In-Place Modification** | **Memory Management** | Defragmenting memory or garbage collection without allocating new heaps. |
-
----
-
-## Visualizing Array State
-```mermaid
-graph LR
-    A[Start] --> B{i < length?}
-    B -- Yes --> C[Process arr[i]]
-    C --> D[i++]
-    D --> B
-    B -- No --> E[End]
-```
-
----
-
 ## Prerequisites
 
 > **Prerequisites:** [01-complexity-analysis](../01-complexity-analysis/README.md)

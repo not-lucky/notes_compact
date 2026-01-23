@@ -331,26 +331,6 @@ GCD/LCM, prime numbers, modular arithmetic, random sampling, and sqrt decomposit
 
 Data structure selection for scale, trade-offs analysis, rate limiting, and LRU/LFU cache implementations.
 
-#### 18 - Advanced DP
-[Go to Chapter](./18-advanced-dp/)
-
-Bitmask DP, Digit DP, and DP on Trees for Senior/Staff roles.
-
-#### 19 - Range Queries
-[Go to Chapter](./19-range-queries/)
-
-Segment Trees, Fenwick Trees, and Sparse Tables for logarithmic range operations.
-
-#### 20 - Advanced Graphs & Concurrency
-[Go to Chapters](./20-advanced-graphs/) & [Concurrency](./20-concurrency/)
-
-Tarjan's (SCC), LCA, Euler Tour, and multi-threaded implementation patterns.
-
-#### 21 - Python Internals
-[Go to Chapter](./21-python-internals/)
-
-Memory management, the GIL, generators, and deep language mechanics.
-
 ---
 
 ## Appendices
