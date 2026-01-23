@@ -1,14 +1,14 @@
 {
-  "assignee": null,
+  "assignee": "ayushrwt801@gmail.com",
   "claim_note": "",
-  "claimed_at": null,
+  "claimed_at": "2026-01-23T07:39:10.127132Z",
   "created_at": "2026-01-23T05:58:46.435909Z",
   "depends_on": [],
   "epic": "fn-2-rla",
   "id": "fn-2-rla.8",
   "priority": null,
   "spec_path": ".flow/tasks/fn-2-rla.8.md",
-  "status": "todo",
+  "status": "in_progress",
   "title": "Mirror folder 07-heaps-priority-queues",
-  "updated_at": "2026-01-23T05:58:46.435922Z"
+  "updated_at": "2026-01-23T07:39:10.127142Z"
 }
