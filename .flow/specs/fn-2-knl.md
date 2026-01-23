@@ -34,20 +34,12 @@ This epic upgrades the `notes_fang` repository from a standard DSA resource to a
 *   Link DSA problems to System Design concepts (e.g., "Consistent Hashing" from HashMaps, "QuadTrees" from Spatial Indexing).
 
 ## Acceptance Criteria
-- [x] New Directory `18-advanced-dp` created with Bitmask, Digit, Tree DP guides.
-- [x] New Directory `19-range-queries` created with Segment Tree and Fenwick Tree guides.
-- [x] New Directory `20-concurrency` created with 5+ deeply explained patterns and runnable code.
-- [x] New Directory `21-python-internals` created.
-- [x] `task.md` created to track detailed progress. (Note: Using flowctl for tracking)
-- [x] All new code examples are PEP8 compliant and include complexity analysis.
-
-## Done summary
-Upgraded the repository to an Elite Preparation Suite for Senior/Staff Engineer interviews. Implemented advanced algorithmic patterns (DP, Range Queries, Graphs), a deep concurrency module (GIL, Sync Primitives, Patterns), and a language internals deep-dive (GC, Object Model, Gotchas). Enriched the entire project with a strategy layer, system design connectors, and 10+ Mermaid.js visualizations.
-
-## Evidence
-- Commits: All changes merged to master.
-- Files: 18-advanced-dp/, 19-range-queries/, 20-advanced-graphs/, 20-concurrency/, 21-python-internals/, A-python-cheatsheet/constraint_analysis.md.
-- Visuals: 10+ Mermaid.js diagrams added.
+- [ ] New Directory `18-advanced-dp` created with Bitmask, Digit, Tree DP guides.
+- [ ] New Directory `19-range-queries` created with Segment Tree and Fenwick Tree guides.
+- [ ] New Directory `20-concurrency` created with 5+ deeply explained patterns and runnable code.
+- [ ] New Directory `21-python-internals` created.
+- [ ] `task.md` created to track detailed progress.
+- [ ] All new code examples are PEP8 compliant and include complexity analysis.
 
 ## Work Phases
 1.  **Phase 1: Advanced Algorithms** (DP & Range Queries)
