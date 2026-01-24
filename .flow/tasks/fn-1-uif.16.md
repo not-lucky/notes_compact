@@ -14,9 +14,8 @@ Mirror the contents of `16-math-basics/` to `solutions/16-math-basics/` includin
 - [x] Add `README.md` with core implementations
 
 ## Done summary
-Mirrored the folder and implemented practice problems for all math topics.
-
+- Task completed
 ## Evidence
-- Commits: 387a97f63b29fd642b108fb3b5f7ba0a856d97bc
+- Commits:
 - Tests:
 - PRs:
