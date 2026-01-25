@@ -76,6 +76,7 @@ def min_extra_char(s: str, dictionary: list[str]) -> int:
                 dp[i] = min(dp[i], dp[j])
 
     return dp[n]
+```
 
 ---
 
@@ -119,7 +120,6 @@ def find_all_concatenated_words_in_a_dict(words: list[str]) -> list[str]:
 ### Complexity Analysis
 - **Time:** $O(N \times L^2)$ - Where $N$ is number of words and $L$ is max length.
 - **Space:** $O(N \times L)$ - For the set and memoization cache.
-```
 
 ### Complexity Analysis
 - **Time:** $O(n^3)$ - Nested loops + string slicing.

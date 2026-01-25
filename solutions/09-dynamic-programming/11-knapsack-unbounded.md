@@ -53,7 +53,7 @@ def rod_cutting(prices: list[int], n: int) -> int:
             dp[i] = max(dp[i], prices[j] + dp[i-j-1])
     return dp[n]
 
----
+```
 
 ## 5. Coin Change II (Count Combinations)
 **Problem:** Number of ways to make up an amount using given coins (unlimited supply).
@@ -79,13 +79,12 @@ def change(amount: int, coins: list[int]) -> int:
 ### Complexity Analysis
 - **Time:** $O(\text{amount} \times \text{len(coins)})$
 - **Space:** $O(\text{amount})$
-```
+
 
 ### Complexity Analysis
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$
 
----
 
 ## 4. Integer Break
 **Problem:** Maximize product of integers that sum to $n$.
@@ -101,7 +100,7 @@ def integer_break(n: int) -> int:
             dp[i] = max(dp[i], dp[j] * dp[i-j])
     return dp[n]
 
----
+```
 
 ## 5. Coin Change II (Count Combinations)
 **Problem:** Number of ways to make up an amount using given coins (unlimited supply).
@@ -127,7 +126,6 @@ def change(amount: int, coins: list[int]) -> int:
 ### Complexity Analysis
 - **Time:** $O(\text{amount} \times \text{len(coins)})$
 - **Space:** $O(\text{amount})$
-```
 
 ### Complexity Analysis
 - **Time:** $O(n^2)$
