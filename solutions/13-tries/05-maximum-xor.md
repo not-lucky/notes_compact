@@ -56,8 +56,8 @@ class Solution:
 3.  **Toggled Bit Search**: For each number, we traverse the Trie and always try to take the path of the `toggled_bit` (if `0` we want `1`, if `1` we want `0`). If it exists, the XOR result at that bit position becomes `1`.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(N \times L)$ where $N$ is the number of elements and $L$ is the number of bits (e.g., 31 for 32-bit integers). We perform one insertion and one search per number, and each operation involves traversing $L$ levels in the Trie.
-*   **Space Complexity**: $O(N \times L)$ to store all numbers in the bitwise Trie, where each node represents a single bit.
+*   **Time Complexity**: $O(N \times L)$ where $N$ is the number of elements and $L$ is the number of bits (e.g., 31 for 32-bit integers). We perform one insertion and one search per number. Each operation is $O(L)$ because we traverse exactly $L$ levels (one for each bit) to either insert the number or greedily find its maximum XOR partner.
+*   **Space Complexity**: $O(N \times L)$ to store all numbers in the bitwise Trie. In the worst case, each bit of every number requires a new node, though many prefixes are shared in practice.
 
 ---
 

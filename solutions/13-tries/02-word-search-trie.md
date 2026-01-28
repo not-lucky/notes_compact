@@ -143,36 +143,59 @@ Output: ["catsdogcats","dogcatsdog","ratcatdogcat"]
 ```python
 class Solution:
     def findAllConcatenatedWordsInADict(self, words: list[str]) -> list[str]:
-        word_set = set(words)
+        # Build Trie for all words
+        root = {}
+        for word in words:
+            if not word: continue
+            node = root
+            for char in word:
+                node = node.setdefault(char, {})
+            node['$'] = True
+
         memo = {}
 
-        def can_form(word):
-            if word in memo: return memo[word]
-            for i in range(1, len(word)):
-                prefix = word[:i]
-                suffix = word[i:]
-                if prefix in word_set:
-                    if suffix in word_set or can_form(suffix):
-                        memo[word] = True
+        def can_form(word, start, count):
+            state = (start, count >= 1)
+            if state in memo: return memo[state]
+
+            node = root
+            for i in range(start, len(word)):
+                char = word[i]
+                if char not in node:
+                    break
+                node = node[char]
+
+                # Found a word in the trie
+                if '$' in node:
+                    # If we've reached the end of the word and have at least one prior word
+                    if i == len(word) - 1:
+                        if count >= 1:
+                            return True
+                    # Otherwise, recurse to see if we can form the rest
+                    elif can_form(word, i + 1, count + 1):
+                        memo[state] = True
                         return True
-            memo[word] = False
+
+            memo[state] = False
             return False
 
         res = []
         for word in words:
-            if can_form(word):
+            if not word: continue
+            # We need to find if word can be formed by >= 2 other words
+            if can_form(word, 0, 0):
                 res.append(word)
         return res
 ```
 
 ### Explanation
-1.  **Word Splitting**: For each word, we check if it can be split into a prefix (which exists in our dictionary) and a suffix (which either exists or can itself be decomposed).
-2.  **Memoization**: We store the results of sub-problems to avoid redundant calculations.
-3.  **Set for O(1) Lookup**: A hashset is more efficient than a Trie here since we are looking for exact matches of word segments.
+1.  **Trie for Prefix Finding**: We store all words in a Trie. This allows us to efficiently find all valid word prefixes starting at any index in $O(L)$ time.
+2.  **DP with Memoization**: We use DFS to check if a word can be decomposed into smaller segments. `can_form(word, start, count)` checks if the substring from `start` can be formed using one or more words from the dictionary.
+3.  **Count Constraint**: A concatenated word must be composed of at least **two** shorter words. We track the `count` of words used to satisfy this.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(N \times L^3)$ where $N$ is the number of words and $L$ is the maximum length. For each word, we check all $L$ possible split points. For each split, we perform string slicing ($O(L)$) and a recursive call (memoized).
-*   **Space Complexity**: $O(N \times L)$ to store the `word_set` for $O(1)$ lookups and the `memo` dictionary.
+*   **Time Complexity**: $O(N \times L^2)$ where $N$ is the number of words and $L$ is the maximum length. For each word, we perform a DFS. With memoization, each starting index is processed once, and at each index, we spend $O(L)$ to find prefixes in the Trie.
+*   **Space Complexity**: $O(N \times L)$ to store the Trie and the memoization table.
 
 ---
 

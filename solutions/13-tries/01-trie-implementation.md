@@ -75,8 +75,8 @@ class Trie:
 3.  **Search vs. Prefix**: Both involve walking down the tree. `search` requires that the final node has `is_end` set to `True`, while `startsWith` only requires that the path exists.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(L)$ for all operations (insert, search, startsWith), where $L$ is the length of the string. We perform one lookup or insertion for each character in the string, and hash map operations are $O(1)$.
-*   **Space Complexity**: $O(N \times L)$ where $N$ is the number of words and $L$ is the average length. In the worst case, where no words share any common prefixes, we store every character as a separate node.
+*   **Time Complexity**: $O(L)$ for all operations (insert, search, startsWith), where $L$ is the length of the string. We perform one lookup or insertion for each character in the string. Since hash map operations (for child nodes) are $O(1)$ on average, the total time is proportional only to the word length $L$.
+*   **Space Complexity**: $O(N \times L)$ where $N$ is the number of words and $L$ is the average length. In the worst case (no shared prefixes), we store every character as a separate node. However, the true strength of a Trie is that it reduces space for shared prefixes.
 
 ---
 

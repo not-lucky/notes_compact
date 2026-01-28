@@ -74,9 +74,9 @@ class AutocompleteSystem:
 
 ### Complexity Analysis
 *   **Time Complexity**:
-    - `__init__`: $O(N \times L)$ where $N$ is the number of sentences and $L$ is the average length. Each sentence is inserted into the Trie, taking $O(L)$ time.
-    - `input`: $O(L + M \log 3)$ where $L$ is the length of the current input and $M$ is the number of sentences sharing the prefix. We traverse $L$ nodes, then use a heap of size 3 to find the top results from $M$ candidates.
-*   **Space Complexity**: $O(N \times L^2)$ in the worst case because each node along a path stores a reference to the full sentence string in its `counts` map.
+    - `__init__`: $O(N \times L)$ where $N$ is the number of sentences and $L$ is the average length. Each character of every sentence is processed once during insertion.
+    - `input`: $O(L + M \log 3)$ where $L$ is the length of the current input and $M$ is the number of sentences sharing the prefix. We traverse $L$ nodes to reach the prefix node, then iterate over $M$ pre-stored candidates in that node, using a min-heap to keep the top 3.
+*   **Space Complexity**: $O(N \times L^2)$ in the worst case. This occurs because each node along a word's path in our optimized implementation stores a reference to the full sentence string in its `counts` map, leading to quadratic space relative to word length in the worst case.
 
 ---
 
