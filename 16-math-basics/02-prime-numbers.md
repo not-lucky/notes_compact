@@ -7,6 +7,7 @@
 **The "Indivisible Atoms" Mental Model**
 
 Primes are the "atoms" of numbers—they can't be broken down further:
+
 - 12 = 2 × 2 × 3 (composite—made of primes)
 - 7 = 7 (prime—can't be factored)
 
@@ -15,6 +16,7 @@ Every number is either prime or a unique product of primes. This is called the F
 **Why Check Only Up to √n**
 
 If n has a factor larger than √n, it must also have one smaller than √n:
+
 - 100 = 10 × 10 → √100 = 10
 - 100 = 4 × 25 → one factor (4) is less than 10
 
@@ -23,6 +25,7 @@ So if no factor exists up to √n, none exists at all.
 **The 6k ± 1 Optimization**
 
 All primes greater than 3 are of the form 6k ± 1:
+
 - Numbers of form 6k, 6k+2, 6k+4 are divisible by 2
 - Numbers of form 6k+3 are divisible by 3
 - Only 6k+1 and 6k+5 (= 6k-1) can be prime
@@ -34,6 +37,7 @@ This lets us check only 2 candidates per 6 numbers instead of all 6.
 ## Interview Context
 
 Prime number problems test mathematical reasoning and optimization skills. Common interview scenarios include:
+
 - Counting primes up to n
 - Checking if a number is prime
 - Finding prime factors
@@ -387,11 +391,11 @@ print(isHappy(2))   # False (cycles)
 
 ## Complexity Analysis
 
-| Algorithm | Time | Space | Use Case |
-|-----------|------|-------|----------|
-| Trial division | O(√n) | O(1) | Single primality check |
-| Sieve of Eratosthenes | O(n log log n) | O(n) | All primes up to n |
-| Prime factorization | O(√n) | O(log n) | Factor decomposition |
+| Algorithm             | Time           | Space    | Use Case               |
+| --------------------- | -------------- | -------- | ---------------------- |
+| Trial division        | O(√n)          | O(1)     | Single primality check |
+| Sieve of Eratosthenes | O(n log log n) | O(n)     | All primes up to n     |
+| Prime factorization   | O(√n)          | O(log n) | Factor decomposition   |
 
 ### When to Use Each
 
@@ -534,14 +538,14 @@ print(factorize_with_spf(60, spf))  # [2, 2, 3, 5]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Count Primes | Medium | Sieve of Eratosthenes |
-| 2 | Ugly Number | Easy | Limited prime factors |
-| 3 | Ugly Number II | Medium | DP with multiple pointers |
-| 4 | Super Ugly Number | Medium | Generalized ugly number |
-| 5 | Happy Number | Easy | Digit sum cycle detection |
-| 6 | Perfect Number | Easy | Divisor sum |
+| #   | Problem           | Difficulty | Key Concept               |
+| --- | ----------------- | ---------- | ------------------------- |
+| 1   | Count Primes      | Medium     | Sieve of Eratosthenes     |
+| 2   | Ugly Number       | Easy       | Limited prime factors     |
+| 3   | Ugly Number II    | Medium     | DP with multiple pointers |
+| 4   | Super Ugly Number | Medium     | Generalized ugly number   |
+| 5   | Happy Number      | Easy       | Digit sum cycle detection |
+| 6   | Perfect Number    | Easy       | Divisor sum               |
 
 ---
 

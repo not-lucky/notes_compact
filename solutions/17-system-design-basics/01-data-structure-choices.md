@@ -5,9 +5,11 @@ This file provides optimal Python solutions for the practice problems related to
 ## 1. Design HashMap
 
 ### Problem Statement
+
 Design a HashMap without using any built-in hash table libraries. You should implement basic operations: `put(key, value)`, `get(key)`, and `remove(key)`.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `put(1, 1)`, `put(2, 2)`, `get(1)` -> 1, `get(3)` -> -1, `put(2, 1)`, `get(2)` -> 1, `remove(2)`, `get(2)` -> -1.
 - **Edge Cases**:
@@ -16,6 +18,7 @@ Design a HashMap without using any built-in hash table libraries. You should imp
   - **Updating existing keys**: Replacing the value.
 
 ### Optimal Python Solution
+
 ```python
 class MyHashMap:
     def __init__(self):
@@ -62,13 +65,16 @@ class MyHashMap:
 ```
 
 ### Explanation
+
 The implementation uses **Chaining** for collision handling. We maintain an array of buckets, where each bucket contains a list of key-value pairs.
+
 1. `_hash`: Computes the index in the bucket array using the modulo operator.
 2. `put`: Finds the bucket, checks if the key exists to update, otherwise appends.
 3. `get`: Finds the bucket and searches for the key.
 4. `remove`: Finds the bucket and removes the key-value pair if it exists.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `put`, `get`, `remove`: Average $O(1)$, Worst-case $O(N/K)$ where $N$ is total keys and $K$ is number of buckets.
 - **Space Complexity**: $O(K + N)$ where $K$ is the number of predefined buckets and $N$ is the number of keys stored.
@@ -78,9 +84,11 @@ The implementation uses **Chaining** for collision handling. We maintain an arra
 ## 2. LRU Cache
 
 ### Problem Statement
+
 Design a data structure that follows the constraints of a **Least Recently Used (LRU) cache**. Implement `get(key)` and `put(key, value)`. Both operations must run in $O(1)$ time complexity.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `LRUCache(2)`, `put(1, 1)`, `put(2, 2)`, `get(1)` (1 becomes MRU), `put(3, 3)` (evicts 2), `get(2)` -> -1.
 - **Edge Cases**:
@@ -89,6 +97,7 @@ Design a data structure that follows the constraints of a **Least Recently Used 
   - **Get of missing key**: Returns -1.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, key=0, value=0):
@@ -145,12 +154,15 @@ class LRUCache:
 ```
 
 ### Explanation
+
 We combine a **HashMap** and a **Doubly Linked List (DLL)**.
+
 1. The HashMap provides $O(1)$ access to the nodes by key.
 2. The DLL allows $O(1)$ removal and re-insertion at the head (Most Recently Used).
 3. Dummy head and tail nodes eliminate edge case checks for empty lists or single elements.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$ for both `get` and `put` because hash lookups and pointer updates are constant time operations.
 - **Space Complexity**: $O(\text{capacity})$ to store the keys in the hash map and nodes in the DLL.
 
@@ -159,9 +171,11 @@ We combine a **HashMap** and a **Doubly Linked List (DLL)**.
 ## 3. Time Based Key-Value Store
 
 ### Problem Statement
+
 Design a time-based key-value data structure that can store multiple values for the same key at different timestamps and retrieve the key's value at a certain timestamp.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `set("foo", "bar", 1)`, `get("foo", 1)` -> "bar", `get("foo", 3)` -> "bar" (finds latest before 3), `set("foo", "bar2", 4)`, `get("foo", 4)` -> "bar2".
 - **Edge Cases**:
@@ -169,6 +183,7 @@ Design a time-based key-value data structure that can store multiple values for 
   - **Multiple values for same key**: Must return the one with `timestamp_prev <= timestamp_query`.
 
 ### Optimal Python Solution
+
 ```python
 import bisect
 
@@ -200,11 +215,13 @@ class TimeMap:
 ```
 
 ### Explanation
+
 1. We use a **HashMap** where the key is the string and the value is a **Sorted List** of `[timestamp, value]` pairs.
 2. Since timestamps are added in strictly increasing order, the list stays sorted.
 3. For `get`, we use **Binary Search** (`bisect_right`) to find the largest timestamp $\leq$ target in $O(\log N)$ time.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `set`: $O(1)$ for appending to list.
   - `get`: $O(\log N)$ where $N$ is the number of timestamps for a given key.
@@ -215,9 +232,11 @@ class TimeMap:
 ## 4. Find Median from Data Stream
 
 ### Problem Statement
+
 Design a data structure that supports adding integers from a stream and finding the median of all elements added so far.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `addNum(1)`, `addNum(2)`, `findMedian()` -> 1.5, `addNum(3)`, `findMedian()` -> 2.0.
 - **Edge Cases**:
@@ -226,6 +245,7 @@ Design a data structure that supports adding integers from a stream and finding 
   - **Even vs. Odd count**: Mean of middle two vs. middle element.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -252,12 +272,15 @@ class MedianFinder:
 ```
 
 ### Explanation
+
 We use **Two Heaps** to maintain the stream split in the middle.
+
 1. `small` (Max-heap): Stores the smaller half of numbers.
 2. `large` (Min-heap): Stores the larger half of numbers.
 3. Balancing ensures the median is either the top of `small` (if odd total) or the average of the tops of both (if even total).
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `addNum`: $O(\log N)$ for heap operations.
   - `findMedian`: $O(1)$ as we only look at the top of the heaps.
@@ -268,9 +291,11 @@ We use **Two Heaps** to maintain the stream split in the middle.
 ## 5. Design Twitter
 
 ### Problem Statement
+
 Design a simplified version of Twitter where users can post tweets, follow/unfollow others, and see the 10 most recent tweets in their feed.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `postTweet(1, 5)`, `getNewsFeed(1)` -> [5], `follow(1, 2)`, `postTweet(2, 6)`, `getNewsFeed(1)` -> [6, 5], `unfollow(1, 2)`, `getNewsFeed(1)` -> [5].
 - **Edge Cases**:
@@ -279,6 +304,7 @@ Design a simplified version of Twitter where users can post tweets, follow/unfol
   - **Users with >10 tweets**: Only show the latest 10.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 from collections import defaultdict
@@ -324,11 +350,13 @@ class Twitter:
 ```
 
 ### Explanation
+
 1. **Data Structures**: `defaultdict(list)` for tweets and `defaultdict(set)` for followers.
 2. **Merging Feeds**: `getNewsFeed` uses a **Min-Heap** (acting as a Max-Heap with negative timestamps) to perform a **K-way Merge** of the tweet lists from all followees.
 3. We only pull the latest 10 tweets, making it efficient even if a user follows many people.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `postTweet`, `follow`, `unfollow`: $O(1)$.
   - `getNewsFeed`: $O(F \log F)$ where $F$ is the number of followees (heap size), capped by the 10 iterations.
@@ -339,9 +367,11 @@ class Twitter:
 ## 6. Stock Price Fluctuation
 
 ### Problem Statement
+
 Design a system to track a stock's price over time. You should be able to update the price at a specific timestamp and retrieve the `latest`, `maximum`, `minimum`, and `current` prices.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `update(1, 10)`, `update(2, 5)`, `current()` -> 5, `maximum()` -> 10, `update(1, 3)`, `maximum()` -> 5, `minimum()` -> 3.
 - **Edge Cases**:
@@ -349,6 +379,7 @@ Design a system to track a stock's price over time. You should be able to update
   - **Latest timestamp**: Not necessarily the one most recently updated.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -384,11 +415,13 @@ class StockPrice:
 ```
 
 ### Explanation
+
 1. **HashMap**: Stores the definitive `timestamp -> price` mapping.
 2. **Two Heaps**: Track the global min and max prices.
 3. **Lazy Deletion**: Since `update` can change old prices, the heaps might contain "stale" entries. When querying `minimum` or `maximum`, we pop the top of the heap until we find an entry that matches the current value in our HashMap.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `update`: $O(\log N)$ to push to heaps.
   - `current`: $O(1)$.

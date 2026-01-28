@@ -22,6 +22,7 @@ Think of it as a budget problem: you have a target amount to spend, and each cho
 3. **Why Sorting Enables Pruning**: If candidates are sorted and the current candidate exceeds remaining, all subsequent candidates will too. This allows immediate termination: `if candidate > remaining: break`.
 
 4. **Visual Intuition—The Spending Tree**:
+
 ```
 target=7, candidates=[2,3,6,7]
 
@@ -61,6 +62,7 @@ This pattern isn't always the best approach:
 5. **When Negative Numbers Are Involved**: Standard pruning (`if candidate > remaining: break`) doesn't work. You'd need depth limits or different approaches.
 
 **Red Flags Against Backtracking for Sum Problems:**
+
 - Problem asks for count only → DP
 - Target is extremely large → DP or math
 - Candidates include negative numbers → careful with termination
@@ -80,6 +82,7 @@ This pattern isn't always the best approach:
 ## Interview Context
 
 Combination sum problems test:
+
 1. **Target-based search**: Find elements that sum to a target
 2. **Reuse decisions**: Can elements be used multiple times?
 3. **Duplicate handling**: Input duplicates vs output duplicates
@@ -89,12 +92,12 @@ Combination sum problems test:
 
 ## Problem Variants Overview
 
-| Variant | Reuse Elements? | Input Duplicates? | Key Difference |
-|---------|-----------------|-------------------|----------------|
-| Combination Sum | Yes | No | Unlimited reuse |
-| Combination Sum II | No | Yes | Each element once |
-| Combination Sum III | No | No | k numbers from 1-9 |
-| Combination Sum IV | Yes | No | Count only (DP) |
+| Variant             | Reuse Elements? | Input Duplicates? | Key Difference     |
+| ------------------- | --------------- | ----------------- | ------------------ |
+| Combination Sum     | Yes             | No                | Unlimited reuse    |
+| Combination Sum II  | No              | Yes               | Each element once  |
+| Combination Sum III | No              | No                | k numbers from 1-9 |
+| Combination Sum IV  | Yes             | No                | Count only (DP)    |
 
 ---
 
@@ -361,12 +364,12 @@ def combination_sum_with_neg(candidates: list[int], target: int) -> list[list[in
 
 ## Complexity Analysis
 
-| Variant | Time | Space | Notes |
-|---------|------|-------|-------|
-| Sum I (reuse) | O(n^(t/m)) | O(t/m) | t=target, m=min candidate |
-| Sum II (no reuse) | O(2^n) | O(n) | Each element in/out |
-| Sum III (1-9) | O(C(9,k) × k) | O(k) | At most C(9,k) combos |
-| Sum IV (count) | O(t × n) | O(t) | DP approach |
+| Variant           | Time          | Space  | Notes                     |
+| ----------------- | ------------- | ------ | ------------------------- |
+| Sum I (reuse)     | O(n^(t/m))    | O(t/m) | t=target, m=min candidate |
+| Sum II (no reuse) | O(2^n)        | O(n)   | Each element in/out       |
+| Sum III (1-9)     | O(C(9,k) × k) | O(k)   | At most C(9,k) combos     |
+| Sum IV (count)    | O(t × n)      | O(t)   | DP approach               |
 
 ---
 
@@ -415,14 +418,14 @@ if i > start and candidates[i] == candidates[i-1]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Combination Sum | Medium | Unlimited reuse |
-| 2 | Combination Sum II | Medium | No reuse, duplicates |
-| 3 | Combination Sum III | Medium | k from 1-9 |
-| 4 | Combination Sum IV | Medium | DP, order matters |
-| 5 | Target Sum | Medium | +/- choices |
-| 6 | Coin Change 2 | Medium | Count combinations |
+| #   | Problem             | Difficulty | Key Insight          |
+| --- | ------------------- | ---------- | -------------------- |
+| 1   | Combination Sum     | Medium     | Unlimited reuse      |
+| 2   | Combination Sum II  | Medium     | No reuse, duplicates |
+| 3   | Combination Sum III | Medium     | k from 1-9           |
+| 4   | Combination Sum IV  | Medium     | DP, order matters    |
+| 5   | Target Sum          | Medium     | +/- choices          |
+| 6   | Coin Change 2       | Medium     | Count combinations   |
 
 ---
 

@@ -7,6 +7,7 @@
 **The "Desk Space" Mental Model**
 
 Imagine your algorithm is doing paperwork at a desk:
+
 - **Input papers**: The data you're given (doesn't count as "extra" space)
 - **Scratch paper**: Any extra notes you make (THIS is what we measure)
 - **Stack of pending work**: Recursive calls waiting to be processed
@@ -74,13 +75,13 @@ def sum_array(arr: list[int]) -> int:
 
 ### What Counts
 
-| Category | Counts | Example |
-|----------|--------|---------|
-| New data structures | Yes | `result = []`, `seen = set()` |
-| Primitive variables | Yes (but usually O(1)) | `count = 0`, `i = 0` |
-| Recursion call stack | Yes | Each recursive call adds a frame |
-| Input data | Usually no | The array passed in |
-| Output data | Depends | Sometimes counted, sometimes not |
+| Category             | Counts                 | Example                          |
+| -------------------- | ---------------------- | -------------------------------- |
+| New data structures  | Yes                    | `result = []`, `seen = set()`    |
+| Primitive variables  | Yes (but usually O(1)) | `count = 0`, `i = 0`             |
+| Recursion call stack | Yes                    | Each recursive call adds a frame |
+| Input data           | Usually no             | The array passed in              |
+| Output data          | Depends                | Sometimes counted, sometimes not |
 
 ---
 
@@ -466,28 +467,28 @@ def process_half(arr: list[int]) -> list[int]:
 
 ## Space Complexity Summary Table
 
-| Pattern | Auxiliary Space |
-|---------|-----------------|
-| Few variables | O(1) |
-| Fixed-size array | O(1) |
-| Hash map with up to n entries | O(n) |
-| Result list of size n | O(n) |
-| n×n matrix | O(n²) |
-| Linear recursion depth | O(n) |
-| Binary recursion depth | O(n) (max path) |
-| Divide-and-conquer depth | O(log n) |
+| Pattern                       | Auxiliary Space |
+| ----------------------------- | --------------- |
+| Few variables                 | O(1)            |
+| Fixed-size array              | O(1)            |
+| Hash map with up to n entries | O(n)            |
+| Result list of size n         | O(n)            |
+| n×n matrix                    | O(n²)           |
+| Linear recursion depth        | O(n)            |
+| Binary recursion depth        | O(n) (max path) |
+| Divide-and-conquer depth      | O(log n)        |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Analyze space of iterative vs recursive solution | Easy | Call stack |
-| 2 | Identify in-place modifications | Easy | O(1) space |
-| 3 | Space-time trade-off comparison | Medium | Trade-offs |
-| 4 | Hidden space in string operations | Medium | Language specifics |
-| 5 | Optimize recursive solution space | Medium | Convert to iterative |
+| #   | Problem                                          | Difficulty | Focus                |
+| --- | ------------------------------------------------ | ---------- | -------------------- |
+| 1   | Analyze space of iterative vs recursive solution | Easy       | Call stack           |
+| 2   | Identify in-place modifications                  | Easy       | O(1) space           |
+| 3   | Space-time trade-off comparison                  | Medium     | Trade-offs           |
+| 4   | Hidden space in string operations                | Medium     | Language specifics   |
+| 5   | Optimize recursive solution space                | Medium     | Convert to iterative |
 
 ---
 
@@ -511,6 +512,7 @@ def process_half(arr: list[int]) -> list[int]:
 5. **One-off scripts**: Don't optimize space for code run once
 
 **When space DOES matter:**
+
 - Embedded systems with limited RAM
 - Processing massive datasets (millions of elements)
 - Long-running servers where memory leaks compound

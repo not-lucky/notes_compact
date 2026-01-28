@@ -1,10 +1,12 @@
 # Solutions: Burst Balloons (Interval DP)
 
 ## 1. Burst Balloons
+
 **Problem:** Maximize coins by bursting balloons. Bursting $i$ gives `nums[i-1]*nums[i]*nums[i+1]`.
 
 ### Optimal Python Solution
-```python
+
+````python
 def max_coins(nums: list[int]) -> int:
     # Key Insight: Think about the LAST balloon to burst in a range.
     # If k is last burst in (i, j), its neighbors are i and j.
@@ -22,6 +24,7 @@ def max_coins(nums: list[int]) -> int:
                                dp[i][k] + dp[k][j] + vals[i] * vals[k] * vals[j])
     return dp[0][n-1]
 
+```
 ---
 
 ## 3. Remove Boxes
@@ -58,9 +61,10 @@ def remove_boxes(boxes: list[int]) -> int:
         return res
 
     return dp(0, n - 1, 0)
-```
+````
 
 ### Explanation
+
 1.  **The "Sticky" Problem**: Standard 2D DP fails because removing a box can bring two separate groups of the same color together.
 2.  **3rd Dimension**: We track `k`, the number of boxes to the left of index `i` that have the same color as `boxes[i]`.
 3.  **Recursive Choices**:
@@ -68,15 +72,18 @@ def remove_boxes(boxes: list[int]) -> int:
     - Or, we can "save" them and try to find another box of the same color later in the range `(m)`, first clearing everything between `i` and `m`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^4)$
 - **Space:** $O(n^3)$
 
 ---
 
 ## 4. Strange Printer
+
 **Problem:** Printer can print a sequence of same characters. Find min turns to print string `s`.
 
 ### Optimal Python Solution
+
 ```python
 def strange_printer(s: str) -> int:
     if not s: return 0
@@ -106,14 +113,17 @@ def strange_printer(s: str) -> int:
 ```
 
 ### Explanation
+
 1.  **Pre-processing**: Consecutive identical characters can always be printed in one turn, so we collapse them.
 2.  **Interval DP**: `dp[i][j]` is the min turns for `s[i..j]`.
 3.  **Optimization**: If `s[i] == s[k]`, we can assume `s[i]` was printed in the same turn as `s[k]`, effectively merging two intervals without adding a turn.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(n^3)$
@@ -140,6 +150,7 @@ def min_score_triangulation(values: list[int]) -> int:
                                dp[i][k] + dp[k][j] + values[i] * values[k] * values[j])
     return dp[0][n-1]
 
+```
 ---
 
 ## 3. Remove Boxes
@@ -176,9 +187,10 @@ def remove_boxes(boxes: list[int]) -> int:
         return res
 
     return dp(0, n - 1, 0)
-```
+````
 
 ### Explanation
+
 1.  **The "Sticky" Problem**: Standard 2D DP fails because removing a box can bring two separate groups of the same color together.
 2.  **3rd Dimension**: We track `k`, the number of boxes to the left of index `i` that have the same color as `boxes[i]`.
 3.  **Recursive Choices**:
@@ -186,15 +198,18 @@ def remove_boxes(boxes: list[int]) -> int:
     - Or, we can "save" them and try to find another box of the same color later in the range `(m)`, first clearing everything between `i` and `m`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^4)$
 - **Space:** $O(n^3)$
 
 ---
 
 ## 4. Strange Printer
+
 **Problem:** Printer can print a sequence of same characters. Find min turns to print string `s`.
 
 ### Optimal Python Solution
+
 ```python
 def strange_printer(s: str) -> int:
     if not s: return 0
@@ -224,15 +239,19 @@ def strange_printer(s: str) -> int:
 ```
 
 ### Explanation
+
 1.  **Pre-processing**: Consecutive identical characters can always be printed in one turn, so we collapse them.
 2.  **Interval DP**: `dp[i][j]` is the min turns for `s[i..j]`.
 3.  **Optimization**: If `s[i] == s[k]`, we can assume `s[i]` was printed in the same turn as `s[k]`, effectively merging two intervals without adding a turn.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
+```

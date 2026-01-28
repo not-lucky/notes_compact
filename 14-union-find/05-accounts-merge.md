@@ -45,11 +45,13 @@ All four emails belong to ONE person.
 **Why Union-Find Fits Perfectly**
 
 This is a connectivity problem in disguise:
+
 - **Nodes**: Email addresses
 - **Edges**: Emails appearing in the same account
 - **Groups**: All emails of one real person
 
 Union-Find excels because:
+
 1. We union all emails within each account
 2. Transitive connections happen automatically
 3. Final grouping is efficient via find()
@@ -493,13 +495,13 @@ for group in groups:
 
 For Accounts Merge with n accounts and k emails per account:
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build email map | O(n × k) | O(n × k) |
-| Union operations | O(n × k × α(n × k)) | O(1) |
-| Group by root | O(n × k × α(n × k)) | O(n × k) |
-| Sort groups | O(n × k × log k) | O(1) |
-| **Total** | **O(n × k × log k)** | **O(n × k)** |
+| Operation        | Time                 | Space        |
+| ---------------- | -------------------- | ------------ |
+| Build email map  | O(n × k)             | O(n × k)     |
+| Union operations | O(n × k × α(n × k))  | O(1)         |
+| Group by root    | O(n × k × α(n × k))  | O(n × k)     |
+| Sort groups      | O(n × k × log k)     | O(1)         |
+| **Total**        | **O(n × k × log k)** | **O(n × k)** |
 
 ---
 
@@ -524,13 +526,13 @@ For Accounts Merge with n accounts and k emails per account:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Accounts Merge | Medium | Email grouping |
-| 2 | Similar String Groups | Hard | Pair-wise similarity |
-| 3 | Sentence Similarity II | Medium | Transitive similarity |
-| 4 | Synonymous Sentences | Medium | Word grouping |
-| 5 | Evaluate Division | Medium | Weighted Union-Find |
+| #   | Problem                | Difficulty | Key Concept           |
+| --- | ---------------------- | ---------- | --------------------- |
+| 1   | Accounts Merge         | Medium     | Email grouping        |
+| 2   | Similar String Groups  | Hard       | Pair-wise similarity  |
+| 3   | Sentence Similarity II | Medium     | Transitive similarity |
+| 4   | Synonymous Sentences   | Medium     | Word grouping         |
+| 5   | Evaluate Division      | Medium     | Weighted Union-Find   |
 
 ---
 

@@ -34,6 +34,7 @@ Key insight: n-1 flips the rightmost 1 to 0 and all 0s to its right become 1s
 ```
 
 This pattern underlies:
+
 - `n & (n-1)`: Clear rightmost set bit
 - Power of 2 check: Only one bit means clearing it gives 0
 - Brian Kernighan's algorithm: Each step removes exactly one bit
@@ -54,6 +55,7 @@ n & (-n) keeps only the rightmost 1 (where they agree)
 ```
 
 This pattern underlies:
+
 - `n & (-n)`: Isolate rightmost set bit
 - Fenwick trees (Binary Indexed Trees)
 
@@ -180,6 +182,7 @@ a ^= b ^= a ^= b  # This is UNDEFINED BEHAVIOR in C!
 ```
 
 **Red Flags (Don't Use Bit Tricks):**
+
 - Production code where maintainability matters
 - Python with arbitrary-width integers (need explicit masking)
 - You can't explain WHY the trick works
@@ -651,14 +654,14 @@ BYTE_3 = 0xFF000000  # Highest byte
 
 ## Complexity Analysis
 
-| Trick | Time | Space | Common Use |
-|-------|------|-------|------------|
-| Isolate rightmost 1 | O(1) | O(1) | Loop control, partition |
-| Clear rightmost 1 | O(1) | O(1) | Counting bits, power of 2 |
-| Get/Set/Clear/Toggle | O(1) | O(1) | Bit manipulation basics |
-| Reverse bits | O(1) | O(1) | Networking, cryptography |
-| Generate subsets | O(n × 2^n) | O(2^n) | Backtracking alternative |
-| Gray code | O(1) | O(1) | Error detection |
+| Trick                | Time       | Space  | Common Use                |
+| -------------------- | ---------- | ------ | ------------------------- |
+| Isolate rightmost 1  | O(1)       | O(1)   | Loop control, partition   |
+| Clear rightmost 1    | O(1)       | O(1)   | Counting bits, power of 2 |
+| Get/Set/Clear/Toggle | O(1)       | O(1)   | Bit manipulation basics   |
+| Reverse bits         | O(1)       | O(1)   | Networking, cryptography  |
+| Generate subsets     | O(n × 2^n) | O(2^n) | Backtracking alternative  |
+| Gray code            | O(1)       | O(1)   | Error detection           |
 
 ---
 
@@ -674,14 +677,14 @@ BYTE_3 = 0xFF000000  # Highest byte
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Trick |
-|---|---------|------------|-----------|
-| 1 | Reverse Bits | Easy | Bit by bit reversal |
-| 2 | Subsets | Medium | Bitmask iteration |
-| 3 | Gray Code | Medium | n ^ (n >> 1) |
-| 4 | Single Number II | Medium | Bit counting |
-| 5 | Maximum XOR | Medium | Trie + XOR |
-| 6 | UTF-8 Validation | Medium | Bit pattern matching |
+| #   | Problem          | Difficulty | Key Trick            |
+| --- | ---------------- | ---------- | -------------------- |
+| 1   | Reverse Bits     | Easy       | Bit by bit reversal  |
+| 2   | Subsets          | Medium     | Bitmask iteration    |
+| 3   | Gray Code        | Medium     | n ^ (n >> 1)         |
+| 4   | Single Number II | Medium     | Bit counting         |
+| 5   | Maximum XOR      | Medium     | Trie + XOR           |
+| 6   | UTF-8 Validation | Medium     | Bit pattern matching |
 
 ---
 

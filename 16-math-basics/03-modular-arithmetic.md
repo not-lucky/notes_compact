@@ -7,6 +7,7 @@
 **The "Clock" Mental Model**
 
 Think of modular arithmetic like a clock:
+
 - A 12-hour clock wraps around after 12: 13:00 → 1:00
 - In mod 12: 13 % 12 = 1, 25 % 12 = 1, 37 % 12 = 1
 
@@ -19,6 +20,7 @@ Result mod 5:   0   1   2   3   4   0   1   ...
 **Why 10^9 + 7?**
 
 This magic number appears everywhere because:
+
 1. It's prime (enables Fermat's little theorem for division)
 2. It fits in 32-bit int with room for one multiplication: (10^9)² < 2^63
 3. It's large enough that collision probability is tiny
@@ -26,10 +28,12 @@ This magic number appears everywhere because:
 **The Division Trap**
 
 Addition, subtraction, and multiplication work naturally with mod:
+
 - (a + b) % m = ((a % m) + (b % m)) % m ✓
 - (a × b) % m = ((a % m) × (b % m)) % m ✓
 
 But division is DIFFERENT:
+
 - (a / b) % m ≠ ((a % m) / (b % m)) % m ✗
 - You need the modular inverse: (a / b) % m = (a × b⁻¹) % m
 
@@ -38,6 +42,7 @@ But division is DIFFERENT:
 ## Interview Context
 
 Modular arithmetic is essential for:
+
 - Handling large numbers without overflow (Pow(x, n) mod m)
 - Hash functions and rolling hashes (Rabin-Karp)
 - Counting problems with "return answer mod 10^9+7"
@@ -423,13 +428,13 @@ print(rolling_hash_search("abcabcabc", "abc"))  # [0, 3, 6]
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Modular add/sub/mul | O(1) | O(1) | Direct operation |
-| Modular exponentiation | O(log exp) | O(1) | Binary exponentiation |
-| Modular inverse (extended GCD) | O(log m) | O(log m) | Stack space |
-| Modular inverse (Fermat) | O(log m) | O(1) | Only for prime m |
-| Rolling hash | O(n) | O(1) | Per string |
+| Operation                      | Time       | Space    | Notes                 |
+| ------------------------------ | ---------- | -------- | --------------------- |
+| Modular add/sub/mul            | O(1)       | O(1)     | Direct operation      |
+| Modular exponentiation         | O(log exp) | O(1)     | Binary exponentiation |
+| Modular inverse (extended GCD) | O(log m)   | O(log m) | Stack space           |
+| Modular inverse (Fermat)       | O(log m)   | O(1)     | Only for prime m      |
+| Rolling hash                   | O(n)       | O(1)     | Per string            |
 
 ---
 
@@ -522,13 +527,13 @@ print(nCr_mod(100, 50, fact, inv_fact, MOD))  # Large but computed efficiently
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Pow(x, n) | Medium | Binary exponentiation |
-| 2 | Super Pow | Medium | Modular exponentiation with array |
-| 3 | Count Good Numbers | Medium | Modular arithmetic + counting |
-| 4 | String Hashing | Medium | Rolling hash (Rabin-Karp) |
-| 5 | Unique Paths (large grid) | Hard | nCr with modular inverse |
+| #   | Problem                   | Difficulty | Key Concept                       |
+| --- | ------------------------- | ---------- | --------------------------------- |
+| 1   | Pow(x, n)                 | Medium     | Binary exponentiation             |
+| 2   | Super Pow                 | Medium     | Modular exponentiation with array |
+| 3   | Count Good Numbers        | Medium     | Modular arithmetic + counting     |
+| 4   | String Hashing            | Medium     | Rolling hash (Rabin-Karp)         |
+| 5   | Unique Paths (large grid) | Hard       | nCr with modular inverse          |
 
 ---
 

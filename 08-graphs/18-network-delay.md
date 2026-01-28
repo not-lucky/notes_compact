@@ -349,11 +349,11 @@ dist = [INF] * (n + 1)  # 1-indexed
 
 ## Complexity Analysis
 
-| Algorithm | Time | Space |
-|-----------|------|-------|
-| Dijkstra | O((V + E) log V) | O(V + E) |
-| Bellman-Ford | O(V × E) | O(V) |
-| BFS (unweighted) | O(V + E) | O(V) |
+| Algorithm        | Time             | Space    |
+| ---------------- | ---------------- | -------- |
+| Dijkstra         | O((V + E) log V) | O(V + E) |
+| Bellman-Ford     | O(V × E)         | O(V)     |
+| BFS (unweighted) | O(V + E)         | O(V)     |
 
 ---
 
@@ -369,13 +369,13 @@ dist = [INF] * (n + 1)  # 1-indexed
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Network Delay Time | Medium | Core Dijkstra |
-| 2 | Path with Maximum Probability | Medium | Multiply instead of add |
-| 3 | Cheapest Flights Within K Stops | Medium | Limited hops |
-| 4 | Path with Minimum Effort | Medium | Maximum edge weight |
-| 5 | Swim in Rising Water | Hard | Binary search + BFS |
+| #   | Problem                         | Difficulty | Key Variation           |
+| --- | ------------------------------- | ---------- | ----------------------- |
+| 1   | Network Delay Time              | Medium     | Core Dijkstra           |
+| 2   | Path with Maximum Probability   | Medium     | Multiply instead of add |
+| 3   | Cheapest Flights Within K Stops | Medium     | Limited hops            |
+| 4   | Path with Minimum Effort        | Medium     | Maximum edge weight     |
+| 5   | Swim in Rising Water            | Hard       | Binary search + BFS     |
 
 ---
 
@@ -393,15 +393,15 @@ dist = [INF] * (n + 1)  # 1-indexed
 
 You've now covered all major graph patterns:
 
-| Topic | Key Algorithm |
-|-------|---------------|
-| Graph representations | Adjacency list/matrix |
-| BFS | Level-order, shortest unweighted |
-| DFS | Traversal, backtracking |
-| Connected components | Union-Find or DFS |
-| Cycle detection | Colors (directed), parent (undirected) |
-| Topological sort | Kahn's or DFS |
-| Shortest paths | Dijkstra, Bellman-Ford |
-| Grid problems | BFS/DFS as implicit graph |
+| Topic                 | Key Algorithm                          |
+| --------------------- | -------------------------------------- |
+| Graph representations | Adjacency list/matrix                  |
+| BFS                   | Level-order, shortest unweighted       |
+| DFS                   | Traversal, backtracking                |
+| Connected components  | Union-Find or DFS                      |
+| Cycle detection       | Colors (directed), parent (undirected) |
+| Topological sort      | Kahn's or DFS                          |
+| Shortest paths        | Dijkstra, Bellman-Ford                 |
+| Grid problems         | BFS/DFS as implicit graph              |
 
 These patterns cover 90%+ of graph problems in FANG+ interviews.

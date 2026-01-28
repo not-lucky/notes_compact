@@ -93,6 +93,7 @@ words = {"apple", "banana", "cherry"}
 **2. Memory-Constrained Environments**
 
 Tries can be memory-hungry. Each node stores either:
+
 - HashMap: Python dict overhead (~200+ bytes per node)
 - Array: 26 pointers × 8 bytes = 208 bytes per node
 
@@ -111,6 +112,7 @@ HashMap-based trie works, but consider specialized structures.
 **4. When Insertion is Rare and Prefix Queries Don't Exist**
 
 Tries shine when you need prefix operations OR when you're building once and querying many times. If you're:
+
 - Doing one-off word checks
 - Inserting and deleting frequently
 - Never using prefix operations
@@ -118,6 +120,7 @@ Tries shine when you need prefix operations OR when you're building once and que
 ...then a hashset is cleaner.
 
 **Red Flags (Don't Use Trie):**
+
 - "Find exact match" with no prefix requirement
 - "Count occurrences of X" (Counter/hashmap better)
 - "Find substring" (not prefix—consider suffix tree or KMP)
@@ -410,15 +413,16 @@ class TrieWithCount:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Insert | O(L) | O(L) | L = word length, may create L nodes |
-| Search | O(L) | O(1) | Just traversal |
-| StartsWith | O(L) | O(1) | Just traversal |
-| Delete | O(L) | O(L) | Recursion stack |
-| Get all with prefix | O(L + k) | O(k) | k = total chars in results |
+| Operation           | Time     | Space | Notes                               |
+| ------------------- | -------- | ----- | ----------------------------------- |
+| Insert              | O(L)     | O(L)  | L = word length, may create L nodes |
+| Search              | O(L)     | O(1)  | Just traversal                      |
+| StartsWith          | O(L)     | O(1)  | Just traversal                      |
+| Delete              | O(L)     | O(L)  | Recursion stack                     |
+| Get all with prefix | O(L + k) | O(k)  | k = total chars in results          |
 
 Space for entire trie: O(N × L × A) worst case
+
 - N = number of words
 - L = average word length
 - A = alphabet size (26 for lowercase)
@@ -515,14 +519,14 @@ class MapSum:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Implement Trie | Medium | Basic implementation |
-| 2 | Replace Words | Medium | Shortest prefix replacement |
-| 3 | Map Sum Pairs | Medium | Trie with values |
-| 4 | Longest Word in Dictionary | Medium | Build word character by character |
-| 5 | Search Suggestions System | Medium | Trie + DFS for suggestions |
-| 6 | Implement Magic Dictionary | Medium | Trie with one-char tolerance |
+| #   | Problem                    | Difficulty | Key Concept                       |
+| --- | -------------------------- | ---------- | --------------------------------- |
+| 1   | Implement Trie             | Medium     | Basic implementation              |
+| 2   | Replace Words              | Medium     | Shortest prefix replacement       |
+| 3   | Map Sum Pairs              | Medium     | Trie with values                  |
+| 4   | Longest Word in Dictionary | Medium     | Build word character by character |
+| 5   | Search Suggestions System  | Medium     | Trie + DFS for suggestions        |
+| 6   | Implement Magic Dictionary | Medium     | Trie with one-char tolerance      |
 
 ---
 

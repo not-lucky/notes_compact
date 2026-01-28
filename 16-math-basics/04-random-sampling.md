@@ -7,6 +7,7 @@
 **The "Fair Lottery" Mental Model**
 
 Imagine you're running a lottery where people buy tickets as they arrive, but you don't know how many will show up:
+
 - You can only hold k winning tickets in your hand
 - You must be fair—everyone has equal chance of winning
 - You can't go back to earlier tickets
@@ -16,10 +17,12 @@ Reservoir sampling solves this: keep k items, and as new ones arrive, randomly d
 **Why the Math Works**
 
 For selecting 1 item from n:
+
 - Keep first item with probability 1
 - On item i, replace with probability 1/i
 
 After n items, probability any item is kept:
+
 ```
 P(item k is final) = P(picked at k) × P(survived all later rounds)
                    = (1/k) × (k/(k+1)) × ((k+1)/(k+2)) × ... × ((n-1)/n)
@@ -40,6 +43,7 @@ The key difference is shrinking the random range as you go.
 ## Interview Context
 
 Random sampling algorithms appear when:
+
 - Selecting random elements from a stream of unknown size
 - Shuffling arrays fairly
 - Generating random permutations
@@ -439,12 +443,12 @@ class Solution:
 
 ## Complexity Analysis
 
-| Algorithm | Time | Space | Use Case |
-|-----------|------|-------|----------|
-| Reservoir (k=1) | O(n) | O(1) | Stream, pick 1 |
-| Reservoir (k) | O(n) | O(k) | Stream, pick k |
-| Fisher-Yates | O(n) | O(1) | In-place shuffle |
-| Weighted random | O(log n) pick | O(n) | Non-uniform selection |
+| Algorithm       | Time          | Space | Use Case              |
+| --------------- | ------------- | ----- | --------------------- |
+| Reservoir (k=1) | O(n)          | O(1)  | Stream, pick 1        |
+| Reservoir (k)   | O(n)          | O(k)  | Stream, pick k        |
+| Fisher-Yates    | O(n)          | O(1)  | In-place shuffle      |
+| Weighted random | O(log n) pick | O(n)  | Non-uniform selection |
 
 ---
 
@@ -558,30 +562,33 @@ class Solution:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Linked List Random Node | Medium | Reservoir sampling |
-| 2 | Shuffle an Array | Medium | Fisher-Yates shuffle |
-| 3 | Random Pick with Weight | Medium | Prefix sum + binary search |
-| 4 | Random Pick Index | Medium | Reservoir with filter |
-| 5 | Random Pick with Blacklist | Hard | Remapping |
-| 6 | Generate Random Point in Circle | Medium | Rejection or sqrt trick |
+| #   | Problem                         | Difficulty | Key Concept                |
+| --- | ------------------------------- | ---------- | -------------------------- |
+| 1   | Linked List Random Node         | Medium     | Reservoir sampling         |
+| 2   | Shuffle an Array                | Medium     | Fisher-Yates shuffle       |
+| 3   | Random Pick with Weight         | Medium     | Prefix sum + binary search |
+| 4   | Random Pick Index               | Medium     | Reservoir with filter      |
+| 5   | Random Pick with Blacklist      | Hard       | Remapping                  |
+| 6   | Generate Random Point in Circle | Medium     | Rejection or sqrt trick    |
 
 ---
 
 ## When NOT to Use These Algorithms
 
 ### When NOT to use Reservoir Sampling
+
 1. **Data fits in memory**: Just store it all and pick randomly
 2. **You can make multiple passes**: Easier approaches exist
 3. **Stream is small and known size**: Simple `random.sample()` works
 
 ### When NOT to use Fisher-Yates
+
 1. **Only need one random element**: Just use `random.choice()`
 2. **Need partial shuffle**: Shuffle only what you need
 3. **Built-in exists**: `random.shuffle()` in Python is already Fisher-Yates
 
 ### When NOT to use Weighted Random
+
 1. **Equal weights**: Use uniform random selection
 2. **Weights change frequently**: Rebuilding prefix sums is O(n)
 3. **Single selection**: Building the structure is overkill

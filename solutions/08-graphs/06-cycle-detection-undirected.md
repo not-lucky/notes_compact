@@ -2,18 +2,19 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Graph Valid Tree | Medium | Tree validation |
-| 2 | Redundant Connection | Medium | Find cycle edge |
-| 3 | Number of Connected Components | Medium | Component counting |
-| 4 | Redundant Connection II | Hard | Directed variation |
+| #   | Problem                        | Difficulty | Key Variation      |
+| --- | ------------------------------ | ---------- | ------------------ |
+| 1   | Graph Valid Tree               | Medium     | Tree validation    |
+| 2   | Redundant Connection           | Medium     | Find cycle edge    |
+| 3   | Number of Connected Components | Medium     | Component counting |
+| 4   | Redundant Connection II        | Hard       | Directed variation |
 
 ---
 
 ## 1. Graph Valid Tree
 
 ### Problem Statement
+
 Determine if a graph is a valid tree.
 
 ### Optimal Python Solution
@@ -45,6 +46,7 @@ def validTree(n: int, edges: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Property**: For a graph with `n` nodes, it's a tree if it is connected and has `n-1` edges.
 - **Algorithm**: Check edge count, then run BFS to verify connectivity.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -54,6 +56,7 @@ def validTree(n: int, edges: list[list[int]]) -> bool:
 ## 2. Redundant Connection
 
 ### Problem Statement
+
 Find an edge that can be removed so that the resulting graph is a tree of `n` nodes.
 
 ### Optimal Python Solution
@@ -83,6 +86,7 @@ def findRedundantConnection(edges: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Concept**: An edge is redundant if it connects two nodes that are already in the same connected component.
 - **Algorithm**: Iterate through edges, adding them to a Union-Find structure. The first edge that fails to perform a `union` is the redundant one.
 - **Complexity**: Time O(E α(V)), Space O(V).
@@ -92,6 +96,7 @@ def findRedundantConnection(edges: list[list[int]]) -> list[int]:
 ## 3. Number of Connected Components
 
 ### Problem Statement
+
 Find the number of connected components in an undirected graph.
 
 ### Optimal Python Solution
@@ -122,6 +127,7 @@ def countComponents(n: int, edges: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: Standard traversal. Each time we start a traversal from an unvisited node, we've found a new component.
 - **Complexity**: Time O(V + E), Space O(V + E).
 
@@ -130,6 +136,7 @@ def countComponents(n: int, edges: list[list[int]]) -> int:
 ## 4. Redundant Connection II
 
 ### Problem Statement
+
 (Directed version included here for completeness as per practice list).
 
 ### Optimal Python Solution
@@ -171,5 +178,6 @@ def findRedundantDirectedConnection(edges: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Logic**: This problem is harder because it's directed. We check for nodes with two parents or cycles.
 - **Complexity**: Time O(E α(V)), Space O(V).

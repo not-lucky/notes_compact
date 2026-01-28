@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The Trail Marker Mental Model**: Imagine hiking in a forest where each node has a "difficulty score". You're looking for trails with a specific total difficulty. As you walk:
+
 - Add each node's score to your running total
 - At a leaf (trail end), check if you hit the target
 - Backtrack to try other trails
@@ -24,6 +25,7 @@ Trail 5→8→13 = 26 (not target)
 
 **The "remaining sum" insight**:
 Instead of tracking running sum and comparing at leaf, track remaining sum:
+
 - Start with target
 - Subtract each node's value
 - At leaf, check if remaining == 0
@@ -38,14 +40,15 @@ At 2: remaining = 2 - 2 = 0 → Found!
 
 **Three types of path problems**:
 
-| Type | Definition | Approach |
-|------|------------|----------|
-| **Root-to-leaf** | Start at root, end at leaf | Simple DFS with sum tracking |
-| **Downward** | From any ancestor to any descendant | Prefix sum with hashmap |
-| **Any-to-any** | Any node to any node (can go up) | DP on subtrees, track through root |
+| Type             | Definition                          | Approach                           |
+| ---------------- | ----------------------------------- | ---------------------------------- |
+| **Root-to-leaf** | Start at root, end at leaf          | Simple DFS with sum tracking       |
+| **Downward**     | From any ancestor to any descendant | Prefix sum with hashmap            |
+| **Any-to-any**   | Any node to any node (can go up)    | DP on subtrees, track through root |
 
 **The prefix sum insight for downward paths**:
 For paths not starting at root, use cumulative sums:
+
 ```
 If prefix[j] - prefix[i] = target, then nodes (i+1 to j) sum to target.
 
@@ -61,16 +64,19 @@ Since 18 - 10 = 8, there's a valid path from i+1 to j!
 ## When NOT to Use
 
 **Simple path sum approach fails when:**
+
 - **Paths can go up** → Need to consider paths through root
 - **Negative values exist** → Cannot prune early when sum > target
 - **Need path count, not existence** → May need different tracking
 
 **Path sum is overkill when:**
+
 - Only need to know if any path exists → Simpler DFS
 - Tree is actually a graph → Different traversal needed
 - Just counting nodes → No sum logic needed
 
 **Common mistake scenarios:**
+
 - Forgetting to check leaf condition → Non-leaf nodes shouldn't match
 - Not backtracking state properly in Path Sum II → Wrong paths
 - Using wrong path definition → Root-to-leaf vs any-to-any
@@ -85,6 +91,7 @@ Since 18 - 10 = 8, there's a valid path from i+1 to j!
 
 **The negative number trap**:
 With positive numbers only, you can prune when current_sum > target. With negatives:
+
 ```
 Target = 10
 Path so far: 5 → 8 (sum = 13 > 10)
@@ -457,13 +464,13 @@ def binary_tree_paths(root: TreeNode) -> list[str]:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Has Path Sum | O(n) | O(h) | Simple DFS |
-| Path Sum II | O(n²) | O(n) | Copying paths |
-| Path Sum III | O(n) | O(h) | Prefix sum trick |
-| Max Path Sum | O(n) | O(h) | Track through vs to |
-| Sum Root to Leaf | O(n) | O(h) | Build number |
+| Problem          | Time  | Space | Notes               |
+| ---------------- | ----- | ----- | ------------------- |
+| Has Path Sum     | O(n)  | O(h)  | Simple DFS          |
+| Path Sum II      | O(n²) | O(n)  | Copying paths       |
+| Path Sum III     | O(n)  | O(h)  | Prefix sum trick    |
+| Max Path Sum     | O(n)  | O(h)  | Track through vs to |
+| Sum Root to Leaf | O(n)  | O(h)  | Build number        |
 
 ---
 
@@ -569,15 +576,15 @@ root = TreeNode(5), target = 5
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Path Sum | Easy | Basic has-path check |
-| 2 | Path Sum II | Medium | Find all paths |
-| 3 | Path Sum III | Medium | Prefix sum on tree |
-| 4 | Binary Tree Maximum Path Sum | Hard | Any-to-any path |
-| 5 | Sum Root to Leaf Numbers | Medium | Build numbers |
-| 6 | Binary Tree Paths | Easy | Path as strings |
-| 7 | Longest Univalue Path | Medium | Same-value paths |
+| #   | Problem                      | Difficulty | Key Concept          |
+| --- | ---------------------------- | ---------- | -------------------- |
+| 1   | Path Sum                     | Easy       | Basic has-path check |
+| 2   | Path Sum II                  | Medium     | Find all paths       |
+| 3   | Path Sum III                 | Medium     | Prefix sum on tree   |
+| 4   | Binary Tree Maximum Path Sum | Hard       | Any-to-any path      |
+| 5   | Sum Root to Leaf Numbers     | Medium     | Build numbers        |
+| 6   | Binary Tree Paths            | Easy       | Path as strings      |
+| 7   | Longest Univalue Path        | Medium     | Same-value paths     |
 
 ---
 

@@ -44,6 +44,7 @@ DP is powerful but not always appropriate. Avoid DP when:
 5. **Problem Asks for "Any" Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
 
 **Red Flags That DP Won't Help:**
+
 - The problem involves graphs with cycles (except shortest path problems)
 - You need to track the actual path/sequence, not just the count/optimal value (reconstruction requires extra space)
 - The constraints are tiny (n ≤ 10)—brute force may be cleaner
@@ -90,6 +91,7 @@ Ask yourself these questions:
 4. **Does the problem ask for min/max/count/feasibility?**
 
 Common DP keywords:
+
 - "Minimum/maximum number of..."
 - "Count all ways to..."
 - "Is it possible to..."
@@ -224,11 +226,11 @@ Can we reduce space complexity?
 
 ## DP vs Greedy vs Divide & Conquer
 
-| Approach | Subproblems | Choice | Example |
-|----------|-------------|--------|---------|
-| DP | Overlapping | Consider all | Fibonacci |
-| Greedy | N/A | Local optimal | Activity Selection |
-| D&C | Non-overlapping | Combine | Merge Sort |
+| Approach | Subproblems     | Choice        | Example            |
+| -------- | --------------- | ------------- | ------------------ |
+| DP       | Overlapping     | Consider all  | Fibonacci          |
+| Greedy   | N/A             | Local optimal | Activity Selection |
+| D&C      | Non-overlapping | Combine       | Merge Sort         |
 
 ---
 
@@ -300,6 +302,7 @@ Common issues:
 5. **Integer overflow**: Use modulo if needed
 
 Debugging technique:
+
 ```python
 # Print DP table for small inputs
 for i in range(n + 1):
@@ -320,12 +323,12 @@ for i in range(n + 1):
 
 ## Complexity Cheat Sheet
 
-| Problem Type | Time | Space | Space-Optimized |
-|--------------|------|-------|-----------------|
-| 1D DP | O(n) | O(n) | O(1) |
-| 2D DP | O(n²) or O(nm) | O(n²) or O(nm) | O(n) or O(m) |
-| Interval DP | O(n³) | O(n²) | N/A |
-| DP + Binary Search | O(n log n) | O(n) | O(n) |
+| Problem Type       | Time           | Space          | Space-Optimized |
+| ------------------ | -------------- | -------------- | --------------- |
+| 1D DP              | O(n)           | O(n)           | O(1)            |
+| 2D DP              | O(n²) or O(nm) | O(n²) or O(nm) | O(n) or O(m)    |
+| Interval DP        | O(n³)          | O(n²)          | N/A             |
+| DP + Binary Search | O(n log n)     | O(n)           | O(n)            |
 
 ---
 

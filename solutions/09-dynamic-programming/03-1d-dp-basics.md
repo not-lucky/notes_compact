@@ -1,9 +1,11 @@
 # Solutions: 1D DP Basics
 
 ## 1. Climbing Stairs
+
 **Problem:** Count ways to reach the $n$-th step if you can take 1 or 2 steps at a time.
 
 ### Optimal Python Solution
+
 ```python
 def climb_stairs(n: int) -> int:
     # State: dp[i] = ways to reach step i
@@ -21,15 +23,18 @@ def climb_stairs(n: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$ - Single pass through steps.
 - **Space:** $O(1)$ - Only storing the last two results.
 
 ---
 
 ## 2. Min Cost Climbing Stairs
+
 **Problem:** Find the minimum cost to reach the top of the floor. You can start from step 0 or step 1.
 
 ### Optimal Python Solution
+
 ```python
 def min_cost_climbing_stairs(cost: list[int]) -> int:
     # State: dp[i] = min cost to reach step i
@@ -45,15 +50,18 @@ def min_cost_climbing_stairs(cost: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$ - Single pass.
 - **Space:** $O(1)$ - Constant space.
 
 ---
 
 ## 3. House Robber
+
 **Problem:** Maximize sum of non-adjacent elements in an array.
 
 ### Optimal Python Solution
+
 ```python
 def rob(nums: list[int]) -> int:
     # State: dp[i] = max money from houses 0..i
@@ -70,15 +78,18 @@ def rob(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 4. House Robber II
+
 **Problem:** House Robber on a circular array (first and last are neighbors).
 
 ### Optimal Python Solution
+
 ```python
 def rob_circular(nums: list[int]) -> int:
     if len(nums) == 1: return nums[0]
@@ -94,15 +105,18 @@ def rob_circular(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$ - Two linear passes.
 - **Space:** $O(1)$ (ignoring slice overhead, which can be avoided with indices).
 
 ---
 
 ## 5. Maximum Subarray (Kadane's)
+
 **Problem:** Find contiguous subarray with the largest sum.
 
 ### Optimal Python Solution
+
 ```python
 def max_subarray(nums: list[int]) -> int:
     # State: dp[i] = max sum ending at i
@@ -115,15 +129,18 @@ def max_subarray(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 6. Decode Ways
+
 **Problem:** Count ways to decode a string of digits to letters (1='A', ..., 26='Z').
 
 ### Optimal Python Solution
+
 ```python
 def num_decodings(s: str) -> int:
     if not s or s[0] == '0': return 0
@@ -146,15 +163,18 @@ def num_decodings(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 7. Perfect Squares
+
 **Problem:** Minimum perfect squares that sum to $n$.
 
 ### Optimal Python Solution
+
 ```python
 def num_squares(n: int) -> int:
     # State: dp[i] = min squares for sum i
@@ -171,15 +191,18 @@ def num_squares(n: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n\sqrt{n})$ - Outer loop $n$, inner loop $\sqrt{n}$.
 - **Space:** $O(n)$ - To store results for all sums up to $n$.
 
 ---
 
 ## 8. Jump Game
+
 **Problem:** Can you reach the last index starting from the first?
 
 ### Optimal Python Solution
+
 ```python
 def can_jump(nums: list[int]) -> bool:
     # Greedy is O(n), DP is also O(n) with reachability
@@ -192,5 +215,6 @@ def can_jump(nums: list[int]) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$

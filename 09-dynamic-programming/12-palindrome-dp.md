@@ -50,6 +50,7 @@ Palindrome DP problems are popular because:
 5. **Counting All Palindromic Subsequences (Distinct)**: This is a different, harder problem requiring careful handling of duplicates.
 
 **Choose the Right Approach:**
+
 - Palindrome check → Two pointers
 - Longest substring → Expand around center (or Manacher's)
 - Longest subsequence → 2D DP (or LCS with reverse)
@@ -370,12 +371,12 @@ def min_insertions(s: str) -> int:
 
 ## Substring vs Subsequence
 
-| Problem | Type | Example |
-|---------|------|---------|
-| Longest Palindromic Substring | Contiguous | "babad" → "bab" |
-| Longest Palindromic Subsequence | Non-contiguous | "bbbab" → "bbbb" |
-| Count Palindromic Substrings | Count contiguous | "aaa" → 6 |
-| Min Cuts | Partition | "aab" → 1 |
+| Problem                         | Type             | Example          |
+| ------------------------------- | ---------------- | ---------------- |
+| Longest Palindromic Substring   | Contiguous       | "babad" → "bab"  |
+| Longest Palindromic Subsequence | Non-contiguous   | "bbbab" → "bbbb" |
+| Count Palindromic Substrings    | Count contiguous | "aaa" → 6        |
+| Min Cuts                        | Partition        | "aab" → 1        |
 
 ---
 
@@ -437,13 +438,13 @@ dp[i][j] = max(dp[i+1][j], dp[i][j-1])
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Longest Palindromic Substring | O(n²) | O(1) or O(n²) |
-| Longest Palindromic Subsequence | O(n²) | O(n) |
-| Count Substrings | O(n²) | O(1) |
-| Min Cuts | O(n²) | O(n²) |
-| All Partitions | O(n × 2ⁿ) | O(n) |
+| Problem                         | Time      | Space         |
+| ------------------------------- | --------- | ------------- |
+| Longest Palindromic Substring   | O(n²)     | O(1) or O(n²) |
+| Longest Palindromic Subsequence | O(n²)     | O(n)          |
+| Count Substrings                | O(n²)     | O(1)          |
+| Min Cuts                        | O(n²)     | O(n²)         |
+| All Partitions                  | O(n × 2ⁿ) | O(n)          |
 
 ---
 
@@ -459,13 +460,13 @@ dp[i][j] = max(dp[i+1][j], dp[i][j-1])
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Type |
-|---|---------|------------|------|
-| 1 | Longest Palindromic Substring | Medium | Substring |
-| 2 | Longest Palindromic Subsequence | Medium | Subsequence |
-| 3 | Palindromic Substrings | Medium | Count |
-| 4 | Palindrome Partitioning | Medium | All partitions |
-| 5 | Palindrome Partitioning II | Hard | Min cuts |
+| #   | Problem                         | Difficulty | Type           |
+| --- | ------------------------------- | ---------- | -------------- |
+| 1   | Longest Palindromic Substring   | Medium     | Substring      |
+| 2   | Longest Palindromic Subsequence | Medium     | Subsequence    |
+| 3   | Palindromic Substrings          | Medium     | Count          |
+| 4   | Palindrome Partitioning         | Medium     | All partitions |
+| 5   | Palindrome Partitioning II      | Hard       | Min cuts       |
 
 ---
 

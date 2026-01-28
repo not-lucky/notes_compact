@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The Tree Measurement Mental Model**: Think of measuring a tree in your backyard:
+
 - **Depth** = How far down from the top? (Root is at the top in CS trees!)
 - **Height** = How tall from bottom to top? (Max depth of any leaf)
 
@@ -36,6 +37,7 @@ height(1) = 1 + max(height(2), height(3)) = 1 + max(2, 0) = 3
 ```
 
 **Balanced vs Unbalanced - why it matters**:
+
 ```
 Balanced (good):          Unbalanced (bad):
       1                        1
@@ -57,16 +59,19 @@ A balanced tree guarantees O(log n) operations because height is logarithmic in 
 ## When NOT to Use
 
 **Depth/height calculations are overkill when:**
+
 - Only need to check if tree is empty → Simple null check
 - Need exact level of specific node → Track depth during search
 - Tree is always balanced by design (heap) → Height is log(n) by definition
 
 **Common mistake scenarios:**
+
 - Confusing depth (from root) with height (from leaves)
 - Off-by-one errors (0-indexed vs 1-indexed depth)
 - Computing height twice per node → O(n²) instead of O(n)
 
 **The balanced tree trap**:
+
 ```
 Definition varies! Common definitions:
 1. AVL: |height(left) - height(right)| ≤ 1 for ALL nodes
@@ -504,12 +509,12 @@ def count_nodes(root: TreeNode) -> int:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Max depth | O(n) | O(h) | Visit all nodes |
-| Min depth | O(n) | O(h) | BFS can be faster |
-| Is balanced | O(n) | O(h) | Single pass with early exit |
-| Complete tree nodes | O(log²n) | O(log n) | Exploit tree properties |
+| Problem             | Time     | Space    | Notes                       |
+| ------------------- | -------- | -------- | --------------------------- |
+| Max depth           | O(n)     | O(h)     | Visit all nodes             |
+| Min depth           | O(n)     | O(h)     | BFS can be faster           |
+| Is balanced         | O(n)     | O(h)     | Single pass with early exit |
+| Complete tree nodes | O(log²n) | O(log n) | Exploit tree properties     |
 
 ---
 
@@ -550,14 +555,14 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Maximum Depth of Binary Tree | Easy | Basic recursion |
-| 2 | Minimum Depth of Binary Tree | Easy | Handle single child |
-| 3 | Balanced Binary Tree | Easy | Height + balance check |
-| 4 | Count Complete Tree Nodes | Medium | Exploit complete property |
-| 5 | Check Completeness of Binary Tree | Medium | BFS null check |
-| 6 | Maximum Level Sum of Binary Tree | Medium | Level-order + sum |
+| #   | Problem                           | Difficulty | Key Concept               |
+| --- | --------------------------------- | ---------- | ------------------------- |
+| 1   | Maximum Depth of Binary Tree      | Easy       | Basic recursion           |
+| 2   | Minimum Depth of Binary Tree      | Easy       | Handle single child       |
+| 3   | Balanced Binary Tree              | Easy       | Height + balance check    |
+| 4   | Count Complete Tree Nodes         | Medium     | Exploit complete property |
+| 5   | Check Completeness of Binary Tree | Medium     | BFS null check            |
+| 6   | Maximum Level Sum of Binary Tree  | Medium     | Level-order + sum         |
 
 ---
 

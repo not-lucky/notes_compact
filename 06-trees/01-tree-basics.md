@@ -15,6 +15,7 @@
 ```
 
 **Why trees appear everywhere in CS**:
+
 - **File systems**: Folders containing folders containing files
 - **HTML/DOM**: `<body>` contains `<div>` contains `<p>` contains text
 - **Database indexes**: B-trees organize sorted data for fast lookup
@@ -27,6 +28,7 @@ count(tree) = 1 + count(left_subtree) + count(right_subtree)
 ```
 
 **Height vs Depth - remember the difference**:
+
 - **Depth** = how far DOWN from root (root has depth 0)
 - **Height** = how far UP from leaves (leaf has height 0, tree height = root's height)
 
@@ -39,6 +41,7 @@ count(tree) = 1 + count(left_subtree) + count(right_subtree)
 ```
 
 **Why height matters for complexity**: Most tree operations are O(h) where h = height:
+
 - Balanced tree: h = log(n) → operations are O(log n)
 - Skewed tree: h = n → operations degrade to O(n)
 
@@ -47,17 +50,20 @@ count(tree) = 1 + count(left_subtree) + count(right_subtree)
 ## When NOT to Use
 
 **Don't use a tree when:**
+
 - **Data is not hierarchical** → Use array, hash map, or graph instead
 - **Frequent insertions in sorted order** → Use balanced tree or skip list
 - **Need O(1) access by index** → Use array
 - **Need O(1) access by key** → Use hash map
 
 **Trees are overkill when:**
+
 - Simple linear data with no hierarchy → Use array/list
 - Small data sets (< 100 elements) → Linear search is fine
 - You only need LIFO/FIFO access → Use stack/queue
 
 **Common mistake scenarios:**
+
 - Using tree when hash map suffices for key-value storage
 - Building tree from sorted array (creates skewed tree) → Use middle element as root
 - Forgetting that unbalanced trees lose their efficiency guarantees
@@ -102,19 +108,19 @@ Binary Tree Structure:
 
 ### Key Terminology
 
-| Term | Definition |
-|------|------------|
-| **Root** | Topmost node (no parent) |
-| **Node** | Element containing value and child pointers |
-| **Edge** | Connection between parent and child |
-| **Leaf** | Node with no children |
-| **Parent** | Node with child node(s) |
-| **Child** | Node directly connected below a parent |
-| **Sibling** | Nodes sharing the same parent |
+| Term        | Definition                                    |
+| ----------- | --------------------------------------------- |
+| **Root**    | Topmost node (no parent)                      |
+| **Node**    | Element containing value and child pointers   |
+| **Edge**    | Connection between parent and child           |
+| **Leaf**    | Node with no children                         |
+| **Parent**  | Node with child node(s)                       |
+| **Child**   | Node directly connected below a parent        |
+| **Sibling** | Nodes sharing the same parent                 |
 | **Subtree** | Tree formed by a node and all its descendants |
-| **Depth** | Distance from root to node (root has depth 0) |
-| **Height** | Maximum depth of any node in tree |
-| **Level** | All nodes at the same depth |
+| **Depth**   | Distance from root to node (root has depth 0) |
+| **Height**  | Maximum depth of any node in tree             |
+| **Level**   | All nodes at the same depth                   |
 
 ---
 
@@ -134,13 +140,13 @@ Tree height = 2 (longest path from root to leaf)
 
 ### Tree Types
 
-| Type | Property |
-|------|----------|
-| **Full Binary Tree** | Every node has 0 or 2 children |
+| Type                     | Property                                                          |
+| ------------------------ | ----------------------------------------------------------------- |
+| **Full Binary Tree**     | Every node has 0 or 2 children                                    |
 | **Complete Binary Tree** | All levels filled except possibly last, which fills left to right |
-| **Perfect Binary Tree** | All internal nodes have 2 children, all leaves at same level |
-| **Balanced Binary Tree** | Height difference between subtrees is at most 1 |
-| **Degenerate/Skewed** | Each node has only one child (like a linked list) |
+| **Perfect Binary Tree**  | All internal nodes have 2 children, all leaves at same level      |
+| **Balanced Binary Tree** | Height difference between subtrees is at most 1                   |
+| **Degenerate/Skewed**    | Each node has only one child (like a linked list)                 |
 
 ```
 Full:           Complete:        Perfect:         Skewed:
@@ -332,17 +338,18 @@ root = build_tree([1, 2, 3, None, 4, 5, 6])
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Count nodes | O(n) | O(h) | Visit all nodes |
-| Find max/min | O(n) | O(h) | Check all nodes |
-| Search | O(n) | O(h) | Worst case: check all |
-| Height | O(n) | O(h) | Visit all nodes |
-| Insert (general) | O(n)* | O(h) | Find position first |
+| Operation        | Time   | Space | Notes                 |
+| ---------------- | ------ | ----- | --------------------- |
+| Count nodes      | O(n)   | O(h)  | Visit all nodes       |
+| Find max/min     | O(n)   | O(h)  | Check all nodes       |
+| Search           | O(n)   | O(h)  | Worst case: check all |
+| Height           | O(n)   | O(h)  | Visit all nodes       |
+| Insert (general) | O(n)\* | O(h)  | Find position first   |
 
-*Position finding is O(n), actual insertion is O(1)
+\*Position finding is O(n), actual insertion is O(1)
 
 h = height of tree, which is:
+
 - O(log n) for balanced tree
 - O(n) for skewed tree
 
@@ -415,13 +422,13 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Maximum Depth of Binary Tree | Easy | Basic recursion |
-| 2 | Invert Binary Tree | Easy | Tree manipulation |
-| 3 | Same Tree | Easy | Tree comparison |
-| 4 | Count Complete Tree Nodes | Medium | Tree properties |
-| 5 | Subtree of Another Tree | Easy | Tree matching |
+| #   | Problem                      | Difficulty | Key Concept       |
+| --- | ---------------------------- | ---------- | ----------------- |
+| 1   | Maximum Depth of Binary Tree | Easy       | Basic recursion   |
+| 2   | Invert Binary Tree           | Easy       | Tree manipulation |
+| 3   | Same Tree                    | Easy       | Tree comparison   |
+| 4   | Count Complete Tree Nodes    | Medium     | Tree properties   |
+| 5   | Subtree of Another Tree      | Easy       | Tree matching     |
 
 ---
 

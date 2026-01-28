@@ -23,10 +23,12 @@ Think of recursion as a chain of delegation. Imagine you're in a long line and w
 4. **When Recursion "Clicks"**: Recursion is natural when the problem has self-similar structure—when a problem can be broken into smaller instances of itself. Trees, nested structures, and mathematical sequences all exhibit this property.
 
 **Visual Intuition—The Nesting Dolls Model**:
+
 ```
 Problem(5) contains Problem(4) contains Problem(3) contains Problem(2) contains Problem(1)
     └── depends on ────└── depends on ────└── depends on ────└── depends on ────└── solved directly!
 ```
+
 You can't solve the outer doll without first solving the inner ones. The base case is the smallest doll that you can handle directly.
 
 ## When NOT to Use Recursion
@@ -44,6 +46,7 @@ Recursion is elegant but not always the best choice. Avoid it when:
 5. **No Natural Subproblem Structure**: If you can't easily define "a smaller version of the same problem," recursion probably isn't the right fit.
 
 **Red Flags That Recursion May Be Wrong:**
+
 - You're artificially creating a recursive structure just to use recursion
 - The problem is fundamentally sequential with no self-similarity
 - You find yourself needing global variables to track state
@@ -62,6 +65,7 @@ Recursion is elegant but not always the best choice. Avoid it when:
 ## Interview Context
 
 Recursion questions test:
+
 1. **Mental model**: Can you trace through recursive calls?
 2. **Base case identification**: Knowing when to stop
 3. **Problem decomposition**: Breaking problems into smaller versions
@@ -96,6 +100,7 @@ Recursion is when a function calls itself to solve a smaller instance of the sam
 ## The Three Components
 
 ### 1. Base Case
+
 The condition where recursion stops. Without it, you get infinite recursion.
 
 ```python
@@ -107,6 +112,7 @@ def factorial(n: int) -> int:
 ```
 
 ### 2. Recursive Case
+
 The part where the function calls itself with a smaller/simpler input.
 
 ```python
@@ -119,6 +125,7 @@ def sum_list(nums: list[int]) -> int:
 ```
 
 ### 3. Progress Toward Base Case
+
 Each recursive call must move closer to the base case.
 
 ```python
@@ -177,6 +184,7 @@ Many recursive problems form a **recursion tree**:
 ```
 
 This visualization helps:
+
 - Understand the number of calls (time complexity)
 - Identify overlapping subproblems (hint for DP)
 - Debug recursive logic
@@ -186,6 +194,7 @@ This visualization helps:
 ## Recursion Patterns
 
 ### Pattern 1: Linear Recursion
+
 One recursive call per function call. Forms a chain.
 
 ```python
@@ -210,6 +219,7 @@ def reverse_string(s: str) -> str:
 ```
 
 ### Pattern 2: Binary Recursion
+
 Two recursive calls per function call. Forms a tree.
 
 ```python
@@ -226,6 +236,7 @@ def fibonacci(n: int) -> int:
 ```
 
 ### Pattern 3: Multiple Recursion
+
 More than two recursive calls. Common in backtracking.
 
 ```python
@@ -247,6 +258,7 @@ def count_paths(grid, row, col):
 **Trust** that your recursive call works correctly, then use it to solve the current problem.
 
 Example: Reverse a linked list
+
 ```python
 def reverse_list(head):
     # Base case: empty or single node
@@ -268,6 +280,7 @@ def reverse_list(head):
 Ask: "If I knew the answer to a smaller version, how would I use it?"
 
 Example: Check if array is sorted
+
 ```python
 def is_sorted(arr: list[int]) -> bool:
     # Base case
@@ -358,12 +371,12 @@ def is_palindrome(s: str) -> bool:
 
 ## Recursion vs Iteration
 
-| Aspect | Recursion | Iteration |
-|--------|-----------|-----------|
+| Aspect      | Recursion                            | Iteration                   |
+| ----------- | ------------------------------------ | --------------------------- |
 | Readability | Often cleaner for tree-like problems | Better for linear processes |
-| Space | O(n) call stack | O(1) typically |
-| Debugging | Harder to trace | Easier to step through |
-| Risk | Stack overflow for deep recursion | No stack limit |
+| Space       | O(n) call stack                      | O(1) typically              |
+| Debugging   | Harder to trace                      | Easier to step through      |
+| Risk        | Stack overflow for deep recursion    | No stack limit              |
 
 ### Converting Recursion to Iteration
 
@@ -451,12 +464,12 @@ def deep_iteration(n):
 
 ## Complexity Analysis
 
-| Operation | Time | Space (Call Stack) |
-|-----------|------|-------------------|
-| Linear recursion (n calls) | O(n) | O(n) |
-| Binary recursion (tree) | O(2^n) | O(n) depth |
-| Divide and conquer | O(n log n) typical | O(log n) |
-| Tail recursion | O(n) | O(1) if optimized |
+| Operation                  | Time               | Space (Call Stack) |
+| -------------------------- | ------------------ | ------------------ |
+| Linear recursion (n calls) | O(n)               | O(n)               |
+| Binary recursion (tree)    | O(2^n)             | O(n) depth         |
+| Divide and conquer         | O(n log n) typical | O(log n)           |
+| Tail recursion             | O(n)               | O(1) if optimized  |
 
 ---
 
@@ -472,15 +485,15 @@ def deep_iteration(n):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Fibonacci Number | Easy | Classic binary recursion |
-| 2 | Power of Two | Easy | Linear recursion |
-| 3 | Reverse String | Easy | Two-pointer or recursion |
-| 4 | Merge Two Sorted Lists | Easy | Recursive merge |
-| 5 | Maximum Depth of Binary Tree | Easy | Tree recursion |
-| 6 | Climbing Stairs | Easy | Fibonacci variant |
-| 7 | Pow(x, n) | Medium | Divide and conquer |
+| #   | Problem                      | Difficulty | Key Insight              |
+| --- | ---------------------------- | ---------- | ------------------------ |
+| 1   | Fibonacci Number             | Easy       | Classic binary recursion |
+| 2   | Power of Two                 | Easy       | Linear recursion         |
+| 3   | Reverse String               | Easy       | Two-pointer or recursion |
+| 4   | Merge Two Sorted Lists       | Easy       | Recursive merge          |
+| 5   | Maximum Depth of Binary Tree | Easy       | Tree recursion           |
+| 6   | Climbing Stairs              | Easy       | Fibonacci variant        |
+| 7   | Pow(x, n)                    | Medium     | Divide and conquer       |
 
 ---
 

@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The Maze Explorer Mental Model**: Imagine exploring a maze with a ball of string. You:
+
 1. Walk as far as possible in one direction
 2. When you hit a dead end, follow the string back
 3. Try a different unexplored path
@@ -22,12 +23,14 @@ Maze:             DFS Exploration (string = recursion stack):
 ```
 
 **Why DFS uses a stack (or recursion)**:
+
 - Stack = LIFO (Last-In-First-Out)
 - We explore the most recent discovery first
 - Backtracking happens naturally when we pop
 - Recursion IS a stack (the call stack)
 
 **The Recursion Tree Visualization**:
+
 ```
 DFS from node 0 in graph: 0-[1,2], 1-[3], 2-[4]
 
@@ -42,6 +45,7 @@ Call Stack:           Recursion Tree:
 Each call adds a frame to the stack. When a call finishes, we pop and return to the parent - this is backtracking!
 
 **Key insight - Two types of "visited"**:
+
 1. **Global visited** (for traversal): "Have I ever seen this node?" - prevents cycles
 2. **Path visited** (for backtracking): "Is this node in my current path?" - for finding all paths
 
@@ -50,17 +54,20 @@ Each call adds a frame to the stack. When a call finishes, we pop and return to 
 ## When NOT to Use
 
 **Don't use DFS when:**
+
 - **Shortest path needed** → DFS may find long path first; use BFS
 - **Graph is very wide** → Recursion depth explodes; use BFS or iterative DFS
 - **Level-order processing** → BFS naturally gives levels
 - **Multi-source problems** → BFS handles multiple starts elegantly
 
 **DFS is problematic when:**
+
 - Python recursion limit (~1000) → Use iterative DFS for deep graphs
 - You need distance tracking → BFS is more natural
 - Memory is tight and graph is wide → BFS uses O(max-level-width) while DFS uses O(depth)
 
 **Common mistake scenarios:**
+
 - Using global visited for path problems → Blocks valid paths through same node
 - Not handling disconnected graphs → Must iterate all nodes
 - Modifying graph during traversal → Unpredictable behavior
@@ -83,6 +90,7 @@ DFS and BFS are the two fundamental graph traversal patterns.
 ## Core Concept: How DFS Works
 
 DFS explores as deep as possible before backtracking, using a **stack** (or recursion):
+
 1. Start from source, push to stack
 2. Pop vertex, mark visited, push unvisited neighbors
 3. Repeat until stack is empty
@@ -337,6 +345,7 @@ print(f"Post-order: {post}") # [3, 1, 2, 0]
 ```
 
 **Post-order is important for:**
+
 - Topological sort (reverse post-order)
 - Strongly connected components
 
@@ -375,13 +384,13 @@ def dfs_timestamps(graph: dict[int, list[int]], start: int):
 
 ## Recursive vs Iterative Comparison
 
-| Aspect | Recursive | Iterative |
-|--------|-----------|-----------|
-| Code simplicity | Cleaner | More verbose |
-| Stack overflow risk | Yes (deep graphs) | No |
-| Traversal order | Natural | May differ |
-| Memory control | Implicit stack | Explicit stack |
-| When to use | Default choice | Deep graphs, Python limits |
+| Aspect              | Recursive         | Iterative                  |
+| ------------------- | ----------------- | -------------------------- |
+| Code simplicity     | Cleaner           | More verbose               |
+| Stack overflow risk | Yes (deep graphs) | No                         |
+| Traversal order     | Natural           | May differ                 |
+| Memory control      | Implicit stack    | Explicit stack             |
+| When to use         | Default choice    | Deep graphs, Python limits |
 
 **Python recursion limit**: ~1000 by default. Use iterative for deep graphs.
 
@@ -440,6 +449,7 @@ def dfs(node, path):
 ## Step-by-Step DFS Trace with ASCII Visualization
 
 **Graph for demonstration:**
+
 ```
         0
        / \
@@ -500,6 +510,7 @@ TRAVERSAL ORDER: [0, 1, 3, 4, 2, 5]
 ```
 
 **Stack state at each step (iterative visualization):**
+
 ```
 Step 0: Stack = [0]              Visit 0
 Step 1: Stack = [2, 1]           Visit 1 (push neighbors, visit last)
@@ -616,13 +627,13 @@ graph = {0: [0, 1]}
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Pattern |
-|---|---------|------------|-------------|
-| 1 | Flood Fill | Easy | Basic grid DFS |
-| 2 | Number of Islands | Medium | Component counting |
-| 3 | All Paths From Source to Target | Medium | Path enumeration |
-| 4 | Clone Graph | Medium | DFS with mapping |
-| 5 | Course Schedule II | Medium | Topological sort DFS |
+| #   | Problem                         | Difficulty | Key Pattern          |
+| --- | ------------------------------- | ---------- | -------------------- |
+| 1   | Flood Fill                      | Easy       | Basic grid DFS       |
+| 2   | Number of Islands               | Medium     | Component counting   |
+| 3   | All Paths From Source to Target | Medium     | Path enumeration     |
+| 4   | Clone Graph                     | Medium     | DFS with mapping     |
+| 5   | Course Schedule II              | Medium     | Topological sort DFS |
 
 ---
 

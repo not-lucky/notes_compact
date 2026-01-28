@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Maximum Sum Subarray of Size K
+
 **Problem Statement**: Given an array of positive numbers and a positive number `k`, find the maximum sum of any contiguous subarray of size `k`.
 
 **Examples & Edge Cases**:
+
 - Example: `[2, 1, 5, 1, 3, 2], k=3` -> `9` (subarray `[5, 1, 3]`)
 - Edge Case: `k` is larger than array length.
 - Edge Case: Array with all identical elements.
 
 **Optimal Python Solution**:
+
 ```python
 def max_sum_subarray(arr, k):
     if not arr or k <= 0 or k > len(arr):
@@ -30,18 +33,21 @@ def max_sum_subarray(arr, k):
 ```
 
 **Explanation**:
-Instead of recalculating the sum for every subarray of size `k`, we initialize the sum for the first `k` elements. Then, we slide the window by one position at a time, adding the incoming element and subtracting the outgoing element. This reduces the time complexity from O(n*k) to O(n).
+Instead of recalculating the sum for every subarray of size `k`, we initialize the sum for the first `k` elements. Then, we slide the window by one position at a time, adding the incoming element and subtracting the outgoing element. This reduces the time complexity from O(n\*k) to O(n).
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), where n is the number of elements in the array. We iterate through the array once.
 - **Space Complexity**: O(1), as we only store the `window_sum` and `max_sum`.
 
 ---
 
 ### 2. Maximum Average Subarray I
+
 **Problem Statement**: You are given an integer array `nums` consisting of `n` elements, and an integer `k`. Find a contiguous subarray whose length is equal to `k` that has the maximum average value and return this value.
 
 **Optimal Python Solution**:
+
 ```python
 def findMaxAverage(nums: list[int], k: int) -> float:
     # Initialize with the sum of the first k elements
@@ -60,15 +66,18 @@ def findMaxAverage(nums: list[int], k: int) -> float:
 Since the length `k` is constant, maximizing the average is equivalent to maximizing the sum. We use a fixed sliding window to find the maximum sum and then divide by `k`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 3. Find All Anagrams in a String
+
 **Problem Statement**: Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -103,15 +112,18 @@ def findAnagrams(s: str, p: str) -> list[int]:
 An anagram has the same character frequencies. We maintain a frequency map (Counter) of a sliding window of size `len(p)` in string `s`. At each step, we update the map by adding the new character and removing the one that left the window, then compare it with the frequency map of `p`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), where n is length of `s`. Map comparison is O(26) = O(1).
 - **Space Complexity**: O(1) as the map size is limited by the alphabet size (26).
 
 ---
 
 ### 4. Permutation in String
+
 **Problem Statement**: Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.
 
 **Optimal Python Solution**:
+
 ```python
 def checkInclusion(s1: str, s2: str) -> bool:
     n1, n2 = len(s1), len(s2)
@@ -140,15 +152,18 @@ def checkInclusion(s1: str, s2: str) -> bool:
 Identical to "Find All Anagrams", but we return `True` as soon as we find one match. We use an array of size 26 for faster comparisons.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 5. Sliding Window Maximum
+
 **Problem Statement**: You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import deque
 
@@ -179,15 +194,18 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 We use a **monotonic deque** to store indices of elements in the current window. We maintain the deque such that the elements are in decreasing order. When a new element arrives, we remove all elements smaller than it from the back. The front of the deque always contains the index of the maximum element for the current window.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n). Each element is added and removed from the deque at most once.
 - **Space Complexity**: O(k) for the deque.
 
 ---
 
 ### 6. Contains Duplicate II
+
 **Problem Statement**: Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
 
 **Optimal Python Solution**:
+
 ```python
 def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
     window = set()
@@ -205,15 +223,18 @@ def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
 We maintain a hash set representing the elements in a sliding window of size `k`. If we encounter a number already in the set, we've found a duplicate within distance `k`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(min(n, k)).
 
 ---
 
 ### 7. Repeated DNA Sequences
+
 **Problem Statement**: The DNA sequence is composed of a series of nucleotides abbreviated as 'A', 'C', 'G', and 'T'. Given a string `s` that represents a DNA sequence, return all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule.
 
 **Optimal Python Solution**:
+
 ```python
 def findRepeatedDnaSequences(s: str) -> list[str]:
     seen = set()
@@ -234,5 +255,6 @@ def findRepeatedDnaSequences(s: str) -> list[str]:
 We slide a window of fixed size 10 across the string. We use a set to keep track of sequences we've seen and another set to store sequences that appear more than once (to avoid duplicates in the result).
 
 **Complexity Analysis**:
-- **Time Complexity**: O(n * L), where L is the window length (10). String slicing and hashing take O(L).
-- **Space Complexity**: O(n * L) to store the sequences in the sets.
+
+- **Time Complexity**: O(n \* L), where L is the window length (10). String slicing and hashing take O(L).
+- **Space Complexity**: O(n \* L) to store the sequences in the sets.

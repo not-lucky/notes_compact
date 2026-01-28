@@ -377,11 +377,11 @@ def dfs(node):
 
 ## Complexity Analysis
 
-| Approach | Time | Space |
-|----------|------|-------|
-| DFS | O(V + E) | O(V) |
-| BFS | O(V + E) | O(V) |
-| Three-pass (list) | O(n) | O(1) |
+| Approach          | Time     | Space |
+| ----------------- | -------- | ----- |
+| DFS               | O(V + E) | O(V)  |
+| BFS               | O(V + E) | O(V)  |
+| Three-pass (list) | O(n)     | O(1)  |
 
 Space is for the HashMap (or interleaved list structure).
 
@@ -399,12 +399,12 @@ Space is for the HashMap (or interleaved list structure).
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Clone Graph | Medium | Core problem |
-| 2 | Copy List with Random Pointer | Medium | Linked list variant |
-| 3 | Clone Binary Tree with Random Pointer | Medium | Tree variant |
-| 4 | Clone N-ary Tree | Easy | Simpler structure |
+| #   | Problem                               | Difficulty | Key Variation       |
+| --- | ------------------------------------- | ---------- | ------------------- |
+| 1   | Clone Graph                           | Medium     | Core problem        |
+| 2   | Copy List with Random Pointer         | Medium     | Linked list variant |
+| 3   | Clone Binary Tree with Random Pointer | Medium     | Tree variant        |
+| 4   | Clone N-ary Tree                      | Easy       | Simpler structure   |
 
 ---
 

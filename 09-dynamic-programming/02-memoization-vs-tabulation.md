@@ -61,14 +61,14 @@ Understanding both approaches is essential because:
 
 ## Overview Comparison
 
-| Aspect | Memoization (Top-Down) | Tabulation (Bottom-Up) |
-|--------|------------------------|------------------------|
-| Direction | Start from problem, recurse down | Start from base, build up |
-| Implementation | Recursive + cache | Iterative + table |
-| Subproblems | Solves only needed ones | Solves all subproblems |
-| Stack | Uses call stack (recursion limit) | No stack issues |
-| Space optimization | Harder | Easier |
-| Debugging | Often easier | State transitions clearer |
+| Aspect             | Memoization (Top-Down)            | Tabulation (Bottom-Up)    |
+| ------------------ | --------------------------------- | ------------------------- |
+| Direction          | Start from problem, recurse down  | Start from base, build up |
+| Implementation     | Recursive + cache                 | Iterative + table         |
+| Subproblems        | Solves only needed ones           | Solves all subproblems    |
+| Stack              | Uses call stack (recursion limit) | No stack issues           |
+| Space optimization | Harder                            | Easier                    |
+| Debugging          | Often easier                      | State transitions clearer |
 
 ---
 

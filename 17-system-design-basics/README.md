@@ -34,6 +34,7 @@ The magic happens when you **combine** these blocks. LRU Cache isn't a new data 
 In interviews, you'll notice an obsession with O(1) operations. Here's why:
 
 **Scale amplifies differences.** At 10 requests/second, O(1) vs O(log n) doesn't matter. At 100,000 requests/second:
+
 - O(1) = consistent microsecond latency
 - O(log n) = grows with data size, causes tail latency spikes
 
@@ -50,23 +51,25 @@ Real systems like Redis, Memcached, and API gateways handle millions of operatio
 
 ## Core Topics
 
-| Topic | Interview Relevance | Example Questions |
-|-------|-------------------|-------------------|
-| Data Structure Choices | Trade-off discussions | "Why HashMap over TreeMap?" |
-| LRU Cache | Very common coding question | "Implement LRU with O(1) operations" |
-| LFU Cache | Advanced cache question | "Implement LFU cache" |
-| Rate Limiter | System design staple | "Design API rate limiting" |
+| Topic                  | Interview Relevance         | Example Questions                    |
+| ---------------------- | --------------------------- | ------------------------------------ |
+| Data Structure Choices | Trade-off discussions       | "Why HashMap over TreeMap?"          |
+| LRU Cache              | Very common coding question | "Implement LRU with O(1) operations" |
+| LFU Cache              | Advanced cache question     | "Implement LFU cache"                |
+| Rate Limiter           | System design staple        | "Design API rate limiting"           |
 
 ---
 
 ## When These Topics Appear
 
 ### Coding Interviews
+
 - **LRU Cache**: Frequently asked at Google, Meta, Amazon
 - **LFU Cache**: Asked at top-tier companies for senior roles
 - **Rate Limiter**: Sliding window, token bucket implementations
 
 ### System Design Interviews
+
 - **Cache Design**: Eviction policies, distributed caching
 - **Rate Limiting**: API gateways, DDoS protection
 - **Data Store Selection**: When to use Redis vs DynamoDB vs PostgreSQL
@@ -75,12 +78,12 @@ Real systems like Redis, Memcached, and API gateways handle millions of operatio
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Data Structure Choices](./01-data-structure-choices.md) | Trade-offs: HashMap vs Tree vs Heap |
-| 02 | [LRU Cache](./02-lru-cache.md) | OrderedDict, doubly linked list + hashmap |
-| 03 | [LFU Cache](./03-lfu-cache.md) | Frequency buckets, O(1) operations |
-| 04 | [Rate Limiter](./04-rate-limiter.md) | Token bucket, sliding window, leaky bucket |
+| #   | Topic                                                    | Key Concepts                               |
+| --- | -------------------------------------------------------- | ------------------------------------------ |
+| 01  | [Data Structure Choices](./01-data-structure-choices.md) | Trade-offs: HashMap vs Tree vs Heap        |
+| 02  | [LRU Cache](./02-lru-cache.md)                           | OrderedDict, doubly linked list + hashmap  |
+| 03  | [LFU Cache](./03-lfu-cache.md)                           | Frequency buckets, O(1) operations         |
+| 04  | [Rate Limiter](./04-rate-limiter.md)                     | Token bucket, sliding window, leaky bucket |
 
 ---
 
@@ -109,32 +112,36 @@ Common O(1) building blocks:
 
 ### 3. Eviction Strategies
 
-| Strategy | When to Evict | Use Case |
-|----------|---------------|----------|
-| LRU (Least Recently Used) | Oldest access | General caching |
-| LFU (Least Frequently Used) | Lowest count | Hot/cold data |
-| FIFO (First In First Out) | Oldest insert | Simple queue |
-| TTL (Time To Live) | Expired items | Session data |
+| Strategy                    | When to Evict | Use Case        |
+| --------------------------- | ------------- | --------------- |
+| LRU (Least Recently Used)   | Oldest access | General caching |
+| LFU (Least Frequently Used) | Lowest count  | Hot/cold data   |
+| FIFO (First In First Out)   | Oldest insert | Simple queue    |
+| TTL (Time To Live)          | Expired items | Session data    |
 
 #### Choosing the Right Eviction Strategy
 
 **LRU (Least Recently Used):**
+
 - Best for: General-purpose caching where recent access predicts future access
 - Key insight: Temporal locality—if you accessed it recently, you'll likely access it again
 - Example: Browser cache, OS page cache
 
 **LFU (Least Frequently Used):**
+
 - Best for: Workloads with clear "hot" and "cold" items
 - Key insight: Frequency matters more than recency when popularity is stable
 - Warning: Can suffer from "cache pollution" where old popular items never leave
 - Example: CDN caching for viral content
 
 **FIFO (First In First Out):**
+
 - Best for: When insertion order is the only signal
 - Key insight: Simplest to implement, no access tracking needed
 - Example: Message queues, log buffers
 
 **TTL (Time To Live):**
+
 - Best for: Data that becomes stale after a known time
 - Key insight: Time-based validity, not access-based
 - Example: Session tokens, DNS cache, API response cache
@@ -220,12 +227,12 @@ class Cache(ABC, Generic[K, V]):
 
 ## Time Complexity Goals
 
-| Operation | Target | Structure to Use |
-|-----------|--------|-----------------|
-| Get | O(1) | HashMap for lookup |
-| Put | O(1) | HashMap + linked list |
-| Evict | O(1) | Maintain eviction candidate |
-| Update access | O(1) | Doubly linked list |
+| Operation     | Target | Structure to Use            |
+| ------------- | ------ | --------------------------- |
+| Get           | O(1)   | HashMap for lookup          |
+| Put           | O(1)   | HashMap + linked list       |
+| Evict         | O(1)   | Maintain eviction candidate |
+| Update access | O(1)   | Doubly linked list          |
 
 ---
 
@@ -241,23 +248,23 @@ class Cache(ABC, Generic[K, V]):
 
 ## Connection to Full System Design
 
-| Coding Problem | System Design Extension |
-|----------------|------------------------|
-| LRU Cache | Distributed cache with Redis, Memcached |
-| Rate Limiter | API Gateway, load balancer integration |
+| Coding Problem        | System Design Extension                 |
+| --------------------- | --------------------------------------- |
+| LRU Cache             | Distributed cache with Redis, Memcached |
+| Rate Limiter          | API Gateway, load balancer integration  |
 | Data structure choice | Database selection, indexing strategies |
 
 ---
 
 ## Classic Problems by Company
 
-| Company | Favorite Problems |
-|---------|------------------|
-| Google | LRU Cache, Design HashMap, Design Hit Counter |
-| Meta | LRU Cache, LFU Cache, Design Twitter Feed |
-| Amazon | LRU Cache, Design Rate Limiter, Time-Based Key-Value Store |
-| Microsoft | LRU Cache, Design In-Memory File System |
-| Apple | Design Data Structure (multiple ops O(1)) |
+| Company   | Favorite Problems                                          |
+| --------- | ---------------------------------------------------------- |
+| Google    | LRU Cache, Design HashMap, Design Hit Counter              |
+| Meta      | LRU Cache, LFU Cache, Design Twitter Feed                  |
+| Amazon    | LRU Cache, Design Rate Limiter, Time-Based Key-Value Store |
+| Microsoft | LRU Cache, Design In-Memory File System                    |
+| Apple     | Design Data Structure (multiple ops O(1))                  |
 
 ---
 

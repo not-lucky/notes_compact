@@ -360,14 +360,14 @@ def merge_trees(root1: TreeNode, root2: TreeNode) -> TreeNode:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Same Tree | O(n) | O(h) | Stop at first mismatch |
-| Symmetric Tree | O(n) | O(h) | Compare mirror pairs |
-| Subtree Check | O(m*n) | O(h) | O(m+n) with serialization |
-| Invert Tree | O(n) | O(h) | Visit all nodes |
-| Flip Equivalent | O(n) | O(h) | Branch on flip/no-flip |
-| Merge Trees | O(min(n1,n2)) | O(h) | Only overlapping nodes |
+| Problem         | Time          | Space | Notes                     |
+| --------------- | ------------- | ----- | ------------------------- |
+| Same Tree       | O(n)          | O(h)  | Stop at first mismatch    |
+| Symmetric Tree  | O(n)          | O(h)  | Compare mirror pairs      |
+| Subtree Check   | O(m\*n)       | O(h)  | O(m+n) with serialization |
+| Invert Tree     | O(n)          | O(h)  | Visit all nodes           |
+| Flip Equivalent | O(n)          | O(h)  | Branch on flip/no-flip    |
+| Merge Trees     | O(min(n1,n2)) | O(h)  | Only overlapping nodes    |
 
 ---
 
@@ -411,15 +411,15 @@ is_symmetric(...)  # False - not mirror
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Same Tree | Easy | Basic comparison |
-| 2 | Symmetric Tree | Easy | Mirror comparison |
-| 3 | Subtree of Another Tree | Easy | Recursive subtree check |
-| 4 | Invert Binary Tree | Easy | Swap children |
-| 5 | Flip Equivalent Binary Trees | Medium | Flip or no flip |
-| 6 | Merge Two Binary Trees | Easy | Sum overlapping |
-| 7 | Leaf-Similar Trees | Easy | Compare leaf sequences |
+| #   | Problem                      | Difficulty | Key Concept             |
+| --- | ---------------------------- | ---------- | ----------------------- |
+| 1   | Same Tree                    | Easy       | Basic comparison        |
+| 2   | Symmetric Tree               | Easy       | Mirror comparison       |
+| 3   | Subtree of Another Tree      | Easy       | Recursive subtree check |
+| 4   | Invert Binary Tree           | Easy       | Swap children           |
+| 5   | Flip Equivalent Binary Trees | Medium     | Flip or no flip         |
+| 6   | Merge Two Binary Trees       | Easy       | Sum overlapping         |
+| 7   | Leaf-Similar Trees           | Easy       | Compare leaf sequences  |
 
 ---
 

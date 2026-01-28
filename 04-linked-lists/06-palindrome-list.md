@@ -11,6 +11,7 @@ Checking if a linked list is a palindrome requires comparing the first half with
 **Why is this problem a perfect test of fundamentals?**
 
 This problem requires combining two techniques you've already learned:
+
 1. Fast-slow pointers → find the middle
 2. Reversal → reverse the second half
 3. Comparison → walk both halves together
@@ -18,6 +19,7 @@ This problem requires combining two techniques you've already learned:
 It's like a cooking challenge where you must combine basic techniques into a complete dish.
 
 **The Core Strategy**:
+
 ```
 Original:    [1] → [2] → [3] → [2] → [1]
 
@@ -39,24 +41,29 @@ Step 3: Compare
 **Why Does the Middle Node Not Affect the Result?**
 
 For odd-length lists, the middle element is compared with itself (via the reversal). For even-length lists, there's no true middle—both halves have equal length. Either way, the algorithm handles it correctly because:
+
 - We only compare until the shorter half is exhausted
 - The middle of an odd list ends up in the first half, not compared
 
 **Why O(1) Space Matters**:
+
 - Array conversion: O(n) space for storing values
 - Stack approach: O(n) space for the stack
 - Fast-slow + reversal: O(1) extra space (just pointers!)
 
 **The Restoration Question**:
+
 ```python
 # After checking, the list is: [1] → [2] → [3] → None  [1] ← [2]
 # Should we restore it?
 slow.next = reverse_list(second_half)
 # Now: [1] → [2] → [3] → [2] → [1]  (original structure)
 ```
+
 In interviews, always ask: "Should I preserve the original list?" Good practice is to restore it, showing attention to side effects.
 
 **Odd vs Even Length Handling**:
+
 ```
 Odd (5 elements):  [1, 2, 3, 2, 1]
   First half:  [1, 2, 3]  (middle included)
@@ -351,12 +358,12 @@ def is_palindrome_stack(head: ListNode) -> bool:
 
 ## Complexity Comparison
 
-| Approach | Time | Space | Modifies List |
-|----------|------|-------|---------------|
-| Array | O(n) | O(n) | No |
-| Reverse half | O(n) | O(1) | Temporarily |
-| Recursive | O(n) | O(n) | No |
-| Stack | O(n) | O(n/2) | No |
+| Approach     | Time | Space  | Modifies List |
+| ------------ | ---- | ------ | ------------- |
+| Array        | O(n) | O(n)   | No            |
+| Reverse half | O(n) | O(1)   | Temporarily   |
+| Recursive    | O(n) | O(n)   | No            |
+| Stack        | O(n) | O(n/2) | No            |
 
 ---
 
@@ -486,12 +493,12 @@ def is_palindrome_allow_one_removal(head: ListNode) -> bool:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Palindrome Linked List | Easy | Fast-slow + reverse |
-| 2 | Valid Palindrome | Easy | Two pointers on string |
-| 3 | Valid Palindrome II | Easy | Allow one removal |
-| 4 | Reorder List | Medium | Similar split + reverse |
+| #   | Problem                | Difficulty | Key Concept             |
+| --- | ---------------------- | ---------- | ----------------------- |
+| 1   | Palindrome Linked List | Easy       | Fast-slow + reverse     |
+| 2   | Valid Palindrome       | Easy       | Two pointers on string  |
+| 3   | Valid Palindrome II    | Easy       | Allow one removal       |
+| 4   | Reorder List           | Medium     | Similar split + reverse |
 
 ---
 

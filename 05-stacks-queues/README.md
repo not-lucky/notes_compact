@@ -18,32 +18,32 @@ At FANG+ companies, stack/queue problems range from easy warm-ups to tricky desi
 
 ## Core Patterns to Master
 
-| Pattern | Frequency | Key Problems |
-|---------|-----------|--------------|
-| Valid Parentheses | Very High | Matching brackets, valid strings |
-| Monotonic Stack | Very High | Next greater element, daily temperatures |
-| Min/Max Stack | High | Stack with O(1) getMin/getMax |
-| Queue with Stacks | High | Implement queue using two stacks |
-| Stack with Queues | Medium | Implement stack using queues |
-| Monotonic Deque | Medium | Sliding window maximum |
-| Expression Evaluation | Medium | Calculator, reverse polish notation |
+| Pattern               | Frequency | Key Problems                             |
+| --------------------- | --------- | ---------------------------------------- |
+| Valid Parentheses     | Very High | Matching brackets, valid strings         |
+| Monotonic Stack       | Very High | Next greater element, daily temperatures |
+| Min/Max Stack         | High      | Stack with O(1) getMin/getMax            |
+| Queue with Stacks     | High      | Implement queue using two stacks         |
+| Stack with Queues     | Medium    | Implement stack using queues             |
+| Monotonic Deque       | Medium    | Sliding window maximum                   |
+| Expression Evaluation | Medium    | Calculator, reverse polish notation      |
 
 ---
 
 ## Chapter Sections
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-stack-basics](./01-stack-basics.md) | Stack Operations & Implementation | LIFO operations, use cases |
-| [02-queue-basics](./02-queue-basics.md) | Queue Operations & Circular Queue | FIFO operations, circular implementation |
-| [03-valid-parentheses](./03-valid-parentheses.md) | Matching Brackets | Stack for nested structure validation |
-| [04-monotonic-stack](./04-monotonic-stack.md) | Monotonic Stack Pattern | Next greater element, daily temperatures |
-| [05-monotonic-queue](./05-monotonic-queue.md) | Sliding Window Maximum | Deque for O(n) sliding window max |
-| [06-min-stack](./06-min-stack.md) | Min Stack Design | O(1) push, pop, top, and getMin |
-| [07-stack-with-queues](./07-stack-with-queues.md) | Implement Stack Using Queues | Design problem, tradeoffs |
-| [08-queue-with-stacks](./08-queue-with-stacks.md) | Implement Queue Using Stacks | Amortized O(1) operations |
-| [09-expression-evaluation](./09-expression-evaluation.md) | Expression Parsing | Calculator, RPN evaluation |
-| [10-histogram-problems](./10-histogram-problems.md) | Largest Rectangle in Histogram | Classic monotonic stack application |
+| Section                                                   | Topic                             | Key Takeaway                             |
+| --------------------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| [01-stack-basics](./01-stack-basics.md)                   | Stack Operations & Implementation | LIFO operations, use cases               |
+| [02-queue-basics](./02-queue-basics.md)                   | Queue Operations & Circular Queue | FIFO operations, circular implementation |
+| [03-valid-parentheses](./03-valid-parentheses.md)         | Matching Brackets                 | Stack for nested structure validation    |
+| [04-monotonic-stack](./04-monotonic-stack.md)             | Monotonic Stack Pattern           | Next greater element, daily temperatures |
+| [05-monotonic-queue](./05-monotonic-queue.md)             | Sliding Window Maximum            | Deque for O(n) sliding window max        |
+| [06-min-stack](./06-min-stack.md)                         | Min Stack Design                  | O(1) push, pop, top, and getMin          |
+| [07-stack-with-queues](./07-stack-with-queues.md)         | Implement Stack Using Queues      | Design problem, tradeoffs                |
+| [08-queue-with-stacks](./08-queue-with-stacks.md)         | Implement Queue Using Stacks      | Amortized O(1) operations                |
+| [09-expression-evaluation](./09-expression-evaluation.md) | Expression Parsing                | Calculator, RPN evaluation               |
+| [10-histogram-problems](./10-histogram-problems.md)       | Largest Rectangle in Histogram    | Classic monotonic stack application      |
 
 ---
 
@@ -60,11 +60,11 @@ At FANG+ companies, stack/queue problems range from easy warm-ups to tricky desi
 
 ## Time Targets
 
-| Difficulty | Target Time | Examples |
-|------------|-------------|----------|
-| Easy | 10-15 min | Valid Parentheses, Implement Queue using Stacks |
-| Medium | 15-25 min | Daily Temperatures, Min Stack, Evaluate RPN |
-| Hard | 25-40 min | Largest Rectangle in Histogram, Basic Calculator |
+| Difficulty | Target Time | Examples                                         |
+| ---------- | ----------- | ------------------------------------------------ |
+| Easy       | 10-15 min   | Valid Parentheses, Implement Queue using Stacks  |
+| Medium     | 15-25 min   | Daily Temperatures, Min Stack, Evaluate RPN      |
+| Hard       | 25-40 min   | Largest Rectangle in Histogram, Basic Calculator |
 
 ---
 
@@ -110,14 +110,14 @@ is_empty = len(queue) == 0
 
 ## Key Complexity Facts
 
-| Operation | Stack (list) | Queue (deque) | Queue (list) |
-|-----------|-------------|---------------|--------------|
-| Push/Enqueue | O(1)* | O(1) | O(1)* |
-| Pop/Dequeue | O(1) | O(1) | O(n) ⚠️ |
-| Peek | O(1) | O(1) | O(1) |
-| isEmpty | O(1) | O(1) | O(1) |
+| Operation    | Stack (list) | Queue (deque) | Queue (list) |
+| ------------ | ------------ | ------------- | ------------ |
+| Push/Enqueue | O(1)\*       | O(1)          | O(1)\*       |
+| Pop/Dequeue  | O(1)         | O(1)          | O(n) ⚠️      |
+| Peek         | O(1)         | O(1)          | O(1)         |
+| isEmpty      | O(1)         | O(1)          | O(1)         |
 
-*Amortized, occasional O(n) for dynamic resizing
+\*Amortized, occasional O(n) for dynamic resizing
 
 ⚠️ **Never use `list.pop(0)` for queue operations** - it's O(n). Use `deque.popleft()`.
 

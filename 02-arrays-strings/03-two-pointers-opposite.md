@@ -21,6 +21,7 @@ The key insight is **elimination by comparison**. At each step, we can definitiv
 **Mental Model**: Think of two people searching a sorted bookshelf—one from each end. They're looking for a specific total page count by combining two books. If their current sum is too small, the left person moves right (bigger books). If too large, the right person moves left (smaller books). They never miss the answer because they're "squeezing" the search space systematically.
 
 **Why We Don't Miss Solutions**:
+
 ```
 Looking for sum = 10 in sorted [1, 2, 4, 6, 8]
                                  L           R
@@ -46,6 +47,7 @@ This pattern requires specific conditions:
 5. **Minimum Instead of Feasibility**: Two pointers find "first valid" or "any valid" easily. Finding "minimum that satisfies X" may need binary search instead.
 
 **Red Flags:**
+
 - "Array is not sorted" (for sum problems) → Use hash map
 - "Return indices from original unsorted array" → Sorting loses indices; use hash map
 - "Minimize/maximize some function" → May need binary search on answer
@@ -465,27 +467,27 @@ def count_pairs_less_than(arr: list[int], target: int) -> int:
 
 ## When to Use Each Direction
 
-| Same Direction | Opposite Direction |
-|----------------|-------------------|
-| Remove duplicates | Find pairs in sorted |
-| Partition array | Palindrome check |
-| Sliding window | Container problems |
+| Same Direction    | Opposite Direction    |
+| ----------------- | --------------------- |
+| Remove duplicates | Find pairs in sorted  |
+| Partition array   | Palindrome check      |
+| Sliding window    | Container problems    |
 | Stream processing | Binary search variant |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Two Sum II (Sorted) | Medium | Basic opposite |
-| 2 | 3Sum | Medium | Fix one + two pointers |
-| 3 | 3Sum Closest | Medium | Track closest |
-| 4 | Container With Most Water | Medium | Max area |
-| 5 | Trapping Rain Water | Hard | Left/right max |
-| 6 | Valid Palindrome | Easy | Skip non-alphanum |
-| 7 | Sort Colors | Medium | Dutch flag |
-| 8 | 4Sum | Medium | Two layers + two pointers |
+| #   | Problem                   | Difficulty | Pattern                   |
+| --- | ------------------------- | ---------- | ------------------------- |
+| 1   | Two Sum II (Sorted)       | Medium     | Basic opposite            |
+| 2   | 3Sum                      | Medium     | Fix one + two pointers    |
+| 3   | 3Sum Closest              | Medium     | Track closest             |
+| 4   | Container With Most Water | Medium     | Max area                  |
+| 5   | Trapping Rain Water       | Hard       | Left/right max            |
+| 6   | Valid Palindrome          | Easy       | Skip non-alphanum         |
+| 7   | Sort Colors               | Medium     | Dutch flag                |
+| 8   | 4Sum                      | Medium     | Two layers + two pointers |
 
 ---
 

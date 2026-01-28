@@ -1,19 +1,24 @@
 # Solutions: Word Search & Tries
 
 ## 1. Word Search
+
 (LeetCode 79)
 
 ### Problem Statement
+
 Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid. The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 ```
 Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
 Output: true
 ```
 
 ### Optimal Python Solution
+
 ```python
 class Solution:
     def exist(self, board: list[list[str]], word: str) -> bool:
@@ -50,30 +55,37 @@ class Solution:
 ```
 
 ### Explanation
+
 1.  **Backtracking**: We use DFS to explore paths from each cell.
 2.  **In-place marking**: To avoid using extra space for a `visited` set, we temporarily modify `board[r][c]` to a special character.
 3.  **Backtracking**: After exploring all neighbors, we restore the cell's original value.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(M \times N \times 3^L)$ where $M, N$ are grid dimensions and $L$ is word length. We start a DFS from each of the $M \times N$ cells. In each step of the DFS, we explore up to 3 directions (excluding the one we came from) for a maximum depth of $L$.
-*   **Space Complexity**: $O(L)$ for the recursion stack, which matches the length of the word being searched.
+
+- **Time Complexity**: $O(M \times N \times 3^L)$ where $M, N$ are grid dimensions and $L$ is word length. We start a DFS from each of the $M \times N$ cells. In each step of the DFS, we explore up to 3 directions (excluding the one we came from) for a maximum depth of $L$.
+- **Space Complexity**: $O(L)$ for the recursion stack, which matches the length of the word being searched.
 
 ---
 
 ## 2. Word Search II
+
 (LeetCode 212)
 
 ### Problem Statement
+
 Given an `m x n` `board` of characters and a list of strings `words`, return all words on the board. Each word must be constructed from letters of sequentially adjacent cells. The same letter cell may not be used more than once in a word.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 ```
 Input: board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], words = ["oath","pea","eat","rain"]
 Output: ["eat","oath"]
 ```
 
 ### Optimal Python Solution
+
 ```python
 class Solution:
     def findWords(self, board: list[list[str]], words: list[str]) -> list[str]:
@@ -116,30 +128,37 @@ class Solution:
 ```
 
 ### Explanation
+
 1.  **Trie for Multiple Search**: Searching each word individually is too slow ($O(K \times M \times N \times 3^L)$). Using a Trie allows us to search all words simultaneously in one grid traversal.
 2.  **Pruning**: A crucial optimization is removing words from the Trie once they are found and deleting Trie branches that no longer lead to any words.
 3.  **DFS with Trie**: We navigate the Trie as we navigate the grid.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(M \times N \times 3^L)$ where $M, N$ are grid dimensions and $L$ is the maximum word length. We perform a single grid traversal where the Trie prunes paths that don't lead to any valid words, but the worst-case exploration remains exponential relative to word length.
-*   **Space Complexity**: $O(\sum \text{word length})$ to store the Trie containing all words in the dictionary.
+
+- **Time Complexity**: $O(M \times N \times 3^L)$ where $M, N$ are grid dimensions and $L$ is the maximum word length. We perform a single grid traversal where the Trie prunes paths that don't lead to any valid words, but the worst-case exploration remains exponential relative to word length.
+- **Space Complexity**: $O(\sum \text{word length})$ to store the Trie containing all words in the dictionary.
 
 ---
 
 ## 3. Concatenated Words
+
 (LeetCode 472)
 
 ### Problem Statement
+
 Given an array of strings `words` (without duplicates), return all the concatenated words in the given list of words. A concatenated word is defined as a string that is comprised entirely of at least two shorter words in the given array.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 ```
 Input: words = ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
 Output: ["catsdogcats","dogcatsdog","ratcatdogcat"]
 ```
 
 ### Optimal Python Solution
+
 ```python
 class Solution:
     def findAllConcatenatedWordsInADict(self, words: list[str]) -> list[str]:
@@ -189,24 +208,30 @@ class Solution:
 ```
 
 ### Explanation
+
 1.  **Trie for Prefix Finding**: We store all words in a Trie. This allows us to efficiently find all valid word prefixes starting at any index in $O(L)$ time.
 2.  **DP with Memoization**: We use DFS to check if a word can be decomposed into smaller segments. `can_form(word, start, count)` checks if the substring from `start` can be formed using one or more words from the dictionary.
 3.  **Count Constraint**: A concatenated word must be composed of at least **two** shorter words. We track the `count` of words used to satisfy this.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(N \times L^2)$ where $N$ is the number of words and $L$ is the maximum length. For each word, we perform a DFS. With memoization, each starting index is processed once, and at each index, we spend $O(L)$ to find prefixes in the Trie.
-*   **Space Complexity**: $O(N \times L)$ to store the Trie and the memoization table.
+
+- **Time Complexity**: $O(N \times L^2)$ where $N$ is the number of words and $L$ is the maximum length. For each word, we perform a DFS. With memoization, each starting index is processed once, and at each index, we spend $O(L)$ to find prefixes in the Trie.
+- **Space Complexity**: $O(N \times L)$ to store the Trie and the memoization table.
 
 ---
 
 ## 4. Stream of Characters
+
 (LeetCode 1032)
 
 ### Problem Statement
+
 Design an algorithm that accepts a stream of characters and checks if a suffix of these characters is a string of a given array of strings `words`.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 ```
 StreamChecker sc = new StreamChecker(["cd", "f", "kl"]);
 sc.query('a'); // false
@@ -215,6 +240,7 @@ sc.query('d'); // true ("cd" is a suffix)
 ```
 
 ### Optimal Python Solution
+
 ```python
 class StreamChecker:
     def __init__(self, words: list[str]):
@@ -242,29 +268,36 @@ class StreamChecker:
 ```
 
 ### Explanation
+
 1.  **Reversed Trie**: Since we are checking suffixes, storing words in reverse in the Trie allows us to match the stream from newest character to oldest.
 2.  **Backward Search**: For every query, we walk backwards through our character history in the Trie. As soon as we find a word end, we return `True`.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(L)$ per query where $L$ is the maximum length of a word in the dictionary. We only need to check the last $L$ characters of the history against the reversed Trie.
-*   **Space Complexity**: $O(N \times L + H)$ to store the Trie and the character history $H$.
+
+- **Time Complexity**: $O(L)$ per query where $L$ is the maximum length of a word in the dictionary. We only need to check the last $L$ characters of the history against the reversed Trie.
+- **Space Complexity**: $O(N \times L + H)$ to store the Trie and the character history $H$.
 
 ---
 
 ## 5. Word Squares
+
 (LeetCode 425)
 
 ### Problem Statement
+
 Given an array of unique strings `words`, return all the word squares you can build from `words`. A sequence of strings forms a valid word square if the $k$-th row and column read the same string, for each $0 \le k < \text{max}(rows, cols)$.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 ```
 Input: words = ["area","lead","wall","lady","ball"]
 Output: [["wall","area","lead","lady"],["ball","area","lead","lady"]]
 ```
 
 ### Optimal Python Solution
+
 ```python
 class Solution:
     def wordSquares(self, words: list[str]) -> list[list[str]]:
@@ -304,10 +337,12 @@ class Solution:
 ```
 
 ### Explanation
+
 1.  **Prefix Requirement**: In a word square, the $k$-th word must start with a prefix formed by the $k$-th characters of the previous $k-1$ words.
 2.  **Trie with Cache**: We store all words matching a prefix directly in the Trie nodes to speed up candidate retrieval.
 3.  **Backtracking**: We build the square row by row, pruning paths where no word matches the required prefix.
 
 ### Complexity Analysis
-*   **Time Complexity**: $O(N \times 26^L)$ in the absolute worst case, where $N$ is the number of words and $L$ is the length of each word. However, in practice, the prefix constraints in the word square and the Trie-based prefix lookup prune the search space significantly.
-*   **Space Complexity**: $O(N \times L)$ for the Trie storage, where each node stores a list of indices or words sharing that prefix.
+
+- **Time Complexity**: $O(N \times 26^L)$ in the absolute worst case, where $N$ is the number of words and $L$ is the length of each word. However, in practice, the prefix constraints in the word square and the Trie-based prefix lookup prune the search space significantly.
+- **Space Complexity**: $O(N \times L)$ for the Trie storage, where each node stores a list of indices or words sharing that prefix.

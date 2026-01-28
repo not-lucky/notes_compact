@@ -33,6 +33,7 @@ With redundant cable (5 nodes, 5 cables):
 **The Key Insight: Union Reveals Cycles**
 
 When processing edges one by one:
+
 - `union(a, b)` succeeds → a and b were in different components → no cycle
 - `union(a, b)` fails → a and b were already connected → THIS EDGE CREATES A CYCLE!
 
@@ -48,6 +49,7 @@ Processing edges: [1-2], [1-3], [2-3]
 **Why This Works**
 
 In a tree:
+
 - Every edge connects two previously disconnected subtrees
 - Adding an edge between already-connected nodes creates a cycle
 
@@ -207,6 +209,7 @@ edges = [[1,2], [1,3], [2,3]]
 ### Key Differences
 
 In a directed tree (rooted):
+
 - Every node except root has exactly one parent
 - One extra edge means either:
   1. A node has two parents (in-degree 2), OR
@@ -333,6 +336,7 @@ This is exactly what union() returns:
 ## Problem: Graph Valid Tree Revisited
 
 A graph is a valid tree if:
+
 1. Connected (one component)
 2. No cycles
 3. n nodes, n-1 edges (implied by 1+2)
@@ -488,13 +492,14 @@ def kruskal_mst(n: int, edges: list[tuple[int, int, int]]) -> list[tuple[int, in
 
 ## Complexity Analysis
 
-| Operation | Time |
-|-----------|------|
-| Process one edge | O(α(n)) |
-| Process all edges | O(E × α(n)) |
-| Cycle detection | O(α(n)) per edge |
+| Operation         | Time             |
+| ----------------- | ---------------- |
+| Process one edge  | O(α(n))          |
+| Process all edges | O(E × α(n))      |
+| Cycle detection   | O(α(n)) per edge |
 
 For Redundant Connection:
+
 - n edges (since n+1 would make it not a near-tree)
 - Total: O(n × α(n)) ≈ O(n)
 
@@ -521,14 +526,14 @@ For Redundant Connection:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Redundant Connection | Medium | Basic cycle detection |
-| 2 | Redundant Connection II | Hard | Directed graph, multiple cases |
-| 3 | Graph Valid Tree | Medium | No cycles + connected |
-| 4 | Detect Cycles in 2D Grid | Medium | Grid as graph |
-| 5 | Min Cost to Connect All Points | Medium | Kruskal's MST |
-| 6 | Critical Connections in a Network | Hard | Bridges (harder, uses Tarjan) |
+| #   | Problem                           | Difficulty | Key Concept                    |
+| --- | --------------------------------- | ---------- | ------------------------------ |
+| 1   | Redundant Connection              | Medium     | Basic cycle detection          |
+| 2   | Redundant Connection II           | Hard       | Directed graph, multiple cases |
+| 3   | Graph Valid Tree                  | Medium     | No cycles + connected          |
+| 4   | Detect Cycles in 2D Grid          | Medium     | Grid as graph                  |
+| 5   | Min Cost to Connect All Points    | Medium     | Kruskal's MST                  |
+| 6   | Critical Connections in a Network | Hard       | Bridges (harder, uses Tarjan)  |
 
 ---
 

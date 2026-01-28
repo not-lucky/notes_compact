@@ -15,6 +15,7 @@ Path compression is the first key optimization for Union-Find that reduces `find
 Imagine a company where every employee knows their direct manager, but not the CEO. To find out who's the ultimate boss:
 
 Without path compression:
+
 ```
 Employee → Manager → Director → VP → CEO
 Each query: "Who's your manager?" repeated up the chain
@@ -22,6 +23,7 @@ Every lookup: O(depth) time
 ```
 
 With path compression:
+
 ```
 First query: Employee → Manager → Director → VP → CEO
              (Remember: CEO is the ultimate boss!)
@@ -35,9 +37,10 @@ Next query: Employee → CEO (instant!)
 
 **Why This Works**
 
-The key insight: *We don't care about the intermediate managers—we only need the root.*
+The key insight: _We don't care about the intermediate managers—we only need the root._
 
 Once we've found the root, we "shortcut" everyone's pointer directly to it. This is lazy optimization:
+
 - First access might be slow (traverse the chain)
 - But it fixes the structure for all future accesses
 - Amortized over many operations → nearly O(1)
@@ -66,6 +69,7 @@ Tall chain → flat star
 **The Amortization Argument**
 
 Each node can only move closer to the root, never further away. After path compression:
+
 - A node at depth d gets moved to depth 1
 - It can never go back to depth d
 - Total "work" across all operations is bounded
@@ -305,12 +309,12 @@ Path splitting after find(7):
            5 7
 ```
 
-| Technique | Passes | Stack | Effectiveness |
-|-----------|--------|-------|---------------|
-| Full compression (recursive) | 2 | O(depth) | Best |
-| Full compression (iterative) | 2 | O(1) | Best |
-| Path halving | 1 | O(1) | Very good |
-| Path splitting | 1 | O(1) | Very good |
+| Technique                    | Passes | Stack    | Effectiveness |
+| ---------------------------- | ------ | -------- | ------------- |
+| Full compression (recursive) | 2      | O(depth) | Best          |
+| Full compression (iterative) | 2      | O(1)     | Best          |
+| Path halving                 | 1      | O(1)     | Very good     |
+| Path splitting               | 1      | O(1)     | Very good     |
 
 ---
 
@@ -440,15 +444,16 @@ print(equationsPossible(["a==b", "b!=c", "c==a"]))  # False (a==b==c but b!=c)
 
 ## Complexity Analysis
 
-| Technique | Single find | m operations on n elements |
-|-----------|-------------|---------------------------|
-| No compression | O(n) | O(n × m) |
-| Path compression only | O(log n)* | O(m × log n) |
-| Path compression + rank | O(α(n))* | O(m × α(n)) |
+| Technique               | Single find | m operations on n elements |
+| ----------------------- | ----------- | -------------------------- |
+| No compression          | O(n)        | O(n × m)                   |
+| Path compression only   | O(log n)\*  | O(m × log n)               |
+| Path compression + rank | O(α(n))\*   | O(m × α(n))                |
 
-*Amortized
+\*Amortized
 
 The improvement comes from flattening the tree:
+
 - After one expensive find, subsequent finds to the same path are O(1)
 - Trees stay shallow over time
 
@@ -493,6 +498,7 @@ As we do more finds, the amortized cost approaches O(1).
 ## Common Mistakes
 
 1. **Forgetting to update parent**: `return find(self.parent[x])` without assignment
+
    ```python
    # Wrong
    def find(self, x):
@@ -520,13 +526,13 @@ As we do more finds, the amortized cost approaches O(1).
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Longest Consecutive Sequence | Medium | Union consecutive numbers |
-| 2 | Satisfiability of Equality Equations | Medium | Two-pass union then check |
-| 3 | Number of Operations to Make Network Connected | Medium | Count components |
-| 4 | Smallest String With Swaps | Medium | Group characters by index |
-| 5 | Regions Cut By Slashes | Medium | Grid subdivision |
+| #   | Problem                                        | Difficulty | Key Concept               |
+| --- | ---------------------------------------------- | ---------- | ------------------------- |
+| 1   | Longest Consecutive Sequence                   | Medium     | Union consecutive numbers |
+| 2   | Satisfiability of Equality Equations           | Medium     | Two-pass union then check |
+| 3   | Number of Operations to Make Network Connected | Medium     | Count components          |
+| 4   | Smallest String With Swaps                     | Medium     | Group characters by index |
+| 5   | Regions Cut By Slashes                         | Medium     | Grid subdivision          |
 
 ---
 

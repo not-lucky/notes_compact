@@ -114,7 +114,7 @@ any(len(word) == 5 for word in words)
 
 **2. Wildcard Matching Multiple Characters**
 
-This pattern handles '.' (single char). For '*' (zero or more), you need different logic:
+This pattern handles '.' (single char). For '\*' (zero or more), you need different logic:
 
 ```
 "b*d" should match: "bd", "bad", "bread", "bd"
@@ -138,6 +138,7 @@ Trie setup overhead isn't justified.
 "Find words containing pattern 'a.c' anywhere" requires suffix tree or inverted index, not prefix trie.
 
 **Red Flags:**
+
 - Pattern length unrestricted → Could be exponential
 - "Match anywhere in string" → Not a prefix problem
 - "Match zero or more" → Needs regex/NFA
@@ -148,6 +149,7 @@ Trie setup overhead isn't justified.
 ## Problem Statement
 
 Design a data structure that supports:
+
 - `addWord(word)` - Adds a word to the structure
 - `search(word)` - Returns true if word is in the structure; '.' matches any letter
 
@@ -355,12 +357,12 @@ class WordDictionary:
 
 ## Complexity Analysis
 
-| Operation | Best Case | Worst Case | Notes |
-|-----------|-----------|------------|-------|
-| addWord | O(L) | O(L) | L = word length |
-| search (no wildcard) | O(L) | O(L) | Standard trie search |
-| search (k wildcards) | O(L) | O(26^k × L) | Branch at each '.' |
-| search (all wildcards) | O(26^L) | O(26^L) | Explores entire trie |
+| Operation              | Best Case | Worst Case  | Notes                |
+| ---------------------- | --------- | ----------- | -------------------- |
+| addWord                | O(L)      | O(L)        | L = word length      |
+| search (no wildcard)   | O(L)      | O(L)        | Standard trie search |
+| search (k wildcards)   | O(L)      | O(26^k × L) | Branch at each '.'   |
+| search (all wildcards) | O(26^L)   | O(26^L)     | Explores entire trie |
 
 ### Space Complexity
 
@@ -371,9 +373,9 @@ class WordDictionary:
 
 ## Common Variations
 
-### Multiple Wildcards with '*'
+### Multiple Wildcards with '\*'
 
-Handle '*' matching zero or more characters:
+Handle '\*' matching zero or more characters:
 
 ```python
 def search_with_star(self, word: str) -> bool:
@@ -538,7 +540,7 @@ class WordFilter:
 2. **Explain wildcard handling**: At '.', we must explore all branches
 3. **Discuss complexity**: Highlight exponential worst case
 4. **Optimization ideas**: Length bucketing, early termination
-5. **Follow-up questions**: What if pattern has '*' for multi-char match?
+5. **Follow-up questions**: What if pattern has '\*' for multi-char match?
 
 ---
 
@@ -571,25 +573,25 @@ Result: True
 
 ## Performance Comparison
 
-| Pattern | Time Complexity | Example |
-|---------|-----------------|---------|
-| "hello" | O(5) | Exact match |
-| ".ello" | O(26 × 4) | Wildcard at start |
-| "h.llo" | O(1 + 26 × 3) | Wildcard in middle |
-| "....." | O(26^5) | All wildcards |
-| ".e.l." | O(26^3 × 2) | Scattered wildcards |
+| Pattern | Time Complexity | Example             |
+| ------- | --------------- | ------------------- |
+| "hello" | O(5)            | Exact match         |
+| ".ello" | O(26 × 4)       | Wildcard at start   |
+| "h.llo" | O(1 + 26 × 3)   | Wildcard in middle  |
+| "....." | O(26^5)         | All wildcards       |
+| ".e.l." | O(26^3 × 2)     | Scattered wildcards |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Add and Search Word | Medium | Wildcard trie search |
-| 2 | Implement Magic Dictionary | Medium | Single char modification |
-| 3 | Prefix and Suffix Search | Hard | Combined prefix/suffix trie |
-| 4 | Camelcase Matching | Medium | Pattern matching variant |
-| 5 | Match Substring After Replacement | Hard | Advanced pattern matching |
+| #   | Problem                           | Difficulty | Key Concept                 |
+| --- | --------------------------------- | ---------- | --------------------------- |
+| 1   | Add and Search Word               | Medium     | Wildcard trie search        |
+| 2   | Implement Magic Dictionary        | Medium     | Single char modification    |
+| 3   | Prefix and Suffix Search          | Hard       | Combined prefix/suffix trie |
+| 4   | Camelcase Matching                | Medium     | Pattern matching variant    |
+| 5   | Match Substring After Replacement | Hard       | Advanced pattern matching   |
 
 ---
 

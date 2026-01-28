@@ -1,26 +1,33 @@
 # Frequency Counting - Solutions
 
 ## 1. Top K Frequent Elements
+
 Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in any order.
 
 ### Problem Statement
+
 Identify which elements in an array appear most often.
 
 ### Examples & Edge Cases
+
 **Example 1:**
+
 - Input: `nums = [1, 1, 1, 2, 2, 3], k = 2`
 - Output: `[1, 2]`
 
 **Example 2:**
+
 - Input: `nums = [1], k = 1`
 - Output: `[1]`
 
 **Edge Cases:**
+
 - `k` is equal to the number of unique elements.
 - Array has all unique elements (any `k` elements are valid).
 - Multiple elements have the same frequency.
 
 ### Optimal Python Solution (Bucket Sort - O(n))
+
 ```python
 from collections import Counter
 
@@ -54,20 +61,24 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
 ```
 
 ### Explanation
+
 1.  **Counting**: We use `Counter` to get the frequency of each number.
 2.  **Bucketing**: Instead of sorting the frequencies (which would take O(n log n)), we use the fact that the maximum possible frequency is `n` (the size of the array). We create an array of lists called `buckets`. If a number `X` appears `f` times, we put `X` into `buckets[f]`.
 3.  **Collection**: We iterate through the `buckets` starting from the end (highest frequency). We pull numbers out of the buckets until we have collected `k` elements.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). We traverse `nums` to count, then we iterate over unique elements to fill buckets, then we traverse buckets. All these steps are linear relative to `n`.
 - **Space Complexity**: O(n). We store the frequency map and the bucket array, both of which take O(n) space in the worst case.
 
 ---
 
 ## 2. Top K Frequent Words
+
 Given an array of strings `words` and an integer `k`, return the `k` most frequent strings. Return the answer sorted by the frequency from highest to lowest. Sort the words with the same frequency by their lexicographical order.
 
 ### Optimal Python Solution (Heap - O(n log k))
+
 ```python
 import heapq
 from collections import Counter
@@ -103,15 +114,18 @@ def topKFrequentWords(words: list[str], k: int) -> list[str]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n log k). We process `n` elements, and each heap operation is O(log k).
 - **Space Complexity**: O(n) for the frequency map.
 
 ---
 
 ## 3. Majority Element
+
 Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `⌊n / 2⌋` times.
 
 ### Optimal Python Solution (Boyer-Moore - O(1) Space)
+
 ```python
 def majorityElement(nums: list[int]) -> int:
     """
@@ -131,15 +145,18 @@ def majorityElement(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). Single pass.
 - **Space Complexity**: O(1). Only two variables.
 
 ---
 
 ## 4. Majority Element II
+
 Find all elements that appear more than `⌊n / 3⌋` times.
 
 ### Optimal Python Solution
+
 ```python
 def majorityElementII(nums: list[int]) -> list[int]:
     """
@@ -171,15 +188,18 @@ def majorityElementII(nums: list[int]) -> list[int]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ## 5. First Unique Character in a String
+
 (Same as in previous file - included for completeness of the practice list).
 
 ### Optimal Python Solution
+
 ```python
 from collections import Counter
 
@@ -194,9 +214,11 @@ def firstUniqChar(s: str) -> int:
 ---
 
 ## 6. Single Number
+
 Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one.
 
 ### Optimal Python Solution (XOR - O(1) Space)
+
 ```python
 def singleNumber(nums: list[int]) -> int:
     """
@@ -210,20 +232,24 @@ def singleNumber(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ## 7. Contains Duplicate
+
 (Discussed in Basics file). `return len(nums) != len(set(nums))` or manual set loop.
 
 ---
 
 ## 8. Contains Duplicate II
+
 Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
 
 ### Optimal Python Solution (Sliding Window / Map)
+
 ```python
 def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
     seen = {} # val -> index
@@ -237,9 +263,11 @@ def containsNearbyDuplicate(nums: list[int], k: int) -> bool:
 ---
 
 ## 9. Sort Characters By Frequency
+
 Given a string `s`, sort it in decreasing order based on the frequency of the characters.
 
 ### Optimal Python Solution
+
 ```python
 from collections import Counter
 
@@ -253,9 +281,11 @@ def frequencySort(s: str) -> str:
 ---
 
 ## 10. Find All Duplicates in an Array
+
 Given an integer array `nums` of length `n` where all the integers of `nums` are in the range `[1, n]` and each integer appears once or twice, return an array of all the integers that appears twice.
 
 ### Optimal Python Solution (Index Marking - O(1) Space)
+
 ```python
 def findDuplicates(nums: list[int]) -> list[int]:
     """

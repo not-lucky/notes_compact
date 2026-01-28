@@ -3,22 +3,26 @@
 This file provides optimal Python solutions for practice problems related to Rate Limiting algorithms and time-windowed counting.
 
 ## 1. Design Hit Counter
-*Note: This problem is covered in detail in the [LFU Cache Solution File](./03-lfu-cache.md#4-design-hit-counter). It uses a bucket-based array to track hits in a sliding window.*
+
+_Note: This problem is covered in detail in the [LFU Cache Solution File](./03-lfu-cache.md#4-design-hit-counter). It uses a bucket-based array to track hits in a sliding window._
 
 ---
 
 ## 2. Logger Rate Limiter
 
 ### Problem Statement
+
 Design a logger system that receives a stream of messages with their timestamps. Each unique message should only be printed at most every 10 seconds. If a message is received within 10 seconds of being printed, it should be dropped.
 
 ### Examples & Edge Cases
+
 - **Example**: `log(1, "foo")` -> True, `log(2, "bar")` -> True, `log(3, "foo")` -> False, `log(11, "foo")` -> True.
 - **Edge Cases**:
   - Multiple messages at the same timestamp.
   - Timestamps are non-decreasing.
 
 ### Optimal Python Solution
+
 ```python
 class Logger:
     def __init__(self):
@@ -33,11 +37,14 @@ class Logger:
 ```
 
 ### Explanation
+
 We use a **HashMap** to store the expiration time for each message.
+
 1. If the message is new or the current `timestamp` is greater than or equal to the stored `next_allowed_time`, we update the map and return `True`.
 2. Otherwise, we return `False`.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$ per request.
 - **Space Complexity**: $O(M)$ where $M$ is the number of unique messages.
 
@@ -46,15 +53,18 @@ We use a **HashMap** to store the expiration time for each message.
 ## 3. Design Rate Limiter (Token Bucket)
 
 ### Problem Statement
+
 Implement a rate limiter that allows a maximum number of requests in a given time period.
 
 ### Examples & Edge Cases
+
 - **Example**: `capacity=5`, `refill_rate=1/sec`. A burst of 5 is allowed, then 1 per second.
 - **Edge Cases**:
   - Very high frequency requests.
   - Large time gaps between requests (bucket should not exceed capacity).
 
 ### Optimal Python Solution
+
 ```python
 import time
 
@@ -79,12 +89,15 @@ class TokenBucket:
 ```
 
 ### Explanation
+
 This is the **Token Bucket** algorithm.
+
 1. We track the `last_update` time.
 2. Every time `allow_request` is called, we "refill" the bucket based on the elapsed time.
 3. If the bucket has at least 1 token, we consume it and allow the request.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$.
 - **Space Complexity**: $O(1)$.
 
@@ -93,9 +106,11 @@ This is the **Token Bucket** algorithm.
 ## 4. API Rate Limiter (Fixed Window vs Sliding Window)
 
 ### Problem Statement
+
 Implement a rate limiter for an API endpoint. Compare a fixed window approach with a sliding window approach.
 
 ### Optimal Python Solution (Sliding Window Counter)
+
 ```python
 import time
 
@@ -130,9 +145,11 @@ class SlidingWindowCounter:
 ```
 
 ### Explanation
+
 The **Sliding Window Counter** approximates a true sliding window using weighted averages of the current and previous fixed windows. This solves the "boundary problem" of Fixed Window (where 2x the limit can pass at the edge of a window) while being much more memory-efficient than a Sliding Window Log.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$.
 - **Space Complexity**: $O(1)$.
 
@@ -141,15 +158,18 @@ The **Sliding Window Counter** approximates a true sliding window using weighted
 ## 5. Sliding Window Maximum
 
 ### Problem Statement
+
 Given an array `nums` and a window size `k`, return the maximum element in each sliding window of size `k`.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums = [1,3,-1,-3,5,3,6,7], k = 3` -> `[3,3,5,5,6,7]`.
 - **Edge Cases**:
   - `k = 1`: Return the array itself.
   - `k = len(nums)`: Return the max of the whole array.
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -178,11 +198,14 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 ```
 
 ### Explanation
+
 We use a **Monotonic Dequeue** (Double-ended queue) to store indices of elements.
+
 1. The dequeue maintains indices in a way that `nums[dq[i]]` is strictly decreasing.
 2. The current maximum is always at `dq[0]`.
 3. For each new element, we discard indices of elements smaller than it (because the new larger element will outlast them in any future window) and discard indices that fall out of the `k` range.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(N)$. Each element is pushed and popped at most once.
 - **Space Complexity**: $O(K)$ for the dequeue.

@@ -15,13 +15,13 @@ Greedy algorithms make locally optimal choices at each step, hoping to find a gl
 
 The most important skill: knowing when to use each approach.
 
-| Aspect | Greedy | Dynamic Programming |
-|--------|--------|---------------------|
-| **Decision** | Make best local choice now | Consider all subproblems |
-| **Time** | Usually O(n) or O(n log n) | Usually O(n²) or O(n × target) |
-| **Space** | Usually O(1) | Usually O(n) or more |
-| **Correctness** | Must prove greedy choice works | Always correct if formulated right |
-| **When it fails** | Locally optimal ≠ globally optimal | Never fails (just slower) |
+| Aspect            | Greedy                             | Dynamic Programming                |
+| ----------------- | ---------------------------------- | ---------------------------------- |
+| **Decision**      | Make best local choice now         | Consider all subproblems           |
+| **Time**          | Usually O(n) or O(n log n)         | Usually O(n²) or O(n × target)     |
+| **Space**         | Usually O(1)                       | Usually O(n) or more               |
+| **Correctness**   | Must prove greedy choice works     | Always correct if formulated right |
+| **When it fails** | Locally optimal ≠ globally optimal | Never fails (just slower)          |
 
 ---
 
@@ -80,28 +80,28 @@ Is there a way to order/sort the choices?
 
 ## Greedy Patterns Overview
 
-| Pattern | Problems | Key Strategy |
-|---------|----------|--------------|
-| Interval Scheduling | Activity selection, meeting rooms | Sort by end time |
-| Merge Intervals | Overlapping intervals | Sort by start time |
-| Jump/Reach | Jump game, gas station | Track farthest reachable |
-| Two-Pass | Candy, trapping rain water | Left pass then right pass |
-| Greedy Choice | Task scheduling, partition | Pick locally optimal |
+| Pattern             | Problems                          | Key Strategy              |
+| ------------------- | --------------------------------- | ------------------------- |
+| Interval Scheduling | Activity selection, meeting rooms | Sort by end time          |
+| Merge Intervals     | Overlapping intervals             | Sort by start time        |
+| Jump/Reach          | Jump game, gas station            | Track farthest reachable  |
+| Two-Pass            | Candy, trapping rain water        | Left pass then right pass |
+| Greedy Choice       | Task scheduling, partition        | Pick locally optimal      |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Greedy Basics](./01-greedy-basics.md) | When greedy works, proof techniques |
-| 02 | [Interval Scheduling](./02-interval-scheduling.md) | Activity selection, maximum meetings |
-| 03 | [Merge Intervals](./03-merge-intervals.md) | Merge overlapping intervals |
-| 04 | [Meeting Rooms](./04-meeting-rooms.md) | Meeting rooms I and II |
-| 05 | [Jump Game](./05-jump-game.md) | Jump game I and II |
-| 06 | [Gas Station](./06-gas-station.md) | Circular array, greedy choice |
-| 07 | [Candy Distribution](./07-candy-distribution.md) | Two-pass greedy |
-| 08 | [Partition Labels](./08-partition-labels.md) | Interval-based partitioning |
+| #   | Topic                                              | Key Concepts                         |
+| --- | -------------------------------------------------- | ------------------------------------ |
+| 01  | [Greedy Basics](./01-greedy-basics.md)             | When greedy works, proof techniques  |
+| 02  | [Interval Scheduling](./02-interval-scheduling.md) | Activity selection, maximum meetings |
+| 03  | [Merge Intervals](./03-merge-intervals.md)         | Merge overlapping intervals          |
+| 04  | [Meeting Rooms](./04-meeting-rooms.md)             | Meeting rooms I and II               |
+| 05  | [Jump Game](./05-jump-game.md)                     | Jump game I and II                   |
+| 06  | [Gas Station](./06-gas-station.md)                 | Circular array, greedy choice        |
+| 07  | [Candy Distribution](./07-candy-distribution.md)   | Two-pass greedy                      |
+| 08  | [Partition Labels](./08-partition-labels.md)       | Interval-based partitioning          |
 
 ---
 
@@ -157,24 +157,24 @@ For Huffman coding:
 
 ## Time Complexity Patterns
 
-| Problem Type | Time | Why |
-|--------------|------|-----|
-| Interval problems | O(n log n) | Sorting dominates |
-| Single pass greedy | O(n) | One traversal |
-| Two-pass greedy | O(n) | Two traversals |
-| Heap-based greedy | O(n log n) | n heap operations |
+| Problem Type       | Time       | Why               |
+| ------------------ | ---------- | ----------------- |
+| Interval problems  | O(n log n) | Sorting dominates |
+| Single pass greedy | O(n)       | One traversal     |
+| Two-pass greedy    | O(n)       | Two traversals    |
+| Heap-based greedy  | O(n log n) | n heap operations |
 
 ---
 
 ## Classic Interview Problems by Company
 
-| Company | Favorite Greedy Problems |
-|---------|-------------------------|
-| Google | Task Scheduler, Jump Game II, Partition Labels |
-| Meta | Meeting Rooms II, Merge Intervals, Queue Reconstruction |
-| Amazon | Gas Station, Candy, Assign Cookies |
+| Company   | Favorite Greedy Problems                                   |
+| --------- | ---------------------------------------------------------- |
+| Google    | Task Scheduler, Jump Game II, Partition Labels             |
+| Meta      | Meeting Rooms II, Merge Intervals, Queue Reconstruction    |
+| Amazon    | Gas Station, Candy, Assign Cookies                         |
 | Microsoft | Jump Game, Non-overlapping Intervals, Boats to Save People |
-| Apple | Lemonade Change, Minimum Number of Arrows |
+| Apple     | Lemonade Change, Minimum Number of Arrows                  |
 
 ---
 
@@ -194,15 +194,15 @@ Look for these keywords/patterns:
 
 ## Greedy vs DP: Quick Examples
 
-| Problem | Approach | Why |
-|---------|----------|-----|
-| Activity Selection | Greedy | Earliest end maximizes remaining time |
-| 0/1 Knapsack | DP | Greedy by value/weight ratio fails |
-| Fractional Knapsack | Greedy | Can take fractions, ratio works |
-| Coin Change (US coins) | Greedy | Special denominations allow it |
-| Coin Change (general) | DP | Greedy fails for arbitrary denominations |
-| Jump Game I | Greedy | Track max reach as you go |
-| Jump Game III | BFS | Bidirectional movement |
+| Problem                | Approach | Why                                      |
+| ---------------------- | -------- | ---------------------------------------- |
+| Activity Selection     | Greedy   | Earliest end maximizes remaining time    |
+| 0/1 Knapsack           | DP       | Greedy by value/weight ratio fails       |
+| Fractional Knapsack    | Greedy   | Can take fractions, ratio works          |
+| Coin Change (US coins) | Greedy   | Special denominations allow it           |
+| Coin Change (general)  | DP       | Greedy fails for arbitrary denominations |
+| Jump Game I            | Greedy   | Track max reach as you go                |
+| Jump Game III          | BFS      | Bidirectional movement                   |
 
 ---
 

@@ -5,6 +5,7 @@
 ## Interview Context
 
 Partition labels tests:
+
 1. **Interval transformation**: Converting string to intervals
 2. **Greedy partitioning**: Finding optimal split points
 3. **HashMap usage**: Tracking last occurrences
@@ -105,6 +106,7 @@ When current index equals horizon, we've seen all occurrences of all characters 
 **1. When Partitions Must Have Equal/Fixed Size**
 
 If partitions must be exactly k characters:
+
 ```
 s = "aabb", k = 2
 Partition labels: Can't be applied—it optimizes partition COUNT, not size.
@@ -114,6 +116,7 @@ Need different approach: sliding window or DP.
 **2. When You Can Rearrange the String**
 
 If you can reorder characters to minimize partitions:
+
 ```
 s = "abab" → "aabb" → only 2 partitions instead of 1!
 This becomes an optimization problem over permutations.
@@ -122,6 +125,7 @@ This becomes an optimization problem over permutations.
 **3. When Characters Can Be in Multiple Partitions**
 
 The problem assumes each character appears in exactly ONE partition. If duplicates are allowed:
+
 ```
 This is no longer interval merging—each character can have multiple "homes."
 ```
@@ -129,6 +133,7 @@ This is no longer interval merging—each character can have multiple "homes."
 **4. When You Need Maximum Partitions with Constraints**
 
 If partitions must satisfy additional constraints (max length, certain characters together):
+
 ```
 This becomes a constrained optimization problem.
 May need DP or greedy with more complex logic.
@@ -159,6 +164,7 @@ Partition: "ababcbaca", "defegde", "hijhklij"
 **Each character defines an interval: [first occurrence, last occurrence]**
 
 For partitioning:
+
 - A partition must include all occurrences of any character it contains
 - Find the smallest valid partition at each step
 - The partition ends at the farthest "last occurrence" of any character in it
@@ -258,11 +264,13 @@ Result: [9, 7, 8]
 **Greedy Choice**: End partition as soon as all included characters are complete.
 
 **Why it's optimal**:
+
 1. We can't end earlier (would split a character)
 2. Ending later would only make this partition bigger
 3. More partitions means smaller partitions (goal: maximize count)
 
 **Proof by construction**:
+
 - At position `i`, if `i == end`, no character in `[start, i]` appears after `i`
 - So `[start, i]` is a valid partition
 - Starting a new partition at `i+1` is safe
@@ -389,11 +397,11 @@ Finding minimum covering - different approach but similar thinking.
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Single pass greedy | O(n) | O(1) | Most efficient |
-| Interval-based | O(n log n) | O(26) | More intuitive |
-| Brute force | O(n²) | O(n) | Check each partition |
+| Approach           | Time       | Space | Notes                |
+| ------------------ | ---------- | ----- | -------------------- |
+| Single pass greedy | O(n)       | O(1)  | Most efficient       |
+| Interval-based     | O(n log n) | O(26) | More intuitive       |
+| Brute force        | O(n²)      | O(n)  | Check each partition |
 
 ---
 
@@ -420,13 +428,13 @@ Partition Labels is really "interval covering" in disguise:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Partition Labels | Medium | Track last occurrence, greedy extend |
-| 2 | Merge Intervals | Medium | Sort by start, merge overlapping |
-| 3 | Maximum Number of Non-overlapping Substrings | Hard | Valid substring intervals |
-| 4 | Optimal Partition of String | Medium | Partition to minimize duplicates |
-| 5 | Video Stitching | Medium | Interval covering |
+| #   | Problem                                      | Difficulty | Key Insight                          |
+| --- | -------------------------------------------- | ---------- | ------------------------------------ |
+| 1   | Partition Labels                             | Medium     | Track last occurrence, greedy extend |
+| 2   | Merge Intervals                              | Medium     | Sort by start, merge overlapping     |
+| 3   | Maximum Number of Non-overlapping Substrings | Hard       | Valid substring intervals            |
+| 4   | Optimal Partition of String                  | Medium     | Partition to minimize duplicates     |
+| 5   | Video Stitching                              | Medium     | Interval covering                    |
 
 ---
 
@@ -454,14 +462,14 @@ Partition Labels is really "interval covering" in disguise:
 
 You've completed Chapter 12: Greedy Algorithms! Key patterns learned:
 
-| Pattern | Problems | Key Technique |
-|---------|----------|---------------|
-| Interval Scheduling | Activity selection | Sort by end time |
-| Merge Intervals | Overlapping intervals | Sort by start time |
-| Meeting Rooms | Resource allocation | Min-heap or sweep line |
-| Jump/Reach | Jump games, gas station | Track farthest reachable |
-| Two-Pass | Candy distribution | Forward + backward pass |
-| Partition | Partition labels | Track last occurrence |
+| Pattern             | Problems                | Key Technique            |
+| ------------------- | ----------------------- | ------------------------ |
+| Interval Scheduling | Activity selection      | Sort by end time         |
+| Merge Intervals     | Overlapping intervals   | Sort by start time       |
+| Meeting Rooms       | Resource allocation     | Min-heap or sweep line   |
+| Jump/Reach          | Jump games, gas station | Track farthest reachable |
+| Two-Pass            | Candy distribution      | Forward + backward pass  |
+| Partition           | Partition labels        | Track last occurrence    |
 
 ---
 

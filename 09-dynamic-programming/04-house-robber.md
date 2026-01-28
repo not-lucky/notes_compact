@@ -48,6 +48,7 @@ House Robber is a FANG+ classic because:
 5. **Reconstruction Required**: Finding which houses to rob (not just max value) requires keeping track of decisions, which needs O(n) space or backtracking.
 
 **Recognize House Robber Pattern When:**
+
 - You must choose a subset of elements
 - Adjacent choices are forbidden (or some fixed constraint)
 - Goal is to maximize/minimize sum
@@ -71,6 +72,7 @@ Output: 12 (rob houses 0, 2, 4: 2 + 9 + 1 = 12)
 ### Approach
 
 At each house, two choices:
+
 1. **Rob it**: Add value + best from 2 houses back
 2. **Skip it**: Take best from previous house
 
@@ -124,6 +126,7 @@ Houses form a circle - first and last are adjacent.
 ### Key Insight
 
 Can't rob both first and last. So:
+
 1. Rob houses 0 to n-2 (exclude last)
 2. Rob houses 1 to n-1 (exclude first)
 3. Take maximum
@@ -429,13 +432,13 @@ def rob_circular(nums):
 
 ## Complexity Analysis
 
-| Variant | Time | Space |
-|---------|------|-------|
-| Linear | O(n) | O(1) |
-| Circular | O(n) | O(1) |
-| Tree | O(n) | O(h) |
+| Variant         | Time       | Space  |
+| --------------- | ---------- | ------ |
+| Linear          | O(n)       | O(1)   |
+| Circular        | O(n)       | O(1)   |
+| Tree            | O(n)       | O(h)   |
 | Delete and Earn | O(n + max) | O(max) |
-| Paint House | O(n × k²) | O(k) |
+| Paint House     | O(n × k²)  | O(k)   |
 
 ---
 
@@ -451,14 +454,14 @@ def rob_circular(nums):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | House Robber | Medium | Basic take/skip |
-| 2 | House Robber II | Medium | Circular = two linear |
-| 3 | House Robber III | Medium | Tree DP with states |
-| 4 | Delete and Earn | Medium | Transform to HR |
-| 5 | Paint House | Medium | Multi-state DP |
-| 6 | Paint House II | Hard | K colors optimization |
+| #   | Problem          | Difficulty | Key Insight           |
+| --- | ---------------- | ---------- | --------------------- |
+| 1   | House Robber     | Medium     | Basic take/skip       |
+| 2   | House Robber II  | Medium     | Circular = two linear |
+| 3   | House Robber III | Medium     | Tree DP with states   |
+| 4   | Delete and Earn  | Medium     | Transform to HR       |
+| 5   | Paint House      | Medium     | Multi-state DP        |
+| 6   | Paint House II   | Hard       | K colors optimization |
 
 ---
 

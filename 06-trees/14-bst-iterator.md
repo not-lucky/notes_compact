@@ -361,11 +361,11 @@ class BinaryTreeIterator:
 
 ## Complexity Analysis
 
-| Approach | Space | next() Time | hasNext() Time |
-|----------|-------|-------------|----------------|
-| Flatten array | O(n) | O(1) | O(1) |
-| Stack-based | O(h) | O(1) amortized | O(1) |
-| Morris | O(1) | O(1) amortized | O(1) |
+| Approach      | Space | next() Time    | hasNext() Time |
+| ------------- | ----- | -------------- | -------------- |
+| Flatten array | O(n)  | O(1)           | O(1)           |
+| Stack-based   | O(h)  | O(1) amortized | O(1)           |
+| Morris        | O(1)  | O(1) amortized | O(1)           |
 
 ---
 
@@ -414,13 +414,13 @@ root = TreeNode(5)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Binary Search Tree Iterator | Medium | Core iterator |
-| 2 | Flatten Nested List Iterator | Medium | Similar pattern |
-| 3 | Peeking Iterator | Medium | Add peek |
-| 4 | Zigzag Iterator | Medium | Multiple iterators |
-| 5 | Design Compressed String Iterator | Easy | Iterator pattern |
+| #   | Problem                           | Difficulty | Key Concept        |
+| --- | --------------------------------- | ---------- | ------------------ |
+| 1   | Binary Search Tree Iterator       | Medium     | Core iterator      |
+| 2   | Flatten Nested List Iterator      | Medium     | Similar pattern    |
+| 3   | Peeking Iterator                  | Medium     | Add peek           |
+| 4   | Zigzag Iterator                   | Medium     | Multiple iterators |
+| 5   | Design Compressed String Iterator | Easy       | Iterator pattern   |
 
 ---
 

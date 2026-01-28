@@ -7,14 +7,17 @@ This document provides optimal solutions and detailed explanations for the pract
 ## 1. Letter Combinations of a Phone Number
 
 ### Problem Statement
+
 Given a string containing digits from `2-9` inclusive, return all possible letter combinations that the number could represent. Return the answer in any order. A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
 
 ### Examples & Edge Cases
+
 - **Input:** digits = "23" → **Output:** ["ad","ae","af","bd","be","bf","cd","ce","cf"]
 - **Input:** digits = "" → **Output:** []
 - **Edge Case:** Digit string containing '7' or '9' (which have 4 letters each).
 
 ### Optimal Python Solution (Backtracking)
+
 ```python
 def letterCombinations(digits: str) -> list[str]:
     if not digits:
@@ -46,11 +49,13 @@ def letterCombinations(digits: str) -> list[str]:
 ```
 
 ### Detailed Explanation
+
 1. **Mapping**: We use a hash map to store the fixed mapping of digits to letters.
 2. **Backtracking**: We process the digits one by one. For each digit, we try all possible letters it can represent. For each choice, we move to the next digit.
 3. **Cartesian Product**: This problem is essentially finding the Cartesian product of the letter sets for each digit.
 
 ### Complexity Analysis
+
 - **Time Complexity:** $O(n \cdot 4^n)$ - In the worst case (digits 7 or 9), each digit has 4 choices. $n$ is the number of digits.
 - **Space Complexity:** $O(n)$ - The recursion stack depth is equal to the number of digits.
 
@@ -59,9 +64,11 @@ def letterCombinations(digits: str) -> list[str]:
 ## 2. Letter Case Permutation
 
 ### Problem Statement
+
 Given a string `s`, we can transform every letter individually to be lowercase or uppercase to create another string. Return a list of all possible strings we could create.
 
 ### Optimal Python Solution (Backtracking)
+
 ```python
 def letterCasePermutation(s: str) -> list[str]:
     res = []
@@ -97,9 +104,11 @@ def letterCasePermutation(s: str) -> list[str]:
 ## 3. Generate All Binary Strings
 
 ### Problem Statement
+
 Given an integer `n`, generate all binary strings of length `n`.
 
 ### Optimal Python Solution (Backtracking)
+
 ```python
 def generateBinaryStrings(n: int) -> list[str]:
     res = []
@@ -123,9 +132,11 @@ def generateBinaryStrings(n: int) -> list[str]:
 ## 4. All Paths from Source to Target
 
 ### Problem Statement
+
 Given a directed acyclic graph (DAG) of `n` nodes labeled from `0` to `n - 1`, find all possible paths from node `0` to node `n - 1` and return them in any order.
 
 ### Optimal Python Solution (DFS Backtracking)
+
 ```python
 def allPathsSourceTarget(graph: list[list[int]]) -> list[list[int]]:
     target = len(graph) - 1
@@ -146,5 +157,6 @@ def allPathsSourceTarget(graph: list[list[int]]) -> list[list[int]]:
 ```
 
 ### Detailed Explanation
+
 1. **DFS**: Since the graph is a DAG, we can use simple DFS without worrying about cycles.
 2. **Backtracking**: We start at node 0, and for each neighbor, we add it to our path and recurse. After exploring all paths through a neighbor, we remove it from the path to explore other branches.

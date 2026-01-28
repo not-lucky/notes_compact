@@ -22,10 +22,10 @@ LCA(Dad, Grandma) = Great-grandma
 
 **Two different problems - BST vs General BT**:
 
-| Tree Type | Key Property | Approach |
-|-----------|--------------|----------|
-| BST | Ordered: left < root < right | Use BST property to navigate |
-| General BT | No ordering guarantee | Search entire tree |
+| Tree Type  | Key Property                 | Approach                     |
+| ---------- | ---------------------------- | ---------------------------- |
+| BST        | Ordered: left < root < right | Use BST property to navigate |
+| General BT | No ordering guarantee        | Search entire tree           |
 
 **BST LCA - the split point insight**:
 In a BST, the LCA is where p and q "split" - one goes left, one goes right:
@@ -48,6 +48,7 @@ Looking for LCA(2, 4):
 
 **General BT LCA - the recursive search insight**:
 Search for p and q in both subtrees. The LCA is:
+
 - If found in different subtrees → current node is LCA
 - If both in one subtree → LCA is in that subtree
 - If current node is p or q → current node might be LCA
@@ -66,15 +67,18 @@ Recursive LCA logic:
 ## When NOT to Use
 
 **Standard LCA algorithms don't apply when:**
+
 - **Tree has parent pointers** → Simpler: trace ancestors and find intersection
 - **Need LCA for many queries** → Preprocess with binary lifting or Euler tour
 - **Graph is not a tree** → Different algorithms needed
 
 **BST approach fails when:**
+
 - Tree is not a BST → Must use general BT approach
 - Values are not unique → Cannot reliably navigate
 
 **Common mistake scenarios:**
+
 - Using BST algorithm on general binary tree → Wrong answer
 - Not handling "node is ancestor of itself" case → Definition says node can be its own descendant
 - Assuming both nodes exist → Add existence check if not guaranteed
@@ -90,6 +94,7 @@ Recursive LCA logic:
 
 **The parent pointer simplification**:
 If nodes have parent pointers, LCA becomes "find intersection of two linked lists":
+
 1. Trace p's ancestors to root → path1
 2. Trace q's ancestors to root → path2
 3. Find last common node in both paths
@@ -411,13 +416,13 @@ def lca_with_parent_set(p: TreeNode, q: TreeNode) -> TreeNode:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Tree Type |
-|----------|------|-------|-----------|
-| BST recursive | O(h) | O(h) | BST |
-| BST iterative | O(h) | O(1) | BST |
-| BT recursive | O(n) | O(h) | General |
-| With parent (depth) | O(h) | O(1) | With parent |
-| With parent (set) | O(h) | O(h) | With parent |
+| Approach            | Time | Space | Tree Type   |
+| ------------------- | ---- | ----- | ----------- |
+| BST recursive       | O(h) | O(h)  | BST         |
+| BST iterative       | O(h) | O(1)  | BST         |
+| BT recursive        | O(n) | O(h)  | General     |
+| With parent (depth) | O(h) | O(1)  | With parent |
+| With parent (set)   | O(h) | O(h)  | With parent |
 
 ---
 
@@ -545,14 +550,14 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Lowest Common Ancestor of a BST | Medium | BST split point |
-| 2 | Lowest Common Ancestor of a Binary Tree | Medium | General recursive |
-| 3 | Lowest Common Ancestor of a Binary Tree II | Medium | Handle non-existence |
-| 4 | Lowest Common Ancestor of a Binary Tree III | Medium | With parent pointers |
-| 5 | Lowest Common Ancestor of Deepest Leaves | Medium | Special case |
-| 6 | Step-By-Step Directions From a Binary Tree Node | Medium | LCA + path |
+| #   | Problem                                         | Difficulty | Key Concept          |
+| --- | ----------------------------------------------- | ---------- | -------------------- |
+| 1   | Lowest Common Ancestor of a BST                 | Medium     | BST split point      |
+| 2   | Lowest Common Ancestor of a Binary Tree         | Medium     | General recursive    |
+| 3   | Lowest Common Ancestor of a Binary Tree II      | Medium     | Handle non-existence |
+| 4   | Lowest Common Ancestor of a Binary Tree III     | Medium     | With parent pointers |
+| 5   | Lowest Common Ancestor of Deepest Leaves        | Medium     | Special case         |
+| 6   | Step-By-Step Directions From a Binary Tree Node | Medium     | LCA + path           |
 
 ---
 

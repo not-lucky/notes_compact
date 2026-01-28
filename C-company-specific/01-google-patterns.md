@@ -17,6 +17,7 @@ Google pioneered the modern tech interview. Their style—deep algorithmic probl
 ### What Interviewers Actually Evaluate
 
 Google interviewers score you on:
+
 1. **Analytical skills**: How you break down problems
 2. **Coding skills**: Clean, working code
 3. **Communication**: Can they understand your thinking?
@@ -29,6 +30,7 @@ The first three are table stakes. Googleyness is the differentiator—it's why t
 Interviewers ask themselves: "Would I want to work with this person?"
 
 This means:
+
 - When you explain your approach, they imagine hearing this in a design discussion
 - When you take feedback, they imagine giving you a code review
 - When you handle a hard problem, they imagine you on-call at 2 AM
@@ -65,6 +67,7 @@ Google systems serve billions of users. An O(n²) solution that works fine in an
 ## Interview Structure
 
 ### Typical Process
+
 1. **Recruiter screen** (30 min) - Background, role fit
 2. **Technical phone screen** (45 min) - 1-2 coding problems
 3. **Onsite/Virtual** (4-5 hours) - 4-5 interviews
@@ -74,30 +77,35 @@ Google systems serve billions of users. An O(n²) solution that works fine in an
 
 ### Round Breakdown
 
-| Round | Duration | Focus | What They Evaluate |
-|-------|----------|-------|-------------------|
-| Coding 1-3 | 45 min each | DSA problems | Problem-solving, code quality |
-| Behavioral | 45 min | Past experience | Googliness, leadership |
-| System Design | 45 min | Large-scale systems | Architecture, tradeoffs |
+| Round         | Duration    | Focus               | What They Evaluate            |
+| ------------- | ----------- | ------------------- | ----------------------------- |
+| Coding 1-3    | 45 min each | DSA problems        | Problem-solving, code quality |
+| Behavioral    | 45 min      | Past experience     | Googliness, leadership        |
+| System Design | 45 min      | Large-scale systems | Architecture, tradeoffs       |
 
 ---
 
 ## What Makes Google Different
 
 ### 1. Emphasis on Optimal Solutions
+
 Google interviewers often push for the best possible solution:
+
 - Expect follow-ups: "Can you do better than O(n²)?"
 - Partial credit for brute force, but optimal is the target
 - They want to see your optimization thought process
 
 ### 2. Communication Is Scored
+
 - Think out loud continuously
 - Explain why you're considering each approach
 - State your assumptions explicitly
 - Summarize complexity at the end
 
 ### 3. Googliness (GCA - General Cognitive Ability)
+
 Interviewers assess:
+
 - How you handle ambiguity
 - Willingness to take feedback
 - Collaborative attitude
@@ -109,13 +117,13 @@ Interviewers assess:
 
 ### High-Frequency Topics
 
-| Category | Frequency | Example Patterns |
-|----------|-----------|------------------|
-| Arrays/Strings | Very High | Two pointers, sliding window |
-| Trees | High | Traversals, LCA, path problems |
-| Graphs | High | BFS/DFS, topological sort |
-| Dynamic Programming | Medium-High | 1D/2D DP, state machine |
-| Design (Senior) | High | Distributed systems |
+| Category            | Frequency   | Example Patterns               |
+| ------------------- | ----------- | ------------------------------ |
+| Arrays/Strings      | Very High   | Two pointers, sliding window   |
+| Trees               | High        | Traversals, LCA, path problems |
+| Graphs              | High        | BFS/DFS, topological sort      |
+| Dynamic Programming | Medium-High | 1D/2D DP, state machine        |
+| Design (Senior)     | High        | Distributed systems            |
 
 ### Google's Favorite Problem Types
 
@@ -144,6 +152,7 @@ Interviewers assess:
 ## The Google Interview Framework
 
 ### Phase 1: Clarify (3-5 minutes)
+
 ```
 1. Repeat the problem in your own words
 2. Ask about input constraints:
@@ -158,6 +167,7 @@ Interviewers assess:
 ```
 
 ### Phase 2: Approach (5-7 minutes)
+
 ```
 1. Start with brute force: "The naive approach would be..."
 2. Identify inefficiency
@@ -167,6 +177,7 @@ Interviewers assess:
 ```
 
 ### Phase 3: Code (15-20 minutes)
+
 ```
 1. Write clean, readable code
 2. Use meaningful variable names
@@ -176,6 +187,7 @@ Interviewers assess:
 ```
 
 ### Phase 4: Test (5-7 minutes)
+
 ```
 1. Trace through a simple example by hand
 2. Test edge cases:
@@ -191,6 +203,7 @@ Interviewers assess:
 ## Google-Specific Tips
 
 ### Do's
+
 - **Ask clarifying questions first** - Shows thoroughness
 - **State assumptions explicitly** - "I'm assuming the input is 0-indexed"
 - **Analyze complexity before and after** - Time AND space
@@ -198,6 +211,7 @@ Interviewers assess:
 - **Be comfortable with silence** - Take time to think
 
 ### Don'ts
+
 - Don't start coding immediately
 - Don't give up after one approach fails
 - Don't be defensive about mistakes
@@ -211,6 +225,7 @@ Interviewers assess:
 What interviewers look for in the behavioral/GCA assessment:
 
 ### Positive Signals
+
 ```
 + Taking feedback gracefully
 + Asking for clarification rather than assuming
@@ -221,6 +236,7 @@ What interviewers look for in the behavioral/GCA assessment:
 ```
 
 ### Negative Signals
+
 ```
 - Arrogance or dismissing hints
 - Giving up too easily
@@ -236,36 +252,37 @@ What interviewers look for in the behavioral/GCA assessment:
 
 ### Phone Screen Level (Medium)
 
-| Problem | Pattern | Key Insight |
-|---------|---------|-------------|
-| LRU Cache | Design + HashMap + DLL | O(1) get/put with ordered eviction |
-| Word Search | DFS + Backtracking | Mark visited, restore after |
-| Group Anagrams | HashMap | Sorted string as key |
-| Find K Closest Points | Heap | Min-heap of size k |
+| Problem               | Pattern                | Key Insight                        |
+| --------------------- | ---------------------- | ---------------------------------- |
+| LRU Cache             | Design + HashMap + DLL | O(1) get/put with ordered eviction |
+| Word Search           | DFS + Backtracking     | Mark visited, restore after        |
+| Group Anagrams        | HashMap                | Sorted string as key               |
+| Find K Closest Points | Heap                   | Min-heap of size k                 |
 
 ### Onsite Level (Medium-Hard)
 
-| Problem | Pattern | Key Insight |
-|---------|---------|-------------|
-| Median from Data Stream | Two Heaps | Balance max-heap and min-heap |
-| Serialize/Deserialize Binary Tree | BFS/DFS | Null markers for structure |
-| Word Ladder | BFS | Word transformation as graph |
+| Problem                           | Pattern    | Key Insight                      |
+| --------------------------------- | ---------- | -------------------------------- |
+| Median from Data Stream           | Two Heaps  | Balance max-heap and min-heap    |
+| Serialize/Deserialize Binary Tree | BFS/DFS    | Null markers for structure       |
+| Word Ladder                       | BFS        | Word transformation as graph     |
 | Longest Increasing Path in Matrix | DFS + Memo | Cache path length from each cell |
 
 ### Hard (Occasional)
 
-| Problem | Pattern | Key Insight |
-|---------|---------|-------------|
-| Sliding Window Maximum | Monotonic Deque | Maintain decreasing order |
-| Trapping Rain Water | Two Pointers | Max from left and right |
-| Word Break II | DP + Backtracking | Build all valid sentences |
-| Regular Expression Matching | DP | Handle '.' and '*' cases |
+| Problem                     | Pattern           | Key Insight               |
+| --------------------------- | ----------------- | ------------------------- |
+| Sliding Window Maximum      | Monotonic Deque   | Maintain decreasing order |
+| Trapping Rain Water         | Two Pointers      | Max from left and right   |
+| Word Break II               | DP + Backtracking | Build all valid sentences |
+| Regular Expression Matching | DP                | Handle '.' and '\*' cases |
 
 ---
 
 ## Time Management
 
 ### 45-Minute Round
+
 ```
 0:00-0:03  Problem understanding, clarify
 0:03-0:08  Discuss approach, complexity
@@ -287,13 +304,13 @@ What interviewers look for in the behavioral/GCA assessment:
 
 ## Common Mistakes at Google
 
-| Mistake | Impact | Fix |
-|---------|--------|-----|
-| Starting to code too fast | Miss cases, wrong approach | Spend 5+ min planning |
-| Silent problem solving | Can't assess your thinking | Think out loud always |
-| Ignoring space complexity | Incomplete analysis | Always state both time/space |
-| Not testing code | Bugs left in solution | Trace through example |
-| Giving up on optimization | Miss chance to improve | Always discuss how to optimize |
+| Mistake                   | Impact                     | Fix                            |
+| ------------------------- | -------------------------- | ------------------------------ |
+| Starting to code too fast | Miss cases, wrong approach | Spend 5+ min planning          |
+| Silent problem solving    | Can't assess your thinking | Think out loud always          |
+| Ignoring space complexity | Incomplete analysis        | Always state both time/space   |
+| Not testing code          | Bugs left in solution      | Trace through example          |
+| Giving up on optimization | Miss chance to improve     | Always discuss how to optimize |
 
 ---
 

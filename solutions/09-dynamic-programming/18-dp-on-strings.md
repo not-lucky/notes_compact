@@ -1,9 +1,11 @@
 # Solutions: Advanced String DP
 
 ## 1. Distinct Subsequences
+
 **Problem:** Count distinct subsequences of `s` that equal `t`.
 
 ### Optimal Python Solution
+
 ```python
 def num_distinct(s: str, t: str) -> int:
     m, n = len(s), len(t)
@@ -19,15 +21,18 @@ def num_distinct(s: str, t: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 2. Interleaving String
+
 **Problem:** Is `s3` an interleaving of `s1` and `s2`?
 
 ### Optimal Python Solution
+
 ```python
 def is_interleave(s1: str, s2: str, s3: str) -> bool:
     m, n = len(s1), len(s2)
@@ -51,15 +56,18 @@ def is_interleave(s1: str, s2: str, s3: str) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 3. Scramble String
+
 **Problem:** Is `s2` a scrambled version of `s1`?
 
 ### Optimal Python Solution
+
 ```python
 from functools import lru_cache
 
@@ -80,16 +88,19 @@ def is_scramble(s1: str, s2: str) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^4)$ due to memoization states and string slicing.
 - **Space:** $O(n^4)$
 
 ---
 
 ## 4. Longest Valid Parentheses
+
 **Problem:** Length of longest valid parentheses substring.
 
 ### Optimal Python Solution
-```python
+
+````python
 def longest_valid_parentheses(s: str) -> int:
     n = len(s)
     dp = [0] * n # Length of valid substring ending at i
@@ -106,6 +117,7 @@ def longest_valid_parentheses(s: str) -> int:
             max_len = max(max_len, dp[i])
     return max_len
 
+```
 ---
 
 ## 6. Palindrome Pairs
@@ -135,6 +147,7 @@ def palindrome_pairs(words: list[str]) -> list[list[int]]:
                     res.append([i, word_to_idx[rev_prefix]])
     return res
 
+```
 ---
 
 ## 7. Decode Ways II
@@ -168,9 +181,10 @@ def num_decodings_ii(s: str) -> int:
         prev2, prev1 = prev1, curr
 
     return prev1
-```
+````
 
 ### Explanation
+
 1.  **Expansion of Decode Ways**: We now have wildcards. The logic remains the same (1-digit vs 2-digit) but the "ways" for each step are multipliers.
 2.  **`*` as 1-digit**: 9 ways (1-9).
 3.  **`*` as 2-digit**:
@@ -179,15 +193,18 @@ def num_decodings_ii(s: str) -> int:
     - `X*`: If X is 1, 9 ways. If 2, 6 ways.
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 8. Count Different Palindromic Subsequences
+
 **Problem:** Count non-empty distinct palindromic subsequences in $s$.
 
 ### Optimal Python Solution
+
 ```python
 def count_palindromic_subsequences(s: str) -> int:
     n = len(s)
@@ -218,8 +235,10 @@ def count_palindromic_subsequences(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$ - Actually $O(n^3)$ due to the inner while loops, but can be optimized to $O(n^2)$ with precomputation.
 - **Space:** $O(n^2)$
+
 ```
 
 ### Explanation
@@ -235,5 +254,6 @@ def count_palindromic_subsequences(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(n)$

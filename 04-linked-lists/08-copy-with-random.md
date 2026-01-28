@@ -66,6 +66,7 @@ The interleaving uses the list structure itself as the hashmap!
 
 **Why the Index Matters in Heap-Based Deep Copy**:
 If you try to put nodes in a heap (for other reasons):
+
 ```python
 heappush(heap, (node.val, node))  # FAILS if two nodes have same value
 heappush(heap, (node.val, index, node))  # Works—index is tiebreaker
@@ -74,6 +75,7 @@ heappush(heap, (node.val, index, node))  # Works—index is tiebreaker
 Python compares tuples left-to-right. If values are equal, it tries to compare nodes, which raises TypeError. An index ensures unique ordering.
 
 **What "Deep Copy" Really Means**:
+
 ```python
 # Shallow copy: new list, same nodes
 copy_head = original_head  # Just copying reference
@@ -98,6 +100,7 @@ Deep copy means complete independence. Modifying the copy doesn't affect the ori
 5. **When the Node Type Isn't Hashable**: The hashmap approach requires nodes to be valid dict keys. Custom `__hash__` might be needed for unusual node types.
 
 **Common Mistake**: Forgetting that `node.random` could be `None`. Always check before doing `node.random.next`:
+
 ```python
 if current.random:
     current.next.random = current.random.next
@@ -120,11 +123,13 @@ This problem (LeetCode 138) is asked frequently at top tech companies.
 ## Problem Definition
 
 Given a linked list where each node has:
+
 - `val`: Integer value
 - `next`: Pointer to next node
 - `random`: Pointer to any node in the list (or None)
 
 Create a **deep copy** - a completely new list where:
+
 - All nodes are newly created
 - `next` and `random` pointers point to the new nodes (not original)
 
@@ -372,13 +377,13 @@ current = None
 
 ## Complexity Comparison
 
-| Approach | Time | Space |
-|----------|------|-------|
-| HashMap (two pass) | O(n) | O(n) |
-| HashMap (single pass) | O(n) | O(n) |
-| Interleaving | O(n) | O(1)* |
+| Approach              | Time | Space  |
+| --------------------- | ---- | ------ |
+| HashMap (two pass)    | O(n) | O(n)   |
+| HashMap (single pass) | O(n) | O(n)   |
+| Interleaving          | O(n) | O(1)\* |
 
-*O(1) extra space (the copied list itself is O(n) but that's required output)
+\*O(1) extra space (the copied list itself is O(n) but that's required output)
 
 ---
 
@@ -541,11 +546,11 @@ def clone_graph(node):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Copy List with Random Pointer | Medium | Deep copy with random |
-| 2 | Clone Graph | Medium | Same concept for graphs |
-| 3 | Clone Binary Tree with Random Pointer | Medium | Same concept for trees |
+| #   | Problem                               | Difficulty | Key Concept             |
+| --- | ------------------------------------- | ---------- | ----------------------- |
+| 1   | Copy List with Random Pointer         | Medium     | Deep copy with random   |
+| 2   | Clone Graph                           | Medium     | Same concept for graphs |
+| 3   | Clone Binary Tree with Random Pointer | Medium     | Same concept for trees  |
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Overview
 
-Regex Matching uses DP to determine if a string matches a pattern containing wildcards (*) and single-character matches (. or ?).
+Regex Matching uses DP to determine if a string matches a pattern containing wildcards (\*) and single-character matches (. or ?).
 
 ## Building Intuition
 
@@ -54,6 +54,7 @@ Pattern matching DP is challenging because:
 5. **Streaming Input**: DP assumes you have the full string. For streaming regex matching, use DFA simulation.
 
 **Distinguish Wildcard vs Regex:**
+
 - Wildcard: `*` alone matches any sequence
 - Regex: `*` modifies preceding char (match 0+)
 - Both: `.` or `?` matches single char
@@ -63,6 +64,7 @@ Pattern matching DP is challenging because:
 ## Wildcard Matching
 
 Pattern with:
+
 - `?` matches any single character
 - `*` matches any sequence (including empty)
 
@@ -140,6 +142,7 @@ def is_match_wildcard_2d(s: str, p: str) -> bool:
 ## Regular Expression Matching
 
 Pattern with:
+
 - `.` matches any single character
 - `*` matches zero or more of the preceding element
 
@@ -235,12 +238,12 @@ Key transitions:
 
 ## Key Differences
 
-| Aspect | Wildcard | Regex |
-|--------|----------|-------|
-| `*` meaning | Match any sequence | Match 0+ of preceding |
-| `?` or `.` | Single char | Single char |
-| `*` standalone | Valid | Invalid (needs preceding) |
-| "a*" matches | Anything starting with 'a' | "", "a", "aa", "aaa"... |
+| Aspect         | Wildcard                   | Regex                     |
+| -------------- | -------------------------- | ------------------------- |
+| `*` meaning    | Match any sequence         | Match 0+ of preceding     |
+| `?` or `.`     | Single char                | Single char               |
+| `*` standalone | Valid                      | Invalid (needs preceding) |
+| "a\*" matches  | Anything starting with 'a' | "", "a", "aa", "aaa"...   |
 
 ---
 
@@ -376,11 +379,11 @@ def is_match_memo(s: str, p: str) -> bool:
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Wildcard (DP) | O(mn) | O(n) |
-| Regex (DP) | O(mn) | O(n) |
-| Regex (Memo) | O(mn) | O(mn) |
+| Problem       | Time  | Space |
+| ------------- | ----- | ----- |
+| Wildcard (DP) | O(mn) | O(n)  |
+| Regex (DP)    | O(mn) | O(n)  |
+| Regex (Memo)  | O(mn) | O(mn) |
 
 ---
 
@@ -388,7 +391,7 @@ def is_match_memo(s: str, p: str) -> bool:
 
 1. **Know both patterns**: Wildcard vs regex
 2. **Handle base cases**: Empty string, empty pattern
-3. **Understand * semantics**: Standalone vs preceding
+3. **Understand \* semantics**: Standalone vs preceding
 4. **Draw DP table**: Helps visualize transitions
 5. **Mention optimizations**: Space reduction
 
@@ -396,20 +399,20 @@ def is_match_memo(s: str, p: str) -> bool:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Type |
-|---|---------|------------|------|
-| 1 | Wildcard Matching | Hard | Wildcard |
-| 2 | Regular Expression Matching | Hard | Regex |
-| 3 | Valid Parenthesis String | Medium | Similar concept |
+| #   | Problem                     | Difficulty | Type            |
+| --- | --------------------------- | ---------- | --------------- |
+| 1   | Wildcard Matching           | Hard       | Wildcard        |
+| 2   | Regular Expression Matching | Hard       | Regex           |
+| 3   | Valid Parenthesis String    | Medium     | Similar concept |
 
 ---
 
 ## Key Takeaways
 
 1. **Two different problems**: Wildcard ≠ regex
-2. **Regex * needs preceding**: "x*" matches zero or more x
-3. **Wildcard * is standalone**: Matches any sequence
-4. **Initialize for empty string**: Important for * patterns
+2. **Regex \* needs preceding**: "x\*" matches zero or more x
+3. **Wildcard \* is standalone**: Matches any sequence
+4. **Initialize for empty string**: Important for \* patterns
 5. **2D then optimize**: Start with 2D, reduce to 1D
 
 ---

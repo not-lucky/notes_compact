@@ -19,6 +19,7 @@ Think of building a subset as going through a checklist. For each item, you make
 3. **Why 2^n Subsets?**: Each element doubles the number of subsets. With 0 elements: 1 subset (empty). Add element A: 2 subsets ({}, {A}). Add element B: 4 subsets ({}, {A}, {B}, {A,B}). Each new element can be added to all existing subsets OR not.
 
 4. **Visual Intuition—The Branching Tree**:
+
 ```
                     Start: {}
                    /        \
@@ -30,6 +31,7 @@ Think of building a subset as going through a checklist. For each item, you make
         /           \          /           \
       {1,2}        {1}       {2}          {}
 ```
+
 Each leaf is a valid subset. The tree has 2^n leaves.
 
 5. **The "Start Index" Trick**: To avoid duplicates like {1,2} and {2,1}, we always process elements in order. By starting from index `start` and only considering elements at `start` or later, we ensure each subset is generated exactly once in a canonical order.
@@ -49,6 +51,7 @@ The subsets/power set approach isn't always appropriate:
 5. **When You Only Need the Count**: If you just need to count valid subsets, use DP or math—don't generate them all.
 
 **Red Flags Against Subsets Pattern:**
+
 - Problem says "minimum/maximum" → probably DP or greedy
 - Problem says "order matters" → probably permutations
 - n > 20 in constraints → 2^n won't fit in time limit
@@ -67,6 +70,7 @@ The subsets/power set approach isn't always appropriate:
 ## Interview Context
 
 Subsets problems test:
+
 1. **Backtracking understanding**: Include/exclude decision at each element
 2. **Duplicate handling**: Subsets II with duplicate elements
 3. **Time/space awareness**: Understanding 2^n complexity
@@ -90,6 +94,7 @@ The power set has 2^n subsets (each element is either in or out).
 ## The Core Insight
 
 At each element, make a binary decision:
+
 - **Include** the element in the current subset
 - **Exclude** the element from the current subset
 
@@ -306,11 +311,11 @@ But we still include it when it's part of a chain (i == start case)
 
 ## Approach Comparison
 
-| Approach | Time | Space | Best For |
-|----------|------|-------|----------|
-| Backtracking | O(n × 2^n) | O(n) | Most interviews, clear logic |
-| Iterative | O(n × 2^n) | O(1) | Simple cases |
-| Bit Manipulation | O(n × 2^n) | O(1) | When n ≤ 20, clever solution |
+| Approach         | Time       | Space | Best For                     |
+| ---------------- | ---------- | ----- | ---------------------------- |
+| Backtracking     | O(n × 2^n) | O(n)  | Most interviews, clear logic |
+| Iterative        | O(n × 2^n) | O(1)  | Simple cases                 |
+| Bit Manipulation | O(n × 2^n) | O(1)  | When n ≤ 20, clever solution |
 
 ---
 
@@ -352,11 +357,11 @@ sorted_nums = sorted(nums)  # Original preserved
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Generate all subsets | O(n × 2^n) | O(n) | 2^n subsets, O(n) per copy |
-| With duplicates | O(n × 2^n) | O(n) | Same worst case |
-| Bit manipulation | O(n × 2^n) | O(1) | Constant extra space |
+| Operation            | Time       | Space | Notes                      |
+| -------------------- | ---------- | ----- | -------------------------- |
+| Generate all subsets | O(n × 2^n) | O(n)  | 2^n subsets, O(n) per copy |
+| With duplicates      | O(n × 2^n) | O(n)  | Same worst case            |
+| Bit manipulation     | O(n × 2^n) | O(1)  | Constant extra space       |
 
 ---
 
@@ -371,12 +376,12 @@ sorted_nums = sorted(nums)  # Original preserved
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Subsets | Medium | Basic backtracking |
-| 2 | Subsets II | Medium | Sort + skip duplicates |
-| 3 | Letter Case Permutation | Medium | Binary decision tree |
-| 4 | Find All Subsets of Length K | Medium | Add length constraint |
+| #   | Problem                      | Difficulty | Key Insight            |
+| --- | ---------------------------- | ---------- | ---------------------- |
+| 1   | Subsets                      | Medium     | Basic backtracking     |
+| 2   | Subsets II                   | Medium     | Sort + skip duplicates |
+| 3   | Letter Case Permutation      | Medium     | Binary decision tree   |
+| 4   | Find All Subsets of Length K | Medium     | Add length constraint  |
 
 ---
 

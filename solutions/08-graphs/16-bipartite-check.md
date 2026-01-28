@@ -2,17 +2,18 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Is Graph Bipartite? | Medium | Core problem |
-| 2 | Possible Bipartition | Medium | People/dislikes framing |
-| 3 | Graph Coloring (k colors) | Hard | Generalization |
+| #   | Problem                   | Difficulty | Key Variation           |
+| --- | ------------------------- | ---------- | ----------------------- |
+| 1   | Is Graph Bipartite?       | Medium     | Core problem            |
+| 2   | Possible Bipartition      | Medium     | People/dislikes framing |
+| 3   | Graph Coloring (k colors) | Hard       | Generalization          |
 
 ---
 
 ## 1. Is Graph Bipartite?
 
 ### Problem Statement
+
 Determine if the given undirected graph is bipartite.
 
 ### Optimal Python Solution
@@ -40,6 +41,7 @@ def isBipartite(graph: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Algorithm**: BFS with two-coloring.
 - **Logic**: A graph is bipartite if and only if it's two-colorable. If we find an adjacent node with the same color, it's not bipartite.
 - **Complexity**: Time O(V + E), Space O(V).
@@ -49,6 +51,7 @@ def isBipartite(graph: list[list[int]]) -> bool:
 ## 2. Possible Bipartition
 
 ### Problem Statement
+
 Can `n` people be split into two groups such that no two people in the same group dislike each other?
 
 ### Optimal Python Solution
@@ -79,6 +82,7 @@ def possibleBipartition(n: int, dislikes: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Logic**: This is the exact same problem as `Is Graph Bipartite?`, just framed with people and dislikes.
 - **Complexity**: Time O(V + E), Space O(V + E).
 
@@ -87,6 +91,7 @@ def possibleBipartition(n: int, dislikes: list[list[int]]) -> bool:
 ## 3. Graph Coloring (k colors)
 
 ### Problem Statement
+
 Given an undirected graph and a number `k`, determine if the graph can be colored with at most `k` colors such that no two adjacent vertices have the same color.
 
 ### Optimal Python Solution (Backtracking)
@@ -113,8 +118,9 @@ def graphColoring(graph, k, color, v):
 ```
 
 ### Explanation
+
 - **Algorithm**: Backtracking.
 - **Complexity**: Time O(k^V), Space O(V). This is a general version of the bipartite check (which is k=2).
 - **Note**: This is an NP-complete problem for k > 2.
-    - O(V + E) for k=2 (Bipartite).
-    - O(k^V) for k > 2.
+  - O(V + E) for k=2 (Bipartite).
+  - O(k^V) for k > 2.

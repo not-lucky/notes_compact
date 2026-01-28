@@ -216,11 +216,11 @@ def kth_largest(root: TreeNode, k: int) -> int:
 
 **A**: Use augmented BST with subtree sizes.
 
-| Operation | Standard BST | Augmented BST |
-|-----------|-------------|---------------|
-| Insert | O(H) | O(H) |
-| Delete | O(H) | O(H) |
-| Kth smallest | O(H + k) | O(H) |
+| Operation    | Standard BST | Augmented BST |
+| ------------ | ------------ | ------------- |
+| Insert       | O(H)         | O(H)          |
+| Delete       | O(H)         | O(H)          |
+| Kth smallest | O(H + k)     | O(H)          |
 
 The augmented approach is better when k queries >> modifications.
 
@@ -277,11 +277,11 @@ def count_smaller(nums: list[int]) -> list[int]:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Best For |
-|----------|------|-------|----------|
-| Inorder counter | O(H + k) | O(H) | Single query |
-| Build array | O(n) | O(n) | Multiple queries, static tree |
-| Augmented BST | O(H) | O(1) | Frequent queries + modifications |
+| Approach        | Time     | Space | Best For                         |
+| --------------- | -------- | ----- | -------------------------------- |
+| Inorder counter | O(H + k) | O(H)  | Single query                     |
+| Build array     | O(n)     | O(n)  | Multiple queries, static tree    |
+| Augmented BST   | O(H)     | O(1)  | Frequent queries + modifications |
 
 ---
 
@@ -318,13 +318,13 @@ def count_smaller(nums: list[int]) -> list[int]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Kth Smallest Element in a BST | Medium | Core problem |
-| 2 | Second Minimum Node In a Binary Tree | Easy | Variant |
-| 3 | Count of Smaller Numbers After Self | Hard | BST order statistics |
-| 4 | Kth Largest Element in a Stream | Easy | Min heap alternative |
-| 5 | Find K-th Smallest Pair Distance | Hard | Binary search + count |
+| #   | Problem                              | Difficulty | Key Concept           |
+| --- | ------------------------------------ | ---------- | --------------------- |
+| 1   | Kth Smallest Element in a BST        | Medium     | Core problem          |
+| 2   | Second Minimum Node In a Binary Tree | Easy       | Variant               |
+| 3   | Count of Smaller Numbers After Self  | Hard       | BST order statistics  |
+| 4   | Kth Largest Element in a Stream      | Easy       | Min heap alternative  |
+| 5   | Find K-th Smallest Pair Distance     | Hard       | Binary search + count |
 
 ---
 

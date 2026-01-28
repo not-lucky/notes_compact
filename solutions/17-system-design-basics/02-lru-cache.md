@@ -5,9 +5,11 @@ This file provides optimal Python solutions for practice problems related to LRU
 ## 1. LRU Cache (Standard)
 
 ### Problem Statement
+
 Design and implement a data structure for Least Recently Used (LRU) cache. It should support `get` and `put` operations. `get(key)` returns the value if the key exists, otherwise -1. `put(key, value)` inserts or updates the value. When the cache is full, it should evict the least recently used item before inserting a new one.
 
 ### Examples & Edge Cases
+
 - **Example**: `capacity = 2`. `put(1, 1)`, `put(2, 2)`, `get(1)` (1 is now MRU), `put(3, 3)` (evicts 2), `get(2)` -> -1.
 - **Edge Cases**:
   - Capacity = 1: Every new entry evicts the previous.
@@ -15,6 +17,7 @@ Design and implement a data structure for Least Recently Used (LRU) cache. It sh
   - Large number of operations: Efficiency is key.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, key=0, value=0):
@@ -78,9 +81,11 @@ class LRUCache:
 ```
 
 ### Explanation
+
 We use a **HashMap** for $O(1)$ lookups and a **Doubly Linked List** to maintain the order of usage. The "Most Recently Used" items are kept near the `head`, and "Least Recently Used" items are near the `tail`. Dummy nodes simplify the logic by removing the need for null checks.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$ for all operations. Hash map lookups and pointer updates in a doubly linked list are constant time.
 - **Space Complexity**: $O(N)$ where $N$ is the capacity.
 
@@ -89,9 +94,11 @@ We use a **HashMap** for $O(1)$ lookups and a **Doubly Linked List** to maintain
 ## 2. Design Linked List
 
 ### Problem Statement
+
 Design your implementation of a doubly linked list. Support `get(index)`, `addAtHead(val)`, `addAtTail(val)`, `addAtIndex(index, val)`, and `deleteAtIndex(index)`.
 
 ### Examples & Edge Cases
+
 - **Examples**:
   - `addAtHead(1)`, `addAtTail(3)`, `addAtIndex(1, 2)`, `get(1)` -> 2.
 - **Edge Cases**:
@@ -100,6 +107,7 @@ Design your implementation of a doubly linked list. Support `get(index)`, `addAt
   - Empty list operations.
 
 ### Optimal Python Solution
+
 ```python
 class ListNode:
     def __init__(self, val=0):
@@ -181,9 +189,11 @@ class MyLinkedList:
 ```
 
 ### Explanation
+
 We implement a **Doubly Linked List** with dummy head and tail. To optimize `get` and finding nodes, we check if the `index` is in the first or second half and traverse from the nearest end.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `addAtHead`, `addAtTail`: $O(1)$.
   - `get`, `addAtIndex`, `deleteAtIndex`: $O(\min(k, N-k))$ where $k$ is the index.
@@ -194,19 +204,23 @@ We implement a **Doubly Linked List** with dummy head and tail. To optimize `get
 ## 3. All O(1) Data Structure
 
 ### Problem Statement
+
 Design a data structure that supports the following operations in $O(1)$ time:
+
 1. `inc(key)`: Increments the count of the key by 1.
 2. `dec(key)`: Decrements the count of the key by 1.
 3. `getMaxKey()`: Returns one of the keys with maximal count.
 4. `getMinKey()`: Returns one of the keys with minimal count.
 
 ### Examples & Edge Cases
+
 - **Examples**: `inc("a")`, `inc("b")`, `inc("b")`, `inc("c")`, `getMaxKey()` -> "b", `getMinKey()` -> "a" or "c".
 - **Edge Cases**:
   - Empty structure: Return "".
   - Key count becomes 0: Remove it.
 
 ### Optimal Python Solution
+
 ```python
 class Block:
     def __init__(self, val=0):
@@ -286,9 +300,11 @@ class AllOne:
 ```
 
 ### Explanation
+
 We use a **Doubly Linked List of Blocks**, where each block represents a specific frequency (count) and stores a set of keys with that frequency. A **HashMap** maps each key to its current block. This allows us to move keys between frequency blocks in $O(1)$.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$ for all operations.
 - **Space Complexity**: $O(N)$ where $N$ is the number of keys.
 
@@ -297,15 +313,18 @@ We use a **Doubly Linked List of Blocks**, where each block represents a specifi
 ## 4. Design Browser History
 
 ### Problem Statement
+
 You have a browser with `homepage`. You can `visit(url)`, go `back(steps)`, or `forward(steps)`.
 
 ### Examples & Edge Cases
+
 - **Examples**: `visit("google.com")`, `visit("facebook.com")`, `back(1)` -> "google.com", `visit("linkedin.com")` (clears forward history).
 - **Edge Cases**:
   - Going back further than history allows: Return earliest page.
   - Going forward further than possible: Return latest page.
 
 ### Optimal Python Solution
+
 ```python
 class BrowserHistory:
     def __init__(self, homepage: str):
@@ -334,9 +353,11 @@ class BrowserHistory:
 ```
 
 ### Explanation
+
 A simple **dynamic array (list)** with a pointer `curr` is sufficient. `visit` truncates the array and appends the new URL. `back` and `forward` just move the pointer within bounds.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
   - `visit`: $O(N)$ in Python due to slicing (can be $O(1)$ if we manage capacity manually).
   - `back`, `forward`: $O(1)$.
@@ -347,15 +368,18 @@ A simple **dynamic array (list)** with a pointer `curr` is sufficient. `visit` t
 ## 5. LRU Cache (Follow-up: TTL)
 
 ### Problem Statement
+
 Implement an LRU cache where each entry also has a **Time To Live (TTL)**. If an entry is requested after its TTL has expired, it should be treated as a cache miss and removed.
 
 ### Examples & Edge Cases
+
 - **Examples**: `put(1, 1, ttl=5s)`, `get(1)` after 6s -> -1.
 - **Edge Cases**:
   - Lazy deletion vs. Eager deletion.
   - Update TTL on `put`.
 
 ### Optimal Python Solution
+
 ```python
 import time
 
@@ -399,8 +423,10 @@ class LRUCacheWithTTL(LRUCache):
 ```
 
 ### Explanation
+
 We extend the standard LRU cache by adding an `expiry` timestamp to each node. We use **Lazy Deletion**: we only check for expiration during a `get` call. This keeps the logic simple and $O(1)$ per operation.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(1)$.
 - **Space Complexity**: $O(N)$.

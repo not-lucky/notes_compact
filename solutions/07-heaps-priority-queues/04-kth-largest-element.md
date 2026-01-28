@@ -1,13 +1,16 @@
 # Kth Largest Element Solutions
 
 ## 1. Kth Largest Element in an Array
+
 Find the kth largest element in an array.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums = [3,2,3,1,2,4,5,5,6], k = 4` -> Output: 4
 - **Edge Case: k = 1**: Should return the maximum.
 
 ### Optimal Python Solution (QuickSelect)
+
 ```python
 import random
 
@@ -46,20 +49,24 @@ def findKthLargest(nums: list[int], k: int) -> int:
 ```
 
 ### Explanation
+
 1.  **Pivot Selection**: We choose a random pivot to avoid the $O(n^2)$ worst case on sorted/nearly sorted inputs.
 2.  **Partitioning**: We rearrange elements so that all elements smaller than the pivot are to its left.
 3.  **Selection**: Unlike QuickSort, we only recurse into the side that contains our `target` index.
 
 ### Complexity Analysis
+
 - **Time Complexity**: Average $O(n)$, Worst $O(n^2)$.
 - **Space Complexity**: $O(1)$ iterative, or $O(\log n)$ recursive for call stack.
 
 ---
 
 ## 2. Kth Smallest Element in a Sorted Matrix
+
 Given an `n x n` matrix where each row and column is sorted in ascending order, find the kth smallest element.
 
 ### Optimal Python Solution (Min-Heap)
+
 ```python
 import heapq
 
@@ -87,15 +94,18 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(k \log (\min(n, k)))$.
 - **Space Complexity**: $O(\min(n, k))$.
 
 ---
 
 ## 3. Find K Pairs with Smallest Sums
+
 Find `k` pairs `(u, v)` with one element from `nums1` and one from `nums2` such that the sum is smallest.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -126,15 +136,18 @@ def kSmallestPairs(nums1: list[int], nums2: list[int], k: int) -> list[list[int]
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(k \log k)$.
 - **Space Complexity**: $O(k)$.
 
 ---
 
 ## 4. Kth Smallest Element in a BST
+
 Given the root of a binary search tree, and an integer `k`, return the kth smallest value (1-indexed).
 
 ### Optimal Python Solution (In-order Traversal)
+
 ```python
 def kthSmallest(root: Optional[TreeNode], k: int) -> int:
     """
@@ -161,9 +174,11 @@ def kthSmallest(root: Optional[TreeNode], k: int) -> int:
 ---
 
 ## 5. Third Maximum Number
+
 Return the third maximum distinct number in an array. If it does not exist, return the maximum number.
 
 ### Optimal Python Solution
+
 ```python
 def thirdMax(nums: list[int]) -> int:
     """
@@ -186,5 +201,6 @@ def thirdMax(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n)$.
 - **Space Complexity**: $O(n)$ for the `set` conversion, or $O(1)$ if we use a different way to check for distinctness.

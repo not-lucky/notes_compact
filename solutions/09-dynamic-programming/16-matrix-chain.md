@@ -1,10 +1,12 @@
 # Solutions: Matrix Chain Multiplication (Interval DP)
 
 ## 1. Matrix Chain Multiplication
+
 **Problem:** Minimum scalar multiplications to multiply a chain of matrices.
 
 ### Optimal Python Solution
-```python
+
+````python
 def matrix_chain_order(p: list[int]) -> int:
     # State: dp[i][j] = min cost to multiply matrices i through j
     n = len(p) - 1
@@ -22,6 +24,7 @@ def matrix_chain_order(p: list[int]) -> int:
 
     return dp[1][n]
 
+```
 ---
 
 ## 4. Burst Balloons
@@ -45,6 +48,7 @@ def max_coins(nums: list[int]) -> int:
                                dp[i][k] + dp[k][j] + vals[i] * vals[k] * vals[j])
     return dp[0][n-1]
 
+```
 ---
 
 ## 6. Optimal Binary Search Tree
@@ -75,17 +79,20 @@ def optimal_bst(freq: list[int]) -> int:
                 right = dp[r+1][j] if r < j else 0
                 dp[i][j] = min(dp[i][j], left + right + weight)
     return dp[0][n-1]
-```
+````
 
 ### Explanation
+
 1.  **The Cost Logic**: If we pick `r` as root for range `(i, j)`, then every node in the left sub-tree `(i..r-1)` and right sub-tree `(r+1..j)` becomes one level deeper. Their contribution to the cost increases by exactly the sum of their frequencies.
 2.  **State**: `dp[i][j]` is the minimum cost for range `i` to `j`.
 3.  **Recurrence**: `dp[i][j] = min(dp[left] + dp[right] + sum_of_freqs_in_range)`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
-```
+
+````
 
 ### Explanation
 1.  **The Core Insight**: If we burst balloon `k` last in the range `(i, j)`, its neighbors at that moment are guaranteed to be `i` and `j` because everything in between has already been burst.
@@ -117,6 +124,7 @@ def min_score_triangulation(values: list[int]) -> int:
                                dp[i][k] + dp[k][j] + values[i] * values[k] * values[j])
     return dp[0][n-1]
 
+```
 ---
 
 ## 6. Optimal Binary Search Tree
@@ -147,16 +155,19 @@ def optimal_bst(freq: list[int]) -> int:
                 right = dp[r+1][j] if r < j else 0
                 dp[i][j] = min(dp[i][j], left + right + weight)
     return dp[0][n-1]
-```
+````
 
 ### Explanation
+
 1.  **The Cost Logic**: If we pick `r` as root for range `(i, j)`, then every node in the left sub-tree `(i..r-1)` and right sub-tree `(r+1..j)` becomes one level deeper. Their contribution to the cost increases by exactly the sum of their frequencies.
 2.  **State**: `dp[i][j]` is the minimum cost for range `i` to `j`.
 3.  **Recurrence**: `dp[i][j] = min(dp[left] + dp[right] + sum_of_freqs_in_range)`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
+
 ```
 
 ### Explanation
@@ -169,16 +180,19 @@ def optimal_bst(freq: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$ - Three nested loops: length, starting point, split point.
 - **Space:** $O(n^2)$ - To store results for all matrix intervals.
 
 ---
 
 ## 2. Minimum Cost to Merge Stones
+
 **Problem:** Merge $k$ consecutive piles into one, minimize total cost.
 
 ### Optimal Python Solution
-```python
+
+````python
 def merge_stones(stones: list[int], k: int) -> int:
     n = len(stones)
     if (n - 1) % (k - 1): return -1
@@ -200,6 +214,7 @@ def merge_stones(stones: list[int], k: int) -> int:
                 dp[i][j] += prefix[j+1] - prefix[i]
     return dp[0][n-1]
 
+```
 ---
 
 ## 6. Optimal Binary Search Tree
@@ -230,17 +245,20 @@ def optimal_bst(freq: list[int]) -> int:
                 right = dp[r+1][j] if r < j else 0
                 dp[i][j] = min(dp[i][j], left + right + weight)
     return dp[0][n-1]
-```
+````
 
 ### Explanation
+
 1.  **The Cost Logic**: If we pick `r` as root for range `(i, j)`, then every node in the left sub-tree `(i..r-1)` and right sub-tree `(r+1..j)` becomes one level deeper. Their contribution to the cost increases by exactly the sum of their frequencies.
 2.  **State**: `dp[i][j]` is the minimum cost for range `i` to `j`.
 3.  **Recurrence**: `dp[i][j] = min(dp[left] + dp[right] + sum_of_freqs_in_range)`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(n^3 / k)$
@@ -271,6 +289,7 @@ def optimal_bst(freq: list[int]) -> int:
                 dp[i][j] = min(dp[i][j], left + right + weight)
     return dp[0][n-1]
 
+```
 ---
 
 ## 6. Optimal Binary Search Tree
@@ -301,18 +320,22 @@ def optimal_bst(freq: list[int]) -> int:
                 right = dp[r+1][j] if r < j else 0
                 dp[i][j] = min(dp[i][j], left + right + weight)
     return dp[0][n-1]
-```
+````
 
 ### Explanation
+
 1.  **The Cost Logic**: If we pick `r` as root for range `(i, j)`, then every node in the left sub-tree `(i..r-1)` and right sub-tree `(r+1..j)` becomes one level deeper. Their contribution to the cost increases by exactly the sum of their frequencies.
 2.  **State**: `dp[i][j]` is the minimum cost for range `i` to `j`.
 3.  **Recurrence**: `dp[i][j] = min(dp[left] + dp[right] + sum_of_freqs_in_range)`.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n^3)$
 - **Space:** $O(n^2)$
+```

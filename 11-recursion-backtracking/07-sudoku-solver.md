@@ -16,7 +16,8 @@ Think of Sudoku as filling slots while respecting multiple "clubs" each cell bel
 
 2. **The Key Mental Model**: Imagine 81 job positions, each requiring one of 9 skill types. Each position has three managers (row, column, box) who each forbid certain skills. You must assign skills such that no manager sees duplicates.
 
-3. **Why Box Index = (row//3)*3 + col//3**:
+3. **Why Box Index = (row//3)\*3 + col//3**:
+
 ```
 The 9 boxes are numbered 0-8:
 ┌───┬───┬───┐
@@ -36,6 +37,7 @@ For cell (5,7):
 ```
 
 4. **Visual Intuition—Constraint Intersection**:
+
 ```
 For cell (4,5):
 
@@ -77,6 +79,7 @@ Simple backtracking works but isn't always optimal:
 5. **When the Board Is Invalid**: If constraints are already violated (duplicate in row/col/box), detect this early rather than waste time backtracking.
 
 **Red Flags for Simple Sudoku Backtracking:**
+
 - Need to solve millions of puzzles → use DLX or SAT solver
 - Generating puzzles → different algorithm entirely
 - Checking uniqueness → need to count solutions
@@ -95,6 +98,7 @@ Simple backtracking works but isn't always optimal:
 ## Interview Context
 
 Sudoku solver tests:
+
 1. **Constraint propagation**: Three simultaneous constraints (row, column, box)
 2. **Backtracking efficiency**: Knowing when to backtrack early
 3. **State management**: Tracking what's valid in each position
@@ -471,12 +475,12 @@ Example:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Basic | O(9^81) | O(81) | Worst case, rarely hit |
-| With sets | O(9^empty) | O(81) | O(1) validation |
-| MRV heuristic | Better avg | O(81) | Prunes more branches |
-| Bitmasks | O(9^empty) | O(27) | Fastest constant |
+| Approach      | Time       | Space | Notes                  |
+| ------------- | ---------- | ----- | ---------------------- |
+| Basic         | O(9^81)    | O(81) | Worst case, rarely hit |
+| With sets     | O(9^empty) | O(81) | O(1) validation        |
+| MRV heuristic | Better avg | O(81) | Prunes more branches   |
+| Bitmasks      | O(9^empty) | O(27) | Fastest constant       |
 
 ---
 
@@ -535,11 +539,11 @@ for digit in '123456789':
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Valid Sudoku | Medium | Validation only |
-| 2 | Sudoku Solver | Hard | Full backtracking |
-| 3 | Design Sudoku | Hard | Generate valid puzzles |
+| #   | Problem       | Difficulty | Key Insight            |
+| --- | ------------- | ---------- | ---------------------- |
+| 1   | Valid Sudoku  | Medium     | Validation only        |
+| 2   | Sudoku Solver | Hard       | Full backtracking      |
+| 3   | Design Sudoku | Hard       | Generate valid puzzles |
 
 ---
 
@@ -547,7 +551,7 @@ for digit in '123456789':
 
 1. **Start with validation**: Show you understand the three constraints
 2. **Use sets**: O(1) lookup is expected
-3. **Know the box formula**: (row // 3) * 3 + col // 3
+3. **Know the box formula**: (row // 3) \* 3 + col // 3
 4. **Mention optimizations**: MRV, constraint propagation, bitmasks
 5. **Handle edge cases**: Already solved, invalid input
 
@@ -557,7 +561,7 @@ for digit in '123456789':
 
 1. Three simultaneous constraints: row, column, 3×3 box
 2. Use sets for O(1) validity checking
-3. Box index = (row // 3) * 3 + col // 3
+3. Box index = (row // 3) \* 3 + col // 3
 4. MRV heuristic: fill most constrained cell first
 5. Must return True/False and backtrack properly
 

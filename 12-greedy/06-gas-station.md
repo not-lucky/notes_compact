@@ -5,6 +5,7 @@
 ## Interview Context
 
 Gas station tests:
+
 1. **Circular array thinking**: Handling wrap-around
 2. **Greedy insight**: Single-pass solution
 3. **Proof skills**: Why the greedy approach works
@@ -75,6 +76,7 @@ This is why we can solve in O(n)—when we fail, we don't retry from I+1, I+2, e
 **1. When Fuel Capacity Is Limited**
 
 Real cars have limited tanks:
+
 ```
 If tank capacity is 10, and at some point we'd need to
 hold 15 units, even a valid "start point" might fail.
@@ -85,6 +87,7 @@ This requires tracking max tank needed, not just running total.
 **2. When There Are Multiple Valid Starts**
 
 The standard problem guarantees unique answer. If duplicates are possible:
+
 ```
 gas  = [1, 1, 1]
 cost = [1, 1, 1]
@@ -97,6 +100,7 @@ but the problem might want "all valid starts."
 **3. When Stations Can Be Skipped**
 
 If you can skip stations (at a cost), it's no longer greedy:
+
 ```
 gas  = [1, 10, 1]
 cost = [5, 5, 5]
@@ -108,6 +112,7 @@ With skipping: Start at 1, skip station 2, go 1→0→1: different problem!
 **4. Non-circular Routes**
 
 If the route is linear (start → end, no wrap), simplify:
+
 ```python
 def can_complete_linear(gas, cost):
     tank = 0
@@ -123,6 +128,7 @@ def can_complete_linear(gas, cost):
 ## Problem Statement
 
 There are `n` gas stations in a circle. You have a car with unlimited tank capacity. At station `i`:
+
 - You gain `gas[i]` fuel
 - You spend `cost[i]` fuel to travel to station `i+1`
 
@@ -235,6 +241,7 @@ Verify starting at 3:
 ### Part 1: If sum(gas) >= sum(cost), solution exists
 
 **By contradiction**:
+
 - Assume no valid starting point exists
 - For every station `i`, starting there leads to negative tank somewhere
 - But if we sum all journeys, total gain = sum(gas) - sum(cost) ≥ 0
@@ -245,6 +252,7 @@ Verify starting at 3:
 **Claim**: If we fail at station `j` starting from `i`, the answer is not in `[i, j]`.
 
 **Proof**:
+
 - From `i` to `j-1`, we maintained non-negative tank
 - At `j`, tank became negative: tank_j < 0
 - For any `k` in `[i+1, j-1]`:
@@ -407,11 +415,11 @@ The key insight is the **elimination**: failing at `j` rules out all stations fr
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Basic solution | O(n) | O(1) | Single pass |
-| Min cumulative approach | O(n) | O(1) | Track minimum |
-| Brute force (comparison) | O(n²) | O(1) | Try each start |
+| Operation                | Time  | Space | Notes          |
+| ------------------------ | ----- | ----- | -------------- |
+| Basic solution           | O(n)  | O(1)  | Single pass    |
+| Min cumulative approach  | O(n)  | O(1)  | Track minimum  |
+| Brute force (comparison) | O(n²) | O(1)  | Try each start |
 
 ---
 
@@ -427,12 +435,12 @@ The key insight is the **elimination**: failing at `j` rules out all stations fr
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Gas Station | Medium | Greedy reset on failure |
-| 2 | Maximum Sum Circular Subarray | Medium | Kadane + wrap-around |
-| 3 | Minimum Number of Refueling Stops | Hard | Heap-based greedy |
-| 4 | Cheapest Flights Within K Stops | Medium | BFS/Bellman-Ford |
+| #   | Problem                           | Difficulty | Key Insight             |
+| --- | --------------------------------- | ---------- | ----------------------- |
+| 1   | Gas Station                       | Medium     | Greedy reset on failure |
+| 2   | Maximum Sum Circular Subarray     | Medium     | Kadane + wrap-around    |
+| 3   | Minimum Number of Refueling Stops | Hard       | Heap-based greedy       |
+| 4   | Cheapest Flights Within K Stops   | Medium     | BFS/Bellman-Ford        |
 
 ---
 

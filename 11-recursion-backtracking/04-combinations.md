@@ -22,6 +22,7 @@ Think of combinations as subsets with a constraint: we only want subsets of exac
    - Dividing by (n-k)! removes orderings of the unchosen
 
 4. **Visual Intuition—Pruned Subset Tree**:
+
 ```
 n=4, k=2: Choose 2 from {1,2,3,4}
 
@@ -56,6 +57,7 @@ Combinations are powerful but have specific use cases:
 5. **When You Need Weighted Selection**: If elements have weights or costs and you want the "best" combination, consider DP or greedy approaches rather than enumerating all.
 
 **Red Flags Against Generating All Combinations:**
+
 - n and k are large (C(n,k) > 10^7) → too many combinations
 - Problem asks for "optimal" → probably DP or greedy
 - Problem asks for count → use math formula directly
@@ -75,6 +77,7 @@ Combinations are powerful but have specific use cases:
 ## Interview Context
 
 Combination problems test:
+
 1. **Subset selection**: Choose k elements from n
 2. **Order independence**: [1,2] and [2,1] are the same combination
 3. **Pruning ability**: Skip when not enough elements remain
@@ -287,11 +290,11 @@ def combine_array(nums: list[int], k: int) -> list[list[int]]:
 
 ## Combinations vs Subsets vs Permutations
 
-| Aspect | Subsets | Combinations | Permutations |
-|--------|---------|--------------|--------------|
-| Size | All sizes | Exactly k | Exactly n |
-| Order | No | No | Yes |
-| Count | 2^n | C(n,k) | n! |
+| Aspect  | Subsets        | Combinations | Permutations |
+| ------- | -------------- | ------------ | ------------ |
+| Size    | All sizes      | Exactly k    | Exactly n    |
+| Order   | No             | No           | Yes          |
+| Count   | 2^n            | C(n,k)       | n!           |
 | Example | {}, {1}, {1,2} | {1,2}, {1,3} | [1,2], [2,1] |
 
 ---
@@ -312,6 +315,7 @@ C(n, 1) = n (choose one)
 ```
 
 Pascal's Triangle relation:
+
 ```
 C(n, k) = C(n-1, k-1) + C(n-1, k)
 ```
@@ -393,11 +397,11 @@ def combine_sum_k(nums: list[int], k: int, target: int) -> list[list[int]]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Generate C(n,k) | O(k × C(n,k)) | O(k) | O(k) per combination |
-| With pruning | O(k × C(n,k)) | O(k) | Fewer recursive calls |
-| Using itertools | O(k × C(n,k)) | O(1) | Iterator, memory efficient |
+| Operation       | Time          | Space | Notes                      |
+| --------------- | ------------- | ----- | -------------------------- |
+| Generate C(n,k) | O(k × C(n,k)) | O(k)  | O(k) per combination       |
+| With pruning    | O(k × C(n,k)) | O(k)  | Fewer recursive calls      |
+| Using itertools | O(k × C(n,k)) | O(1)  | Iterator, memory efficient |
 
 ---
 
@@ -412,12 +416,12 @@ def combine_sum_k(nums: list[int], k: int, target: int) -> list[list[int]]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Combinations | Medium | Basic backtracking |
-| 2 | Combination Sum III | Medium | k numbers that sum to n |
-| 3 | Factor Combinations | Medium | Prime factorization |
-| 4 | Combination Iterator | Medium | Design pattern |
+| #   | Problem              | Difficulty | Key Insight             |
+| --- | -------------------- | ---------- | ----------------------- |
+| 1   | Combinations         | Medium     | Basic backtracking      |
+| 2   | Combination Sum III  | Medium     | k numbers that sum to n |
+| 3   | Factor Combinations  | Medium     | Prime factorization     |
+| 4   | Combination Iterator | Medium     | Design pattern          |
 
 ---
 

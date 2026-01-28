@@ -21,6 +21,7 @@ The key insight is **every modification creates a new string**:
 **Mental Model**: Think of immutable strings like printed documents. To change one word, you must reprint the entire document. Lists are like whiteboards—you can erase and rewrite freely. Build on the whiteboard, then print once when done.
 
 **The O(n²) Trap**:
+
 ```python
 # DON'T DO THIS - O(n²)
 s = ""
@@ -50,6 +51,7 @@ Consider alternatives in these cases:
 5. **When Bytes vs Characters Matter**: `str` is Unicode (variable-width internally). For byte-level manipulation, use `bytes`.
 
 **Red Flags:**
+
 - "Modify string in-place" → Must use `list(s)`, then `"".join()`
 - "Append in a loop" → Use list + join, not `+=`
 - "Binary/byte manipulation" → Use `bytes` or `bytearray`
@@ -82,12 +84,12 @@ s[0] = 'H'   # ERROR! Strings are immutable
 
 ### Key Properties
 
-| Property | Implication |
-|----------|-------------|
-| Immutable | Can't modify in-place |
-| Hashable | Can use as dict keys/set elements |
-| Iterable | Can loop through characters |
-| Indexable | O(1) character access |
+| Property  | Implication                       |
+| --------- | --------------------------------- |
+| Immutable | Can't modify in-place             |
+| Hashable  | Can use as dict keys/set elements |
+| Iterable  | Can loop through characters       |
+| Indexable | O(1) character access             |
 
 ---
 
@@ -228,6 +230,7 @@ for char in chars:
 ```
 
 Why O(n²)? Each `+=` copies the entire string:
+
 - Iteration 1: copy 1 char
 - Iteration 2: copy 2 chars
 - ...
@@ -393,17 +396,17 @@ def to_lower(c: str) -> str:
 
 ## Complexity Comparison
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| `s[i]` | O(1) | Index access |
-| `len(s)` | O(1) | Stored attribute |
-| `s + t` | O(n+m) | Creates new string |
-| `s in t` | O(n*m) | Substring search |
-| `s.find(t)` | O(n*m) | Substring search |
-| `s.split()` | O(n) | Creates list of strings |
-| `"".join(list)` | O(n) | Total characters |
-| `s[::-1]` | O(n) | Creates reversed copy |
-| `s == t` | O(n) | Character comparison |
+| Operation       | Time    | Notes                   |
+| --------------- | ------- | ----------------------- |
+| `s[i]`          | O(1)    | Index access            |
+| `len(s)`        | O(1)    | Stored attribute        |
+| `s + t`         | O(n+m)  | Creates new string      |
+| `s in t`        | O(n\*m) | Substring search        |
+| `s.find(t)`     | O(n\*m) | Substring search        |
+| `s.split()`     | O(n)    | Creates list of strings |
+| `"".join(list)` | O(n)    | Total characters        |
+| `s[::-1]`       | O(n)    | Creates reversed copy   |
+| `s == t`        | O(n)    | Character comparison    |
 
 ---
 
@@ -432,16 +435,16 @@ def to_lower(c: str) -> str:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Reverse String | Easy | Two pointers or slicing |
-| 2 | Valid Palindrome | Easy | Two pointers, isalnum |
-| 3 | First Unique Character | Easy | Frequency count |
-| 4 | Valid Anagram | Easy | Character frequency |
-| 5 | String to Integer (atoi) | Medium | Parsing edge cases |
-| 6 | Longest Common Prefix | Easy | Character comparison |
-| 7 | Implement strStr() | Easy | Substring matching |
-| 8 | Reverse Words in a String | Medium | Split, reverse, join |
+| #   | Problem                   | Difficulty | Key Concept             |
+| --- | ------------------------- | ---------- | ----------------------- |
+| 1   | Reverse String            | Easy       | Two pointers or slicing |
+| 2   | Valid Palindrome          | Easy       | Two pointers, isalnum   |
+| 3   | First Unique Character    | Easy       | Frequency count         |
+| 4   | Valid Anagram             | Easy       | Character frequency     |
+| 5   | String to Integer (atoi)  | Medium     | Parsing edge cases      |
+| 6   | Longest Common Prefix     | Easy       | Character comparison    |
+| 7   | Implement strStr()        | Easy       | Substring matching      |
+| 8   | Reverse Words in a String | Medium     | Split, reverse, join    |
 
 ---
 

@@ -13,6 +13,7 @@ Finding the intersection point of two linked lists determines where two separate
 This is one of the most elegant algorithms in computer science. The magic lies in distance equalization.
 
 **The Distance Equalization Insight**:
+
 ```
 List A: ─────•─────────────•─────────• (length a + shared)
              ↑              intersection
@@ -29,16 +30,19 @@ Both travel the same total distance: a + b + shared. They arrive at the intersec
 
 **The Mental Model**:
 Imagine two people walking toward each other on different roads that merge:
+
 - Alice walks road A (3 miles), reaches the merge, continues on road B (5 miles)
 - Bob walks road B (5 miles), reaches the merge, continues on road A (3 miles)
 
 Both walk exactly 8 miles. If there's a meeting point, they arrive together. If not, they both reach the end at the same time (both become None).
 
 **Why This Beats Hash Set**:
+
 - Hash set: O(n) space to store all nodes from one list
 - Two pointers: O(1) space, same time complexity
 
 **The Length-Alignment Alternative**:
+
 ```
 1. Count length of A (len_a), length of B (len_b)
 2. Advance the longer list's pointer by |len_a - len_b|
@@ -49,6 +53,7 @@ Both walk exactly 8 miles. If there's a meeting point, they arrive together. If 
 This is more intuitive but requires two passes over each list (count + walk) vs the single-pass elegance of the switch technique.
 
 **Critical Point: Reference vs Value**
+
 ```python
 # WRONG: Comparing values
 if node_a.val == node_b.val:  # Different nodes can have same value!
@@ -101,6 +106,7 @@ Intersection at: c1
 ```
 
 Important notes:
+
 - The intersection is by **reference** (same node object), not by value
 - After intersection, both lists share the same tail
 - If no intersection exists, return None
@@ -340,11 +346,11 @@ a, b, intersection = create_intersecting_lists([1, 2], [3, 4, 5], [6, 7, 8])
 
 ## Complexity Comparison
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Hash Set | O(n + m) | O(n) | Simple but uses extra space |
-| Two Pointers | O(n + m) | O(1) | Elegant, optimal |
-| Length Difference | O(n + m) | O(1) | Two passes but intuitive |
+| Approach          | Time     | Space | Notes                       |
+| ----------------- | -------- | ----- | --------------------------- |
+| Hash Set          | O(n + m) | O(n)  | Simple but uses extra space |
+| Two Pointers      | O(n + m) | O(1)  | Elegant, optimal            |
+| Length Difference | O(n + m) | O(1)  | Two passes but intuitive    |
 
 ---
 
@@ -381,6 +387,7 @@ In the standard problem, once lists intersect, they never diverge. But if the qu
 ## Common Mistakes
 
 1. **Comparing values instead of references**
+
    ```python
    # WRONG
    if nodeA.val == nodeB.val:  # Values can be equal without intersection
@@ -390,6 +397,7 @@ In the standard problem, once lists intersect, they never diverge. But if the qu
    ```
 
 2. **Infinite loop with different lengths**
+
    ```python
    # WRONG: This never terminates if lists don't intersect
    while pA and pB:
@@ -420,10 +428,10 @@ In the standard problem, once lists intersect, they never diverge. But if the qu
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Intersection of Two Linked Lists | Easy | Two-pointer technique |
-| 2 | Find the Duplicate Number | Medium | Related: cycle detection in array |
+| #   | Problem                          | Difficulty | Key Concept                       |
+| --- | -------------------------------- | ---------- | --------------------------------- |
+| 1   | Intersection of Two Linked Lists | Easy       | Two-pointer technique             |
+| 2   | Find the Duplicate Number        | Medium     | Related: cycle detection in array |
 
 ---
 

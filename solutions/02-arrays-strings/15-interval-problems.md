@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Merge Intervals
+
 **Problem Statement**: Given an array of `intervals` where `intervals[i] = [starti, endi]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 
 **Examples & Edge Cases**:
+
 - Example: `[[1,3],[2,6],[8,10],[15,18]]` -> `[[1,6],[8,10],[15,18]]`
 - Edge Case: Single interval.
 - Edge Case: Intervals that are exactly adjacent (`[1,2], [2,3]` should merge to `[1,3]`).
 
 **Optimal Python Solution**:
+
 ```python
 def merge(intervals: list[list[int]]) -> list[list[int]]:
     if not intervals: return []
@@ -35,15 +38,18 @@ def merge(intervals: list[list[int]]) -> list[list[int]]:
 We sort intervals by their start times. This ensures that any intervals that could potentially be merged are adjacent in our list. We then iterate through, either extending the current "running" interval or starting a new one if a gap is found.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n log n) due to sorting.
 - **Space Complexity**: O(n) for the output list (or O(log n) for sorting in-place).
 
 ---
 
 ### 2. Insert Interval
+
 **Problem Statement**: You are given an array of non-overlapping intervals `intervals` sorted by their start times. Insert a `newInterval` into the intervals such that the resulting intervals are still sorted and non-overlapping.
 
 **Optimal Python Solution**:
+
 ```python
 def insert(intervals: list[list[int]], newInterval: list[int]) -> list[list[int]]:
     res = []
@@ -71,15 +77,18 @@ def insert(intervals: list[list[int]], newInterval: list[int]) -> list[list[int]
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n) for the result.
 
 ---
 
 ### 3. Meeting Rooms
+
 **Problem Statement**: Given an array of meeting time intervals, determine if a person could attend all meetings.
 
 **Optimal Python Solution**:
+
 ```python
 def canAttendMeetings(intervals: list[list[int]]) -> bool:
     intervals.sort(key=lambda x: x[0])
@@ -93,15 +102,18 @@ def canAttendMeetings(intervals: list[list[int]]) -> bool:
 A person can attend all meetings if no two meetings overlap. After sorting by start time, we just check if any meeting starts before the previous one ends.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n log n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 4. Meeting Rooms II
+
 **Problem Statement**: Given an array of meeting time intervals, return the minimum number of conference rooms required.
 
 **Optimal Python Solution**:
+
 ```python
 def minMeetingRooms(intervals: list[list[int]]) -> int:
     if not intervals: return 0
@@ -132,15 +144,18 @@ def minMeetingRooms(intervals: list[list[int]]) -> int:
 We treat starts and ends as independent events. We iterate through time; every start increases the room count, and every end decreases it. The maximum room count reached at any point is our answer.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n log n).
 - **Space Complexity**: O(n).
 
 ---
 
 ### 5. Non-overlapping Intervals
+
 **Problem Statement**: Given an array of intervals, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
 
 **Optimal Python Solution**:
+
 ```python
 def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
     if not intervals: return 0
@@ -164,15 +179,18 @@ def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n log n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 6. Interval List Intersections
+
 **Problem Statement**: You are given two lists of closed intervals, `firstList` and `secondList`, where `firstList[i] = [starti, endi]` and `secondList[j] = [startj, endj]`. Each list of intervals is pairwise disjoint and in sorted order. Return the intersection of these two interval lists.
 
 **Optimal Python Solution**:
+
 ```python
 def intervalIntersection(A: list[list[int]], B: list[list[int]]) -> list[list[int]]:
     res = []
@@ -196,15 +214,18 @@ def intervalIntersection(A: list[list[int]], B: list[list[int]]) -> list[list[in
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n + m).
 - **Space Complexity**: O(n + m) for the result.
 
 ---
 
 ### 7. Remove Covered Intervals
+
 **Problem Statement**: Given a list of intervals, remove all intervals that are covered by another interval in the list. Interval `[a,b]` is covered by interval `[c,d]` if and only if `c <= a` and `b <= d`. Return the number of remaining intervals.
 
 **Optimal Python Solution**:
+
 ```python
 def removeCoveredIntervals(intervals: list[list[int]]) -> int:
     # Sort by start (asc) and then by end (desc)
@@ -224,15 +245,18 @@ def removeCoveredIntervals(intervals: list[list[int]]) -> int:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n log n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 8. Employee Free Time
+
 **Problem Statement**: Given a list of employee schedules, return the common free time for all employees.
 
 **Optimal Python Solution**:
+
 ```python
 def employeeFreeTime(schedule: list[list[list[int]]]) -> list[list[int]]:
     # 1. Flatten all working intervals
@@ -258,5 +282,6 @@ def employeeFreeTime(schedule: list[list[list[int]]]) -> list[list[int]]:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N log N) where N is the total number of intervals.
 - **Space Complexity**: O(N).

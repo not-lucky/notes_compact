@@ -23,6 +23,7 @@ Given a grid and k words, the brute force is: for each word, search the entire g
 Instead of asking "Does this grid contain word X?" k times, ask "As I walk through this grid, which words can I form?"
 
 The trie transforms this from:
+
 ```
 For each of 10,000 words:
     For each of 144 cells:
@@ -30,6 +31,7 @@ For each of 10,000 words:
 ```
 
 To:
+
 ```
 For each of 144 cells:
     DFS up to 10 levels, but prune if path not in ANY word
@@ -40,12 +42,14 @@ For each of 144 cells:
 Consider searching for ["oath", "pea", "eat", "rain"]. When you start DFS from cell 'o':
 
 Without trie:
+
 - Check if path matches "oath" → Yes? Continue. No? Check next word.
 - Check if path matches "pea" → ...
 - Check if path matches "eat" → ...
 - Repeat for every step!
 
 With trie:
+
 - Is 'o' a valid prefix? Check ONE node. Yes → continue. No → prune entirely.
 - At 'oa', is 'oa' valid? Check ONE node.
 - At 'oat', is 'oat' valid? Check ONE node.
@@ -108,6 +112,7 @@ If almost every path matches some word, pruning provides little benefit. The tri
 For a 3×3 grid with 5-letter words? Brute force might be faster due to lower constant factors.
 
 **Red Flags:**
+
 - "Find if ANY path matches pattern" → Regex/DP might be better
 - "Find longest word in grid" → Similar but may need different termination
 - "Find all substrings" (not starting from each cell) → Different problem entirely
@@ -342,18 +347,18 @@ Instead of using a separate visited set, modify board directly.
 
 ## Complexity Analysis
 
-| Aspect | Value | Explanation |
-|--------|-------|-------------|
-| Time | O(m × n × 4^L) | Start from each cell, max L moves with 4 directions |
-| Space | O(sum of word lengths) | Trie storage |
-| Space (recursion) | O(L) | Max depth of DFS |
+| Aspect            | Value                  | Explanation                                         |
+| ----------------- | ---------------------- | --------------------------------------------------- |
+| Time              | O(m × n × 4^L)         | Start from each cell, max L moves with 4 directions |
+| Space             | O(sum of word lengths) | Trie storage                                        |
+| Space (recursion) | O(L)                   | Max depth of DFS                                    |
 
 ### Comparison: With vs Without Trie
 
-| Approach | Time | Notes |
-|----------|------|-------|
-| Naive (per word) | O(m × n × k × 4^L) | DFS for each of k words |
-| With Trie | O(m × n × 4^L) | Single DFS checks all words |
+| Approach         | Time               | Notes                       |
+| ---------------- | ------------------ | --------------------------- |
+| Naive (per word) | O(m × n × k × 4^L) | DFS for each of k words     |
+| With Trie        | O(m × n × 4^L)     | Single DFS checks all words |
 
 For k = 10,000 words, trie is ~10,000x faster.
 
@@ -492,13 +497,13 @@ DFS from (0,3) 'e':
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Word Search | Medium | Single word DFS |
-| 2 | Word Search II | Hard | Trie + DFS |
-| 3 | Concatenated Words | Hard | Trie + DP |
-| 4 | Stream of Characters | Hard | Suffix trie matching |
-| 5 | Word Squares | Hard | Trie + backtracking |
+| #   | Problem              | Difficulty | Key Concept          |
+| --- | -------------------- | ---------- | -------------------- |
+| 1   | Word Search          | Medium     | Single word DFS      |
+| 2   | Word Search II       | Hard       | Trie + DFS           |
+| 3   | Concatenated Words   | Hard       | Trie + DP            |
+| 4   | Stream of Characters | Hard       | Suffix trie matching |
+| 5   | Word Squares         | Hard       | Trie + backtracking  |
 
 ---
 

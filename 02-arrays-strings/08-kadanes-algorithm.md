@@ -24,6 +24,7 @@ The key insight is **local optimality leads to global optimality**. At each posi
 **Mental Model**: Imagine you're collecting coins (positive) and paying tolls (negative) as you walk. At each step, ask: "Is my accumulated wealth helping or hurting me?" If you're in debt (negative sum), declare bankruptcy and start over. If you have savings (positive sum), keep going.
 
 **Visual Trace**:
+
 ```
 arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
 
@@ -59,6 +60,7 @@ Kadane's solves a specific problem:
 6. **All Elements Are Negative**: Kadane's still works (returns the least negative), but clarify with interviewer: "Is empty subarray allowed?" If yes, answer is 0.
 
 **Red Flags:**
+
 - "Subsequence" (not subarray) → Different DP
 - "Product" (not sum) → Track min and max
 - "Exactly k elements" → Sliding window or constrained DP
@@ -94,6 +96,7 @@ Maximum subarray: [4, -1, 2, 1] with sum = 6
 ## Core Insight
 
 At each position, we have two choices:
+
 1. **Extend** the current subarray (include this element)
 2. **Start fresh** from this element
 
@@ -433,16 +436,16 @@ Space optimization: only need dp[i-1] → single variable
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Maximum Subarray | Medium | Basic Kadane |
-| 2 | Maximum Product Subarray | Medium | Track min/max |
-| 3 | Maximum Sum Circular Subarray | Medium | Total - min |
-| 4 | House Robber | Medium | No adjacent |
-| 5 | House Robber II | Medium | Circular + no adjacent |
-| 6 | Best Time to Buy and Sell Stock | Easy | Kadane variation |
-| 7 | Maximum Sum Rectangle (2D) | Hard | 2D compression |
-| 8 | Maximum Subarray Sum with One Deletion | Medium | Track with/without deletion |
+| #   | Problem                                | Difficulty | Key Variation               |
+| --- | -------------------------------------- | ---------- | --------------------------- |
+| 1   | Maximum Subarray                       | Medium     | Basic Kadane                |
+| 2   | Maximum Product Subarray               | Medium     | Track min/max               |
+| 3   | Maximum Sum Circular Subarray          | Medium     | Total - min                 |
+| 4   | House Robber                           | Medium     | No adjacent                 |
+| 5   | House Robber II                        | Medium     | Circular + no adjacent      |
+| 6   | Best Time to Buy and Sell Stock        | Easy       | Kadane variation            |
+| 7   | Maximum Sum Rectangle (2D)             | Hard       | 2D compression              |
+| 8   | Maximum Subarray Sum with One Deletion | Medium     | Track with/without deletion |
 
 ---
 

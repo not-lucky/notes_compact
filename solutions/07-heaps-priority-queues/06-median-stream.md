@@ -1,9 +1,11 @@
 # Median from Stream Solutions
 
 ## 1. Find Median from Data Stream
+
 The median is the middle value in an ordered integer list. Implement `MedianFinder` class.
 
 ### Optimal Python Solution (Two Heaps)
+
 ```python
 import heapq
 
@@ -30,26 +32,31 @@ class MedianFinder:
 ```
 
 ### Explanation
+
 - **small**: A max-heap storing the lower half of the numbers.
 - **large**: A min-heap storing the upper half of the numbers.
 - **addNum**: Ensures numbers are partitioned correctly and heaps are balanced.
 - **findMedian**: Returns the average of roots if total count is even, else the root of the larger heap (`small`).
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(\log n)$ for `addNum`, $O(1)$ for `findMedian`.
 - **Space Complexity**: $O(n)$ to store all numbers.
 
 ---
 
 ## 2. Sliding Window Median
+
 Given an array `nums` and a window size `k`, return the median of each sliding window.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums = [1,3,-1,-3,5,3,6,7], k = 3` -> `[1.00000,-1.00000,-1.00000,3.00000,5.00000,6.00000]`
 - **Edge Case: k = 1**: Median is just the element itself.
 - **Edge Case: k = n**: Median of the entire array.
 
 ### Optimal Python Solution (Two Heaps + Lazy Deletion)
+
 ```python
 import heapq
 from collections import defaultdict
@@ -153,25 +160,30 @@ class SlidingWindowMedian:
 ```
 
 ### Explanation
+
 1.  **Lazy Deletion**: Standard heaps don't support efficient removal of arbitrary elements. When an element leaves the sliding window, we increment its count in a `delayed` hash map.
 2.  **Pruning**: We only remove the "zombie" elements when they reach the top of a heap.
 3.  **Two Heaps**: Similar to the "Median from Data Stream" problem, we use a max-heap for the lower half and a min-heap for the upper half to find the median in $O(1)$ once balanced.
 4.  **Balancing**: We use a `balance` factor to track how the addition and removal of elements shifted the equilibrium between the two heaps.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k)$. Each element is pushed and popped from the heaps at most once.
 - **Space Complexity**: $O(n)$ in the worst case to store the `delayed` elements, though it stays $O(k)$ for the heaps themselves.
 
 ---
 
 ## 3. IPO
+
 Maximize your capital by picking at most `k` projects.
 
 ### Examples & Edge Cases
+
 - **Example**: `k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]` -> `4`
 - **Edge Case: No affordable projects**: Should stop and return current capital.
 
 ### Optimal Python Solution (Greedy + Heap)
+
 ```python
 import heapq
 
@@ -207,24 +219,29 @@ def findMaximizedCapital(k: int, w: int, profits: list[int], capital: list[int])
 ```
 
 ### Explanation
+
 1.  **Greedy Choice**: At any point, our best strategy is to take the project that gives the maximum profit among all projects we can afford.
 2.  **Sorting**: We sort projects by capital so we can efficiently find "newly affordable" projects as our capital `w` grows.
 3.  **Heap**: A max-heap stores the profits of all currently affordable projects, allowing $O(1)$ access to the best one and $O(\log n)$ updates.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log n + k \log n)$. Sorting is $O(n \log n)$. We push and pop each project from the heap at most once, which is $O(n \log n)$.
 - **Space Complexity**: $O(n)$ to store the projects and the heap.
 
 ---
 
 ## 4. K Closest Points to Origin
+
 Given an array of `points` and an integer `k`, return the `k` closest points to `(0,0)`.
 
 ### Examples & Edge Cases
+
 - **Example**: `points = [[3,3],[5,-1],[-2,4]], k = 2` -> `[[3,3],[-2,4]]`
 - **Edge Case: k = 1**: Returns the single closest point.
 
 ### Optimal Python Solution (Max-Heap)
+
 ```python
 import heapq
 
@@ -252,9 +269,11 @@ def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 ```
 
 ### Explanation
-1.  **Top-K Smallest**: Since we want the $k$ *closest* points, we maintain a *max-heap* of our current candidates. The root is the "worst" (furthest) point in our set.
+
+1.  **Top-K Smallest**: Since we want the $k$ _closest_ points, we maintain a _max-heap_ of our current candidates. The root is the "worst" (furthest) point in our set.
 2.  **Efficiency**: This approach only uses $O(k)$ space, which is better than sorting ($O(n \log n)$) or a full heap ($O(n)$) when $k \ll n$.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k)$.
 - **Space Complexity**: $O(k)$.

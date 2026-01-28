@@ -14,6 +14,7 @@ Binary Search is a foundational algorithm that appears frequently in FANG+ inter
 ## The Core Insight
 
 Binary search works when the search space has a **monotonic property**:
+
 - If condition is true at position `mid`, it's true for all positions to one side
 - If condition is false at position `mid`, it's false for all positions to the other side
 
@@ -21,29 +22,29 @@ Binary search works when the search space has a **monotonic property**:
 
 ## Binary Search Patterns Overview
 
-| Pattern | Problems | Key Insight |
-|---------|----------|-------------|
-| Classic Search | Find target | Standard template |
-| Boundary Finding | First/last occurrence | Search for transition point |
-| Rotated Array | Search rotated sorted | Identify sorted half |
-| Peak Finding | Find peak element | Compare with neighbors |
-| Answer Space | Capacity problems | Binary search on answer |
-| Matrix Search | 2D matrix | Treat as 1D or use rows/cols |
+| Pattern          | Problems              | Key Insight                  |
+| ---------------- | --------------------- | ---------------------------- |
+| Classic Search   | Find target           | Standard template            |
+| Boundary Finding | First/last occurrence | Search for transition point  |
+| Rotated Array    | Search rotated sorted | Identify sorted half         |
+| Peak Finding     | Find peak element     | Compare with neighbors       |
+| Answer Space     | Capacity problems     | Binary search on answer      |
+| Matrix Search    | 2D matrix             | Treat as 1D or use rows/cols |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Binary Search Template](./01-binary-search-template.md) | Standard templates, variants |
-| 02 | [First/Last Occurrence](./02-first-last-occurrence.md) | Boundary finding |
-| 03 | [Search Rotated Array](./03-search-rotated-array.md) | Rotated sorted arrays |
-| 04 | [Find Minimum Rotated](./04-find-minimum-rotated.md) | Minimum in rotated array |
-| 05 | [Peak Element](./05-peak-element.md) | Finding peaks in arrays |
-| 06 | [Search Space](./06-search-space.md) | Binary search on answer |
-| 07 | [Matrix Search](./07-matrix-search.md) | 2D matrix search patterns |
-| 08 | [Median Two Arrays](./08-median-two-arrays.md) | Median of sorted arrays |
+| #   | Topic                                                    | Key Concepts                 |
+| --- | -------------------------------------------------------- | ---------------------------- |
+| 01  | [Binary Search Template](./01-binary-search-template.md) | Standard templates, variants |
+| 02  | [First/Last Occurrence](./02-first-last-occurrence.md)   | Boundary finding             |
+| 03  | [Search Rotated Array](./03-search-rotated-array.md)     | Rotated sorted arrays        |
+| 04  | [Find Minimum Rotated](./04-find-minimum-rotated.md)     | Minimum in rotated array     |
+| 05  | [Peak Element](./05-peak-element.md)                     | Finding peaks in arrays      |
+| 06  | [Search Space](./06-search-space.md)                     | Binary search on answer      |
+| 07  | [Matrix Search](./07-matrix-search.md)                   | 2D matrix search patterns    |
+| 08  | [Median Two Arrays](./08-median-two-arrays.md)           | Median of sorted arrays      |
 
 ---
 
@@ -101,24 +102,24 @@ def find_boundary(nums: list[int], target: int) -> int:
 
 ## Time Complexity
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Binary Search | O(log n) | O(1) |
-| Binary Search (recursive) | O(log n) | O(log n) |
-| Search in Matrix | O(log(m×n)) | O(1) |
-| Search Space | O(log(range) × cost) | O(1) |
+| Operation                 | Time                 | Space    |
+| ------------------------- | -------------------- | -------- |
+| Binary Search             | O(log n)             | O(1)     |
+| Binary Search (recursive) | O(log n)             | O(log n) |
+| Search in Matrix          | O(log(m×n))          | O(1)     |
+| Search Space              | O(log(range) × cost) | O(1)     |
 
 ---
 
 ## Common Interview Problems by Company
 
-| Company | Favorite Binary Search Problems |
-|---------|-------------------------------|
-| Google | Koko Eating Bananas, Median Two Arrays |
-| Meta | Search Rotated Array, Peak Element |
-| Amazon | Capacity to Ship, Find Minimum Rotated |
-| Microsoft | Search 2D Matrix, First Bad Version |
-| Apple | First/Last Position, Square Root |
+| Company   | Favorite Binary Search Problems        |
+| --------- | -------------------------------------- |
+| Google    | Koko Eating Bananas, Median Two Arrays |
+| Meta      | Search Rotated Array, Peak Element     |
+| Amazon    | Capacity to Ship, Find Minimum Rotated |
+| Microsoft | Search 2D Matrix, First Bad Version    |
+| Apple     | First/Last Position, Square Root       |
 
 ---
 

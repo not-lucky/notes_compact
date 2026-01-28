@@ -18,6 +18,7 @@ This problem frequently appears at Google and Amazon.
 ## Problem Statement
 
 Given `beginWord`, `endWord`, and `wordList`, find the shortest transformation sequence from beginWord to endWord where:
+
 - Only one letter changes at a time
 - Each intermediate word must be in wordList
 
@@ -361,6 +362,7 @@ def min_mutation(start: str, end: str, bank: list[str]) -> int:
 ## Pattern: Implicit Graph Recognition
 
 If you see:
+
 - States that transform into other states
 - Minimum steps/operations to reach goal
 - Valid intermediate states from a set
@@ -371,11 +373,11 @@ Think: **BFS on implicit graph**
 
 ## Complexity Analysis
 
-| Approach | Time | Space |
-|----------|------|-------|
-| Basic BFS | O(M² × N) | O(M × N) |
-| With preprocessing | O(M² × N) | O(M² × N) |
-| Bidirectional | O(M² × N) but faster | O(M × N) |
+| Approach           | Time                 | Space     |
+| ------------------ | -------------------- | --------- |
+| Basic BFS          | O(M² × N)            | O(M × N)  |
+| With preprocessing | O(M² × N)            | O(M² × N) |
+| Bidirectional      | O(M² × N) but faster | O(M × N)  |
 
 M = word length, N = number of words
 
@@ -428,13 +430,13 @@ if word == endWord:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Word Ladder | Hard | Basic implicit graph |
-| 2 | Word Ladder II | Hard | All shortest paths |
-| 3 | Open the Lock | Medium | Digit state graph |
-| 4 | Minimum Genetic Mutation | Medium | 4-character alphabet |
-| 5 | Sliding Puzzle | Hard | Board state graph |
+| #   | Problem                  | Difficulty | Key Variation        |
+| --- | ------------------------ | ---------- | -------------------- |
+| 1   | Word Ladder              | Hard       | Basic implicit graph |
+| 2   | Word Ladder II           | Hard       | All shortest paths   |
+| 3   | Open the Lock            | Medium     | Digit state graph    |
+| 4   | Minimum Genetic Mutation | Medium     | 4-character alphabet |
+| 5   | Sliding Puzzle           | Hard       | Board state graph    |
 
 ---
 

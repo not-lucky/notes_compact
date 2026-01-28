@@ -5,6 +5,7 @@
 ## Interview Context
 
 Binary search template questions test:
+
 1. **Implementation accuracy**: Can you write bug-free binary search?
 2. **Edge case handling**: Empty arrays, single elements, not found
 3. **Variant recognition**: Which template applies to which problem?
@@ -34,6 +35,7 @@ Condition: [F] [F] [F] [T] [T] [T] [T]
 Imagine painting a sorted array: everything before some point is red (condition false), everything from that point onward is blue (condition true). Binary search finds where the color changes—in O(log n) time.
 
 **Why Halving Works**:
+
 1. You pick the middle element
 2. You evaluate the condition at that point
 3. If true: the transition is at or before mid → search left half
@@ -45,6 +47,7 @@ This gives exactly log₂(n) steps.
 **The "Sorted Array" is a Special Case**
 
 When searching for a target in a sorted array:
+
 - Condition = "Is nums[mid] >= target?"
 - The condition transitions from false→true at the first occurrence
 - So binary search on sorted arrays is just finding this transition
@@ -56,6 +59,7 @@ When searching for a target in a sorted array:
 Binary search is powerful but has specific requirements:
 
 **1. Unsorted Data Without Monotonic Property**
+
 ```python
 # Won't work: no monotonic property
 arr = [3, 1, 4, 1, 5, 9, 2, 6]
@@ -63,23 +67,28 @@ arr = [3, 1, 4, 1, 5, 9, 2, 6]
 ```
 
 **2. When You Need All Occurrences**
+
 - Binary search finds ONE position (first, last, or any occurrence)
 - For ALL occurrences, you still need O(k) time where k = count
 
 **3. Small Arrays (n < 10-20)**
+
 - Linear scan is often faster due to cache efficiency
 - Binary search has more comparisons per iteration
 - Only matters for performance-critical code
 
 **4. Linked Lists**
+
 - No O(1) random access means O(n) to reach middle
 - Binary search becomes O(n log n)—worse than linear!
 
 **5. Frequently Modified Data**
+
 - Insertions break sorted order
 - Consider balanced BST or skip list instead
 
 **Red Flags That Binary Search Won't Work:**
+
 - "Find all elements satisfying..."
 - "Count total occurrences" (though boundaries can help)
 - Unsorted data with no way to define monotonicity
@@ -117,6 +126,7 @@ def binary_search(nums: list[int], target: int) -> int:
 ```
 
 **Key points:**
+
 - Use `<=` in condition (search until left crosses right)
 - Return `mid` immediately when found
 - Move `left = mid + 1` or `right = mid - 1` (never include mid)
@@ -207,11 +217,11 @@ def find_right_boundary(nums: list[int], target: int) -> int:
 
 ## Template Comparison
 
-| Template | Loop Condition | Mid Calculation | When Mid Found |
-|----------|---------------|-----------------|----------------|
-| Exact Match | `left <= right` | `left + (right-left)//2` | Return immediately |
-| Left Boundary | `left <= right` or `left < right` | Same | Continue searching left |
-| Right Boundary | `left <= right` | Same | Continue searching right |
+| Template       | Loop Condition                    | Mid Calculation          | When Mid Found           |
+| -------------- | --------------------------------- | ------------------------ | ------------------------ |
+| Exact Match    | `left <= right`                   | `left + (right-left)//2` | Return immediately       |
+| Left Boundary  | `left <= right` or `left < right` | Same                     | Continue searching left  |
+| Right Boundary | `left <= right`                   | Same                     | Continue searching right |
 
 ---
 
@@ -220,12 +230,14 @@ def find_right_boundary(nums: list[int], target: int) -> int:
 ### Finding target = 5 in [1, 2, 3, 5, 5, 5, 8, 9]
 
 **Exact match (finds any 5):**
+
 ```
 [1, 2, 3, 5, 5, 5, 8, 9]
  L           M        R     mid=3, nums[3]=5, return 3
 ```
 
 **Left boundary (finds first 5):**
+
 ```
 [1, 2, 3, 5, 5, 5, 8, 9]
  L           M        R     mid=3, nums[3]=5 >= 5, result=3, R=2
@@ -235,6 +247,7 @@ def find_right_boundary(nums: list[int], target: int) -> int:
 ```
 
 **Right boundary (finds last 5):**
+
 ```
 [1, 2, 3, 5, 5, 5, 8, 9]
  L           M        R     mid=3, nums[3]=5 <= 5, result=3, L=4
@@ -333,11 +346,11 @@ def binary_search_safe(nums: list[int], target: int) -> int:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Binary Search | O(log n) | O(1) | Halves search space each step |
-| Recursive Binary Search | O(log n) | O(log n) | Call stack depth |
-| Finding All Occurrences | O(log n + k) | O(1) | k = number of occurrences |
+| Operation               | Time         | Space    | Notes                         |
+| ----------------------- | ------------ | -------- | ----------------------------- |
+| Binary Search           | O(log n)     | O(1)     | Halves search space each step |
+| Recursive Binary Search | O(log n)     | O(log n) | Call stack depth              |
+| Finding All Occurrences | O(log n + k) | O(1)     | k = number of occurrences     |
 
 ---
 
@@ -418,15 +431,15 @@ def guess_number(n: int) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Binary Search | Easy | Standard template |
-| 2 | Sqrt(x) | Easy | Search on answer |
-| 3 | First Bad Version | Easy | Left boundary |
-| 4 | Guess Number Higher or Lower | Easy | Standard template |
-| 5 | Search Insert Position | Easy | Left boundary/insertion point |
-| 6 | Valid Perfect Square | Easy | Search on answer |
-| 7 | Count Negative Numbers in Sorted Matrix | Easy | Binary search per row |
+| #   | Problem                                 | Difficulty | Key Insight                   |
+| --- | --------------------------------------- | ---------- | ----------------------------- |
+| 1   | Binary Search                           | Easy       | Standard template             |
+| 2   | Sqrt(x)                                 | Easy       | Search on answer              |
+| 3   | First Bad Version                       | Easy       | Left boundary                 |
+| 4   | Guess Number Higher or Lower            | Easy       | Standard template             |
+| 5   | Search Insert Position                  | Easy       | Left boundary/insertion point |
+| 6   | Valid Perfect Square                    | Easy       | Search on answer              |
+| 7   | Count Negative Numbers in Sorted Matrix | Easy       | Binary search per row         |
 
 ---
 

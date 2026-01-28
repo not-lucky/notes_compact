@@ -72,17 +72,20 @@ bisect.insort(arr, 4)
 ## When NOT to Use
 
 ### Don't use bisect when:
+
 - **Data isn't sorted**: bisect assumes sorted input. Using it on unsorted data gives garbage results (silently!)
 - **You need O(log n) insertion**: `insort` is O(n) due to list shifting
 - **You're searching once**: A simple `in` check or linear scan may be clearer for one-time lookups
 - **The list is tiny**: Binary search has overhead; for 10 elements, linear is fine
 
 ### Use different approaches when:
+
 - **You need frequent insertions + lookups**: Use `sortedcontainers.SortedList` or a balanced tree
 - **You're finding min/max dynamically**: Use a heap
 - **Data arrives unsorted**: Sort first, or use a self-balancing structure
 
 ### Common mistakes:
+
 ```python
 # WRONG: Forgetting to check bounds
 arr = [1, 3, 5, 7]
@@ -438,11 +441,11 @@ i = bisect.bisect_left(keys, 3)  # Works!
 
 ## Complexity Summary
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| bisect_left | O(log n) | Find insertion point |
+| Operation    | Time     | Notes                               |
+| ------------ | -------- | ----------------------------------- |
+| bisect_left  | O(log n) | Find insertion point                |
 | bisect_right | O(log n) | Find insertion point (after equals) |
-| insort | O(n) | Insert + shift elements |
+| insort       | O(n)     | Insert + shift elements             |
 
 **Note**: While finding the position is O(log n), inserting into a list is O(n) due to shifting. For true O(log n) insertion, use `sortedcontainers.SortedList`.
 
@@ -481,14 +484,14 @@ print(sl[1:3])      # Slicing works
 
 ## Practice Problems
 
-| # | Problem | Concept |
-|---|---------|---------|
-| 1 | Search Insert Position | bisect_left |
-| 2 | Find First and Last Position | bisect_left + bisect_right |
-| 3 | Time Based Key-Value Store | bisect_right for floor |
-| 4 | Count of Smaller Numbers | bisect + update |
-| 5 | Russian Doll Envelopes | LIS with bisect |
-| 6 | H-Index II | bisect on sorted array |
+| #   | Problem                      | Concept                    |
+| --- | ---------------------------- | -------------------------- |
+| 1   | Search Insert Position       | bisect_left                |
+| 2   | Find First and Last Position | bisect_left + bisect_right |
+| 3   | Time Based Key-Value Store   | bisect_right for floor     |
+| 4   | Count of Smaller Numbers     | bisect + update            |
+| 5   | Russian Doll Envelopes       | LIS with bisect            |
+| 6   | H-Index II                   | bisect on sorted array     |
 
 ---
 

@@ -2,18 +2,19 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Core cycle detection |
-| 2 | Course Schedule II | Medium | Topological sort if no cycle |
-| 3 | Find Eventual Safe States | Medium | Nodes not in any cycle |
-| 4 | Redundant Connection II | Hard | Find edge causing cycle |
+| #   | Problem                   | Difficulty | Key Variation                |
+| --- | ------------------------- | ---------- | ---------------------------- |
+| 1   | Course Schedule           | Medium     | Core cycle detection         |
+| 2   | Course Schedule II        | Medium     | Topological sort if no cycle |
+| 3   | Find Eventual Safe States | Medium     | Nodes not in any cycle       |
+| 4   | Redundant Connection II   | Hard       | Find edge causing cycle      |
 
 ---
 
 ## 1. Course Schedule
 
 ### Problem Statement
+
 Given `numCourses` and a list of `prerequisites` where `[a, b]` means you must take course `b` before `a`, determine if you can finish all courses.
 
 ### Optimal Python Solution
@@ -50,6 +51,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Algorithm**: We use DFS with three states (Three-Coloring).
 - **Logic**: A cycle in a directed graph exists if and only if we encounter a node that is currently being visited (`state == 1`) in the current recursion stack.
 - **Complexity**: Time O(V + E), Space O(V + E) for graph storage.
@@ -59,6 +61,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ## 2. Course Schedule II
 
 ### Problem Statement
+
 Return the ordering of courses to finish all courses. Return `[]` if impossible.
 
 ### Optimal Python Solution
@@ -96,6 +99,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Topological Sort**: This is reverse post-order DFS.
 - **Ordering**: We append the node to `order` after all its dependents are processed. Reversing gives the correct execution order.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -105,6 +109,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ## 3. Find Eventual Safe States
 
 ### Problem Statement
+
 A node is "safe" if every possible path starting from that node leads to a terminal node (a node with no outgoing edges). Return all safe nodes in ascending order.
 
 ### Optimal Python Solution
@@ -131,6 +136,7 @@ def eventualSafeNodes(graph: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Concept**: A node is safe if it is NOT part of a cycle and doesn't lead to a cycle.
 - **Algorithm**: Similar to cycle detection. If a node or any of its descendants can reach a "visiting" node, it's unsafe.
 - **Complexity**: Time O(V + E), Space O(V).
@@ -140,6 +146,7 @@ def eventualSafeNodes(graph: list[list[int]]) -> list[int]:
 ## 4. Redundant Connection II
 
 ### Problem Statement
+
 A directed tree with one additional edge added. Find the edge that can be removed to make it a rooted tree again.
 
 ### Optimal Python Solution
@@ -188,9 +195,10 @@ def findRedundantDirectedConnection(edges: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Cases**:
-    1. A node has two parents (two edges pointing to it).
-    2. There is a cycle.
-    3. Both (one edge causes two parents AND a cycle).
+  1. A node has two parents (two edges pointing to it).
+  2. There is a cycle.
+  3. Both (one edge causes two parents AND a cycle).
 - **Algorithm**: Identify if any node has two parents. If so, those two edges are our candidates. We use Union-Find to detect cycles.
 - **Complexity**: Time O(V α(V)), Space O(V).

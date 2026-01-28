@@ -2,22 +2,23 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Number of Islands | Medium | Basic counting |
-| 2 | Max Area of Island | Medium | Return size |
-| 3 | Flood Fill | Easy | Simple traversal |
-| 4 | Surrounded Regions | Medium | Border-connected |
-| 5 | Number of Distinct Islands | Medium | Shape signature |
-| 6 | Making A Large Island | Hard | What-if analysis |
-| 7 | Island Perimeter | Easy | Counting pattern |
-| 8 | Pacific Atlantic Water Flow | Medium | Multi-source |
+| #   | Problem                     | Difficulty | Key Variation    |
+| --- | --------------------------- | ---------- | ---------------- |
+| 1   | Number of Islands           | Medium     | Basic counting   |
+| 2   | Max Area of Island          | Medium     | Return size      |
+| 3   | Flood Fill                  | Easy       | Simple traversal |
+| 4   | Surrounded Regions          | Medium     | Border-connected |
+| 5   | Number of Distinct Islands  | Medium     | Shape signature  |
+| 6   | Making A Large Island       | Hard       | What-if analysis |
+| 7   | Island Perimeter            | Easy       | Counting pattern |
+| 8   | Pacific Atlantic Water Flow | Medium     | Multi-source     |
 
 ---
 
 ## 1. Number of Islands
 
 ### Problem Statement
+
 Count islands (connected "1"s) in a grid.
 
 ### Optimal Python Solution
@@ -46,6 +47,7 @@ def numIslands(grid: list[list[str]]) -> int:
 ## 2. Max Area of Island
 
 ### Problem Statement
+
 Find the area of the largest island.
 
 ### Optimal Python Solution
@@ -72,6 +74,7 @@ def maxAreaOfIsland(grid: list[list[int]]) -> int:
 ## 3. Flood Fill
 
 ### Problem Statement
+
 Change color of connected pixels of the same starting color.
 
 ### Optimal Python Solution
@@ -97,6 +100,7 @@ def floodFill(image: list[list[int]], sr: int, sc: int, color: int) -> list[list
 ## 4. Surrounded Regions
 
 ### Problem Statement
+
 Flip 'O's surrounded by 'X's to 'X's.
 
 ### Optimal Python Solution
@@ -126,6 +130,7 @@ def solve(board: list[list[str]]) -> None:
 ## 5. Number of Distinct Islands
 
 ### Problem Statement
+
 Count distinct shapes of islands.
 
 ### Optimal Python Solution
@@ -159,6 +164,7 @@ def numDistinctIslands(grid: list[list[int]]) -> int:
 ## 6. Making A Large Island
 
 ### Problem Statement
+
 Flip one '0' to maximize island area.
 
 ### Optimal Python Solution
@@ -199,6 +205,7 @@ def largestIsland(grid: list[list[int]]) -> int:
 ## 7. Island Perimeter
 
 ### Problem Statement
+
 Calculate perimeter of an island.
 
 ### Optimal Python Solution
@@ -221,6 +228,7 @@ def islandPerimeter(grid: list[list[int]]) -> int:
 ## 8. Pacific Atlantic Water Flow
 
 ### Problem Statement
+
 Find cells from which water can flow to both Pacific and Atlantic oceans.
 
 ### Optimal Python Solution

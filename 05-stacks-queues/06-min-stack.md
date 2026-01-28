@@ -13,6 +13,7 @@ The Min Stack problem asks you to design a stack that supports push, pop, top, a
 In a normal stack, finding the minimum requires scanning all elements—O(n). The challenge is maintaining O(1) access to the minimum as elements come and go.
 
 **The Key Insight**:
+
 ```
 The minimum of a stack only depends on what's currently in the stack.
 If we know the minimum when there are k elements, and we pop one,
@@ -25,6 +26,7 @@ We can "remember" the minimum at each stack level!
 **Why an Auxiliary Stack Works**:
 
 Imagine we push elements 3, 2, 5, 1:
+
 ```
 Main stack:    Min stack:
 [3]            [3]         ← min is 3
@@ -41,6 +43,7 @@ The min_stack tracks "what was the minimum at this stack height?" When we pop, b
 **Why NOT Just Track a Single Min Variable?**
 
 Single variable fails on pop:
+
 ```
 Push 3: min = 3
 Push 2: min = 2
@@ -96,6 +99,7 @@ Interviewers use this to assess your understanding of auxiliary data structures 
 ## The Problem
 
 Design a stack that supports:
+
 - `push(x)` — Push element x onto stack
 - `pop()` — Remove top element
 - `top()` — Get top element
@@ -119,14 +123,14 @@ minStack.top();      // Returns 0
 
 ## Approach Comparison
 
-| Approach | push | pop | getMin | Space |
-|----------|------|-----|--------|-------|
-| Brute force (scan) | O(1) | O(1) | O(n) ❌ | O(n) |
-| Two stacks | O(1) | O(1) | O(1) ✓ | O(n) |
-| Single stack with pairs | O(1) | O(1) | O(1) ✓ | O(n) |
-| Single stack optimized | O(1) | O(1) | O(1) ✓ | O(n)* |
+| Approach                | push | pop  | getMin  | Space  |
+| ----------------------- | ---- | ---- | ------- | ------ |
+| Brute force (scan)      | O(1) | O(1) | O(n) ❌ | O(n)   |
+| Two stacks              | O(1) | O(1) | O(1) ✓  | O(n)   |
+| Single stack with pairs | O(1) | O(1) | O(1) ✓  | O(n)   |
+| Single stack optimized  | O(1) | O(1) | O(1) ✓  | O(n)\* |
 
-*Better space in practice for many duplicates
+\*Better space in practice for many duplicates
 
 ---
 
@@ -434,12 +438,12 @@ class MinQueue:
 ## Complexity Summary
 
 | Operation | Two Stacks | Pairs | Optimized | Math Trick |
-|-----------|------------|-------|-----------|------------|
-| push | O(1) | O(1) | O(1) | O(1) |
-| pop | O(1) | O(1) | O(1) | O(1) |
-| top | O(1) | O(1) | O(1) | O(1) |
-| getMin | O(1) | O(1) | O(1) | O(1) |
-| Space | 2n | 2n | n to 2n | n + O(1) |
+| --------- | ---------- | ----- | --------- | ---------- |
+| push      | O(1)       | O(1)  | O(1)      | O(1)       |
+| pop       | O(1)       | O(1)  | O(1)      | O(1)       |
+| top       | O(1)       | O(1)  | O(1)      | O(1)       |
+| getMin    | O(1)       | O(1)  | O(1)      | O(1)       |
+| Space     | 2n         | 2n    | n to 2n   | n + O(1)   |
 
 ---
 
@@ -510,13 +514,13 @@ ms.push(3)  # min = 1
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Min Stack | Medium | Core pattern |
-| 2 | Max Stack | Hard | With popMax operation |
-| 3 | Implement Stack using Queues | Easy | Related design |
-| 4 | Design a Stack With Increment Operation | Medium | Modified stack |
-| 5 | Maximum Frequency Stack | Hard | Stack + frequency |
+| #   | Problem                                 | Difficulty | Key Concept           |
+| --- | --------------------------------------- | ---------- | --------------------- |
+| 1   | Min Stack                               | Medium     | Core pattern          |
+| 2   | Max Stack                               | Hard       | With popMax operation |
+| 3   | Implement Stack using Queues            | Easy       | Related design        |
+| 4   | Design a Stack With Increment Operation | Medium     | Modified stack        |
+| 5   | Maximum Frequency Stack                 | Hard       | Stack + frequency     |
 
 ---
 

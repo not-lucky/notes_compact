@@ -1,26 +1,33 @@
 # Subarray Sum with HashMap - Solutions
 
 ## 1. Subarray Sum Equals K
+
 Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
 
 ### Problem Statement
+
 Find how many contiguous segments of the array add up to exactly `k`.
 
 ### Examples & Edge Cases
+
 **Example 1:**
+
 - Input: `nums = [1, 1, 1], k = 2`
 - Output: `2`
 
 **Example 2:**
+
 - Input: `nums = [1, 2, 3], k = 3`
 - Output: `2` ([1,2] and [3])
 
 **Edge Cases:**
+
 - Negative numbers in `nums`.
 - `k = 0`.
 - Array has one element.
 
 ### Optimal Python Solution
+
 ```python
 def subarraySum(nums: list[int], k: int) -> int:
     """
@@ -48,21 +55,25 @@ def subarraySum(nums: list[int], k: int) -> int:
 ```
 
 ### Explanation
+
 1.  **Prefix Sum Concept**: A prefix sum at index `j` is the sum of all elements from `0` to `j`.
 2.  **The Formula**: The sum of a subarray between index `i` and `j` is `PrefixSum[j] - PrefixSum[i-1]`. We want this to be `k`.
 3.  **Hashmap Optimization**: As we iterate, we keep track of how many times each `PrefixSum` has occurred. For each new `curr_sum`, we check if `curr_sum - k` exists in our history. If it does, every time `curr_sum - k` occurred in the past marks the start of a valid subarray ending right now.
 4.  **Dummy Entry**: `{0: 1}` is critical. It represents the case where `curr_sum` itself is equal to `k`, meaning the subarray starts at the very beginning of the array.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). We iterate through the array once.
 - **Space Complexity**: O(n). In the worst case, we store `n` unique prefix sums in the hashmap.
 
 ---
 
 ## 2. Subarray Sums Divisible by K
+
 Given an integer array `nums` and an integer `k`, return the number of non-empty subarrays that have a sum divisible by `k`.
 
 ### Optimal Python Solution
+
 ```python
 def subarraysDivByK(nums: list[int], k: int) -> int:
     """
@@ -88,15 +99,18 @@ def subarraysDivByK(nums: list[int], k: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(k). There are at most `k` unique remainders.
 
 ---
 
 ## 3. Maximum Size Subarray Sum Equals K
+
 Given an array `nums` and an integer `k`, find the maximum length of a subarray that sums to `k`. If there isn't one, return 0 instead.
 
 ### Optimal Python Solution
+
 ```python
 def maxSubArrayLen(nums: list[int], k: int) -> int:
     """
@@ -121,15 +135,18 @@ def maxSubArrayLen(nums: list[int], k: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n).
 
 ---
 
 ## 4. Contiguous Array
+
 Given a binary array `nums`, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
 
 ### Optimal Python Solution
+
 ```python
 def findMaxLength(nums: list[int]) -> int:
     """
@@ -155,9 +172,11 @@ def findMaxLength(nums: list[int]) -> int:
 ---
 
 ## 5. Continuous Subarray Sum
+
 Given an integer array `nums` and an integer `k`, return `true` if `nums` has a continuous subarray of size at least two whose sum is a multiple of `k`.
 
 ### Optimal Python Solution
+
 ```python
 def checkSubarraySum(nums: list[int], k: int) -> bool:
     # remainder -> first_index
@@ -179,26 +198,32 @@ def checkSubarraySum(nums: list[int], k: int) -> bool:
 ---
 
 ## 6. Binary Subarrays With Sum
+
 Given a binary array `nums` and an integer `goal`, return the number of non-empty subarrays with a sum equal to `goal`.
 
 ### Optimal Python Solution
+
 Same logic as "Subarray Sum Equals K". Since it's binary, `curr_sum` is non-decreasing, but the hashmap approach remains O(n) and works perfectly.
 
 ---
 
 ## 7. Count Nice Subarrays
+
 Given an array of integers `nums` and an integer `k`. A continuous subarray is called nice if there are `k` odd numbers on it. Return the number of nice subarrays.
 
 ### Optimal Python Solution
+
 Transform: replace odd with 1, even with 0. Problem becomes "Binary Subarrays with Sum K".
 O(n) Time, O(n) Space.
 
 ---
 
 ## 8. Minimum Size Subarray Sum
+
 Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0 instead.
 
 ### Optimal Python Solution (Sliding Window)
+
 ```python
 def minSubArrayLen(target: int, nums: list[int]) -> int:
     """
@@ -217,4 +242,5 @@ def minSubArrayLen(target: int, nums: list[int]) -> int:
 
     return res if res != float('inf') else 0
 ```
+
 **Crucial Note**: We use sliding window here because elements are positive, making the prefix sums monotonic. If there were negatives, we would need a different approach (like a segment tree or binary search on prefix sums).

@@ -3,14 +3,17 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Min Stack notes.
 
 ## 1. Min Stack
+
 **Problem Statement**: Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
 
 ### Examples & Edge Cases
+
 - **Example**: `push(-2), push(0), push(-3), getMin() -> -3, pop(), top() -> 0, getMin() -> -2`
 - **Edge Case**: Pop from a stack with one element.
 - **Edge Case**: Multiple elements with the same minimum value.
 
 ### Optimal Python Solution
+
 ```python
 class MinStack:
     def __init__(self):
@@ -38,18 +41,22 @@ class MinStack:
 ```
 
 ### Explanation
+
 We maintain two stacks. The `stack` stores all elements normally. The `min_stack` stores the minimum value seen so far. By using `<=` in the push condition, we handle duplicate minimum values correctly (e.g., pushing `[1, 1, 1]`). When we pop, we check if the element removed was the current minimum; if so, we also pop from `min_stack` to reveal the previous minimum.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(1) for all operations: `push`, `pop`, `top`, `getMin`.
 - **Space Complexity**: O(n), where n is the number of elements pushed. In the worst case (strictly decreasing values), `min_stack` stores n elements.
 
 ---
 
 ## 2. Max Stack
+
 **Problem Statement**: Design a stack that supports `push`, `pop`, `top`, `peekMax`, and `popMax`. `popMax` removes the maximum element from the stack and returns it. If there are multiple maximum elements, only remove the top-most one.
 
 ### Optimal Python Solution (O(log n) popMax)
+
 ```python
 import heapq
 
@@ -95,14 +102,17 @@ class MaxStack:
 ```
 
 ### Explanation
+
 To support `popMax` efficiently, we use a combination of a stack, a max-heap, and lazy deletion. Each element is assigned a unique `id`. When an element is removed (either via `pop` or `popMax`), its `id` is added to a `removed` set. Before any operation, we "clean up" the tops of the stack and heap to ensure they reflect valid, non-removed elements.
 
 ---
 
 ## 3. Implement Stack using Queues
+
 **Problem Statement**: Implement a last-in-first-out (LIFO) stack using only two queues.
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -127,15 +137,18 @@ class MyStack:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: `push`: O(n), `pop`: O(1), `top`: O(1).
 - **Space Complexity**: O(n).
 
 ---
 
 ## 4. Design a Stack With Increment Operation
+
 **Problem Statement**: Design a stack that supports `push`, `pop`, and `increment(k, val)`. `increment` adds `val` to the bottom `k` elements of the stack.
 
 ### Optimal Python Solution
+
 ```python
 class CustomStack:
     def __init__(self, maxSize: int):
@@ -166,14 +179,17 @@ class CustomStack:
 ```
 
 ### Explanation
+
 We use lazy propagation. Instead of incrementing all `k` elements (which would be O(k)), we only store the increment at the `k-th` index. When we pop an element, we add its increment and "pass down" that increment to the next element below it.
 
 ---
 
 ## 5. Maximum Frequency Stack
+
 **Problem Statement**: Design a stack that returns the most frequent element. If there's a tie, return the one closest to the stack's top.
 
 ### Optimal Python Solution
+
 ```python
 from collections import Counter, defaultdict
 

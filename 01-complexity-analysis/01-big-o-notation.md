@@ -7,6 +7,7 @@
 **The "Scaling Story" Mental Model**
 
 Imagine you're comparing two pizza delivery services:
+
 - **Service A**: Takes 5 minutes per pizza, regardless of order size
 - **Service B**: Takes 1 minute setup + 2 minutes per pizza
 
@@ -31,6 +32,7 @@ Quadruples   Doubles → Different patterns → Different classes
 **The Key Insight**
 
 Big-O answers: "If I double my input, how much more work do I do?"
+
 - O(1): Same work
 - O(log n): A tiny bit more
 - O(n): Double the work
@@ -281,26 +283,26 @@ def all_permutations(nums: list[int]) -> list[list[int]]:
 
 For n = 1,000:
 
-| Complexity | Operations | Practical? |
-|------------|------------|------------|
-| O(1) | 1 | ✓ Instant |
-| O(log n) | 10 | ✓ Instant |
-| O(n) | 1,000 | ✓ Fast |
-| O(n log n) | 10,000 | ✓ Fast |
-| O(n²) | 1,000,000 | ✓ Acceptable |
-| O(2ⁿ) | 10^301 | ✗ Impossible |
-| O(n!) | 10^2567 | ✗ Impossible |
+| Complexity | Operations | Practical?   |
+| ---------- | ---------- | ------------ |
+| O(1)       | 1          | ✓ Instant    |
+| O(log n)   | 10         | ✓ Instant    |
+| O(n)       | 1,000      | ✓ Fast       |
+| O(n log n) | 10,000     | ✓ Fast       |
+| O(n²)      | 1,000,000  | ✓ Acceptable |
+| O(2ⁿ)      | 10^301     | ✗ Impossible |
+| O(n!)      | 10^2567    | ✗ Impossible |
 
 For n = 1,000,000:
 
-| Complexity | Operations | Practical? |
-|------------|------------|------------|
-| O(1) | 1 | ✓ Instant |
-| O(log n) | 20 | ✓ Instant |
-| O(n) | 1,000,000 | ✓ Fast |
+| Complexity | Operations | Practical?   |
+| ---------- | ---------- | ------------ |
+| O(1)       | 1          | ✓ Instant    |
+| O(log n)   | 20         | ✓ Instant    |
+| O(n)       | 1,000,000  | ✓ Fast       |
 | O(n log n) | 20,000,000 | ✓ Acceptable |
-| O(n²) | 10^12 | ⚠ Very slow |
-| O(2ⁿ) | ∞ | ✗ Impossible |
+| O(n²)      | 10^12      | ⚠ Very slow  |
+| O(2ⁿ)      | ∞          | ✗ Impossible |
 
 ---
 
@@ -451,6 +453,7 @@ def mystery1(n):
 <summary>Answer 1</summary>
 
 O(n²). The inner loop runs 0 + 1 + 2 + ... + (n-1) = n(n-1)/2 times.
+
 </details>
 
 ```python
@@ -465,6 +468,7 @@ def mystery2(n):
 <summary>Answer 2</summary>
 
 O(log n). We're halving i each iteration.
+
 </details>
 
 ```python
@@ -481,18 +485,19 @@ def mystery3(arr):
 <summary>Answer 3</summary>
 
 O(n²). The `in` check on a list is O(n), done n times.
+
 </details>
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Analyze nested loop patterns | Easy | Basic analysis |
-| 2 | Compare two approaches | Easy | Trade-off thinking |
-| 3 | Identify hidden complexity | Medium | String/list operations |
-| 4 | Recursion tree analysis | Medium | Exponential vs polynomial |
+| #   | Problem                      | Difficulty | Focus                     |
+| --- | ---------------------------- | ---------- | ------------------------- |
+| 1   | Analyze nested loop patterns | Easy       | Basic analysis            |
+| 2   | Compare two approaches       | Easy       | Trade-off thinking        |
+| 3   | Identify hidden complexity   | Medium     | String/list operations    |
+| 4   | Recursion tree analysis      | Medium     | Exponential vs polynomial |
 
 ---
 

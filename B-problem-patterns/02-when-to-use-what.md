@@ -13,11 +13,13 @@ This guide helps you choose the right data structure and algorithm based on the 
 Every data structure is a trade-off. There's no "best" structure—only the best one for your specific operations. The key insight: **what you do most frequently should be fastest**.
 
 Think of it like choosing a vehicle:
+
 - Need to carry 10 people? → Bus (slow but high capacity)
 - Need to go fast with one person? → Sports car
 - Need to go off-road? → Truck
 
 Similarly:
+
 - Need frequent lookups by key? → HashMap (O(1) lookup)
 - Need to maintain sorted order with insertions? → TreeMap (O(log n) operations)
 - Need to get min/max repeatedly? → Heap (O(1) peek, O(log n) operations)
@@ -33,6 +35,7 @@ Similarly:
 ### Mental Model: The Operations Checklist
 
 Before choosing a data structure, list your operations:
+
 1. What's the most frequent operation?
 2. What's the second most frequent?
 3. What operations are rare but still needed?
@@ -63,19 +66,19 @@ Then pick the structure that optimizes the frequent operations, even if rare ope
 
 ### Quick Decision Matrix
 
-| Need to... | Best Choice | Time Complexity | Notes |
-|------------|-------------|-----------------|-------|
-| Access by index | Array/List | O(1) | Use when order matters |
-| Search by value | HashSet | O(1) avg | Unordered, no duplicates |
-| Search with count | HashMap | O(1) avg | Key-value pairs |
-| Maintain sorted order | TreeMap/SortedList | O(log n) | Range queries possible |
-| Get min/max quickly | Heap | O(1) get, O(log n) insert/remove | Use for K-th element problems |
-| FIFO order | Queue | O(1) both ends | BFS, level-order |
-| LIFO order | Stack | O(1) push/pop | Parentheses, recursion simulation |
-| Both ends access | Deque | O(1) both ends | Sliding window max/min |
-| Range operations | Prefix Sum | O(1) query, O(n) build | Sum queries after preprocessing |
-| Fast union/find | Union-Find | O(α(n)) ≈ O(1) | Connected components |
-| Prefix matching | Trie | O(L) where L = length | Autocomplete, word search |
+| Need to...            | Best Choice        | Time Complexity                  | Notes                             |
+| --------------------- | ------------------ | -------------------------------- | --------------------------------- |
+| Access by index       | Array/List         | O(1)                             | Use when order matters            |
+| Search by value       | HashSet            | O(1) avg                         | Unordered, no duplicates          |
+| Search with count     | HashMap            | O(1) avg                         | Key-value pairs                   |
+| Maintain sorted order | TreeMap/SortedList | O(log n)                         | Range queries possible            |
+| Get min/max quickly   | Heap               | O(1) get, O(log n) insert/remove | Use for K-th element problems     |
+| FIFO order            | Queue              | O(1) both ends                   | BFS, level-order                  |
+| LIFO order            | Stack              | O(1) push/pop                    | Parentheses, recursion simulation |
+| Both ends access      | Deque              | O(1) both ends                   | Sliding window max/min            |
+| Range operations      | Prefix Sum         | O(1) query, O(n) build           | Sum queries after preprocessing   |
+| Fast union/find       | Union-Find         | O(α(n)) ≈ O(1)                   | Connected components              |
+| Prefix matching       | Trie               | O(L) where L = length            | Autocomplete, word search         |
 
 ---
 
@@ -84,12 +87,14 @@ Then pick the structure that optimizes the frequent operations, even if rare ope
 ### Arrays / Lists
 
 **Use when:**
+
 - Random access by index is needed
 - Order of elements matters
 - Iterating through all elements
 - Memory efficiency is important
 
 **Avoid when:**
+
 - Frequent insertions/deletions in the middle
 - Need fast search by value
 
@@ -103,12 +108,14 @@ for i, val in enumerate(nums):
 ### HashMap (dict)
 
 **Use when:**
+
 - Need O(1) lookup by key
 - Counting frequencies
 - Mapping relationships (parent, next greater, etc.)
 - Caching/memoization
 
 **Avoid when:**
+
 - Need to maintain order (use OrderedDict)
 - Need to find min/max (use heap)
 
@@ -124,11 +131,13 @@ for i, num in enumerate(nums):
 ### HashSet (set)
 
 **Use when:**
+
 - Need O(1) membership check
 - Removing duplicates
 - Set operations (intersection, union)
 
 **Avoid when:**
+
 - Need to track counts (use HashMap)
 - Need ordered unique elements (use sorted set)
 
@@ -144,12 +153,14 @@ for num in nums:
 ### Heap (heapq)
 
 **Use when:**
+
 - Need quick access to min or max
 - Top-K problems
 - Merge K sorted streams
 - Priority-based processing
 
 **Avoid when:**
+
 - Need access to arbitrary elements
 - Need to delete arbitrary elements efficiently
 
@@ -168,6 +179,7 @@ return heap[0]
 ### Stack
 
 **Use when:**
+
 - Matching pairs (parentheses, tags)
 - Tracking "most recent" state
 - Monotonic patterns (next greater/smaller)
@@ -175,6 +187,7 @@ return heap[0]
 - Undo operations
 
 **Avoid when:**
+
 - Need access to elements in the middle
 
 ```python
@@ -191,6 +204,7 @@ return len(stack) == 0
 ### Queue / Deque
 
 **Use when:**
+
 - BFS traversal
 - Level-order processing
 - Sliding window with max/min
@@ -212,6 +226,7 @@ while queue:
 ### Monotonic Stack / Deque
 
 **Use when:**
+
 - Next/previous greater/smaller element
 - Sliding window maximum/minimum
 - Histogram problems (largest rectangle)
@@ -229,6 +244,7 @@ for i, num in enumerate(nums):
 ### Union-Find (Disjoint Set)
 
 **Use when:**
+
 - Grouping elements into sets
 - Finding connected components
 - Detecting cycles in undirected graphs
@@ -260,6 +276,7 @@ class UnionFind:
 ### Trie (Prefix Tree)
 
 **Use when:**
+
 - Prefix matching / autocomplete
 - Word search in matrix
 - Longest common prefix
@@ -287,45 +304,45 @@ class Trie:
 
 ### Searching
 
-| Constraint | Algorithm | Time |
-|------------|-----------|------|
-| Unsorted data | Linear Search | O(n) |
-| Sorted array | Binary Search | O(log n) |
-| Search in rotated sorted | Modified Binary Search | O(log n) |
-| Peak/valley finding | Binary Search | O(log n) |
-| 2D sorted matrix | Binary Search / Staircase | O(m + n) or O(log mn) |
+| Constraint               | Algorithm                 | Time                  |
+| ------------------------ | ------------------------- | --------------------- |
+| Unsorted data            | Linear Search             | O(n)                  |
+| Sorted array             | Binary Search             | O(log n)              |
+| Search in rotated sorted | Modified Binary Search    | O(log n)              |
+| Peak/valley finding      | Binary Search             | O(log n)              |
+| 2D sorted matrix         | Binary Search / Staircase | O(m + n) or O(log mn) |
 
 ### Sorting
 
-| Constraint | Algorithm | Time | Space |
-|------------|-----------|------|-------|
-| General purpose | Timsort (Python default) | O(n log n) | O(n) |
-| Nearly sorted | Insertion Sort | O(n) best | O(1) |
-| Limited range (0 to k) | Counting Sort | O(n + k) | O(k) |
-| K sorted lists | K-way Merge (heap) | O(n log k) | O(k) |
+| Constraint             | Algorithm                | Time       | Space |
+| ---------------------- | ------------------------ | ---------- | ----- |
+| General purpose        | Timsort (Python default) | O(n log n) | O(n)  |
+| Nearly sorted          | Insertion Sort           | O(n) best  | O(1)  |
+| Limited range (0 to k) | Counting Sort            | O(n + k)   | O(k)  |
+| K sorted lists         | K-way Merge (heap)       | O(n log k) | O(k)  |
 
 ### Graph Traversal
 
-| Need | Algorithm | Time |
-|------|-----------|------|
-| Shortest path (unweighted) | BFS | O(V + E) |
-| Shortest path (positive weights) | Dijkstra | O(E log V) |
-| Shortest path (negative weights) | Bellman-Ford | O(V × E) |
-| All paths / exhaustive | DFS | O(V + E) |
-| Topological order | Kahn's BFS or DFS | O(V + E) |
-| Cycle detection (directed) | DFS with colors | O(V + E) |
-| Cycle detection (undirected) | Union-Find or DFS | O(V + E) |
-| Connected components | DFS/BFS or Union-Find | O(V + E) |
+| Need                             | Algorithm             | Time       |
+| -------------------------------- | --------------------- | ---------- |
+| Shortest path (unweighted)       | BFS                   | O(V + E)   |
+| Shortest path (positive weights) | Dijkstra              | O(E log V) |
+| Shortest path (negative weights) | Bellman-Ford          | O(V × E)   |
+| All paths / exhaustive           | DFS                   | O(V + E)   |
+| Topological order                | Kahn's BFS or DFS     | O(V + E)   |
+| Cycle detection (directed)       | DFS with colors       | O(V + E)   |
+| Cycle detection (undirected)     | Union-Find or DFS     | O(V + E)   |
+| Connected components             | DFS/BFS or Union-Find | O(V + E)   |
 
 ### Optimization Problems
 
-| Characteristic | Approach | Example |
-|----------------|----------|---------|
-| Overlapping subproblems | Dynamic Programming | Fibonacci, coin change |
-| Greedy choice works | Greedy | Activity selection |
-| Minimize maximum / maximize minimum | Binary Search on Answer | Capacity allocation |
-| All possibilities needed | Backtracking | N-Queens, permutations |
-| Constraints are inequalities | Two Pointers | 3Sum |
+| Characteristic                      | Approach                | Example                |
+| ----------------------------------- | ----------------------- | ---------------------- |
+| Overlapping subproblems             | Dynamic Programming     | Fibonacci, coin change |
+| Greedy choice works                 | Greedy                  | Activity selection     |
+| Minimize maximum / maximize minimum | Binary Search on Answer | Capacity allocation    |
+| All possibilities needed            | Backtracking            | N-Queens, permutations |
+| Constraints are inequalities        | Two Pointers            | 3Sum                   |
 
 ---
 
@@ -333,16 +350,16 @@ class Trie:
 
 The input size (n) is a strong hint for the expected time complexity:
 
-| n | Expected Complexity | Typical Patterns |
-|---|---------------------|------------------|
-| n ≤ 10 | O(n!) | Brute force, permutations |
-| n ≤ 20 | O(2^n) | Backtracking, bitmask DP |
-| n ≤ 100 | O(n³) | Floyd-Warshall, 3D DP |
-| n ≤ 1,000 | O(n²) | 2D DP, nested loops |
-| n ≤ 10,000 | O(n²) or O(n log n) | Careful with O(n²) |
-| n ≤ 100,000 | O(n log n) | Sorting, heap, binary search |
-| n ≤ 1,000,000 | O(n) | Single pass, hash table |
-| n ≤ 10^9 | O(log n) or O(1) | Binary search, math |
+| n             | Expected Complexity | Typical Patterns             |
+| ------------- | ------------------- | ---------------------------- |
+| n ≤ 10        | O(n!)               | Brute force, permutations    |
+| n ≤ 20        | O(2^n)              | Backtracking, bitmask DP     |
+| n ≤ 100       | O(n³)               | Floyd-Warshall, 3D DP        |
+| n ≤ 1,000     | O(n²)               | 2D DP, nested loops          |
+| n ≤ 10,000    | O(n²) or O(n log n) | Careful with O(n²)           |
+| n ≤ 100,000   | O(n log n)          | Sorting, heap, binary search |
+| n ≤ 1,000,000 | O(n)                | Single pass, hash table      |
+| n ≤ 10^9      | O(log n) or O(1)    | Binary search, math          |
 
 ---
 
@@ -350,21 +367,21 @@ The input size (n) is a strong hint for the expected time complexity:
 
 ### Time vs Space
 
-| More Space | Less Time | Example |
-|------------|-----------|---------|
-| HashMap | O(1) lookup | Two Sum |
-| Memoization | Avoid recomputation | DP problems |
-| Prefix Sum | O(1) range query | Range Sum Query |
-| Parent pointers | Faster LCA | Tree traversal |
+| More Space      | Less Time           | Example         |
+| --------------- | ------------------- | --------------- |
+| HashMap         | O(1) lookup         | Two Sum         |
+| Memoization     | Avoid recomputation | DP problems     |
+| Prefix Sum      | O(1) range query    | Range Sum Query |
+| Parent pointers | Faster LCA          | Tree traversal  |
 
 ### Preprocessing vs Query
 
-| Approach | Preprocess | Query | When to Use |
-|----------|------------|-------|-------------|
-| Prefix Sum | O(n) | O(1) | Many range sum queries |
-| Sorting | O(n log n) | O(log n) | Many search queries |
-| Trie | O(total chars) | O(query len) | Many prefix queries |
-| Sparse Table | O(n log n) | O(1) | Many RMQ queries (immutable) |
+| Approach     | Preprocess     | Query        | When to Use                  |
+| ------------ | -------------- | ------------ | ---------------------------- |
+| Prefix Sum   | O(n)           | O(1)         | Many range sum queries       |
+| Sorting      | O(n log n)     | O(log n)     | Many search queries          |
+| Trie         | O(total chars) | O(query len) | Many prefix queries          |
+| Sparse Table | O(n log n)     | O(1)         | Many RMQ queries (immutable) |
 
 ---
 
@@ -375,6 +392,7 @@ The input size (n) is a strong hint for the expected time complexity:
 **Constraints:** n = 10^6
 
 Analysis:
+
 - n is large → need O(n) or O(n log n)
 - Two approaches:
   - Sort + Two Pointers: O(n log n)
@@ -387,6 +405,7 @@ Analysis:
 **Constraints:** Up to 10^5 operations
 
 Analysis:
+
 - Need dynamic insertions
 - Need quick access to middle elements
 - Sorted list: O(n) insert, O(1) median
@@ -399,6 +418,7 @@ Analysis:
 **Constraints:** n = 10^5 nodes, m = 10^5 edges
 
 Analysis:
+
 - Need to group nodes
 - Options:
   - DFS/BFS: O(V + E)
@@ -411,6 +431,7 @@ Analysis:
 **Constraints:** n = 10^5 points, k = 100
 
 Analysis:
+
 - Need K smallest by distance
 - Options:
   - Sort all: O(n log n)

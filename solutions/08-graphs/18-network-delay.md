@@ -2,19 +2,20 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Network Delay Time | Medium | Core Dijkstra |
-| 2 | Path with Maximum Probability | Medium | Multiply instead of add |
-| 3 | Cheapest Flights Within K Stops | Medium | Limited hops |
-| 4 | Path with Minimum Effort | Medium | Maximum edge weight |
-| 5 | Swim in Rising Water | Hard | Binary search + BFS |
+| #   | Problem                         | Difficulty | Key Variation           |
+| --- | ------------------------------- | ---------- | ----------------------- |
+| 1   | Network Delay Time              | Medium     | Core Dijkstra           |
+| 2   | Path with Maximum Probability   | Medium     | Multiply instead of add |
+| 3   | Cheapest Flights Within K Stops | Medium     | Limited hops            |
+| 4   | Path with Minimum Effort        | Medium     | Maximum edge weight     |
+| 5   | Swim in Rising Water            | Hard       | Binary search + BFS     |
 
 ---
 
 ## 1. Network Delay Time
 
 ### Problem Statement
+
 Find the minimum time for all nodes to receive a signal from a source node `k`.
 
 ### Optimal Python Solution
@@ -46,6 +47,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: Dijkstra's.
 - **Complexity**: Time O(E log V), Space O(V + E).
 
@@ -54,6 +56,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ## 2. Path with Maximum Probability
 
 ### Problem Statement
+
 Find the path with the maximum probability of success.
 
 ### Optimal Python Solution
@@ -90,6 +93,7 @@ def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start:
 ## 3. Cheapest Flights Within K Stops
 
 ### Problem Statement
+
 Find the cheapest price from `src` to `dst` with at most `k` stops.
 
 ### Optimal Python Solution
@@ -123,6 +127,7 @@ def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: i
 ## 4. Path with Minimum Effort
 
 ### Problem Statement
+
 Find path with minimum maximum edge weight.
 
 ### Optimal Python Solution
@@ -156,6 +161,7 @@ def minimumEffortPath(heights: list[list[int]]) -> int:
 ## 5. Swim in Rising Water
 
 ### Problem Statement
+
 Find the minimum time to swim to the destination.
 
 ### Optimal Python Solution

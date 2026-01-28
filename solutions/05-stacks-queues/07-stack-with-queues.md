@@ -3,9 +3,11 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Implement Stack Using Queues notes.
 
 ## 1. Implement Stack using Queues (Single Queue)
+
 **Problem Statement**: Implement a last-in-first-out (LIFO) stack using only one queue.
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -48,20 +50,24 @@ class MyStack:
 ```
 
 ### Explanation
+
 To implement a stack (LIFO) with a queue (FIFO), we must ensure that the most recently added element is always at the front of the queue. We achieve this by rotating the queue after every `push` operation. When we add an element to the back, we move all previous elements to the back behind it. This takes O(n) time for `push` but allows O(1) `pop` and `top`.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
-    - `push`: O(n), where n is the number of elements in the stack.
-    - `pop`, `top`, `empty`: O(1).
+  - `push`: O(n), where n is the number of elements in the stack.
+  - `pop`, `top`, `empty`: O(1).
 - **Space Complexity**: O(n), to store the elements.
 
 ---
 
 ## 2. Implement Queue using Stacks
+
 **Problem Statement**: Implement a first-in-first-out (FIFO) queue using only two stacks.
 
 ### Optimal Python Solution
+
 ```python
 class MyQueue:
     def __init__(self):
@@ -94,20 +100,24 @@ class MyQueue:
 ```
 
 ### Explanation
+
 By using two stacks, we can reverse the order of elements twice to achieve FIFO. The elements are pushed into `s1`. When a `pop` or `peek` is requested, we move everything from `s1` to `s2` (reversing the order). Subsequent pops from `s2` will be in FIFO order. We only transfer elements when `s2` is empty to maintain efficiency.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
-    - `push`: O(1).
-    - `pop`, `peek`: O(1) amortized. While a single transfer takes O(n), each element is moved at most twice across its lifetime.
+  - `push`: O(1).
+  - `pop`, `peek`: O(1) amortized. While a single transfer takes O(n), each element is moved at most twice across its lifetime.
 - **Space Complexity**: O(n).
 
 ---
 
 ## 3. Design Circular Queue
+
 **Problem Statement**: Design your implementation of the circular queue using a fixed-size array.
 
 ### Optimal Python Solution
+
 ```python
 class MyCircularQueue:
     def __init__(self, k: int):
@@ -146,9 +156,11 @@ class MyCircularQueue:
 ---
 
 ## 4. Design Front Middle Back Queue
+
 **Problem Statement**: Design a queue that supports `pushFront`, `pushMiddle`, `pushBack`, `popFront`, `popMiddle`, and `popBack`.
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -204,4 +216,5 @@ class FrontMiddleBackQueue:
 ```
 
 ### Explanation
+
 By maintaining two deques (`left` and `right`) and keeping them balanced (size difference ≤ 1), we can perform middle insertions and deletions in O(1) time. The middle of the entire structure is essentially the junction between the two deques.

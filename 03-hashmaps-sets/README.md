@@ -17,29 +17,29 @@ At FANG+ companies, mastering hashmaps often means the difference between passin
 
 ## Core Patterns to Master
 
-| Pattern | Frequency | Key Problems |
-|---------|-----------|--------------|
-| Two Sum Pattern | Very High | Two Sum, 4Sum, K-Sum variants |
-| Frequency Counting | Very High | Top K Frequent, Valid Anagram, Majority Element |
-| Subarray + HashMap | High | Subarray Sum Equals K, Longest Substring Without Repeating |
-| Anagram Grouping | High | Group Anagrams, Find All Anagrams in a String |
-| Set Operations | Medium | Intersection, Union, Happy Number |
-| Design HashMap | Medium | Design HashMap, Design HashSet, LRU Cache |
+| Pattern            | Frequency | Key Problems                                               |
+| ------------------ | --------- | ---------------------------------------------------------- |
+| Two Sum Pattern    | Very High | Two Sum, 4Sum, K-Sum variants                              |
+| Frequency Counting | Very High | Top K Frequent, Valid Anagram, Majority Element            |
+| Subarray + HashMap | High      | Subarray Sum Equals K, Longest Substring Without Repeating |
+| Anagram Grouping   | High      | Group Anagrams, Find All Anagrams in a String              |
+| Set Operations     | Medium    | Intersection, Union, Happy Number                          |
+| Design HashMap     | Medium    | Design HashMap, Design HashSet, LRU Cache                  |
 
 ---
 
 ## Chapter Sections
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-hash-table-basics](./01-hash-table-basics.md) | Hash Table Internals | Understand hashing, collisions, and O(1) guarantees |
-| [02-two-sum-pattern](./02-two-sum-pattern.md) | Two Sum Pattern | The classic complement lookup technique |
-| [03-frequency-counting](./03-frequency-counting.md) | Frequency Counting | Counter patterns and top K problems |
-| [04-anagram-grouping](./04-anagram-grouping.md) | Anagram Problems | Group by signature using hashmap |
-| [05-subarray-sum-hashmap](./05-subarray-sum-hashmap.md) | Subarray Sum + HashMap | Prefix sum with hashmap for O(n) solutions |
-| [06-set-operations](./06-set-operations.md) | Set Operations | Intersection, union, and uniqueness problems |
-| [07-design-hashmap](./07-design-hashmap.md) | Design HashMap | Build your own hash table from scratch |
-| [08-advanced-patterns](./08-advanced-patterns.md) | Advanced Patterns | LRU Cache, RandomizedSet, and more |
+| Section                                                 | Topic                  | Key Takeaway                                        |
+| ------------------------------------------------------- | ---------------------- | --------------------------------------------------- |
+| [01-hash-table-basics](./01-hash-table-basics.md)       | Hash Table Internals   | Understand hashing, collisions, and O(1) guarantees |
+| [02-two-sum-pattern](./02-two-sum-pattern.md)           | Two Sum Pattern        | The classic complement lookup technique             |
+| [03-frequency-counting](./03-frequency-counting.md)     | Frequency Counting     | Counter patterns and top K problems                 |
+| [04-anagram-grouping](./04-anagram-grouping.md)         | Anagram Problems       | Group by signature using hashmap                    |
+| [05-subarray-sum-hashmap](./05-subarray-sum-hashmap.md) | Subarray Sum + HashMap | Prefix sum with hashmap for O(n) solutions          |
+| [06-set-operations](./06-set-operations.md)             | Set Operations         | Intersection, union, and uniqueness problems        |
+| [07-design-hashmap](./07-design-hashmap.md)             | Design HashMap         | Build your own hash table from scratch              |
+| [08-advanced-patterns](./08-advanced-patterns.md)       | Advanced Patterns      | LRU Cache, RandomizedSet, and more                  |
 
 ---
 
@@ -56,11 +56,11 @@ At FANG+ companies, mastering hashmaps often means the difference between passin
 
 ## Time Targets
 
-| Difficulty | Target Time | Examples |
-|------------|-------------|----------|
-| Easy | 10-15 min | Two Sum, Valid Anagram, Contains Duplicate |
-| Medium | 15-25 min | Group Anagrams, Top K Frequent, Subarray Sum |
-| Hard | 25-40 min | LRU Cache, Minimum Window Substring |
+| Difficulty | Target Time | Examples                                     |
+| ---------- | ----------- | -------------------------------------------- |
+| Easy       | 10-15 min   | Two Sum, Valid Anagram, Contains Duplicate   |
+| Medium     | 15-25 min   | Group Anagrams, Top K Frequent, Subarray Sum |
+| Hard       | 25-40 min   | LRU Cache, Minimum Window Substring          |
 
 ---
 
@@ -81,13 +81,13 @@ At FANG+ companies, mastering hashmaps often means the difference between passin
 
 ## Key Complexity Facts
 
-| Operation | HashMap (dict) | Set |
-|-----------|----------------|-----|
-| Insert | O(1) average | O(1) average |
-| Lookup | O(1) average | O(1) average |
-| Delete | O(1) average | O(1) average |
-| Iteration | O(n) | O(n) |
-| Space | O(n) | O(n) |
+| Operation | HashMap (dict) | Set          |
+| --------- | -------------- | ------------ |
+| Insert    | O(1) average   | O(1) average |
+| Lookup    | O(1) average   | O(1) average |
+| Delete    | O(1) average   | O(1) average |
+| Iteration | O(n)           | O(n)         |
+| Space     | O(n)           | O(n)         |
 
 **Note**: Worst case is O(n) due to hash collisions, but this rarely happens with good hash functions.
 

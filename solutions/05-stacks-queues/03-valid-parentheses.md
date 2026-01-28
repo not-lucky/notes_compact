@@ -3,9 +3,11 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Valid Parentheses notes.
 
 ## 1. Valid Parentheses
+
 **Problem Statement**: Given a string `s` containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `"()"` -> `True`
 - **Example 2**: `"()[]{}"` -> `True`
 - **Example 3**: `"(]"` -> `False`
@@ -13,6 +15,7 @@ This file provides optimal Python solutions and explanations for the practice pr
 - **Edge Case**: `s = "((("` -> `False` (Unclosed brackets)
 
 ### Optimal Python Solution
+
 ```python
 def isValid(s: str) -> bool:
     # Map closing brackets to their corresponding opening brackets
@@ -34,18 +37,22 @@ def isValid(s: str) -> bool:
 ```
 
 ### Explanation
+
 We use a stack to process the string. Opening brackets are stored to be matched later. When a closing bracket appears, it must match the most recently pushed opening bracket (the top of the stack). This LIFO behavior perfectly matches the nested structure of valid parentheses.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the length of the string. We perform a single pass through the input string, and every stack operation (push/pop) is O(1).
 - **Space Complexity**: O(n), as in the worst case (e.g., a string consisting only of opening brackets), the stack will store all n characters.
 
 ---
 
 ## 2. Generate Parentheses
+
 **Problem Statement**: Given `n` pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
 
 ### Optimal Python Solution
+
 ```python
 def generateParenthesis(n: int) -> list[str]:
     result = []
@@ -72,18 +79,22 @@ def generateParenthesis(n: int) -> list[str]:
 ```
 
 ### Explanation
+
 This problem uses backtracking. The key constraints for a valid partial string are: 1) Number of '(' must be ≤ `n`. 2) Number of ')' must be ≤ number of '('. By following these rules, we explore all valid paths.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(4^n / √n). This is proportional to the n-th Catalan number, which represents the number of valid parenthetical expressions of length 2n.
 - **Space Complexity**: O(n), for the recursion stack and the list used to build each valid string.
 
 ---
 
 ## 3. Longest Valid Parentheses
+
 **Problem Statement**: Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.
 
 ### Optimal Python Solution
+
 ```python
 def longestValidParentheses(s: str) -> int:
     # Stack stores indices of '('
@@ -107,16 +118,19 @@ def longestValidParentheses(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the length of the string. We traverse the string once, and each index is pushed or popped from the stack at most once.
 - **Space Complexity**: O(n), to store the indices in the stack in the worst case.
 
 ---
 
 ## 4. Remove Invalid Parentheses
+
 **Problem Statement**: Remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.
 
 ### Optimal Python Solution
-```python
+
+````python
 def removeInvalidParentheses(s: str) -> list[str]:
     def is_valid(string):
         count = 0
@@ -139,6 +153,7 @@ def removeInvalidParentheses(s: str) -> list[str]:
             for i in range(len(string)):
                 if string[i] in '()':
                     new_level.add(string[:i] + string[i+1:])
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n * 2^n), where n is the length of the string. In each BFS level, we potentially explore all possible single-character removals.
 - **Space Complexity**: O(n * 2^n), to store the strings in the current and next levels of BFS.
@@ -165,6 +180,7 @@ def minRemoveToMakeValid(s: str) -> str:
                 s_list[i] = ""
 
     # Remaining indices in stack are unmatched '('
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of the string. We perform one pass to identify invalid indices and one pass to join the characters.
 - **Space Complexity**: O(n), to store the stack of indices and the list representation of the string.
@@ -184,6 +200,7 @@ def checkValidString(s: str) -> bool:
         high += 1 if char != ')' else -1
         if high < 0: return False
         low = max(low, 0)
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), as we iterate through the string once and perform constant time updates to `low` and `high`.
 - **Space Complexity**: O(1), as we only use two integer variables.
@@ -203,6 +220,8 @@ def scoreOfParentheses(s: str) -> int:
         else:
             v = stack.pop()
             stack[-1] += max(2 * v, 1)
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of the string. We visit each character once and perform O(1) stack operations.
 - **Space Complexity**: O(n), for the stack which tracks scores at different nesting depths.
+````

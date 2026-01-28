@@ -3,9 +3,11 @@
 ## Practice Problems
 
 ### 1. Implement strStr()
+
 **Problem Statement**: Given two strings `needle` and `haystack`, return the index of the first occurrence of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.
 
 **Optimal Python Solution**:
+
 ```python
 def strStr(haystack: str, needle: str) -> int:
     # Python's built-in 'find' is highly optimized (usually Boyer-Moore or similar)
@@ -51,15 +53,18 @@ def strStr_kmp(haystack: str, needle: str) -> int:
 KMP (Knuth-Morris-Pratt) avoids redundant comparisons by precomputing a "Longest Prefix Suffix" (LPS) array for the pattern. When a mismatch occurs, we use the LPS array to determine how many characters we can skip without missing a potential match.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n + m), where n is length of haystack and m is length of needle. Building LPS takes O(m), matching takes O(n).
 - **Space Complexity**: O(m) to store the LPS array.
 
 ---
 
 ### 2. Repeated Substring Pattern
+
 **Problem Statement**: Given a string `s`, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together.
 
 **Optimal Python Solution**:
+
 ```python
 def repeatedSubstringPattern(s: str) -> bool:
     # Trick: If s contains a repeated pattern, then s + s (excluding the very first
@@ -71,15 +76,18 @@ def repeatedSubstringPattern(s: str) -> bool:
 If `s` is made of $n$ copies of substring $P$, then $s = P \times n$. $s+s = P \times 2n$. By removing the first and last characters, we remove one $P$ from each end (or parts of it), leaving $2n-2$ copies of $P$ plus fragments. If $n \ge 2$, we still have at least $n$ copies of $P$ in the middle, allowing us to find $s$.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), due to the string search `in`.
 - **Space Complexity**: O(n) to create the `s + s` string.
 
 ---
 
 ### 3. Wildcard Matching
+
 **Problem Statement**: Implement wildcard pattern matching with support for `'?'` (matches any single character) and `'*'` (matches any sequence of characters including empty).
 
 **Optimal Python Solution**:
+
 ```python
 def isMatch(s: str, p: str) -> bool:
     m, n = len(s), len(p)
@@ -108,15 +116,18 @@ def isMatch(s: str, p: str) -> bool:
 We use Dynamic Programming. The most complex part is handling `*`. A `*` can either represent an empty string (look at the result without using this `*`) or it can represent one or more characters from `s` (look at the result for the previous character in `s` using this same `*`).
 
 **Complexity Analysis**:
-- **Time Complexity**: O(m * n).
-- **Space Complexity**: O(m * n).
+
+- **Time Complexity**: O(m \* n).
+- **Space Complexity**: O(m \* n).
 
 ---
 
 ### 4. Regular Expression Matching
+
 **Problem Statement**: Implement regular expression matching with support for `'.'` and `'*'`. `'.'` matches any single character. `'*'` matches zero or more of the preceding element.
 
 **Optimal Python Solution**:
+
 ```python
 def isMatch(s: str, p: str) -> bool:
     memo = {}
@@ -141,18 +152,21 @@ def isMatch(s: str, p: str) -> bool:
 ```
 
 **Explanation**:
-The `'*'` in regex is different from wildcard; it applies to the *preceding* character. We use recursion with memoization. If we see a character followed by `*`, we either skip both (0 occurrences) or, if the current character matches, we consume one character of `s` and keep the pattern the same to match more.
+The `'*'` in regex is different from wildcard; it applies to the _preceding_ character. We use recursion with memoization. If we see a character followed by `*`, we either skip both (0 occurrences) or, if the current character matches, we consume one character of `s` and keep the pattern the same to match more.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(m * n).
-- **Space Complexity**: O(m * n).
+
+- **Time Complexity**: O(m \* n).
+- **Space Complexity**: O(m \* n).
 
 ---
 
 ### 5. Shortest Palindrome
+
 **Problem Statement**: You are given a string `s`. You can convert `s` to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
 
 **Optimal Python Solution**:
+
 ```python
 def shortestPalindrome(s: str) -> str:
     # We need to find the longest prefix of s that is already a palindrome.
@@ -180,15 +194,18 @@ def shortestPalindrome(s: str) -> str:
 To make the shortest palindrome by adding to the front, we want to keep as much of the existing string as possible as the "center" or "end". This means finding the longest prefix of `s` that is already a palindrome. By using KMP's LPS array on `s + # + reverse(s)`, the last element of the array tells us exactly how many characters from the start of `s` match the end of `reverse(s)`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n).
 
 ---
 
 ### 6. Longest Happy Prefix
+
 **Problem Statement**: A string is called a happy prefix if is a non-empty prefix which is also a suffix (excluding itself). Given a string `s`, return the longest happy prefix of `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def longestPrefix(s: str) -> str:
     # This is exactly what the LPS array in KMP computes for the last index.
@@ -205,15 +222,18 @@ def longestPrefix(s: str) -> str:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n).
 
 ---
 
 ### 7. Find All Anagrams
+
 **Problem Statement**: Find all start indices of `p`'s anagrams in `s`.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -239,5 +259,6 @@ def findAnagrams(s: str, p: str) -> list[int]:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1) (limited alphabet).

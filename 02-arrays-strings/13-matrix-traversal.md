@@ -23,6 +23,7 @@ The key insight is **geometric structure enables systematic processing**:
 **Mental Model - Rotation**: Imagine index cards laid in a grid. Transpose = pick up along diagonals, lay them back row→column. Reverse rows = flip horizontally.
 
 **Why Corner Search Works (Search Matrix II)**:
+
 ```
 Starting at top-right (11):
 Matrix (row-sorted, column-sorted):
@@ -59,6 +60,7 @@ Matrix problems have variations that require different approaches:
 5. **Dynamic Matrix Updates**: If the matrix changes frequently and you need repeated queries, consider 2D segment trees or 2D Fenwick trees.
 
 **Red Flags:**
+
 - "Shortest path in grid" → BFS
 - "Count islands/connected components" → DFS/BFS flood fill
 - "Matrix updates + queries" → 2D data structures
@@ -506,17 +508,17 @@ Can't rotate in-place, transpose changes dimensions
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Technique |
-|---|---------|------------|-----------|
-| 1 | Spiral Matrix | Medium | Layer traversal |
-| 2 | Spiral Matrix II | Medium | Generate spiral |
-| 3 | Rotate Image | Medium | Transpose + reverse |
-| 4 | Set Matrix Zeroes | Medium | First row/col as markers |
-| 5 | Search a 2D Matrix | Medium | Binary search |
-| 6 | Search a 2D Matrix II | Medium | Start from corner |
-| 7 | Diagonal Traverse | Medium | Zigzag pattern |
-| 8 | Transpose Matrix | Easy | Swap indices |
-| 9 | Reshape the Matrix | Easy | Flatten and rebuild |
+| #   | Problem               | Difficulty | Technique                |
+| --- | --------------------- | ---------- | ------------------------ |
+| 1   | Spiral Matrix         | Medium     | Layer traversal          |
+| 2   | Spiral Matrix II      | Medium     | Generate spiral          |
+| 3   | Rotate Image          | Medium     | Transpose + reverse      |
+| 4   | Set Matrix Zeroes     | Medium     | First row/col as markers |
+| 5   | Search a 2D Matrix    | Medium     | Binary search            |
+| 6   | Search a 2D Matrix II | Medium     | Start from corner        |
+| 7   | Diagonal Traverse     | Medium     | Zigzag pattern           |
+| 8   | Transpose Matrix      | Easy       | Swap indices             |
+| 9   | Reshape the Matrix    | Easy       | Flatten and rebuild      |
 
 ---
 

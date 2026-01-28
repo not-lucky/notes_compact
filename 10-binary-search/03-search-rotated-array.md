@@ -5,6 +5,7 @@
 ## Interview Context
 
 Rotated array search is a FANG+ favorite because:
+
 1. **Tests adaptability**: Standard binary search needs modification
 2. **Multiple variants**: With/without duplicates, find target/minimum
 3. **Requires careful analysis**: Must identify the sorted half
@@ -25,6 +26,7 @@ Rotated:  [4, 5, 6, 7, 0, 1, 2, 3]
 ```
 
 The array breaks into TWO sorted subarrays joined at the pivot:
+
 - Left portion: [4, 5, 6, 7] — sorted, but all values are LARGER
 - Right portion: [0, 1, 2, 3] — sorted, but all values are SMALLER
 
@@ -51,6 +53,7 @@ Right half [1,2,3] is sorted (we're after the pivot)
 **Mental Model: The Mountain Range**
 
 Think of the rotated array as two mountains side by side:
+
 - A tall mountain (the larger values before rotation)
 - A shorter mountain (the smaller values)
 
@@ -59,6 +62,7 @@ Binary search is like asking: "Is my target on the tall mountain or the short on
 **How to Identify the Sorted Half**
 
 Compare `nums[left]` with `nums[mid]`:
+
 - If `nums[left] <= nums[mid]`: Left half is sorted (no pivot in between)
 - Otherwise: Right half is sorted
 
@@ -73,24 +77,29 @@ The sorted half has a predictable range: `[nums[left], nums[mid]]` or `[nums[mid
 ## When NOT to Use Rotated Array Search
 
 **1. The Array Isn't Rotated**
+
 - A "rotation of 0" or "rotation of n" is just a sorted array
 - Use standard binary search (it's simpler)
 - The rotated search still works, but why add complexity?
 
 **2. Array Has Many Duplicates**
+
 - Duplicates break the `nums[left] <= nums[mid]` check
 - Worst case degrades to O(n)
 - See the variant with duplicates below
 
 **3. Array Is Not Sorted Before Rotation**
+
 - If original array wasn't sorted, rotation means nothing
 - No binary search will help
 
 **4. You Need All Occurrences**
+
 - Rotated search finds ONE occurrence
 - For all occurrences, you'd need additional boundary searches
 
 **Red Flags in Problem Statements:**
+
 - "Array may have duplicates" → Use O(n) fallback or careful duplicate handling
 - "Find all positions of target" → Rotated search + boundary search
 - "Array is not sorted" → Different problem entirely
@@ -109,6 +118,7 @@ Rotated:  [4, 5, 6, 7, 0, 1, 2]  (rotated at index 4)
 ```
 
 Properties:
+
 - The array consists of two sorted subarrays
 - One half is always completely sorted
 - The minimum element is at the rotation point
@@ -289,11 +299,11 @@ def search_via_pivot(nums: list[int], target: int) -> int:
 
 ## Complexity Analysis
 
-| Variant | Time | Space |
-|---------|------|-------|
-| No duplicates | O(log n) | O(1) |
-| With duplicates | O(n) worst, O(log n) avg | O(1) |
-| Find pivot first | O(log n) | O(1) |
+| Variant          | Time                     | Space |
+| ---------------- | ------------------------ | ----- |
+| No duplicates    | O(log n)                 | O(1)  |
+| With duplicates  | O(n) worst, O(log n) avg | O(1)  |
+| Find pivot first | O(log n)                 | O(1)  |
 
 ---
 
@@ -380,13 +390,13 @@ def search_nearly_sorted(nums: list[int], target: int) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Search in Rotated Sorted Array | Medium | Identify sorted half |
-| 2 | Search in Rotated Sorted Array II | Medium | Handle duplicates |
-| 3 | Find Minimum in Rotated Sorted Array | Medium | Find pivot |
-| 4 | Find Minimum in Rotated Sorted Array II | Hard | Duplicates + pivot |
-| 5 | Rotation Count | Medium | Index of minimum |
+| #   | Problem                                 | Difficulty | Key Insight          |
+| --- | --------------------------------------- | ---------- | -------------------- |
+| 1   | Search in Rotated Sorted Array          | Medium     | Identify sorted half |
+| 2   | Search in Rotated Sorted Array II       | Medium     | Handle duplicates    |
+| 3   | Find Minimum in Rotated Sorted Array    | Medium     | Find pivot           |
+| 4   | Find Minimum in Rotated Sorted Array II | Hard       | Duplicates + pivot   |
+| 5   | Rotation Count                          | Medium     | Index of minimum     |
 
 ---
 

@@ -39,21 +39,25 @@ OrderedDict: {a: 1, b: 2} with .move_to_end('a') → {b: 2, a: 1}
 ## When NOT to Use
 
 ### Counter
+
 - **Don't use for existence checks**: Use a `set` if you only care whether something exists, not how many times
 - **Don't use when you need the original order**: Counter sorts by frequency, not insertion
 - **Don't use for memory-constrained counting**: For very large streams, consider probabilistic structures like Count-Min Sketch
 
 ### defaultdict
+
 - **Don't use when you need explicit KeyError**: Sometimes a missing key is a bug you want to catch
 - **Don't use with expensive default factories**: `defaultdict(lambda: compute_expensive_default())` runs on every access
 - **Don't use when you need to check key existence**: `if key in d` works, but `d[key]` creates the key
 
 ### deque
+
 - **Don't use for random access**: `deque[i]` is O(n), not O(1) - use list instead
 - **Don't use when you only need LIFO**: A list is fine for stack operations (append/pop)
 - **Don't use for small collections**: The overhead isn't worth it for 10 elements
 
 ### OrderedDict
+
 - **Don't use in Python 3.7+**: Regular dicts preserve order now
 - **Only use if you need `move_to_end()` or `popitem(last=False)`**
 
@@ -275,15 +279,15 @@ dq.extendleft([0, -1])   # Add multiple left (reversed!)
 
 ### Time Complexity
 
-| Operation | list | deque |
-|-----------|------|-------|
-| append | O(1)* | O(1) |
-| appendleft | O(n) | O(1) |
-| pop | O(1) | O(1) |
-| popleft | O(n) | O(1) |
-| access by index | O(1) | O(n) |
+| Operation       | list   | deque |
+| --------------- | ------ | ----- |
+| append          | O(1)\* | O(1)  |
+| appendleft      | O(n)   | O(1)  |
+| pop             | O(1)   | O(1)  |
+| popleft         | O(n)   | O(1)  |
+| access by index | O(1)   | O(n)  |
 
-*Amortized
+\*Amortized
 
 ### Interview Patterns with deque
 
@@ -447,38 +451,38 @@ edges.sort()  # Sorts by weight first
 
 ## Complexity Summary
 
-| Container | Access | Search | Insert | Delete |
-|-----------|--------|--------|--------|--------|
-| Counter | O(1) | O(1) | O(1) | O(1) |
-| defaultdict | O(1) | O(1) | O(1) | O(1) |
-| deque (ends) | O(n) | O(n) | O(1) | O(1) |
-| OrderedDict | O(1) | O(1) | O(1) | O(1) |
+| Container    | Access | Search | Insert | Delete |
+| ------------ | ------ | ------ | ------ | ------ |
+| Counter      | O(1)   | O(1)   | O(1)   | O(1)   |
+| defaultdict  | O(1)   | O(1)   | O(1)   | O(1)   |
+| deque (ends) | O(n)   | O(n)   | O(1)   | O(1)   |
+| OrderedDict  | O(1)   | O(1)   | O(1)   | O(1)   |
 
 ---
 
 ## When to Use Each
 
-| Scenario | Container |
-|----------|-----------|
-| Count frequencies | Counter |
-| Build graph | defaultdict(list) |
-| BFS queue | deque |
-| Sliding window | deque |
-| LRU Cache | OrderedDict |
-| Group by key | defaultdict(list) |
+| Scenario          | Container         |
+| ----------------- | ----------------- |
+| Count frequencies | Counter           |
+| Build graph       | defaultdict(list) |
+| BFS queue         | deque             |
+| Sliding window    | deque             |
+| LRU Cache         | OrderedDict       |
+| Group by key      | defaultdict(list) |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Container |
-|---|---------|-----------|
-| 1 | Valid Anagram | Counter |
-| 2 | Top K Frequent Elements | Counter |
-| 3 | Group Anagrams | defaultdict |
-| 4 | Sliding Window Maximum | deque |
-| 5 | LRU Cache | OrderedDict |
-| 6 | Number of Recent Calls | deque |
+| #   | Problem                 | Container   |
+| --- | ----------------------- | ----------- |
+| 1   | Valid Anagram           | Counter     |
+| 2   | Top K Frequent Elements | Counter     |
+| 3   | Group Anagrams          | defaultdict |
+| 4   | Sliding Window Maximum  | deque       |
+| 5   | LRU Cache               | OrderedDict |
+| 6   | Number of Recent Calls  | deque       |
 
 ---
 

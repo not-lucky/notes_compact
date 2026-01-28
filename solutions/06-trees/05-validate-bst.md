@@ -1,15 +1,18 @@
 # Validate BST Solutions
 
 ## 1. Validate Binary Search Tree
+
 **Problem Statement**: Given the `root` of a binary tree, determine if it is a valid binary search tree (BST).
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [2,1,3]` → Output: `true`
 - **Example 2**: `root = [5,1,4,None,None,3,6]` → Output: `false` (3 is in the right subtree of 5 but is less than 5)
 - **Edge Case - Min/Max values**: Tree contains `2^31 - 1` or `-2^31`.
 - **Edge Case - Duplicates**: `[2,2,2]` should return `false`.
 
 ### Optimal Python Solution
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -35,6 +38,7 @@ def isValidBST(root: TreeNode) -> bool:
 ```
 
 ### Explanation
+
 1.  **Naive Fallacy**: A common mistake is to only check if `left < root < right`. This is insufficient because a node in the right subtree must be greater than its parent AND all ancestors that the parent was a right-child of.
 2.  **Range Technique**: We define a valid range `(low, high)` for every node.
 3.  **Propagation**:
@@ -43,20 +47,24 @@ def isValidBST(root: TreeNode) -> bool:
 4.  **Consistency**: If any node falls outside its range, the entire tree is invalid.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Every node is visited once.
 - **Space Complexity**: **O(h)**. The depth of the recursion stack is determined by the height of the tree.
 
 ---
 
 ## 2. Recover Binary Search Tree
+
 **Problem Statement**: You are given the `root` of a binary search tree (BST), where the values of **exactly two nodes** were swapped by mistake. Recover the tree without changing its structure.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [1,3,None,None,2]` → Output: `[3,1,None,None,2]` (Inorder before: `[3,2,1]`, Inorder after: `[1,2,3]`)
 - **Edge Case - Adjacent Swaps**: Two nodes were neighbors in inorder traversal.
 - **Edge Case - Non-adjacent Swaps**: Swapped nodes are far apart.
 
 ### Optimal Python Solution
+
 ```python
 def recoverTree(root: TreeNode) -> None:
     first = second = prev = None
@@ -85,23 +93,27 @@ def recoverTree(root: TreeNode) -> None:
 ```
 
 ### Explanation
+
 1.  **Inorder Insight**: In a sorted array, if you swap two elements, you will see one or two "dips" where an element is smaller than the one before it.
     - Example: `[1, 2, 3, 4, 5]` → swap 2 and 5 → `[1, 5, 3, 4, 2]`.
     - Violations: `5 > 3` (first) and `4 > 2` (second).
-    - To fix: The first node involved is the *larger* of the first violation (`5`), and the second node is the *smaller* of the last violation (`2`).
+    - To fix: The first node involved is the _larger_ of the first violation (`5`), and the second node is the _smaller_ of the last violation (`2`).
 2.  **Detection**: We perform an inorder traversal and track the `prev` node.
 3.  **Repair**: We identify the two nodes (`first` and `second`) and swap their values.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. One full inorder traversal.
 - **Space Complexity**: **O(h)**. Recursion stack. (Can be O(1) using Morris traversal).
 
 ---
 
 ## 3. Largest BST Subtree
+
 **Problem Statement**: Given the root of a binary tree, find the largest subtree, which is also a Binary Search Tree (BST), where the largest means subtree has the largest number of nodes in it.
 
 ### Optimal Python Solution
+
 ```python
 def largestBSTSubtree(root: TreeNode) -> int:
     max_size = 0
@@ -130,6 +142,7 @@ def largestBSTSubtree(root: TreeNode) -> int:
 ```
 
 ### Explanation
+
 1.  **Bottom-Up DFS**: We need info from children to decide if the current node is a root of a BST.
 2.  **State**: Each call returns:
     - If the subtree is a BST.
@@ -138,15 +151,18 @@ def largestBSTSubtree(root: TreeNode) -> int:
 3.  **Validation**: A node is a root of a BST if `left_is_bst` is true, `right_is_bst` is true, AND `node.val` is strictly between the largest value on the left and the smallest value on the right.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Single post-order traversal.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 4. Minimum Distance Between BST Nodes
+
 **Problem Statement**: Given the root of a Binary Search Tree (BST), return the minimum difference between the values of any two different nodes in the tree.
 
 ### Optimal Python Solution
+
 ```python
 def minDiffInBST(root: TreeNode) -> int:
     prev = None
@@ -172,15 +188,18 @@ def minDiffInBST(root: TreeNode) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 5. Two Sum IV - Input is a BST
+
 **Problem Statement**: Given the root of a Binary Search Tree and a target number `k`, return `true` if there exist two elements in the BST such that their sum is equal to the given target.
 
 ### Optimal Python Solution
+
 ```python
 def findTarget(root: TreeNode, k: int) -> bool:
     seen = set()
@@ -201,10 +220,12 @@ def findTarget(root: TreeNode, k: int) -> bool:
 ```
 
 ### Explanation
+
 1.  **Standard Two-Sum**: We use a hash set to track values we've already visited.
-2.  **Traversal**: Since we just need *any* two nodes, a standard DFS (preorder/inorder doesn't matter) is fine.
+2.  **Traversal**: Since we just need _any_ two nodes, a standard DFS (preorder/inorder doesn't matter) is fine.
 3.  **Property**: While we can use the BST property with two iterators (one starting from smallest, one from largest), the hash set approach is simple and $O(n)$ time.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(n)**. We store all values in a set.

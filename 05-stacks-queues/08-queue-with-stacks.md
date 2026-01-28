@@ -25,6 +25,7 @@ Now push those to another stack:
 Reversing the order twice gives us the original order. This is the foundation of the two-stack queue.
 
 **The Key Insight**:
+
 ```
 - Input stack: New elements go here (like a holding area)
 - Output stack: Pop from here (elements are in FIFO order)
@@ -32,6 +33,7 @@ Reversing the order twice gives us the original order. This is the foundation of
 ```
 
 **Worked Example**:
+
 ```
 Operations: push(1), push(2), pop(), push(3), pop(), pop()
 
@@ -63,6 +65,7 @@ Average per operation: O(3n) / 2n = O(1) amortized!
 ```
 
 Each element moves at most 3 times total:
+
 1. Push to input: O(1)
 2. Transfer to output: O(1) per element
 3. Pop from output: O(1)
@@ -82,6 +85,7 @@ The two-stack queue is wrong when:
 4. **You Need Both Ends**: If you need a deque (double-ended queue), this approach doesn't extend well.
 
 **Why This IS Useful**:
+
 - Demonstrates amortized analysis beautifully
 - Common interview problem
 - Shows that LIFO + LIFO = FIFO
@@ -109,6 +113,7 @@ Interviewers use this to assess your understanding of amortized analysis and laz
 ## The Problem
 
 Implement a queue using only stack operations:
+
 - `push(x)` — Push element x to the back of queue
 - `pop()` — Remove and return the front element
 - `peek()` — Get the front element
@@ -120,13 +125,13 @@ Implement a queue using only stack operations:
 
 ## Approach Comparison
 
-| Approach | push | pop | peek | Space |
-|----------|------|-----|------|-------|
-| Two stacks (push costly) | O(n) | O(1) | O(1) | O(n) |
-| Two stacks (pop costly) | O(1) | O(n) | O(n) | O(n) |
-| Two stacks (amortized) | O(1) | O(1)* | O(1)* | O(n) |
+| Approach                 | push | pop    | peek   | Space |
+| ------------------------ | ---- | ------ | ------ | ----- |
+| Two stacks (push costly) | O(n) | O(1)   | O(1)   | O(n)  |
+| Two stacks (pop costly)  | O(1) | O(n)   | O(n)   | O(n)  |
+| Two stacks (amortized)   | O(1) | O(1)\* | O(1)\* | O(n)  |
 
-*Amortized O(1)
+\*Amortized O(1)
 
 ---
 
@@ -398,25 +403,29 @@ for i in range(1000):
 ## Follow-up Questions
 
 ### Q: What's the worst-case for a single pop?
+
 A: O(n) when output stack is empty and we need to transfer. But amortized is O(1).
 
 ### Q: Can we guarantee O(1) worst-case?
+
 A: Not with two simple stacks. Would need more complex structures (e.g., reversing during idle time).
 
 ### Q: How does this compare to deque?
+
 A: `collections.deque` is O(1) worst-case for both ends. This is useful when you only have stack primitives available.
 
 ---
 
 ## Comparison with Stack Using Queues
 
-| Aspect | Queue using Stacks | Stack using Queues |
-|--------|-------------------|-------------------|
-| Best solution | Amortized O(1) both | O(n) push or pop |
-| Key insight | Lazy transfer | Must rotate |
-| Can achieve O(1) amortized? | Yes | No |
+| Aspect                      | Queue using Stacks  | Stack using Queues |
+| --------------------------- | ------------------- | ------------------ |
+| Best solution               | Amortized O(1) both | O(n) push or pop   |
+| Key insight                 | Lazy transfer       | Must rotate        |
+| Can achieve O(1) amortized? | Yes                 | No                 |
 
 The queue using stacks has a better solution because:
+
 - Two stacks can naturally reverse order (LIFO + LIFO = FIFO)
 - We can delay the reversal until needed (lazy evaluation)
 
@@ -424,12 +433,12 @@ The queue using stacks has a better solution because:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Implement Queue using Stacks | Easy | Core problem |
-| 2 | Implement Stack using Queues | Easy | Reverse direction |
-| 3 | Design Circular Deque | Medium | Both ends |
-| 4 | Design Hit Counter | Medium | Queue-like with time |
+| #   | Problem                      | Difficulty | Key Concept          |
+| --- | ---------------------------- | ---------- | -------------------- |
+| 1   | Implement Queue using Stacks | Easy       | Core problem         |
+| 2   | Implement Stack using Queues | Easy       | Reverse direction    |
+| 3   | Design Circular Deque        | Medium     | Both ends            |
+| 4   | Design Hit Counter           | Medium     | Queue-like with time |
 
 ---
 

@@ -46,6 +46,7 @@ Matrix Chain Multiplication introduces **interval DP**:
 5. **Graph Structure, Not Interval**: If the problem involves graphs rather than linear sequences, interval DP doesn't apply.
 
 **Recognize Interval DP When:**
+
 - Combine contiguous ranges optimally
 - Split a range into two subranges
 - Order of operations affects cost but not result
@@ -369,11 +370,11 @@ for k in range(...):
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Matrix Chain | O(n³) | O(n²) |
-| Merge Stones | O(n³) | O(n²) |
-| Optimal BST | O(n³) | O(n²) |
+| Problem             | Time  | Space |
+| ------------------- | ----- | ----- |
+| Matrix Chain        | O(n³) | O(n²) |
+| Merge Stones        | O(n³) | O(n²) |
+| Optimal BST         | O(n³) | O(n²) |
 | General Interval DP | O(n³) | O(n²) |
 
 Note: Some can be optimized to O(n²) with Knuth's optimization.
@@ -392,13 +393,13 @@ Note: Some can be optimized to O(n²) with Knuth's optimization.
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variation |
-|---|---------|------------|-----------|
-| 1 | Matrix Chain Multiplication | Medium | Classic |
-| 2 | Burst Balloons | Hard | Reverse thinking |
-| 3 | Merge Stones | Hard | K-way merge |
-| 4 | Optimal BST | Hard | Tree construction |
-| 5 | Minimum Score Triangulation | Medium | Polygon |
+| #   | Problem                     | Difficulty | Variation         |
+| --- | --------------------------- | ---------- | ----------------- |
+| 1   | Matrix Chain Multiplication | Medium     | Classic           |
+| 2   | Burst Balloons              | Hard       | Reverse thinking  |
+| 3   | Merge Stones                | Hard       | K-way merge       |
+| 4   | Optimal BST                 | Hard       | Tree construction |
+| 5   | Minimum Score Triangulation | Medium     | Polygon           |
 
 ---
 

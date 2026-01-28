@@ -51,6 +51,7 @@
 5. **Non-Additive Objectives**: If total value isn't the sum of individual values (e.g., discounts for combinations), the standard recurrence breaks.
 
 **Recognize 0/1 Knapsack Pattern When:**
+
 - Each item has weight and value
 - Capacity constraint
 - Each item used at most once
@@ -371,12 +372,12 @@ for w in range(capacity, weights[i] - 1, -1):  # Include weights[i]
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| 0/1 Knapsack | O(n × W) | O(W) |
-| Subset Sum | O(n × target) | O(target) |
-| Partition Equal | O(n × sum/2) | O(sum/2) |
-| Target Sum | O(n × P) | O(P) |
+| Problem         | Time          | Space     |
+| --------------- | ------------- | --------- |
+| 0/1 Knapsack    | O(n × W)      | O(W)      |
+| Subset Sum      | O(n × target) | O(target) |
+| Partition Equal | O(n × sum/2)  | O(sum/2)  |
+| Target Sum      | O(n × P)      | O(P)      |
 
 Note: These are **pseudo-polynomial** time (polynomial in numeric value, not input size).
 
@@ -394,13 +395,13 @@ Note: These are **pseudo-polynomial** time (polynomial in numeric value, not inp
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | 0/1 Knapsack | Medium | Classic |
-| 2 | Partition Equal Subset Sum | Medium | Boolean subset |
-| 3 | Target Sum | Medium | Count with +/- |
-| 4 | Last Stone Weight II | Medium | Min partition diff |
-| 5 | Ones and Zeroes | Medium | 2D knapsack |
+| #   | Problem                    | Difficulty | Variant            |
+| --- | -------------------------- | ---------- | ------------------ |
+| 1   | 0/1 Knapsack               | Medium     | Classic            |
+| 2   | Partition Equal Subset Sum | Medium     | Boolean subset     |
+| 3   | Target Sum                 | Medium     | Count with +/-     |
+| 4   | Last Stone Weight II       | Medium     | Min partition diff |
+| 5   | Ones and Zeroes            | Medium     | 2D knapsack        |
 
 ---
 

@@ -137,6 +137,7 @@ XOR gives the XOR of ALL odd-occurring elements, not a list:
 If you need "how many times does the single element appear?", XOR can't help—it only tells you WHAT the element is (for Single Number I) or requires state machines (Single Number II).
 
 **Red Flags (Don't Use XOR):**
+
 - "Find the duplicate" (not the unique)
 - Elements can appear any number of times (not constrained to pairs+one)
 - You need to preserve or count occurrences
@@ -445,11 +446,11 @@ Why does partitioning work?
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Technique |
-|---------|------|-------|-----------|
-| Single Number I | O(n) | O(1) | XOR all elements |
-| Single Number II | O(n) | O(1) | Bit counting or state machine |
-| Single Number III | O(n) | O(1) | XOR + partition by diff bit |
+| Problem           | Time | Space | Technique                     |
+| ----------------- | ---- | ----- | ----------------------------- |
+| Single Number I   | O(n) | O(1)  | XOR all elements              |
+| Single Number II  | O(n) | O(1)  | Bit counting or state machine |
+| Single Number III | O(n) | O(1)  | XOR + partition by diff bit   |
 
 ---
 
@@ -520,13 +521,13 @@ def find_two_singles_different_counts(nums: list[int]) -> list[int]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Single Number | Easy | Basic XOR |
-| 2 | Single Number II | Medium | Bit counting / state machine |
-| 3 | Single Number III | Medium | XOR + partition |
-| 4 | Find the Duplicate Number | Medium | Different approach (Floyd's) |
-| 5 | Missing Number | Easy | XOR with indices |
+| #   | Problem                   | Difficulty | Key Concept                  |
+| --- | ------------------------- | ---------- | ---------------------------- |
+| 1   | Single Number             | Easy       | Basic XOR                    |
+| 2   | Single Number II          | Medium     | Bit counting / state machine |
+| 3   | Single Number III         | Medium     | XOR + partition              |
+| 4   | Find the Duplicate Number | Medium     | Different approach (Floyd's) |
+| 5   | Missing Number            | Easy       | XOR with indices             |
 
 ---
 

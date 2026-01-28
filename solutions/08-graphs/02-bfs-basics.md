@@ -2,30 +2,32 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Pattern |
-|---|---------|------------|-------------|
-| 1 | Flood Fill | Easy | Basic grid BFS |
-| 2 | Number of Islands | Medium | Multi-component BFS |
-| 3 | Shortest Path in Binary Matrix | Medium | Shortest path |
-| 4 | Rotting Oranges | Medium | Multi-source BFS |
-| 5 | Word Ladder | Hard | Implicit graph BFS |
-| 6 | 01 Matrix | Medium | Multi-source BFS |
+| #   | Problem                        | Difficulty | Key Pattern         |
+| --- | ------------------------------ | ---------- | ------------------- |
+| 1   | Flood Fill                     | Easy       | Basic grid BFS      |
+| 2   | Number of Islands              | Medium     | Multi-component BFS |
+| 3   | Shortest Path in Binary Matrix | Medium     | Shortest path       |
+| 4   | Rotting Oranges                | Medium     | Multi-source BFS    |
+| 5   | Word Ladder                    | Hard       | Implicit graph BFS  |
+| 6   | 01 Matrix                      | Medium     | Multi-source BFS    |
 
 ---
 
 ## 1. Flood Fill
 
 ### Problem Statement
+
 An image is represented by an `m x n` integer grid `image` where `image[i][j]` represents the pixel value of the image. You are also given three integers `sr`, `sc`, and `color`. You should perform a flood fill on the image starting from the pixel `image[sr][sc]`.
 
 To perform a flood fill, consider the starting pixel, plus any pixels connected 4-directionally to the starting pixel of the same color as the starting pixel, plus any pixels connected 4-directionally to those pixels (also with the same color), and so on. Replace the color of all of the aforementioned pixels with `color`.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `image = [[1,1,1],[1,1,0],[1,0,1]], sr = 1, sc = 1, color = 2` -> `[[2,2,2],[2,2,0],[2,0,1]]`
 - **Edge Cases**:
-    - `newColor` is the same as the original color: Return the image as is to avoid infinite loops.
-    - Grid with a single pixel.
-    - Starting pixel at the boundary.
+  - `newColor` is the same as the original color: Return the image as is to avoid infinite loops.
+  - Grid with a single pixel.
+  - Starting pixel at the boundary.
 
 ### Optimal Python Solution
 
@@ -59,12 +61,14 @@ def floodFill(image: list[list[int]], sr: int, sc: int, color: int) -> list[list
 ```
 
 ### Explanation
+
 1. **Starting Point**: We identify the `start_color` at `(sr, sc)`.
 2. **Avoid Redundancy**: If `start_color` is already the target `color`, we exit immediately.
 3. **BFS Traversal**: We use a queue to explore all adjacent pixels of the same color.
 4. **Marking Visited**: By updating the pixel to the new `color` as soon as it's added to the queue, we prevent it from being processed multiple times.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M × N)**. In the worst case, we visit every pixel in the grid.
 - **Space Complexity**: **O(M × N)**. The queue can store up to O(M × N) pixels in the worst case.
 
@@ -73,9 +77,11 @@ def floodFill(image: list[list[int]], sr: int, sc: int, color: int) -> list[list
 ## 2. Number of Islands (BFS Focus)
 
 ### Problem Statement
+
 Given an `m x n` 2D binary grid `grid` which represents a map of '1's (land) and '0's (water), return the number of islands.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `grid = [["1","1","0"],["1","1","0"],["0","0","1"]]` -> Output: 2
 - **Edge Cases**: Empty grid, grid with no land, grid with no water.
 
@@ -111,12 +117,14 @@ def numIslands(grid: list[list[str]]) -> int:
 ```
 
 ### Explanation
+
 1. **Iterate Grid**: We scan the grid cell by cell.
 2. **Found Land**: When we find a "1", we increment our island count and start a BFS.
 3. **BFS Sinking**: The BFS finds all connected land and "sinks" it by changing "1" to "0". This ensures we don't count the same island twice.
 4. **BFS vs DFS**: For very large grids, BFS is often preferred in Python to avoid reaching the recursion depth limit.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M × N)**. Each cell is visited at most twice (once by the main loop and once by BFS).
 - **Space Complexity**: **O(min(M, N))**. The queue size is bounded by the perimeter of the largest island, which is at most O(min(M, N)).
 
@@ -125,14 +133,16 @@ def numIslands(grid: list[list[str]]) -> int:
 ## 3. Shortest Path in Binary Matrix
 
 ### Problem Statement
+
 Given an `n x n` binary matrix `grid`, return the length of the shortest clear path from the top-left corner `(0, 0)` to the bottom-right corner `(n - 1, n - 1)`. If no such path exists, return -1. A clear path is a path where every visited cell is 0 and includes 8-directional connections.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `grid = [[0,1],[1,0]]` -> Output: 2
 - **Example 2**: `grid = [[0,0,0],[1,1,0],[1,1,0]]` -> Output: 4
 - **Edge Cases**:
-    - Start or end cell is 1: Return -1.
-    - `n = 1` and `grid[0][0] = 0`: Return 1.
+  - Start or end cell is 1: Return -1.
+  - `n = 1` and `grid[0][0] = 0`: Return 1.
 
 ### Optimal Python Solution
 
@@ -169,12 +179,14 @@ def shortestPathBinaryMatrix(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 1. **Shortest Path = BFS**: Since all edges have equal weight (1), BFS is guaranteed to find the shortest path.
 2. **8-Directions**: We define all possible movements, including diagonals.
 3. **Early Exit**: As soon as we reach the bottom-right corner, we return the current distance + 1.
 4. **Visited Tracking**: We mark cells as `1` in the grid to avoid using extra space for a `visited` set.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(N²)**. We visit each cell at most once.
 - **Space Complexity**: **O(N²)**. In the worst case, the queue can hold many cells.
 
@@ -183,7 +195,9 @@ def shortestPathBinaryMatrix(grid: list[list[int]]) -> int:
 ## 4. Rotting Oranges
 
 ### Problem Statement
+
 You are given an `m x n` grid where each cell can have one of three values:
+
 - `0`: empty cell
 - `1`: fresh orange
 - `2`: rotten orange
@@ -191,6 +205,7 @@ You are given an `m x n` grid where each cell can have one of three values:
 Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten. Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `grid = [[2,1,1],[1,1,0],[0,1,1]]` -> Output: 4
 - **Edge Cases**: No fresh oranges (return 0), no rotten oranges (return -1 if fresh exist), unreachable fresh oranges.
 
@@ -234,12 +249,14 @@ def orangesRotting(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 1. **Multi-source BFS**: All rotten oranges start rotting their neighbors simultaneously. We add all initial rotten oranges to the queue at distance 0.
 2. **Level Tracking**: We use `len(queue)` to process oranges minute by minute.
 3. **Fresh Counter**: We keep track of the remaining fresh oranges to easily check if all oranges have rotted at the end.
 4. **Impossible Scenario**: If the queue is empty but `fresh_count > 0`, some oranges are unreachable.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M × N)**. Every cell is visited at most once.
 - **Space Complexity**: **O(M × N)**. The queue size in the worst case.
 
@@ -248,11 +265,14 @@ def orangesRotting(grid: list[list[int]]) -> int:
 ## 5. Word Ladder
 
 ### Problem Statement
+
 Given two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the number of words in the shortest transformation sequence from `beginWord` to `endWord`. If no such sequence exists, return 0.
+
 - Every adjacent word in the sequence must differ by exactly one letter.
 - Every intermediate word must be in the `wordList`.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]` -> Output: 5
 - **Edge Cases**: `endWord` not in `wordList` (return 0), no path exists.
 
@@ -299,12 +319,14 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
 ```
 
 ### Explanation
+
 1. **Implicit Graph**: Words are nodes, and an edge exists between words that differ by one letter.
 2. **Preprocessing Patterns**: Instead of comparing every word against every other word (O(N²)), we create patterns like `h*t`. This allows us to find neighbors in O(L) time.
 3. **BFS**: Standard BFS to find the shortest path in an unweighted graph.
 4. **Efficiency**: Clearing the `all_combo_dict[pattern]` after visiting neighbors is a common optimization to speed up the search.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M² × N)**. M is the length of each word, N is the number of words. Preprocessing takes O(M²N) and BFS takes O(M²N).
 - **Space Complexity**: **O(M² × N)**. To store the dictionary of patterns.
 
@@ -313,9 +335,11 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
 ## 6. 01 Matrix
 
 ### Problem Statement
+
 Given an `m x n` binary matrix `mat`, return the distance of the nearest `0` for each cell. The distance between two adjacent cells is 1.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `mat = [[0,0,0],[0,1,0],[0,0,0]]` -> Output: `[[0,0,0],[0,1,0],[0,0,0]]`
 - **Example 2**: `mat = [[0,0,0],[0,1,0],[1,1,1]]` -> Output: `[[0,0,0],[0,1,0],[1,2,1]]`
 
@@ -351,11 +375,13 @@ def updateMatrix(mat: list[list[int]]) -> list[list[int]]:
 ```
 
 ### Explanation
+
 1. **Multi-source BFS**: We treat all `0`s as starting sources.
 2. **Distance Initialization**: We set the distance of `0`s to 0 and all `1`s to infinity.
 3. **Propagation**: The BFS propagates from the `0`s outward. When we visit a neighbor, we check if the current path `mat[r][c] + 1` is shorter than its existing value.
 4. **Efficiency**: By updating neighbors only if we find a shorter distance, we naturally explore only the necessary paths.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M × N)**. Every cell is visited once.
 - **Space Complexity**: **O(M × N)**. For the BFS queue.

@@ -1,9 +1,11 @@
 # Solutions: Palindrome DP
 
 ## 1. Longest Palindromic Substring
+
 **Problem:** Find the longest contiguous substring that is a palindrome.
 
 ### Optimal Python Solution ($O(1)$ space)
+
 ```python
 def longest_palindrome(s: str) -> str:
     # Pattern: Expand Around Center
@@ -27,15 +29,18 @@ def longest_palindrome(s: str) -> str:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(1)$
 
 ---
 
 ## 2. Longest Palindromic Subsequence (LPS)
+
 **Problem:** Find length of longest non-contiguous palindromic subsequence.
 
 ### Optimal Python Solution
+
 ```python
 def longest_palindrome_subseq(s: str) -> int:
     # Interval DP: dp[i][j] = LPS of s[i..j]
@@ -54,15 +59,18 @@ def longest_palindrome_subseq(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$
 
 ---
 
 ## 3. Palindromic Substrings
+
 **Problem:** Count all palindromic substrings.
 
 ### Optimal Python Solution
+
 ```python
 def count_substrings(s: str) -> int:
     count = 0
@@ -81,16 +89,19 @@ def count_substrings(s: str) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(1)$
 
 ---
 
 ## 4. Palindrome Partitioning II (Min Cuts)
+
 **Problem:** Minimum cuts to partition string into palindromes.
 
 ### Optimal Python Solution
-```python
+
+````python
 def min_cut(s: str) -> int:
     n = len(s)
     # Precompute palindrome matrix
@@ -111,6 +122,7 @@ def min_cut(s: str) -> int:
                     dp[i] = min(dp[i], dp[j] + 1)
     return dp[-1]
 
+```
 ---
 
 ## 5. Palindrome Partitioning (All Partitions)
@@ -143,18 +155,22 @@ def partition(s: str) -> list[list[str]]:
 
     backtrack(0, [])
     return result
-```
+````
 
 ### Explanation
+
 1.  **Step 1: DP Precomputation**: We build an $n \times n$ table `is_pal` where `is_pal[i][j]` is true if `s[i..j]` is a palindrome. This avoids redundant $O(n)$ checks during backtracking.
 2.  **Step 2: Backtracking**: We try to split the string at every possible position. If the current prefix is a palindrome, we recurse on the remainder.
 3.  **Efficiency**: Precomputing the palindrome table reduces the check from $O(n)$ to $O(1)$ inside the recursion.
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times 2^n)$ - In worst case (e.g., "aaaa"), there are $2^n$ possible partitions.
 - **Space:** $O(n^2)$ - To store the palindrome matrix.
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n^2)$
 - **Space:** $O(n^2)$
+```

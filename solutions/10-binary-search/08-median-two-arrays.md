@@ -1,12 +1,15 @@
 # Median of Two Sorted Arrays Solutions
 
 ## 1. Median of Two Sorted Arrays
+
 [LeetCode 4](https://leetcode.com/problems/median-of-two-sorted-arrays/)
 
 ### Problem Description
+
 Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays. The overall run time complexity should be `O(log (m+n))`.
 
 ### Solution
+
 ```python
 def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
     # Ensure nums1 is the smaller array to optimize binary search
@@ -45,18 +48,22 @@ def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
 
     return 0.0
 ```
+
 - **Time Complexity**: O(log(min(m, n)))
 - **Space Complexity**: O(1)
 
 ---
 
 ## 2. Kth Smallest Element in a Sorted Matrix
+
 [LeetCode 378](https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/)
 
 ### Problem Description
+
 Given an `n x n` matrix where each of the rows and columns is sorted in ascending order, return the `k`-th smallest element in the matrix.
 
 ### Solution
+
 ```python
 def kthSmallest(matrix: list[list[int]], k: int) -> int:
     n = len(matrix)
@@ -84,18 +91,22 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
 
     return res
 ```
+
 - **Time Complexity**: O(n log(max-min))
 - **Space Complexity**: O(1)
 
 ---
 
 ## 3. Find K Pairs with Smallest Sums
+
 [LeetCode 373](https://leetcode.com/problems/find-k-pairs-with-smallest-sums/)
 
 ### Problem Description
+
 You are given two integer arrays `nums1` and `nums2` sorted in ascending order and an integer `k`. Define a pair `(u, v)` which consists of one element from the first array and one element from the second array. Return the `k` pairs `(u1, v1), (u2, v2), ..., (uk, vk)` with the smallest sums.
 
 ### Solution
+
 ```python
 import heapq
 
@@ -122,18 +133,22 @@ def kSmallestPairs(nums1: list[int], nums2: list[int], k: int) -> list[list[int]
 
     return res
 ```
+
 - **Time Complexity**: O(k log(min(n, k)))
 - **Space Complexity**: O(min(n, k))
 
 ---
 
 ## 4. Merge K Sorted Lists
+
 [LeetCode 23](https://leetcode.com/problems/merge-k-sorted-lists/)
 
 ### Problem Description
+
 You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.
 
 ### Solution
+
 ```python
 import heapq
 
@@ -164,18 +179,22 @@ def mergeKLists(lists: list[ListNode]) -> ListNode:
 
     return dummy.next
 ```
+
 - **Time Complexity**: O(N log k), where N is total number of nodes and k is number of lists.
 - **Space Complexity**: O(k) for the heap.
 
 ---
 
 ## 5. Find Median from Data Stream
+
 [LeetCode 295](https://leetcode.com/problems/find-median-from-data-stream/)
 
 ### Problem Description
+
 The median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value and the median is the mean of the two middle values. Implement the `MedianFinder` class.
 
 ### Solution
+
 ```python
 import heapq
 
@@ -200,5 +219,6 @@ class MedianFinder:
             return float(-self.small[0])
         return (-self.small[0] + self.large[0]) / 2.0
 ```
+
 - **Time Complexity**: O(log n) for `addNum`, O(1) for `findMedian`.
 - **Space Complexity**: O(n) to store all numbers.
