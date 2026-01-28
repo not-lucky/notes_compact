@@ -300,8 +300,9 @@ def evaluate(expression: str) -> int:
             return res
 
     return solve(expression)
-````
-
 ```
 
-```
+### Complexity Analysis
+
+- **Time Complexity**: O(n^2) in the worst case due to string slicing and multiple passes over substrings during parsing.
+- **Space Complexity**: O(n) for the recursion stack and storing variable scopes.
