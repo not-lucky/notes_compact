@@ -48,6 +48,7 @@ This path doesn't go through root!
 ## Key Insight
 
 At each node, the longest path passing through it is:
+
 - **left_depth + right_depth** (connecting deepest left to deepest right)
 
 The diameter is the maximum of these values across all nodes.
@@ -249,11 +250,11 @@ def longest_path(parent: list[int], s: str) -> int:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Optimal (single pass) | O(n) | O(h) | Combine diameter and depth |
-| Naive (separate height) | O(n²) | O(h) | Height at each node |
-| N-ary tree | O(n log k) | O(h) | Sort children depths |
+| Approach                | Time       | Space | Notes                      |
+| ----------------------- | ---------- | ----- | -------------------------- |
+| Optimal (single pass)   | O(n)       | O(h)  | Combine diameter and depth |
+| Naive (separate height) | O(n²)      | O(h)  | Height at each node        |
+| N-ary tree              | O(n log k) | O(h)  | Sort children depths       |
 
 ---
 
@@ -299,13 +300,13 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Diameter of Binary Tree | Easy | Basic diameter |
-| 2 | Binary Tree Maximum Path Sum | Hard | Similar pattern with values |
-| 3 | Longest Univalue Path | Medium | Same value constraint |
-| 4 | Longest Path With Different Adjacent Characters | Hard | Character constraint |
-| 5 | Tree Diameter | Medium | Unrooted tree (graph) |
+| #   | Problem                                         | Difficulty | Key Concept                 |
+| --- | ----------------------------------------------- | ---------- | --------------------------- |
+| 1   | Diameter of Binary Tree                         | Easy       | Basic diameter              |
+| 2   | Binary Tree Maximum Path Sum                    | Hard       | Similar pattern with values |
+| 3   | Longest Univalue Path                           | Medium     | Same value constraint       |
+| 4   | Longest Path With Different Adjacent Characters | Hard       | Character constraint        |
+| 5   | Tree Diameter                                   | Medium     | Unrooted tree (graph)       |
 
 ---
 

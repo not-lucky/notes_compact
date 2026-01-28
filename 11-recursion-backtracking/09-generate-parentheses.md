@@ -27,6 +27,7 @@ Think of it as maintaining a balance while building a sequence.
    - At every prefix, opens ≥ closes (never go negative)
 
 4. **Visual Intuition—The Decision Tree**:
+
 ```
 n=2, tracking (open, close)
 
@@ -43,7 +44,7 @@ n=2, tracking (open, close)
 Only 2 valid sequences for n=2: "(())" and "()()"
 ```
 
-5. **Why Not Just All Permutations?**: There are (2n)! / (n!)² = C(2n,n) ways to arrange n opens and n closes. But only C(2n,n)/(n+1) = Catalan(n) are *valid*. Backtracking builds only valid ones, never generating invalid sequences.
+5. **Why Not Just All Permutations?**: There are (2n)! / (n!)² = C(2n,n) ways to arrange n opens and n closes. But only C(2n,n)/(n+1) = Catalan(n) are _valid_. Backtracking builds only valid ones, never generating invalid sequences.
 
 6. **The Catalan Connection**: The count of valid parentheses is the n-th Catalan number:
    - C(1) = 1: "()"
@@ -66,6 +67,7 @@ This pattern is specific to sequence generation:
 5. **When n Is Large**: Catalan(15) ≈ 9 million. For n > 12-15, generating all sequences is impractical.
 
 **Red Flags Against Full Generation:**
+
 - n > 12 → too many sequences
 - Only need count → use Catalan formula
 - Only need validity check → single-pass balance check
@@ -85,6 +87,7 @@ This pattern is specific to sequence generation:
 ## Interview Context
 
 Generate Parentheses tests:
+
 1. **Valid sequence understanding**: When can we add '(' or ')'?
 2. **Counting constraints**: Track open and close counts
 3. **Tree visualization**: See the decision tree clearly
@@ -109,6 +112,7 @@ Output: ["(())", "()()"]
 ## The Core Insight
 
 At each position, we can add:
+
 - `(` if we have remaining open parentheses (open < n)
 - `)` if it would balance an open (close < open)
 
@@ -237,9 +241,11 @@ def generate_parenthesis_iterative(n: int) -> list[str]:
 ## Why This Works: Validity Invariant
 
 The key insight is maintaining the invariant:
+
 - At any point, `close_count ≤ open_count ≤ n`
 
 This guarantees:
+
 1. We never have more `)` than `(` at any prefix
 2. We use exactly n of each
 
@@ -269,6 +275,7 @@ n=6: 132
 ```
 
 Catalan numbers also count:
+
 - Number of binary trees with n nodes
 - Number of ways to triangulate a polygon
 - Number of paths in a grid that don't cross the diagonal
@@ -351,11 +358,11 @@ def generate_multi_parenthesis(n: int) -> list[str]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Generate all | O(4^n / √n) | O(n) | Catalan number results |
-| Check valid | O(n) | O(1) | Single pass |
-| Min to add | O(n) | O(1) | Single pass |
+| Operation    | Time        | Space | Notes                  |
+| ------------ | ----------- | ----- | ---------------------- |
+| Generate all | O(4^n / √n) | O(n)  | Catalan number results |
+| Check valid  | O(n)        | O(1)  | Single pass            |
+| Min to add   | O(n)        | O(1)  | Single pass            |
 
 ---
 
@@ -406,13 +413,13 @@ if len(current) == 2 * n:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Generate Parentheses | Medium | Basic backtracking |
-| 2 | Valid Parentheses | Easy | Stack matching |
-| 3 | Minimum Add to Make Valid | Medium | Count unmatched |
-| 4 | Longest Valid Parentheses | Hard | DP or stack |
-| 5 | Remove Invalid Parentheses | Hard | BFS or backtracking |
+| #   | Problem                    | Difficulty | Key Insight         |
+| --- | -------------------------- | ---------- | ------------------- |
+| 1   | Generate Parentheses       | Medium     | Basic backtracking  |
+| 2   | Valid Parentheses          | Easy       | Stack matching      |
+| 3   | Minimum Add to Make Valid  | Medium     | Count unmatched     |
+| 4   | Longest Valid Parentheses  | Hard       | DP or stack         |
+| 5   | Remove Invalid Parentheses | Hard       | BFS or backtracking |
 
 ---
 

@@ -51,6 +51,7 @@ Advanced string DP problems appear in FANG+ because:
 5. **Streaming/Online Processing**: If the string is given character by character and you need immediate answers, batch DP doesn't apply.
 
 **Common String DP Categories:**
+
 - Subsequence: LCS, Distinct Subsequences
 - Transformation: Edit Distance, One Edit Distance
 - Decoding: Decode Ways, Valid Parentheses
@@ -452,13 +453,13 @@ def shortest_way(source: str, target: str) -> int:
 
 ## Common Patterns Summary
 
-| Problem | Key Insight | Complexity |
-|---------|-------------|------------|
-| Distinct Subsequences | Count matches, add don't-use | O(mn) |
-| Interleaving | Two pointers in 2D | O(mn) |
-| Scramble String | Recursive with memo | O(n⁴) |
-| Decode Ways | Fibonacci-like | O(n) |
-| Valid Parentheses | Track ending valid length | O(n) |
+| Problem               | Key Insight                  | Complexity |
+| --------------------- | ---------------------------- | ---------- |
+| Distinct Subsequences | Count matches, add don't-use | O(mn)      |
+| Interleaving          | Two pointers in 2D           | O(mn)      |
+| Scramble String       | Recursive with memo          | O(n⁴)      |
+| Decode Ways           | Fibonacci-like               | O(n)       |
+| Valid Parentheses     | Track ending valid length    | O(n)       |
 
 ---
 
@@ -474,14 +475,14 @@ def shortest_way(source: str, target: str) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Distinct Subsequences | Hard | Counting matches |
-| 2 | Interleaving String | Medium | Two-string merge |
-| 3 | Scramble String | Hard | Recursive partition |
-| 4 | Decode Ways | Medium | Fibonacci variant |
-| 5 | Longest Valid Parentheses | Hard | Bracket matching |
-| 6 | Palindrome Pairs | Hard | String manipulation |
+| #   | Problem                   | Difficulty | Pattern             |
+| --- | ------------------------- | ---------- | ------------------- |
+| 1   | Distinct Subsequences     | Hard       | Counting matches    |
+| 2   | Interleaving String       | Medium     | Two-string merge    |
+| 3   | Scramble String           | Hard       | Recursive partition |
+| 4   | Decode Ways               | Medium     | Fibonacci variant   |
+| 5   | Longest Valid Parentheses | Hard       | Bracket matching    |
+| 6   | Palindrome Pairs          | Hard       | String manipulation |
 
 ---
 
@@ -499,13 +500,13 @@ def shortest_way(source: str, target: str) -> int:
 
 You've now covered all major DP patterns for FANG+ interviews:
 
-| Category | Key Topics |
-|----------|------------|
-| 1D DP | Fibonacci, House Robber, Climbing Stairs |
-| 2D DP | Grid paths, LCS, Edit Distance |
-| Knapsack | 0/1, Unbounded, Subset Sum |
-| String DP | Palindromes, Word Break, Regex |
-| Interval DP | Matrix Chain, Burst Balloons |
-| State Machine | Stock Problems |
+| Category      | Key Topics                               |
+| ------------- | ---------------------------------------- |
+| 1D DP         | Fibonacci, House Robber, Climbing Stairs |
+| 2D DP         | Grid paths, LCS, Edit Distance           |
+| Knapsack      | 0/1, Unbounded, Subset Sum               |
+| String DP     | Palindromes, Word Break, Regex           |
+| Interval DP   | Matrix Chain, Burst Balloons             |
+| State Machine | Stock Problems                           |
 
 These patterns cover 90%+ of DP problems in technical interviews.

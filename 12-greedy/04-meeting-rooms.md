@@ -5,6 +5,7 @@
 ## Interview Context
 
 Meeting rooms tests:
+
 1. **Interval overlap detection**: Can all meetings happen in one room?
 2. **Resource allocation**: Minimum rooms needed
 3. **Algorithm choice**: Sorting vs heap vs sweep line
@@ -70,6 +71,7 @@ Meeting Rooms II can be solved three ways, all giving the same answer:
 **1. When Rooms Have Different Capacities**
 
 If rooms have size limits (room A fits 10 people, room B fits 50):
+
 ```
 This becomes a bin packing / assignment problem,
 typically solved with greedy heuristics or optimization.
@@ -78,6 +80,7 @@ typically solved with greedy heuristics or optimization.
 **2. When Meetings Have Preferences**
 
 If some meetings must be in specific rooms, or some rooms are preferred:
+
 ```
 This becomes a constrained assignment problem.
 May need matching algorithms or constraint satisfaction.
@@ -86,6 +89,7 @@ May need matching algorithms or constraint satisfaction.
 **3. When You Need the Actual Schedule**
 
 If you need to output "meeting X → room Y":
+
 ```
 Heap approach naturally gives this!
 Each pop/push represents room assignment.
@@ -95,6 +99,7 @@ Sweep line only gives the count, not assignments.
 **4. When Intervals Can Be Rescheduled**
 
 If you can move meetings to minimize rooms:
+
 ```
 That's job scheduling with flexibility—much harder!
 Our algorithms assume fixed meeting times.
@@ -358,11 +363,11 @@ Answer: 2
 
 ## Approach Comparison
 
-| Approach | Time | Space | When to Use |
-|----------|------|-------|-------------|
-| Min-Heap | O(n log n) | O(n) | Most intuitive for interviews |
-| Sweep Line | O(n log n) | O(n) | When counting concurrent events |
-| Two Pointers | O(n log n) | O(n) | Clean, easy to remember |
+| Approach     | Time       | Space | When to Use                     |
+| ------------ | ---------- | ----- | ------------------------------- |
+| Min-Heap     | O(n log n) | O(n)  | Most intuitive for interviews   |
+| Sweep Line   | O(n log n) | O(n)  | When counting concurrent events |
+| Two Pointers | O(n log n) | O(n)  | Clean, easy to remember         |
 
 ---
 
@@ -490,13 +495,13 @@ def find_right_interval(intervals: list[list[int]]) -> list[int]:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Meeting Rooms I | O(n log n) | O(1) | Simple overlap check |
-| Meeting Rooms II (heap) | O(n log n) | O(n) | Heap size = rooms |
-| Meeting Rooms II (sweep) | O(n log n) | O(n) | Event processing |
-| Car Pooling | O(n log n) | O(n) | Sweep line variant |
-| Car Pooling (bucket) | O(n + k) | O(k) | k = max location |
+| Problem                  | Time       | Space | Notes                |
+| ------------------------ | ---------- | ----- | -------------------- |
+| Meeting Rooms I          | O(n log n) | O(1)  | Simple overlap check |
+| Meeting Rooms II (heap)  | O(n log n) | O(n)  | Heap size = rooms    |
+| Meeting Rooms II (sweep) | O(n log n) | O(n)  | Event processing     |
+| Car Pooling              | O(n log n) | O(n)  | Sweep line variant   |
+| Car Pooling (bucket)     | O(n + k)   | O(k)  | k = max location     |
 
 ---
 
@@ -529,14 +534,14 @@ Sort key: (time, delta) where end=-1 < start=+1
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Meeting Rooms | Easy | Sort, check adjacent overlap |
-| 2 | Meeting Rooms II | Medium | Min-heap or sweep line |
-| 3 | Car Pooling | Medium | Sweep line with capacity |
-| 4 | My Calendar I | Medium | Interval insertion/overlap |
-| 5 | My Calendar II | Medium | Track double bookings |
-| 6 | My Calendar III | Hard | Sweep line, max overlap |
+| #   | Problem          | Difficulty | Key Insight                  |
+| --- | ---------------- | ---------- | ---------------------------- |
+| 1   | Meeting Rooms    | Easy       | Sort, check adjacent overlap |
+| 2   | Meeting Rooms II | Medium     | Min-heap or sweep line       |
+| 3   | Car Pooling      | Medium     | Sweep line with capacity     |
+| 4   | My Calendar I    | Medium     | Interval insertion/overlap   |
+| 5   | My Calendar II   | Medium     | Track double bookings        |
+| 6   | My Calendar III  | Hard       | Sweep line, max overlap      |
 
 ---
 

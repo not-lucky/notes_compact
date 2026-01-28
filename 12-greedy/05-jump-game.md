@@ -5,6 +5,7 @@
 ## Interview Context
 
 Jump game problems test:
+
 1. **Greedy reachability**: Track farthest position reachable
 2. **Optimization**: Find minimum jumps
 3. **Pattern recognition**: When greedy vs DP vs BFS
@@ -18,7 +19,7 @@ Jump game problems test:
 
 Imagine you're hopping across stones in a river. At each stone, you see how far you CAN jump from there. The key insight:
 
-*You don't need to track WHERE you jump—just HOW FAR you can reach.*
+_You don't need to track WHERE you jump—just HOW FAR you can reach._
 
 ```
 nums = [2, 3, 1, 1, 4]
@@ -48,7 +49,7 @@ After i=1:  [X] [X] [X] [X] [X]  reach=4 (from index 1, jump 3)
 
 **Why Greedy Works for Jump Game I**
 
-The crucial observation: *If you can reach position i, you can reach ALL positions 0 through i.*
+The crucial observation: _If you can reach position i, you can reach ALL positions 0 through i._
 
 This means there's no "better path" to worry about—any path reaching position i is equally good for the purpose of reaching position i.
 
@@ -78,6 +79,7 @@ Each "level" represents positions reachable with exactly that many jumps.
 **1. When Jumps Can Go Backwards**
 
 Jump Game III allows jumping to `i + arr[i]` OR `i - arr[i]`:
+
 ```
 This is no longer a "reach frontier" problem.
 Use BFS/DFS because you can visit the same index multiple ways.
@@ -86,6 +88,7 @@ Use BFS/DFS because you can visit the same index multiple ways.
 **2. When Jumps Have Costs**
 
 If each jump position has a cost to land on:
+
 ```
 nums = [2, 3, 1, 1, 4]
 cost = [1, 100, 1, 1, 1]
@@ -97,6 +100,7 @@ Need DP: dp[i] = minimum cost to reach index i
 **3. When You Must Land on Specific Indices**
 
 If only certain indices are "safe" (like Frog Jump with stones):
+
 ```
 Greedy doesn't work because valid landing spots are sparse.
 Use DP with state = (position, last_jump_size)
@@ -105,6 +109,7 @@ Use DP with state = (position, last_jump_size)
 **4. When Jump Sizes Have Constraints**
 
 If jump size must follow a pattern (k-1, k, k+1 from last jump):
+
 ```
 This is stateful—the valid jumps depend on history.
 Greedy is stateless by design, so use DP.
@@ -283,6 +288,7 @@ def jump_bfs(nums: list[int]) -> int:
 **Greedy choice**: Always track maximum reach from all visited positions.
 
 **Why it works**:
+
 - If we can reach position `i`, we can reach all positions `0..i`
 - Maximum reach from `0..i` determines if `i+1` is reachable
 - No need to track which specific path was taken
@@ -292,6 +298,7 @@ def jump_bfs(nums: list[int]) -> int:
 **Greedy choice**: At each "level", jump to maximize next level's reach.
 
 **Why it works**:
+
 - BFS-like level expansion
 - Each level = one jump
 - Jumping to farthest reach minimizes total jumps
@@ -409,13 +416,13 @@ def min_jumps(arr: list[int]) -> int:
 
 ## Jump Game Variant Comparison
 
-| Variant | Approach | Time | Key Insight |
-|---------|----------|------|-------------|
-| I (can reach?) | Greedy | O(n) | Track max reach |
-| II (min jumps) | Greedy | O(n) | BFS-like levels |
-| III (reach zero) | BFS | O(n) | Bidirectional jumps |
-| IV (same values) | BFS | O(n) | Clear visited groups |
-| V (max score) | DP | O(n log n) | Monotonic deque |
+| Variant          | Approach | Time       | Key Insight          |
+| ---------------- | -------- | ---------- | -------------------- |
+| I (can reach?)   | Greedy   | O(n)       | Track max reach      |
+| II (min jumps)   | Greedy   | O(n)       | BFS-like levels      |
+| III (reach zero) | BFS      | O(n)       | Bidirectional jumps  |
+| IV (same values) | BFS      | O(n)       | Clear visited groups |
+| V (max score)    | DP       | O(n log n) | Monotonic deque      |
 
 ---
 
@@ -456,13 +463,13 @@ def can_cross(stones: list[int]) -> bool:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Approach |
-|---------|------|-------|----------|
-| Jump Game I | O(n) | O(1) | Greedy |
-| Jump Game II | O(n) | O(1) | Greedy |
-| Jump Game III | O(n) | O(n) | BFS |
-| Jump Game IV | O(n) | O(n) | BFS |
-| Frog Jump | O(n²) | O(n²) | DP |
+| Problem       | Time  | Space | Approach |
+| ------------- | ----- | ----- | -------- |
+| Jump Game I   | O(n)  | O(1)  | Greedy   |
+| Jump Game II  | O(n)  | O(1)  | Greedy   |
+| Jump Game III | O(n)  | O(n)  | BFS      |
+| Jump Game IV  | O(n)  | O(n)  | BFS      |
+| Frog Jump     | O(n²) | O(n²) | DP       |
 
 ---
 
@@ -478,14 +485,14 @@ def can_cross(stones: list[int]) -> bool:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Jump Game | Medium | Track max reach |
-| 2 | Jump Game II | Medium | Greedy level expansion |
-| 3 | Jump Game III | Medium | BFS bidirectional |
-| 4 | Jump Game IV | Hard | BFS with optimization |
-| 5 | Frog Jump | Hard | DP with jump sizes |
-| 6 | Jump Game V | Hard | DP with monotonic stack |
+| #   | Problem       | Difficulty | Key Insight             |
+| --- | ------------- | ---------- | ----------------------- |
+| 1   | Jump Game     | Medium     | Track max reach         |
+| 2   | Jump Game II  | Medium     | Greedy level expansion  |
+| 3   | Jump Game III | Medium     | BFS bidirectional       |
+| 4   | Jump Game IV  | Hard       | BFS with optimization   |
+| 5   | Frog Jump     | Hard       | DP with jump sizes      |
+| 6   | Jump Game V   | Hard       | DP with monotonic stack |
 
 ---
 

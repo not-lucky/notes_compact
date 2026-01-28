@@ -2,18 +2,19 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Cheapest Flights Within K Stops | Medium | Limited iterations |
-| 2 | Network Delay Time | Medium | Can use either |
-| 3 | Negative Cycle Detection | Medium | Extra iteration |
-| 4 | Path with Minimum Effort | Medium | Binary search variant |
+| #   | Problem                         | Difficulty | Key Variation         |
+| --- | ------------------------------- | ---------- | --------------------- |
+| 1   | Cheapest Flights Within K Stops | Medium     | Limited iterations    |
+| 2   | Network Delay Time              | Medium     | Can use either        |
+| 3   | Negative Cycle Detection        | Medium     | Extra iteration       |
+| 4   | Path with Minimum Effort        | Medium     | Binary search variant |
 
 ---
 
 ## 1. Cheapest Flights Within K Stops
 
 ### Problem Statement
+
 Find the cheapest price from `src` to `dst` with at most `k` stops.
 
 ### Optimal Python Solution
@@ -33,15 +34,17 @@ def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: i
 ```
 
 ### Explanation
+
 - **Algorithm**: Bellman-Ford variant. We limit the number of relaxations to `k+1` to respect the stop constraint.
 - **Copying**: Using `temp` is essential to ensure we only use results from the previous "layer" of stops.
-- **Complexity**: Time O(K * E), Space O(V).
+- **Complexity**: Time O(K \* E), Space O(V).
 
 ---
 
 ## 2. Network Delay Time
 
 ### Problem Statement
+
 Minimum time for all nodes to receive a signal.
 
 ### Optimal Python Solution
@@ -64,6 +67,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ```
 
 ### Explanation
+
 - **Complexity**: Time O(VE), Space O(V).
 - **Note**: While Dijkstra is usually faster, Bellman-Ford works and is simpler to implement.
 
@@ -72,6 +76,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ## 3. Negative Cycle Detection
 
 ### Problem Statement
+
 Determine if a graph contains a cycle with a negative total weight.
 
 ### Optimal Python Solution
@@ -94,6 +99,7 @@ def hasNegativeCycle(n: int, edges: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Logic**: A shortest path in a graph without negative cycles has at most `V-1` edges. If we can still improve after `V-1` relaxations, there's a negative cycle.
 - **Complexity**: Time O(VE), Space O(V).
 
@@ -102,6 +108,7 @@ def hasNegativeCycle(n: int, edges: list[list[int]]) -> bool:
 ## 4. Path with Minimum Effort
 
 ### Problem Statement
+
 (Binary Search + BFS approach as a Bellman-Ford "variant" style of thought).
 
 ### Optimal Python Solution (Binary Search + BFS)
@@ -139,5 +146,6 @@ def minimumEffortPath(heights: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Variation**: Instead of pathfinding, we binary search on the "effort" limit and use BFS to check reachability.
 - **Complexity**: Time O(MN log(max_height)), Space O(MN).

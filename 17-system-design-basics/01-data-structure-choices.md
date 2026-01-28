@@ -17,6 +17,7 @@ Here's the mental framework:
 All data structure choices come down to three trade-offs:
 
 **1. Speed vs. Ordering**
+
 ```
 HashMap: O(1) everything, but no ordering
 TreeMap: O(log n) everything, but maintains sorted order
@@ -27,6 +28,7 @@ Question to ask: "Do I ever need items in sorted order?"
 ```
 
 **2. Memory vs. Speed**
+
 ```
 Array: Compact memory, O(n) search
 HashMap: Extra memory for buckets, O(1) search
@@ -37,6 +39,7 @@ Question to ask: "How often do I search vs. how much memory can I spare?"
 ```
 
 **3. Read vs. Write Optimization**
+
 ```
 Sorted Array: O(log n) search, O(n) insert
 HashMap: O(1) search, O(1) insert
@@ -68,22 +71,23 @@ System design interviews frequently ask "why did you choose X over Y?" This sect
 
 ### Quick Reference
 
-| Operation | HashMap | BST/TreeMap | Heap |
-|-----------|---------|-------------|------|
-| Search | O(1) avg | O(log n) | O(n) |
-| Insert | O(1) avg | O(log n) | O(log n) |
-| Delete | O(1) avg | O(log n) | O(log n)* |
-| Min/Max | O(n) | O(log n) | O(1) |
-| Range Query | O(n) | O(log n + k) | O(n) |
-| Ordered Iteration | O(n log n) | O(n) | O(n log n) |
+| Operation         | HashMap    | BST/TreeMap  | Heap       |
+| ----------------- | ---------- | ------------ | ---------- |
+| Search            | O(1) avg   | O(log n)     | O(n)       |
+| Insert            | O(1) avg   | O(log n)     | O(log n)   |
+| Delete            | O(1) avg   | O(log n)     | O(log n)\* |
+| Min/Max           | O(n)       | O(log n)     | O(1)       |
+| Range Query       | O(n)       | O(log n + k) | O(n)       |
+| Ordered Iteration | O(n log n) | O(n)         | O(n log n) |
 
-*Delete by value in heap is O(n) to find + O(log n) to remove
+\*Delete by value in heap is O(n) to find + O(log n) to remove
 
 ---
 
 ## When to Use HashMap
 
 **Choose HashMap when:**
+
 - You need O(1) lookup by key
 - Order doesn't matter
 - No range queries needed
@@ -127,6 +131,7 @@ def two_sum(nums, target):
 ## When to Use Tree (BST/TreeMap/TreeSet)
 
 **Choose Tree when:**
+
 - You need ordered data
 - Range queries are required
 - You need floor/ceiling operations
@@ -205,6 +210,7 @@ Understanding when NOT to use a data structure is as important as knowing when t
 ```
 
 **Real-World Example:**
+
 ```python
 # WRONG: Using HashMap for a time-series database
 # Can't efficiently query "all readings between 2pm and 4pm"
@@ -233,6 +239,7 @@ readings = SortedDict()  # O(log n + k) range queries
 ```
 
 **Real-World Example:**
+
 ```python
 # WRONG: Using TreeMap for user session storage
 # We only do key lookups, never range queries
@@ -263,6 +270,7 @@ sessions = {}  # O(1) lookup
 ```
 
 **Real-World Example:**
+
 ```python
 # WRONG: Using heap to track both highest and lowest prices
 prices_heap = []  # Can only efficiently track ONE extreme
@@ -280,6 +288,7 @@ prices = SortedList()  # O(1) access to both ends
 ## When to Use Heap
 
 **Choose Heap when:**
+
 - You need quick access to min or max
 - Top-K problems
 - Priority scheduling
@@ -419,26 +428,26 @@ Start: What operation is most critical?
 
 ## Real System Examples
 
-| System | Data Structure | Why |
-|--------|---------------|-----|
-| Redis Cache | HashMap + skiplist | O(1) lookup + O(log n) range |
-| Database Index | B+ Tree | Range queries on disk |
-| Priority Queue | Heap | O(1) min, O(log n) insert |
-| LRU Cache | HashMap + DLL | O(1) everything |
-| URL Shortener | HashMap | O(1) redirect lookup |
-| Leaderboard | Skip List/TreeMap | Range + updates |
+| System         | Data Structure     | Why                          |
+| -------------- | ------------------ | ---------------------------- |
+| Redis Cache    | HashMap + skiplist | O(1) lookup + O(log n) range |
+| Database Index | B+ Tree            | Range queries on disk        |
+| Priority Queue | Heap               | O(1) min, O(log n) insert    |
+| LRU Cache      | HashMap + DLL      | O(1) everything              |
+| URL Shortener  | HashMap            | O(1) redirect lookup         |
+| Leaderboard    | Skip List/TreeMap  | Range + updates              |
 
 ---
 
 ## Complexity Analysis
 
-| Scenario | Best Choice | Time | Why |
-|----------|-------------|------|-----|
-| User session lookup | HashMap | O(1) | Just need key→value |
-| Price history range | TreeMap | O(log n + k) | Range queries |
-| Next event to process | Heap | O(1) get, O(log n) insert | Priority-based |
-| LRU eviction | HashMap+DLL | O(1) | Both lookup and order |
-| Top 10 scores | Heap | O(n log 10) | Fixed size top-K |
+| Scenario              | Best Choice | Time                      | Why                   |
+| --------------------- | ----------- | ------------------------- | --------------------- |
+| User session lookup   | HashMap     | O(1)                      | Just need key→value   |
+| Price history range   | TreeMap     | O(log n + k)              | Range queries         |
+| Next event to process | Heap        | O(1) get, O(log n) insert | Priority-based        |
+| LRU eviction          | HashMap+DLL | O(1)                      | Both lookup and order |
+| Top 10 scores         | Heap        | O(n log 10)               | Fixed size top-K      |
 
 ---
 
@@ -518,14 +527,14 @@ class MinMaxTracker:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Decision |
-|---|---------|------------|--------------|
-| 1 | Design HashMap | Easy | Collision handling |
-| 2 | LRU Cache | Medium | HashMap + DLL |
-| 3 | Time Based Key-Value Store | Medium | HashMap + TreeMap |
-| 4 | Find Median from Data Stream | Hard | Two heaps |
-| 5 | Design Twitter | Medium | HashMap + Heap for feed |
-| 6 | Stock Price Fluctuation | Medium | HashMap + TreeMap or 2 heaps |
+| #   | Problem                      | Difficulty | Key Decision                 |
+| --- | ---------------------------- | ---------- | ---------------------------- |
+| 1   | Design HashMap               | Easy       | Collision handling           |
+| 2   | LRU Cache                    | Medium     | HashMap + DLL                |
+| 3   | Time Based Key-Value Store   | Medium     | HashMap + TreeMap            |
+| 4   | Find Median from Data Stream | Hard       | Two heaps                    |
+| 5   | Design Twitter               | Medium     | HashMap + Heap for feed      |
+| 6   | Stock Price Fluctuation      | Medium     | HashMap + TreeMap or 2 heaps |
 
 ---
 

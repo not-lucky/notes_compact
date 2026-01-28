@@ -22,11 +22,13 @@ The key insight: counting occurrences transforms comparison problems into lookup
 **The Core Insight: Counting Enables O(1) Decisions**
 
 Without frequency counting:
+
 ```
 "How many times does 5 appear?" → Scan entire array → O(n)
 ```
 
 With frequency counting (one-time O(n) preprocessing):
+
 ```
 freq = {5: 3, 2: 2, 7: 1}
 "How many times does 5 appear?" → freq[5] → O(1)
@@ -37,6 +39,7 @@ You pay O(n) once to answer unlimited questions in O(1).
 **Mental Model: Inventory Sheet**
 
 Think of a warehouse inventory:
+
 - Walking the aisles to count each item type → O(n) every time
 - Building an inventory sheet first → O(n) once, O(1) lookups forever
 
@@ -81,11 +84,13 @@ Result: The candidate after all battles is the majority.
 **Pattern Recognition: When to Use XOR**
 
 XOR has magical properties:
+
 - `a ^ a = 0` (any number XORed with itself is 0)
 - `a ^ 0 = a` (any number XORed with 0 is itself)
 - Commutative and associative
 
 So for "find the single non-duplicate":
+
 ```
 XOR all elements → duplicates cancel to 0 → only unique remains
 ```
@@ -99,6 +104,7 @@ No hashmap needed, O(1) space!
 **1. You Need Order Information**
 
 Frequency maps lose positional information:
+
 ```python
 # "Find first element that appears k times" → need to track positions too
 # "Find longest streak of same element" → sliding window is better
@@ -107,6 +113,7 @@ Frequency maps lose positional information:
 **2. Counting Isn't the Question**
 
 Some problems look like counting but aren't:
+
 ```python
 # "Find two numbers that sum to target" → Two Sum, not frequency
 # "Find longest increasing subsequence" → DP, not frequency
@@ -115,6 +122,7 @@ Some problems look like counting but aren't:
 **3. Memory Constraints Are Tight**
 
 Counter uses O(k) space where k = unique elements:
+
 ```python
 # Stream of 10 billion elements with 1 billion unique values
 # Counter would use 1 billion entries → too much memory
@@ -124,16 +132,19 @@ Counter uses O(k) space where k = unique elements:
 **4. You Need Approximate Answers**
 
 For "roughly how many unique?" or "approximately top-K":
+
 - Probabilistic algorithms are better
 - Exact counting is overkill
 
 **5. Streaming Data with Limited Memory**
 
 For unbounded streams:
+
 - Boyer-Moore works for majority (O(1) space)
 - But generic "top K" on infinite stream needs different approach
 
 **Red Flags:**
+
 - "Maintain order of first occurrence" → Use OrderedDict or track separately
 - "Streaming with bounded memory" → Probabilistic structures
 - "Approximate answer acceptable" → Sketch algorithms
@@ -697,18 +708,18 @@ dict(c)                 # Convert to regular dict
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Top K Frequent Elements | Medium | Heap or bucket sort |
-| 2 | Top K Frequent Words | Medium | Heap with tie-breaking |
-| 3 | Majority Element | Easy | Boyer-Moore or Counter |
-| 4 | Majority Element II | Medium | Boyer-Moore extended |
-| 5 | First Unique Character | Easy | Counter + scan |
-| 6 | Single Number | Easy | XOR trick |
-| 7 | Contains Duplicate | Easy | Set |
-| 8 | Contains Duplicate II | Easy | Sliding window set |
-| 9 | Sort Characters By Frequency | Medium | Counter + sort |
-| 10 | Find All Duplicates | Medium | Index marking |
+| #   | Problem                      | Difficulty | Pattern                |
+| --- | ---------------------------- | ---------- | ---------------------- |
+| 1   | Top K Frequent Elements      | Medium     | Heap or bucket sort    |
+| 2   | Top K Frequent Words         | Medium     | Heap with tie-breaking |
+| 3   | Majority Element             | Easy       | Boyer-Moore or Counter |
+| 4   | Majority Element II          | Medium     | Boyer-Moore extended   |
+| 5   | First Unique Character       | Easy       | Counter + scan         |
+| 6   | Single Number                | Easy       | XOR trick              |
+| 7   | Contains Duplicate           | Easy       | Set                    |
+| 8   | Contains Duplicate II        | Easy       | Sliding window set     |
+| 9   | Sort Characters By Frequency | Medium     | Counter + sort         |
+| 10  | Find All Duplicates          | Medium     | Index marking          |
 
 ---
 

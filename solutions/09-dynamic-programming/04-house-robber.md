@@ -1,9 +1,11 @@
 # Solutions: House Robber Variants
 
 ## 1. House Robber (Linear)
+
 **Problem:** Maximize sum of non-adjacent elements.
 
 ### Optimal Python Solution
+
 ```python
 def rob(nums: list[int]) -> int:
     # State: dp[i] = max money from houses 0..i
@@ -15,15 +17,18 @@ def rob(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 2. House Robber II (Circular)
+
 **Problem:** Houses are arranged in a circle.
 
 ### Optimal Python Solution
+
 ```python
 def rob_circular(nums: list[int]) -> int:
     if len(nums) == 1: return nums[0]
@@ -38,15 +43,18 @@ def rob_circular(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 3. House Robber III (Binary Tree)
+
 **Problem:** Houses form a binary tree. Cannot rob parent and child.
 
 ### Optimal Python Solution
+
 ```python
 def rob_tree(root) -> int:
     # Returns (max if rob current, max if skip current)
@@ -68,15 +76,18 @@ def rob_tree(root) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$ - Visit each node once.
 - **Space:** $O(h)$ - Recursion stack height.
 
 ---
 
 ## 4. Delete and Earn
+
 **Problem:** Earn points by picking numbers, but delete all `num-1` and `num+1`.
 
 ### Optimal Python Solution
+
 ```python
 def delete_and_earn(nums: list[int]) -> int:
     # Key Insight: Transform to House Robber on points array
@@ -95,15 +106,18 @@ def delete_and_earn(nums: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n + \text{max\_num})$
 - **Space:** $O(\text{max\_num})$
 
 ---
 
 ## 5. Paint House
+
 **Problem:** $n$ houses, 3 colors. Minimize cost such that no two adjacent houses have same color.
 
 ### Optimal Python Solution
+
 ```python
 def min_cost(costs: list[list[int]]) -> int:
     # State: dp[i][color] = min cost to paint house i with color
@@ -122,15 +136,18 @@ def min_cost(costs: list[list[int]]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$ - Only storing 3 color costs.
 
 ---
 
 ## 6. Paint House II
+
 **Problem:** $n$ houses, $k$ colors. Minimize cost.
 
 ### Optimal Python Solution
+
 ```python
 def min_cost_ii(costs: list[list[int]]) -> int:
     # Optimization: Keep track of min and second min from previous house
@@ -161,5 +178,6 @@ def min_cost_ii(costs: list[list[int]]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(nk)$ - By tracking min/second min, we avoid $O(nk^2)$.
 - **Space:** $O(1)$

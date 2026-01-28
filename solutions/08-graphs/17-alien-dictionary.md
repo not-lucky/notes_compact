@@ -2,17 +2,18 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Alien Dictionary | Hard | Core problem |
-| 2 | Course Schedule II | Medium | Similar topological sort |
-| 3 | Sequence Reconstruction | Medium | Verify unique order |
+| #   | Problem                 | Difficulty | Key Variation            |
+| --- | ----------------------- | ---------- | ------------------------ |
+| 1   | Alien Dictionary        | Hard       | Core problem             |
+| 2   | Course Schedule II      | Medium     | Similar topological sort |
+| 3   | Sequence Reconstruction | Medium     | Verify unique order      |
 
 ---
 
 ## 1. Alien Dictionary
 
 ### Problem Statement
+
 Derive the order of letters in an alien alphabet from a sorted list of words.
 
 ### Optimal Python Solution
@@ -51,6 +52,7 @@ def alienOrder(words: list[str]) -> str:
 ```
 
 ### Explanation
+
 - **Algorithm**: Topological Sort (Kahn's).
 - **Graph Construction**: Compare adjacent words to find relative character ordering.
 - **Prefix Rule**: If word A is a prefix of word B, A must come before B. If B comes first, it's invalid.
@@ -61,6 +63,7 @@ def alienOrder(words: list[str]) -> str:
 ## 2. Course Schedule II
 
 ### Problem Statement
+
 Return a valid course ordering.
 
 ### Optimal Python Solution
@@ -92,6 +95,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ## 3. Sequence Reconstruction
 
 ### Problem Statement
+
 Check if a sequence `nums` can be uniquely reconstructed from a set of `sequences`.
 
 ### Optimal Python Solution

@@ -1,14 +1,17 @@
 # Binary Tree to Linked List Solutions
 
 ## 1. Flatten Binary Tree to Linked List
+
 **Problem Statement**: Given the `root` of a binary tree, flatten the tree into a "linked list". The "linked list" should use the same `TreeNode` class where the `right` child pointer points to the next node in the list and the `left` child pointer is always `null`. The list should be in preorder.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [1,2,5,3,4,None,6]` → `1 -> 2 -> 3 -> 4 -> 5 -> 6`
 - **Edge Case - Tree with only left children**: Needs to be rewired to right.
 - **Edge Case - Already a list**: `1 -> None -> 2 -> None -> 3`.
 
 ### Optimal Python Solution (Morris Style - O(1) Space)
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -38,6 +41,7 @@ def flatten(root: TreeNode) -> None:
 ```
 
 ### Explanation
+
 1.  **Rewiring Insight**: In a preorder traversal, the right subtree of a node is visited immediately after the ENTIRE left subtree has been visited.
 2.  **Target Connection**: Therefore, the root of the right subtree should be attached to the "last" node visited in the left subtree.
 3.  **Procedure**:
@@ -47,15 +51,18 @@ def flatten(root: TreeNode) -> None:
 4.  **Efficiency**: This is $O(1)$ space because we don't use a stack or recursion.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Although there is a nested while loop, each edge in the tree is visited a constant number of times.
 - **Space Complexity**: **O(1)**.
 
 ---
 
 ## 2. Convert BST to Sorted Doubly Linked List
+
 **Problem Statement**: Convert a Binary Search Tree to a sorted **circular** doubly linked list in-place. Use `left` as `prev` and `right` as `next`.
 
 ### Optimal Python Solution
+
 ```python
 def treeToDoublyList(root: TreeNode) -> TreeNode:
     if not root:
@@ -94,21 +101,25 @@ def treeToDoublyList(root: TreeNode) -> TreeNode:
 ```
 
 ### Explanation
+
 1.  **Sorted Order**: Inorder traversal visits nodes in sorted order.
 2.  **State Tracking**: We track the `first` node (the head) and the `last` node visited.
 3.  **Linking**: For every node we visit, we set `last.right = node` and `node.left = last`.
 4.  **Final Step**: Once the traversal is finished, `first` and `last` represent the ends of the sorted list. We link them together to make it circular.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 3. Convert Sorted List to Binary Search Tree
+
 **Problem Statement**: Given the `head` of a sorted linked list, convert it to a height-balanced BST.
 
 ### Optimal Python Solution
+
 ```python
 def sortedListToBST(head: list) -> TreeNode:
     # Helper to count total nodes
@@ -146,19 +157,23 @@ def sortedListToBST(head: list) -> TreeNode:
 ```
 
 ### Explanation
+
 - **Efficiency**: Most solutions use slow/fast pointers ($O(n \log n)$). This optimal approach simulates an **inorder traversal** to build the tree bottom-up in $O(n)$.
-- **Logic**: Since the list is sorted, it *is* the inorder sequence. We build the left subtree for the first half, create a root using the current list node, then build the right subtree.
+- **Logic**: Since the list is sorted, it _is_ the inorder sequence. We build the left subtree for the first half, create a root using the current list node, then build the right subtree.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Each list node is visited once.
 - **Space Complexity**: **O(log n)**. Recursion depth for a balanced tree.
 
 ---
 
 ## 4. Increasing Order Search Tree
+
 **Problem Statement**: Rearrange the BST so that the inorder traversal is in the form of a tree where every node has only a right child, and no left child.
 
 ### Optimal Python Solution
+
 ```python
 def increasingBST(root: TreeNode) -> TreeNode:
     dummy = TreeNode(0)
@@ -183,15 +198,18 @@ def increasingBST(root: TreeNode) -> TreeNode:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 5. Flatten a Multilevel Doubly Linked List
+
 **Problem Statement**: A linked list is given where besides the `next` and `prev` pointers, it also has a `child` pointer. Flatten it into a single-level doubly linked list.
 
 ### Optimal Python Solution
+
 ```python
 def flattenMultilevel(head: 'Node') -> 'Node':
     if not head: return None
@@ -225,5 +243,6 @@ def flattenMultilevel(head: 'Node') -> 'Node':
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.

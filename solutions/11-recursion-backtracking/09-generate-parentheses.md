@@ -7,14 +7,17 @@ This document provides optimal solutions and detailed explanations for the pract
 ## 1. Generate Parentheses
 
 ### Problem Statement
+
 Given `n` pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
 
 ### Examples & Edge Cases
+
 - **Input:** n = 3 → **Output:** ["((()))","(()())","(())()","()(())","()()()"]
 - **Input:** n = 1 → **Output:** ["()"]
 - **Edge Case:** n = 0 → [""]
 
 ### Optimal Python Solution (Backtracking)
+
 ```python
 def generateParenthesis(n: int) -> list[str]:
     res = []
@@ -38,13 +41,15 @@ def generateParenthesis(n: int) -> list[str]:
 ```
 
 ### Detailed Explanation
+
 1. **The Validity Invariant**: To ensure a sequence is well-formed:
    - We can never have more than `n` open parentheses.
    - At any point while building the string, the number of closing parentheses cannot exceed the number of open ones.
 2. **Backtracking**: We start with an empty string and recursively try adding `(` then `)`. If we reach length `2n`, we have a valid sequence.
-3. **Efficiency**: This approach *only* generates valid sequences, exploring exactly $C_n$ paths (the $n$-th Catalan number).
+3. **Efficiency**: This approach _only_ generates valid sequences, exploring exactly $C_n$ paths (the $n$-th Catalan number).
 
 ### Complexity Analysis
+
 - **Time Complexity:** $O(\frac{4^n}{\sqrt{n}})$ - This is the bound for the $n$-th Catalan number.
 - **Space Complexity:** $O(n)$ - The maximum depth of the recursion stack is $2n$.
 
@@ -53,9 +58,11 @@ def generateParenthesis(n: int) -> list[str]:
 ## 2. Valid Parentheses
 
 ### Problem Statement
+
 Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
 
 ### Optimal Python Solution (Stack)
+
 ```python
 def isValid(s: str) -> bool:
     stack = []
@@ -75,6 +82,7 @@ def isValid(s: str) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity:** $O(n)$ - Single pass through the string.
 - **Space Complexity:** $O(n)$ - Worst case stack size.
 
@@ -83,9 +91,11 @@ def isValid(s: str) -> bool:
 ## 3. Minimum Add to Make Valid
 
 ### Problem Statement
+
 Return the minimum number of parentheses we must add to make the string valid.
 
 ### Optimal Python Solution
+
 ```python
 def minAddToMakeValid(s: str) -> int:
     # Track balance
@@ -109,9 +119,11 @@ def minAddToMakeValid(s: str) -> int:
 ## 4. Longest Valid Parentheses
 
 ### Problem Statement
+
 Given a string containing just the characters `'('` and `')'`, find the length of the longest valid (well-formed) parentheses substring.
 
 ### Optimal Python Solution (Stack or DP)
+
 ```python
 def longestValidParentheses(s: str) -> int:
     stack = [-1] # Initialize with -1 to handle full valid strings
@@ -135,9 +147,11 @@ def longestValidParentheses(s: str) -> int:
 ## 5. Remove Invalid Parentheses
 
 ### Problem Statement
+
 Remove the minimum number of invalid parentheses to make the input string valid. Return all possible results.
 
 ### Optimal Python Solution (BFS)
+
 BFS is ideal here because it finds the "minimum removals" level by level.
 
 ```python

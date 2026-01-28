@@ -1,22 +1,25 @@
 # Solutions: Meeting Rooms
 
 ## 1. Meeting Rooms
+
 **Problem Statement**:
 Given an array of meeting time `intervals` where `intervals[i] = [start_i, end_i]`, determine if a person could attend all meetings.
 
 **Examples & Edge Cases**:
+
 - **Example 1**:
-    - Input: `intervals = [[0,30],[5,10],[15,20]]`
-    - Output: `false`
+  - Input: `intervals = [[0,30],[5,10],[15,20]]`
+  - Output: `false`
 - **Example 2**:
-    - Input: `intervals = [[7,10],[2,4]]`
-    - Output: `true`
+  - Input: `intervals = [[7,10],[2,4]]`
+  - Output: `true`
 - **Edge Cases**:
-    - Empty input: `true`.
-    - Single meeting: `true`.
-    - Meetings touching at the end (e.g., `[1,2]` and `[2,3]`): `true` (usually considered not overlapping).
+  - Empty input: `true`.
+  - Single meeting: `true`.
+  - Meetings touching at the end (e.g., `[1,2]` and `[2,3]`): `true` (usually considered not overlapping).
 
 **Optimal Python Solution**:
+
 ```python
 def canAttendMeetings(intervals: list[list[int]]) -> bool:
     """
@@ -34,29 +37,34 @@ def canAttendMeetings(intervals: list[list[int]]) -> bool:
 ```
 
 **Explanation**:
+
 1.  **Sorting**: By sorting meetings by start time, any potential overlap must occur between consecutive meetings in the sorted list.
 2.  **Overlap Check**: If `current_meeting.start < previous_meeting.end`, there's a conflict.
 3.  **Correctness**: If the list is sorted and no adjacent meetings overlap, then no two meetings in the entire set can overlap.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N log N)` for sorting.
 - **Space Complexity**: `O(1)` additional space (excluding sort overhead).
 
 ---
 
 ## 2. Meeting Rooms II
+
 **Problem Statement**:
 Given an array of meeting time `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of conference rooms required.
 
 **Examples & Edge Cases**:
+
 - **Example 1**:
-    - Input: `intervals = [[0,30],[5,10],[15,20]]`
-    - Output: `2`
+  - Input: `intervals = [[0,30],[5,10],[15,20]]`
+  - Output: `2`
 - **Example 2**:
-    - Input: `intervals = [[7,10],[2,4]]`
-    - Output: `1`
+  - Input: `intervals = [[7,10],[2,4]]`
+  - Output: `1`
 
 **Optimal Python Solution (Min-Heap)**:
+
 ```python
 import heapq
 
@@ -91,6 +99,7 @@ def minMeetingRooms(intervals: list[list[int]]) -> int:
 ```
 
 **Explanation**:
+
 1.  **Greedy strategy**: We want to reuse rooms whenever possible. To maximize reuse, we should always check the room that becomes free **the soonest**.
 2.  **Min-Heap**: A min-heap allows us to efficiently find the smallest end time (`rooms[0]`).
 3.  **Process**:
@@ -101,24 +110,28 @@ def minMeetingRooms(intervals: list[list[int]]) -> int:
     - The final size of the heap is the number of rooms used simultaneously at the peak.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N log N)` for sorting and `O(N log N)` for heap operations (each meeting pushed/popped once).
 - **Space Complexity**: `O(N)` for the heap in the worst case where all meetings overlap.
 
 ---
 
 ## 3. Car Pooling
+
 **Problem Statement**:
 There is a car with `capacity` empty seats. The car only drives east. You are given the integer `capacity` and an array `trips` where `trips[i] = [numPassengers_i, from_i, to_i]`. Return `true` if it is possible to pick up and drop off all passengers for all the given trips.
 
 **Examples & Edge Cases**:
+
 - **Example 1**:
-    - Input: `trips = [[2,1,5],[3,3,7]], capacity = 4`
-    - Output: `false`
+  - Input: `trips = [[2,1,5],[3,3,7]], capacity = 4`
+  - Output: `false`
 - **Example 2**:
-    - Input: `trips = [[2,1,5],[3,3,7]], capacity = 5`
-    - Output: `true`
+  - Input: `trips = [[2,1,5],[3,3,7]], capacity = 5`
+  - Output: `true`
 
 **Optimal Python Solution (Difference Array / Bucket Sort)**:
+
 ```python
 def carPooling(trips: list[list[int]], capacity: int) -> bool:
     """
@@ -143,21 +156,25 @@ def carPooling(trips: list[list[int]], capacity: int) -> bool:
 ```
 
 **Explanation**:
+
 1.  **Events logic**: At each `start` location, `capacity` decreases by `passengers`. At each `end` location, `capacity` increases by `passengers`.
 2.  **Efficiency**: Since the locations are bounded (0 to 1000), we don't need to sort events. We can simply increment/decrement values in an array.
 3.  **Prefix Sum**: Iterating through the array and keeping a running sum (`current_passengers`) tells us exactly how many people are in the car at any given point.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N + K)`, where `N` is the number of trips and `K` is the number of locations (1000).
 - **Space Complexity**: `O(K)` for the milestones array.
 
 ---
 
 ## 4. My Calendar I
+
 **Problem Statement**:
 Implement a `MyCalendar` class that can book events. An event is added if it does not cause a double booking (overlapping with an existing event). `book(start, end)` returns `true` if the event can be added.
 
 **Optimal Python Solution (Binary Search Tree / Sorted List)**:
+
 ```python
 from bisect import bisect_left
 
@@ -185,24 +202,28 @@ class MyCalendar:
 ```
 
 **Explanation**:
+
 1.  **Maintaining Order**: We keep the intervals sorted by their start times.
-2.  **Efficient Lookup**: `bisect_left` finds the position where the interval *should* go.
+2.  **Efficient Lookup**: `bisect_left` finds the position where the interval _should_ go.
 3.  **Conflict check**:
     - Overlap with previous: `new.start < prev.end`
     - Overlap with next: `next.start < new.end`
 4.  **Insert**: If no conflict, we insert it at the correct index.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N)` per `book` call ( `O(log N)` search + `O(N)` insertion in a list). Using a balanced BST or `SortedList` would make it `O(log N)`.
 - **Space Complexity**: `O(N)` to store the bookings.
 
 ---
 
 ## 5. My Calendar II
+
 **Problem Statement**:
 Implement a `MyCalendarTwo` class that can book events. An event is added if it does not cause a triple booking. A triple booking happens when three events have some non-empty intersection.
 
 **Optimal Python Solution (Sweep Line / Segment Tree)**:
+
 ```python
 from sortedcontainers import SortedDict
 
@@ -230,21 +251,25 @@ class MyCalendarTwo:
 ```
 
 **Explanation**:
+
 1.  **Sweep Line**: Similar to My Calendar III, we track the number of concurrent bookings.
 2.  **Constraint**: We only allow the booking if the peak concurrency stays below 3.
 3.  **Rollback**: If the booking causes `active_bookings` to reach 3, we undo the change to the `delta` map and return `False`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N)` per `book` call if using a map (to iterate through all events). `O(log N)` with a segment tree.
 - **Space Complexity**: `O(N)` to store the events.
 
 ---
 
 ## 6. My Calendar III (Max Overlap)
+
 **Problem Statement**:
 Find the maximum number of concurrent bookings at any time.
 
 **Optimal Python Solution (Sweep Line)**:
+
 ```python
 from sortedcontainers import SortedDict
 
@@ -270,11 +295,13 @@ class MyCalendarThree:
 ```
 
 **Explanation**:
+
 1.  **Sweep Line Algorithm**: This is the standard way to find the "peak" of overlapping intervals.
 2.  **Events**: Each booking is two events: `+1` at `start` and `-1` at `end`.
 3.  **Process**: We traverse all events in chronological order. The running sum of the `delta` values at any point `t` gives the number of active bookings at that time.
 4.  **Goal**: The result is the maximum value of this running sum.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: `O(N²)` if using a regular dictionary and sorting keys every time. `O(N log N)` or better if using a `SortedDict`.
 - **Space Complexity**: `O(N)` to store the events.

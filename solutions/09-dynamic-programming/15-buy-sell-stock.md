@@ -1,9 +1,11 @@
 # Solutions: Buy and Sell Stock (State Machine DP)
 
 ## 1. Stock I (1 Transaction)
+
 **Problem:** Max profit with at most one transaction.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_1(prices: list[int]) -> int:
     min_price = float('inf')
@@ -15,15 +17,18 @@ def max_profit_1(prices: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 2. Stock II (Unlimited Transactions)
+
 **Problem:** Max profit with unlimited transactions.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_2(prices: list[int]) -> int:
     # Greedy: Sum all positive daily differences
@@ -35,15 +40,18 @@ def max_profit_2(prices: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 3. Stock III (2 Transactions)
+
 **Problem:** Max profit with at most two transactions.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_3(prices: list[int]) -> int:
     buy1 = buy2 = float('-inf')
@@ -57,15 +65,18 @@ def max_profit_3(prices: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 4. Stock IV (k Transactions)
+
 **Problem:** Max profit with at most $k$ transactions.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_4(k: int, prices: list[int]) -> int:
     if not prices or k == 0: return 0
@@ -83,15 +94,18 @@ def max_profit_4(k: int, prices: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(nk)$
 - **Space:** $O(k)$
 
 ---
 
 ## 5. Stock with Cooldown
+
 **Problem:** Unlimited transactions, 1-day cooldown after selling.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_cooldown(prices: list[int]) -> int:
     # States: hold, sold (just sold, must cool), rest (can buy)
@@ -106,15 +120,18 @@ def max_profit_cooldown(prices: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 6. Stock with Transaction Fee
+
 **Problem:** Unlimited transactions, pay fee for each sell.
 
 ### Optimal Python Solution
+
 ```python
 def max_profit_fee(prices: list[int], fee: int) -> int:
     hold = float('-inf')
@@ -126,5 +143,6 @@ def max_profit_fee(prices: list[int], fee: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$

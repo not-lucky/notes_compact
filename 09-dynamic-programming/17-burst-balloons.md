@@ -51,6 +51,7 @@ Burst Balloons is a FANG+ hard problem because:
 5. **Different Cost Function**: If bursting depends on more than just neighbors (e.g., global state, history), the standard recurrence breaks.
 
 **Recognize This Pattern When:**
+
 - Processing elements changes their neighbors
 - "First" thinking leads to complex dependencies
 - Range-based problem with "last processed" insight
@@ -79,9 +80,11 @@ Total: 15 + 120 + 24 + 8 = 167
 ## Key Insight: Think Backwards
 
 **Wrong approach**: Which balloon to burst first?
+
 - After bursting, neighbors change, making DP hard
 
 **Correct approach**: Which balloon to burst LAST in a range?
+
 - If k is last burst in range [i,j], neighbors are fixed as i-1 and j+1
 
 ---
@@ -311,12 +314,12 @@ def remove_boxes(boxes: list[int]) -> int:
 
 ## Comparison with Matrix Chain
 
-| Aspect | Matrix Chain | Burst Balloons |
-|--------|--------------|----------------|
-| State meaning | Cost to multiply | Coins from bursting |
-| Split point k | Where to split multiply | Last balloon to burst |
-| Merge cost | p[i-1] × p[k] × p[j] | nums[i] × nums[k] × nums[j] |
-| Boundaries | Dimensions array | Virtual 1s at ends |
+| Aspect        | Matrix Chain            | Burst Balloons              |
+| ------------- | ----------------------- | --------------------------- |
+| State meaning | Cost to multiply        | Coins from bursting         |
+| Split point k | Where to split multiply | Last balloon to burst       |
+| Merge cost    | p[i-1] × p[k] × p[j]    | nums[i] × nums[k] × nums[j] |
+| Boundaries    | Dimensions array        | Virtual 1s at ends          |
 
 ---
 
@@ -369,11 +372,11 @@ for k in range(i + 1, j):
 
 ## Complexity
 
-| Metric | Value |
-|--------|-------|
-| Time | O(n³) |
-| Space | O(n²) |
-| States | O(n²) |
+| Metric      | Value          |
+| ----------- | -------------- |
+| Time        | O(n³)          |
+| Space       | O(n²)          |
+| States      | O(n²)          |
 | Transitions | O(n) per state |
 
 ---
@@ -390,12 +393,12 @@ for k in range(i + 1, j):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Similar Pattern |
-|---|---------|------------|-----------------|
-| 1 | Burst Balloons | Hard | Core problem |
-| 2 | Min Score Triangulation | Medium | Same structure |
-| 3 | Remove Boxes | Hard | 3D state |
-| 4 | Strange Printer | Hard | Similar |
+| #   | Problem                 | Difficulty | Similar Pattern |
+| --- | ----------------------- | ---------- | --------------- |
+| 1   | Burst Balloons          | Hard       | Core problem    |
+| 2   | Min Score Triangulation | Medium     | Same structure  |
+| 3   | Remove Boxes            | Hard       | 3D state        |
+| 4   | Strange Printer         | Hard       | Similar         |
 
 ---
 

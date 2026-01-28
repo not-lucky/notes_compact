@@ -15,16 +15,19 @@ Time 0:     Time 1:     Time 2:     Time 3:
 ```
 
 **Why BFS guarantees shortest path in unweighted graphs**:
+
 1. We process nodes level-by-level (distance 0, then 1, then 2...)
 2. When we first reach a node, we've taken the minimum hops
 3. All edges have equal weight (1), so "minimum hops" = shortest path
 
 **Key insight - The Queue is Everything**:
+
 - FIFO (First-In-First-Out) ensures we exhaust all distance-k nodes before distance-(k+1)
 - Using a stack would make it DFS (depth-first, not breadth-first)
 - Using a priority queue would make it Dijkstra (weighted shortest path)
 
 **Visual proof of correctness**:
+
 ```
 If BFS visits node X at distance d, can there be a shorter path?
 No! Because:
@@ -38,17 +41,20 @@ No! Because:
 ## When NOT to Use
 
 **Don't use BFS when:**
+
 - **Edges have different weights** → Use Dijkstra instead
 - **You need all paths, not just shortest** → Use DFS with backtracking
 - **Graph is very deep but narrow** → DFS uses less memory (O(depth) vs O(width))
 - **You're detecting cycles** → DFS with three colors is cleaner for directed graphs
 
 **BFS is overkill when:**
+
 - Simple reachability check → DFS is equally valid and often simpler
 - Tree traversal → Specialized tree algorithms may be cleaner
 - Graph has special structure (DAG) → Topological sort may be better
 
 **Common mistake scenarios:**
+
 - Using BFS on weighted graphs expecting shortest path → Wrong answer
 - Using list instead of deque → O(n) popleft() kills performance
 - Marking visited when dequeuing → Duplicates in queue, TLE
@@ -71,6 +77,7 @@ BFS appears in almost every FANG+ interview loop involving graphs or grids.
 ## Core Concept: How BFS Works
 
 BFS explores vertices level by level using a **queue**:
+
 1. Start from source, add to queue
 2. Process current vertex, add unvisited neighbors to queue
 3. Repeat until queue is empty
@@ -372,26 +379,26 @@ def bfs_all_components(graph: dict[int, list[int]],
 
 ## When to Use BFS vs DFS
 
-| Scenario | Use BFS | Use DFS |
-|----------|---------|---------|
-| Shortest path (unweighted) | ✓ | ✗ |
-| Level-order traversal | ✓ | ✗ |
-| Closest node to source | ✓ | ✗ |
-| Explore all paths | ✗ | ✓ |
-| Cycle detection | Either | ✓ (simpler) |
-| Topological sort | ✓ (Kahn's) | ✓ (reverse post-order) |
-| Memory constrained (deep graph) | ✗ | ✓ |
+| Scenario                        | Use BFS    | Use DFS                |
+| ------------------------------- | ---------- | ---------------------- |
+| Shortest path (unweighted)      | ✓          | ✗                      |
+| Level-order traversal           | ✓          | ✗                      |
+| Closest node to source          | ✓          | ✗                      |
+| Explore all paths               | ✗          | ✓                      |
+| Cycle detection                 | Either     | ✓ (simpler)            |
+| Topological sort                | ✓ (Kahn's) | ✓ (reverse post-order) |
+| Memory constrained (deep graph) | ✗          | ✓                      |
 
 ---
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| BFS traversal | O(V + E) | O(V) |
-| Shortest path | O(V + E) | O(V) |
-| Grid BFS | O(rows × cols) | O(rows × cols) |
-| Multi-source BFS | O(V + E) | O(V) |
+| Operation        | Time           | Space          |
+| ---------------- | -------------- | -------------- |
+| BFS traversal    | O(V + E)       | O(V)           |
+| Shortest path    | O(V + E)       | O(V)           |
+| Grid BFS         | O(rows × cols) | O(rows × cols) |
+| Multi-source BFS | O(V + E)       | O(V)           |
 
 Space includes both visited set and queue.
 
@@ -445,6 +452,7 @@ for node in range(n):
 ## Step-by-Step BFS Trace with ASCII Visualization
 
 **Graph for demonstration:**
+
 ```
         0
        /|\
@@ -527,6 +535,7 @@ Distance from 0: {0:0, 1:1, 2:1, 3:1, 4:2, 5:2, 6:2}
 ```
 
 **Level visualization:**
+
 ```
 Level 0:        0           (distance 0)
                /|\
@@ -628,14 +637,14 @@ bfs(graph, 0)  # [0]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Pattern |
-|---|---------|------------|-------------|
-| 1 | Flood Fill | Easy | Basic grid BFS |
-| 2 | Number of Islands | Medium | Multi-component BFS |
-| 3 | Shortest Path in Binary Matrix | Medium | Shortest path |
-| 4 | Rotting Oranges | Medium | Multi-source BFS |
-| 5 | Word Ladder | Hard | Implicit graph BFS |
-| 6 | 01 Matrix | Medium | Multi-source BFS |
+| #   | Problem                        | Difficulty | Key Pattern         |
+| --- | ------------------------------ | ---------- | ------------------- |
+| 1   | Flood Fill                     | Easy       | Basic grid BFS      |
+| 2   | Number of Islands              | Medium     | Multi-component BFS |
+| 3   | Shortest Path in Binary Matrix | Medium     | Shortest path       |
+| 4   | Rotting Oranges                | Medium     | Multi-source BFS    |
+| 5   | Word Ladder                    | Hard       | Implicit graph BFS  |
+| 6   | 01 Matrix                      | Medium     | Multi-source BFS    |
 
 ---
 

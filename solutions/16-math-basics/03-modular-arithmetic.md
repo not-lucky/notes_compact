@@ -10,6 +10,7 @@ This file contains optimal Python solutions for the practice problems listed in 
 Implement `pow(x, n)`, which calculates $x$ raised to the power $n$ (i.e., $x^n$).
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `x = 2.0, n = 10` -> Output: `1024.0`
 - **Example 2:** `x = 2.1, n = 3` -> Output: `9.261`
 - **Example 3:** `x = 2.0, n = -2` -> Output: `0.25` ($2^{-2} = 1/4 = 0.25$)
@@ -17,6 +18,7 @@ Implement `pow(x, n)`, which calculates $x$ raised to the power $n$ (i.e., $x^n$
 - **Edge Case:** `n` is the minimum possible 32-bit integer (handled naturally in Python).
 
 **Optimal Python Solution:**
+
 ```python
 def myPow(x: float, n: int) -> float:
     """
@@ -47,11 +49,13 @@ def myPow(x: float, n: int) -> float:
 ```
 
 **Explanation:**
+
 1. **Binary Exponentiation**: Instead of multiplying $x$ by itself $n$ times, we use the binary representation of $n$. For example, $x^{13} = x^8 \cdot x^4 \cdot x^1$.
 2. **Efficiency**: In each step, we either square the current value or multiply the result. This reduces the number of operations from $O(n)$ to $O(\log n)$.
 3. **Negative Exponents**: If $n$ is negative, $x^n$ is equivalent to $(1/x)^{-n}$.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\log n)$ because $n$ is halved in each iteration.
 - **Space Complexity:** $O(1)$ as we use a constant amount of extra space.
 
@@ -63,12 +67,14 @@ def myPow(x: float, n: int) -> float:
 Your task is to calculate $a^b \pmod{1337}$ where $a$ is a positive integer and $b$ is an extremely large positive integer given in the form of an array.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `a = 2, b = [3]` -> Output: `8`
 - **Example 2:** `a = 2, b = [1,0]` -> Output: `1024`
 - **Example 3:** `a = 1, b = [4,3,3,8,5,2]` -> Output: `1`
 - **Edge Case:** `a` is large -> Use `a % 1337`.
 
 **Optimal Python Solution:**
+
 ```python
 def superPow(a: int, b: list[int]) -> int:
     """
@@ -97,11 +103,13 @@ def superPow(a: int, b: list[int]) -> int:
 ```
 
 **Explanation:**
+
 1. **Mathematical Property**: We use the property $a^{1234} = (a^{123})^{10} \cdot a^4$.
 2. **Recursion**: We process the array `b` from the last element. The result of the rest of the array is raised to the 10th power, then multiplied by $a$ raised to the last digit.
 3. **Modular Arithmetic**: Apply `% 1337` at every multiplication to prevent overflow and keep numbers small.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(L \cdot \log 10)$, where $L$ is the length of array $b$. We perform a constant number of modular exponentiations for each digit.
 - **Space Complexity:** $O(L)$ due to the recursion stack.
 
@@ -113,12 +121,14 @@ def superPow(a: int, b: list[int]) -> int:
 A digit string is good if the digits at even indices are even (0, 2, 4, 6, 8) and the digits at odd indices are prime (2, 3, 5, 7). Given an integer `n`, return the total number of good digit strings of length `n`. Since the answer may be large, return it modulo $10^9 + 7$.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 1` -> Output: `5` (Strings: "0", "2", "4", "6", "8")
 - **Example 2:** `n = 4` -> Output: `400`
 - **Example 3:** `n = 50` -> Output: `564908303`
 - **Edge Case:** Large $n$ (up to $10^{15}$) -> Requires $O(\log n)$ modular exponentiation.
 
 **Optimal Python Solution:**
+
 ```python
 def countGoodNumbers(n: int) -> int:
     """
@@ -138,11 +148,13 @@ def countGoodNumbers(n: int) -> int:
 ```
 
 **Explanation:**
+
 1. **Combinatorics**: For each even index, there are 5 choices. For each odd index, there are 4 choices.
 2. **Total Product**: The result is $5^{\text{even\_count}} \cdot 4^{\text{odd\_count}}$.
 3. **Efficiency**: Since $n$ can be extremely large, we must use modular exponentiation ($O(\log n)$) instead of a simple loop. Python's `pow(a, b, m)` is highly optimized for this.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\log n)$ for the two calls to `pow`.
 - **Space Complexity:** $O(1)$.
 
@@ -154,12 +166,14 @@ def countGoodNumbers(n: int) -> int:
 Implement a function to find the index of the first occurrence of `pattern` in `text` using the Rabin-Karp rolling hash algorithm.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `text = "sadbutsad", pattern = "sad"` -> Output: `0`
 - **Example 2:** `text = "leetcode", pattern = "leeto"` -> Output: `-1`
 - **Edge Case:** `pattern` is longer than `text`.
 - **Edge Case:** Empty strings.
 
 **Optimal Python Solution:**
+
 ```python
 def strStr(text: str, pattern: str) -> int:
     """
@@ -201,11 +215,13 @@ def strStr(text: str, pattern: str) -> int:
 ```
 
 **Explanation:**
+
 1. **Rolling Hash**: Instead of recomputing the hash of the substring from scratch, we "roll" it by removing the contribution of the leftmost character and adding the new character on the right.
 2. **Mathematical Formula**: `new_hash = (old_hash * BASE - leftmost_char * BASE^m + rightmost_char) % MOD`.
 3. **Collision Handling**: Since different strings can have the same hash, we perform a direct string comparison if the hashes match.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(n + m)$ average case. $O(n \cdot m)$ in the worst case (many collisions), but extremely rare with a good prime modulus.
 - **Space Complexity:** $O(1)$ additional space beyond input.
 
@@ -217,11 +233,13 @@ def strStr(text: str, pattern: str) -> int:
 A robot is located at the top-left corner of a $m \times n$ grid. The robot can only move either down or right. Find the number of possible unique paths to the bottom-right corner. Since $m$ and $n$ can be large, return the result modulo $10^9 + 7$.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `m = 3, n = 7` -> Output: `28`
 - **Example 2:** `m = 3, n = 2` -> Output: `3`
 - **Edge Case:** `m = 1` or `n = 1` -> Output: `1`.
 
 **Optimal Python Solution:**
+
 ```python
 def uniquePaths(m: int, n: int) -> int:
     """
@@ -251,10 +269,12 @@ def uniquePaths(m: int, n: int) -> int:
 ```
 
 **Explanation:**
+
 1. **Combinatorial Formula**: The total number of steps is $(m-1) + (n-1)$. We need to choose which $m-1$ steps are "down" (or $n-1$ are "right"). This is $\binom{m+n-2}{m-1}$.
 2. **Modular Division**: To calculate $\frac{A}{B} \pmod M$, we calculate $A \cdot B^{-1} \pmod M$.
 3. **Modular Inverse**: For a prime $M$, $B^{-1} \equiv B^{M-2} \pmod M$.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\min(m, n) + \log \text{MOD})$.
 - **Space Complexity:** $O(1)$.

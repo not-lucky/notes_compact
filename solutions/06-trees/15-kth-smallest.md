@@ -1,15 +1,18 @@
 # Kth Smallest Element in BST Solutions
 
 ## 1. Kth Smallest Element in a BST
+
 **Problem Statement**: Given the `root` of a binary search tree (BST) and an integer `k`, return the `k`-th smallest value (1-indexed) of all the values of the nodes in the tree.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [3,1,4,None,2], k = 1` → Output: `1`
 - **Example 2**: `root = [5,3,6,2,4,None,None,1], k = 3` → Output: `3`
 - **Edge Case - k = 1**: Returns the smallest element (leftmost).
 - **Edge Case - k = n**: Returns the largest element (rightmost).
 
 ### Optimal Python Solution (Iterative Inorder)
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -41,6 +44,7 @@ def kthSmallest(root: TreeNode, k: int) -> int:
 ```
 
 ### Explanation
+
 1.  **BST Order**: In a Binary Search Tree, an **inorder traversal** (Left-Root-Right) visits nodes in non-decreasing order.
 2.  **Iterative Advantage**: By using an iterative inorder traversal with an explicit stack, we can stop the traversal as soon as we reach the $k$-th element. This is more efficient than a full recursive traversal that might continue after $k$ is found.
 3.  **Process**:
@@ -50,15 +54,18 @@ def kthSmallest(root: TreeNode, k: int) -> int:
     - Go right and repeat.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(h + k)**. We need $O(h)$ time to reach the smallest element, and then $O(k)$ time to find the $k$-th one.
 - **Space Complexity**: **O(h)**. The stack stores the nodes along the current branch of the tree.
 
 ---
 
 ## 2. Second Minimum Node In a Binary Tree
+
 **Problem Statement**: Given a special binary tree where each node has exactly 0 or 2 children, and `root.val = min(root.left.val, root.right.val)`, find the second minimum value in the tree.
 
 ### Optimal Python Solution
+
 ```python
 def findSecondMinimumValue(root: TreeNode) -> int:
     # The root is always the absolute minimum
@@ -85,15 +92,18 @@ def findSecondMinimumValue(root: TreeNode) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 3. Count of Smaller Numbers After Self
+
 **Problem Statement**: Given an integer array `nums`, return an integer array `counts` where `counts[i]` is the number of smaller elements to the right of `nums[i]`.
 
 ### Optimal Python Solution (BST with Rank)
+
 ```python
 class RankNode:
     def __init__(self, val):
@@ -132,20 +142,24 @@ def countSmaller(nums: list[int]) -> list[int]:
 ```
 
 ### Explanation
+
 - We build a BST while iterating through `nums` from right to left.
 - Each node tracks the size of its left subtree.
 - When inserting a new value, if we move to the right child, we know the new value is greater than the root and everything to the root's left. We accumulate these counts.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n log n)** on average (O(n²) for sorted input).
 - **Space Complexity**: **O(n)**.
 
 ---
 
 ## 4. Kth Largest Element in a Stream
+
 **Problem Statement**: Design a class to find the kth largest element in a stream.
 
 ### Optimal Python Solution (Min-Heap)
+
 ```python
 import heapq
 
@@ -167,15 +181,18 @@ class KthLargest:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(log k)** per `add` operation.
 - **Space Complexity**: **O(k)**.
 
 ---
 
 ## 5. Find K-th Smallest Pair Distance
+
 **Problem Statement**: Given an integer array, return the k-th smallest distance among all pairs.
 
 ### Optimal Python Solution (Binary Search + Two Pointers)
+
 ```python
 def smallestDistancePair(nums: list[int], k: int) -> int:
     nums.sort()
@@ -201,5 +218,6 @@ def smallestDistancePair(nums: list[int], k: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n log n + n log W)** where $W$ is the max distance.
 - **Space Complexity**: **O(1)**.

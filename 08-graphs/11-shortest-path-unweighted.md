@@ -218,12 +218,12 @@ def all_shortest_paths(graph: dict[int, list[int]],
 
 ## Comparison with Other Algorithms
 
-| Algorithm | Graph Type | Time | When to Use |
-|-----------|------------|------|-------------|
-| BFS | Unweighted | O(V + E) | All edges same weight |
-| Dijkstra | Weighted (positive) | O((V+E) log V) | Different positive weights |
-| Bellman-Ford | Weighted (any) | O(V × E) | Negative weights |
-| Floyd-Warshall | All pairs | O(V³) | Multiple source-target queries |
+| Algorithm      | Graph Type          | Time           | When to Use                    |
+| -------------- | ------------------- | -------------- | ------------------------------ |
+| BFS            | Unweighted          | O(V + E)       | All edges same weight          |
+| Dijkstra       | Weighted (positive) | O((V+E) log V) | Different positive weights     |
+| Bellman-Ford   | Weighted (any)      | O(V × E)       | Negative weights               |
+| Floyd-Warshall | All pairs           | O(V³)          | Multiple source-target queries |
 
 ---
 
@@ -385,14 +385,14 @@ for neighbor in graph[node]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Shortest Path in Binary Matrix | Medium | 8-directional |
-| 2 | Word Ladder | Hard | Implicit graph |
-| 3 | Minimum Knight Moves | Medium | Chess moves |
-| 4 | Open the Lock | Medium | State graph |
-| 5 | Jump Game III | Medium | Can reach index |
-| 6 | Nearest Exit from Entrance | Medium | Grid BFS |
+| #   | Problem                        | Difficulty | Key Variation   |
+| --- | ------------------------------ | ---------- | --------------- |
+| 1   | Shortest Path in Binary Matrix | Medium     | 8-directional   |
+| 2   | Word Ladder                    | Hard       | Implicit graph  |
+| 3   | Minimum Knight Moves           | Medium     | Chess moves     |
+| 4   | Open the Lock                  | Medium     | State graph     |
+| 5   | Jump Game III                  | Medium     | Can reach index |
+| 6   | Nearest Exit from Entrance     | Medium     | Grid BFS        |
 
 ---
 

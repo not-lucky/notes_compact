@@ -5,6 +5,7 @@
 ## Interview Context
 
 Matrix search problems test:
+
 1. **Dimensional thinking**: Treating 2D as 1D or using properties
 2. **Multiple approaches**: Different strategies for different matrix types
 3. **Edge case handling**: Boundaries, empty matrices
@@ -75,12 +76,14 @@ Looking for 5:
 **Why Top-Right (or Bottom-Left)?**
 
 From top-right:
+
 - Go LEFT → values decrease (eliminate that column)
 - Go DOWN → values increase (eliminate that row)
 
 You can make a decision at every step! Each move eliminates a row OR column.
 
 From top-left (BAD):
+
 - Go RIGHT → values increase
 - Go DOWN → values increase
 - BOTH directions increase! Can't decide which way to go.
@@ -88,6 +91,7 @@ From top-left (BAD):
 **Mental Model: The Ladder**
 
 Imagine you're on a ladder leaning against a wall:
+
 - Going LEFT means stepping down the ladder (smaller values)
 - Going DOWN means climbing up the wall (larger values)
 - You can always adjust your position to reach your target
@@ -106,6 +110,7 @@ Imagine you're on a ladder leaning against a wall:
 **2. Unsorted Matrix**
 
 If rows/columns aren't sorted, no efficient search exists:
+
 ```
 ┌──────────────┐
 │ 5   2   8    │
@@ -122,11 +127,13 @@ If rows/columns aren't sorted, no efficient search exists:
 **4. Non-Square Matrices with Extreme Dimensions**
 
 For m×n where m >> n (or vice versa):
+
 - Staircase is O(m+n) which is basically O(m)
 - Binary search per row might be better: O(m·log(n))
 - Compare based on actual dimensions
 
 **Red Flags:**
+
 - "Find all occurrences" → Can't avoid O(mn)
 - Matrix isn't sorted at all → Linear scan
 - Matrix has complex sorting (diagonals, etc.) → Different approach
@@ -253,6 +260,7 @@ LeetCode 240: Search a 2D Matrix II
 ### Approach: Start from Corner
 
 Start from top-right (or bottom-left) corner:
+
 - If current > target: move left
 - If current < target: move down
 
@@ -463,13 +471,13 @@ def row_with_max_ones(matrix: list[list[int]]) -> int:
 
 ## Complexity Summary
 
-| Problem | Approach | Time | Space |
-|---------|----------|------|-------|
-| Search Type 2 (fully sorted) | 1D binary search | O(log mn) | O(1) |
-| Search Type 1 (row/col sorted) | Staircase | O(m + n) | O(1) |
-| Count negatives | Staircase | O(m + n) | O(1) |
-| Kth smallest | Binary search on value | O(n log(range)) | O(1) |
-| Row with max ones | Staircase | O(m + n) | O(1) |
+| Problem                        | Approach               | Time            | Space |
+| ------------------------------ | ---------------------- | --------------- | ----- |
+| Search Type 2 (fully sorted)   | 1D binary search       | O(log mn)       | O(1)  |
+| Search Type 1 (row/col sorted) | Staircase              | O(m + n)        | O(1)  |
+| Count negatives                | Staircase              | O(m + n)        | O(1)  |
+| Kth smallest                   | Binary search on value | O(n log(range)) | O(1)  |
+| Row with max ones              | Staircase              | O(m + n)        | O(1)  |
 
 ---
 
@@ -533,14 +541,14 @@ while row < m and col >= 0:  # Not just while True
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Search a 2D Matrix | Medium | Treat as 1D |
-| 2 | Search a 2D Matrix II | Medium | Staircase from corner |
-| 3 | Kth Smallest Element in Sorted Matrix | Medium | Binary search on value |
-| 4 | Count Negative Numbers in Sorted Matrix | Easy | Staircase counting |
-| 5 | Median of Row Wise Sorted Matrix | Hard | Binary search on value |
-| 6 | Row with Maximum Ones | Easy | Staircase |
+| #   | Problem                                 | Difficulty | Key Insight            |
+| --- | --------------------------------------- | ---------- | ---------------------- |
+| 1   | Search a 2D Matrix                      | Medium     | Treat as 1D            |
+| 2   | Search a 2D Matrix II                   | Medium     | Staircase from corner  |
+| 3   | Kth Smallest Element in Sorted Matrix   | Medium     | Binary search on value |
+| 4   | Count Negative Numbers in Sorted Matrix | Easy       | Staircase counting     |
+| 5   | Median of Row Wise Sorted Matrix        | Hard       | Binary search on value |
+| 6   | Row with Maximum Ones                   | Easy       | Staircase              |
 
 ---
 

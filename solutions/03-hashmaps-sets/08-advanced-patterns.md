@@ -1,9 +1,11 @@
 # Advanced HashMap Patterns - Solutions
 
 ## 1. LRU Cache
+
 Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, key, value):
@@ -62,9 +64,11 @@ class LRUCache:
 ---
 
 ## 2. LFU Cache
+
 Design a data structure that follows the constraints of a Least Frequently Used (LFU) cache.
 
 ### Optimal Python Solution
+
 ```python
 from collections import defaultdict, OrderedDict
 
@@ -109,9 +113,11 @@ class LFUCache:
 ---
 
 ## 3. Insert Delete GetRandom O(1)
+
 Implement `RandomizedSet` class.
 
 ### Optimal Python Solution
+
 ```python
 import random
 
@@ -142,14 +148,17 @@ class RandomizedSet:
 ---
 
 ## 4. Insert Delete GetRandom O(1) - Duplicates Allowed
+
 Similar to above, but `self.dict` maps `val` to a `set` of indices.
 
 ---
 
 ## 5. Time Based Key-Value Store
+
 Design a time-based key-value data structure that can store multiple values for the same key at different time stamps and retrieve the key's value at a certain timestamp.
 
 ### Optimal Python Solution
+
 ```python
 import bisect
 from collections import defaultdict
@@ -171,9 +180,11 @@ class TimeMap:
 ---
 
 ## 6. Snapshot Array
+
 Implement a `SnapshotArray` that supports `set`, `snap`, and `get` operations.
 
 ### Optimal Python Solution
+
 ```python
 import bisect
 
@@ -198,22 +209,26 @@ class SnapshotArray:
 ---
 
 ## 7. All O'one Data Structure
+
 Design a data structure to store strings' counts with `inc`, `dec`, `getMaxKey`, `getMinKey` in O(1) time.
 Implemented using HashMap + DLL of frequency buckets.
 
 ---
 
 ## 8. Logger Rate Limiter
+
 (Discussed in Design HashMap file).
 
 ---
 
 ## 9. Design Twitter
+
 Design a simplified version of Twitter where users can post tweets, follow/unfollow each other and is able to see the 10 most recent tweets in the user's news feed.
 Implemented using HashMap for following relationships and Heaps to merge tweet lists from followed users.
 
 ---
 
 ## 10. Design Hit Counter
+
 Design a hit counter which counts the number of hits received in the past 5 minutes (300 seconds).
 Implemented using a queue or a fixed-size array of 300 buckets (circular buffer).

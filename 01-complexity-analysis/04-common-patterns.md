@@ -26,6 +26,7 @@ Heap = Priority mailbox (most urgent always on top)
 **The "Why Hash Tables Are Magic" Insight**
 
 Hash tables convert searching into arithmetic:
+
 - Instead of checking each item: "Is this the one? Is this? Is this?"
 - Hash function says: "The item at key K is at index H(K)"
 
@@ -42,6 +43,7 @@ A balanced tree with 1 billion elements has only ~30 levels. Each step eliminate
 Interviewers expect you to know the complexity of basic operations without thinking. When you use a data structure, you should instantly know the cost.
 
 This knowledge helps you:
+
 - Choose the right data structure for a problem
 - Spot inefficiencies in your approach
 - Optimize by switching data structures
@@ -52,22 +54,22 @@ This knowledge helps you:
 
 ### List (Dynamic Array)
 
-| Operation | Average Case | Worst Case | Notes |
-|-----------|--------------|------------|-------|
-| Access `a[i]` | O(1) | O(1) | Direct indexing |
-| Search `x in a` | O(n) | O(n) | Linear scan |
-| Append `a.append(x)` | O(1)* | O(n) | Amortized O(1) |
-| Insert at index `a.insert(i, x)` | O(n) | O(n) | Shift elements |
-| Delete by index `del a[i]` | O(n) | O(n) | Shift elements |
-| Delete by value `a.remove(x)` | O(n) | O(n) | Search + shift |
-| Pop last `a.pop()` | O(1) | O(1) | Just decrement size |
-| Pop at index `a.pop(i)` | O(n) | O(n) | Shift elements |
-| Slice `a[i:j]` | O(j-i) | O(n) | Creates copy |
-| Extend `a.extend(b)` | O(len(b)) | O(len(b)) | Append each |
-| Sort `a.sort()` | O(n log n) | O(n log n) | Timsort |
-| Reverse `a.reverse()` | O(n) | O(n) | In-place swap |
-| Copy `a.copy()` | O(n) | O(n) | Shallow copy |
-| Length `len(a)` | O(1) | O(1) | Stored value |
+| Operation                        | Average Case | Worst Case | Notes               |
+| -------------------------------- | ------------ | ---------- | ------------------- |
+| Access `a[i]`                    | O(1)         | O(1)       | Direct indexing     |
+| Search `x in a`                  | O(n)         | O(n)       | Linear scan         |
+| Append `a.append(x)`             | O(1)\*       | O(n)       | Amortized O(1)      |
+| Insert at index `a.insert(i, x)` | O(n)         | O(n)       | Shift elements      |
+| Delete by index `del a[i]`       | O(n)         | O(n)       | Shift elements      |
+| Delete by value `a.remove(x)`    | O(n)         | O(n)       | Search + shift      |
+| Pop last `a.pop()`               | O(1)         | O(1)       | Just decrement size |
+| Pop at index `a.pop(i)`          | O(n)         | O(n)       | Shift elements      |
+| Slice `a[i:j]`                   | O(j-i)       | O(n)       | Creates copy        |
+| Extend `a.extend(b)`             | O(len(b))    | O(len(b))  | Append each         |
+| Sort `a.sort()`                  | O(n log n)   | O(n log n) | Timsort             |
+| Reverse `a.reverse()`            | O(n)         | O(n)       | In-place swap       |
+| Copy `a.copy()`                  | O(n)         | O(n)       | Shallow copy        |
+| Length `len(a)`                  | O(1)         | O(1)       | Stored value        |
 
 ```python
 # Gotcha: These are O(n), not O(1)!
@@ -78,16 +80,16 @@ x in arr             # O(n) - linear search
 
 ### String (Immutable)
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Access `s[i]` | O(1) | Direct indexing |
-| Search `x in s` | O(n) | Linear scan |
-| Concatenate `s + t` | O(n+m) | Creates new string |
-| Slice `s[i:j]` | O(j-i) | Creates new string |
-| Length `len(s)` | O(1) | Stored value |
-| Join `''.join(list)` | O(total length) | Efficient building |
-| Replace `s.replace(a, b)` | O(n) | Creates new string |
-| Split `s.split()` | O(n) | Creates list of strings |
+| Operation                 | Time            | Notes                   |
+| ------------------------- | --------------- | ----------------------- |
+| Access `s[i]`             | O(1)            | Direct indexing         |
+| Search `x in s`           | O(n)            | Linear scan             |
+| Concatenate `s + t`       | O(n+m)          | Creates new string      |
+| Slice `s[i:j]`            | O(j-i)          | Creates new string      |
+| Length `len(s)`           | O(1)            | Stored value            |
+| Join `''.join(list)`      | O(total length) | Efficient building      |
+| Replace `s.replace(a, b)` | O(n)            | Creates new string      |
+| Split `s.split()`         | O(n)            | Creates list of strings |
 
 ```python
 # Gotcha: String concatenation in a loop is O(n²)!
@@ -102,18 +104,18 @@ s = "".join(chars)
 
 ### Dictionary (Hash Map)
 
-| Operation | Average Case | Worst Case | Notes |
-|-----------|--------------|------------|-------|
-| Get `d[key]` | O(1) | O(n) | Hash collision |
-| Set `d[key] = val` | O(1) | O(n) | Hash collision |
-| Delete `del d[key]` | O(1) | O(n) | Hash collision |
-| Search `key in d` | O(1) | O(n) | Hash collision |
-| Keys `d.keys()` | O(1) | O(1) | Returns view |
-| Values `d.values()` | O(1) | O(1) | Returns view |
-| Items `d.items()` | O(1) | O(1) | Returns view |
-| Iteration | O(n) | O(n) | Visit all items |
-| Length `len(d)` | O(1) | O(1) | Stored value |
-| Copy `d.copy()` | O(n) | O(n) | Shallow copy |
+| Operation           | Average Case | Worst Case | Notes           |
+| ------------------- | ------------ | ---------- | --------------- |
+| Get `d[key]`        | O(1)         | O(n)       | Hash collision  |
+| Set `d[key] = val`  | O(1)         | O(n)       | Hash collision  |
+| Delete `del d[key]` | O(1)         | O(n)       | Hash collision  |
+| Search `key in d`   | O(1)         | O(n)       | Hash collision  |
+| Keys `d.keys()`     | O(1)         | O(1)       | Returns view    |
+| Values `d.values()` | O(1)         | O(1)       | Returns view    |
+| Items `d.items()`   | O(1)         | O(1)       | Returns view    |
+| Iteration           | O(n)         | O(n)       | Visit all items |
+| Length `len(d)`     | O(1)         | O(1)       | Stored value    |
+| Copy `d.copy()`     | O(n)         | O(n)       | Shallow copy    |
 
 ```python
 # Gotcha: Iteration over views is O(n)
@@ -125,16 +127,16 @@ for key in d.keys():    # O(n) total, not O(1)
 
 ### Set (Hash Set)
 
-| Operation | Average Case | Worst Case | Notes |
-|-----------|--------------|------------|-------|
-| Add `s.add(x)` | O(1) | O(n) | Hash collision |
-| Remove `s.remove(x)` | O(1) | O(n) | Hash collision |
-| Discard `s.discard(x)` | O(1) | O(n) | No error if missing |
-| Search `x in s` | O(1) | O(n) | Hash collision |
-| Union `s \| t` | O(len(s)+len(t)) | - | New set |
-| Intersection `s & t` | O(min(len(s), len(t))) | - | New set |
-| Difference `s - t` | O(len(s)) | - | New set |
-| Length `len(s)` | O(1) | O(1) | Stored value |
+| Operation              | Average Case           | Worst Case | Notes               |
+| ---------------------- | ---------------------- | ---------- | ------------------- |
+| Add `s.add(x)`         | O(1)                   | O(n)       | Hash collision      |
+| Remove `s.remove(x)`   | O(1)                   | O(n)       | Hash collision      |
+| Discard `s.discard(x)` | O(1)                   | O(n)       | No error if missing |
+| Search `x in s`        | O(1)                   | O(n)       | Hash collision      |
+| Union `s \| t`         | O(len(s)+len(t))       | -          | New set             |
+| Intersection `s & t`   | O(min(len(s), len(t))) | -          | New set             |
+| Difference `s - t`     | O(len(s))              | -          | New set             |
+| Length `len(s)`        | O(1)                   | O(1)       | Stored value        |
 
 ```python
 # Convert list to set for O(1) lookup
@@ -149,15 +151,15 @@ if x in s:    # O(1)
 
 ### Deque (Double-ended Queue)
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Append right `d.append(x)` | O(1) | |
+| Operation                     | Time | Notes        |
+| ----------------------------- | ---- | ------------ |
+| Append right `d.append(x)`    | O(1) |              |
 | Append left `d.appendleft(x)` | O(1) | Unlike list! |
-| Pop right `d.pop()` | O(1) | |
-| Pop left `d.popleft()` | O(1) | Unlike list! |
-| Access `d[i]` | O(n) | Unlike list! |
-| Search `x in d` | O(n) | |
-| Length `len(d)` | O(1) | |
+| Pop right `d.pop()`           | O(1) |              |
+| Pop left `d.popleft()`        | O(1) | Unlike list! |
+| Access `d[i]`                 | O(n) | Unlike list! |
+| Search `x in d`               | O(n) |              |
+| Length `len(d)`               | O(1) |              |
 
 ```python
 from collections import deque
@@ -173,14 +175,14 @@ value = queue[i]     # O(n) - vs O(1) for list
 
 ### Heap (via heapq)
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Push `heappush(h, x)` | O(log n) | Maintain heap property |
-| Pop min `heappop(h)` | O(log n) | Remove and return smallest |
-| Peek min `h[0]` | O(1) | Just access |
-| Heapify `heapify(arr)` | O(n) | Convert list to heap |
+| Operation                    | Time     | Notes                        |
+| ---------------------------- | -------- | ---------------------------- |
+| Push `heappush(h, x)`        | O(log n) | Maintain heap property       |
+| Pop min `heappop(h)`         | O(log n) | Remove and return smallest   |
+| Peek min `h[0]`              | O(1)     | Just access                  |
+| Heapify `heapify(arr)`       | O(n)     | Convert list to heap         |
 | Push+Pop `heappushpop(h, x)` | O(log n) | More efficient than separate |
-| Pop+Push `heapreplace(h, x)` | O(log n) | Pop then push |
+| Pop+Push `heapreplace(h, x)` | O(log n) | Pop then push                |
 
 ```python
 import heapq
@@ -196,43 +198,43 @@ heapq.heapify(arr)  # O(n) - often asked in interviews
 
 ### When to Use What
 
-| Need | Best Choice | Alternative |
-|------|-------------|-------------|
-| O(1) lookup by key | dict | - |
-| O(1) membership test | set | frozenset |
-| O(1) access by index | list | - |
-| O(1) add/remove both ends | deque | - |
-| O(log n) min/max | heap | - |
-| Sorted data + O(log n) search | sorted list + bisect | - |
-| FIFO queue | deque | - |
-| LIFO stack | list | - |
+| Need                          | Best Choice          | Alternative |
+| ----------------------------- | -------------------- | ----------- |
+| O(1) lookup by key            | dict                 | -           |
+| O(1) membership test          | set                  | frozenset   |
+| O(1) access by index          | list                 | -           |
+| O(1) add/remove both ends     | deque                | -           |
+| O(log n) min/max              | heap                 | -           |
+| Sorted data + O(log n) search | sorted list + bisect | -           |
+| FIFO queue                    | deque                | -           |
+| LIFO stack                    | list                 | -           |
 
 ### Time Complexity Comparison Table
 
-| Operation | List | Dict/Set | Deque | Heap |
-|-----------|------|----------|-------|------|
-| Access by index | O(1) | - | O(n) | - |
-| Access by key | - | O(1) | - | - |
-| Search | O(n) | O(1) | O(n) | O(n) |
-| Insert/Delete at end | O(1)* | - | O(1) | O(log n) |
-| Insert/Delete at start | O(n) | - | O(1) | - |
-| Insert/Delete middle | O(n) | - | O(n) | - |
-| Get min/max | O(n) | O(n) | O(n) | O(1)/O(log n) |
+| Operation              | List   | Dict/Set | Deque | Heap          |
+| ---------------------- | ------ | -------- | ----- | ------------- |
+| Access by index        | O(1)   | -        | O(n)  | -             |
+| Access by key          | -      | O(1)     | -     | -             |
+| Search                 | O(n)   | O(1)     | O(n)  | O(n)          |
+| Insert/Delete at end   | O(1)\* | -        | O(1)  | O(log n)      |
+| Insert/Delete at start | O(n)   | -        | O(1)  | -             |
+| Insert/Delete middle   | O(n)   | -        | O(n)  | -             |
+| Get min/max            | O(n)   | O(n)     | O(n)  | O(1)/O(log n) |
 
 ---
 
 ## Sorting Algorithms
 
-| Algorithm | Best | Average | Worst | Space | Stable |
-|-----------|------|---------|-------|-------|--------|
-| Python sort (Timsort) | O(n) | O(n log n) | O(n log n) | O(n) | Yes |
-| Merge sort | O(n log n) | O(n log n) | O(n log n) | O(n) | Yes |
-| Quick sort | O(n log n) | O(n log n) | O(n²) | O(log n) | No |
-| Heap sort | O(n log n) | O(n log n) | O(n log n) | O(1) | No |
-| Counting sort | O(n+k) | O(n+k) | O(n+k) | O(k) | Yes |
-| Bucket sort | O(n+k) | O(n+k) | O(n²) | O(n) | Yes |
+| Algorithm             | Best       | Average    | Worst      | Space    | Stable |
+| --------------------- | ---------- | ---------- | ---------- | -------- | ------ |
+| Python sort (Timsort) | O(n)       | O(n log n) | O(n log n) | O(n)     | Yes    |
+| Merge sort            | O(n log n) | O(n log n) | O(n log n) | O(n)     | Yes    |
+| Quick sort            | O(n log n) | O(n log n) | O(n²)      | O(log n) | No     |
+| Heap sort             | O(n log n) | O(n log n) | O(n log n) | O(1)     | No     |
+| Counting sort         | O(n+k)     | O(n+k)     | O(n+k)     | O(k)     | Yes    |
+| Bucket sort           | O(n+k)     | O(n+k)     | O(n²)      | O(n)     | Yes    |
 
-*k = range of values*
+_k = range of values_
 
 ```python
 # Python's built-in sort is almost always the right choice
@@ -249,47 +251,47 @@ arr.sort(key=lambda x: x[0])
 
 ### Binary Search Tree (BST)
 
-| Operation | Average | Worst (Unbalanced) |
-|-----------|---------|-------------------|
-| Search | O(log n) | O(n) |
-| Insert | O(log n) | O(n) |
-| Delete | O(log n) | O(n) |
-| Min/Max | O(log n) | O(n) |
-| In-order traversal | O(n) | O(n) |
+| Operation          | Average  | Worst (Unbalanced) |
+| ------------------ | -------- | ------------------ |
+| Search             | O(log n) | O(n)               |
+| Insert             | O(log n) | O(n)               |
+| Delete             | O(log n) | O(n)               |
+| Min/Max            | O(log n) | O(n)               |
+| In-order traversal | O(n)     | O(n)               |
 
 ### Balanced BST (AVL, Red-Black)
 
-| Operation | Time |
-|-----------|------|
-| Search | O(log n) |
-| Insert | O(log n) |
-| Delete | O(log n) |
-| Min/Max | O(log n) |
+| Operation | Time     |
+| --------- | -------- |
+| Search    | O(log n) |
+| Insert    | O(log n) |
+| Delete    | O(log n) |
+| Min/Max   | O(log n) |
 
 ### Heap (Binary)
 
-| Operation | Time |
-|-----------|------|
-| Find min/max | O(1) |
-| Insert | O(log n) |
+| Operation      | Time     |
+| -------------- | -------- |
+| Find min/max   | O(1)     |
+| Insert         | O(log n) |
 | Delete min/max | O(log n) |
-| Build heap | O(n) |
+| Build heap     | O(n)     |
 
 ---
 
 ## Graph Operations
 
-| Operation | Adjacency List | Adjacency Matrix |
-|-----------|---------------|------------------|
-| Space | O(V + E) | O(V²) |
-| Add vertex | O(1) | O(V²) |
-| Add edge | O(1) | O(1) |
-| Remove edge | O(E) | O(1) |
-| Check edge exists | O(V) | O(1) |
-| Get neighbors | O(degree) | O(V) |
-| BFS/DFS | O(V + E) | O(V²) |
+| Operation         | Adjacency List | Adjacency Matrix |
+| ----------------- | -------------- | ---------------- |
+| Space             | O(V + E)       | O(V²)            |
+| Add vertex        | O(1)           | O(V²)            |
+| Add edge          | O(1)           | O(1)             |
+| Remove edge       | O(E)           | O(1)             |
+| Check edge exists | O(V)           | O(1)             |
+| Get neighbors     | O(degree)      | O(V)             |
+| BFS/DFS           | O(V + E)       | O(V²)            |
 
-*V = vertices, E = edges*
+_V = vertices, E = edges_
 
 ```python
 # Adjacency list - preferred for sparse graphs
@@ -339,25 +341,25 @@ Sorting:
 
 ### Red Flags in Your Solution
 
-| If you're doing... | Watch out for... |
-|-------------------|------------------|
-| `x in list` in a loop | O(n²) total |
-| `list.insert(0, x)` | O(n) each |
-| `string += char` in a loop | O(n²) total |
-| Nested loops | O(n²) or worse |
+| If you're doing...            | Watch out for...     |
+| ----------------------------- | -------------------- |
+| `x in list` in a loop         | O(n²) total          |
+| `list.insert(0, x)`           | O(n) each            |
+| `string += char` in a loop    | O(n²) total          |
+| Nested loops                  | O(n²) or worse       |
 | Recursion without memoization | Possibly exponential |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Choose best data structure for scenario | Easy | Data structure selection |
-| 2 | Identify hidden O(n) operations | Easy | List/string gotchas |
-| 3 | Optimize using hash table | Medium | Trade space for time |
-| 4 | Compare adjacency list vs matrix | Medium | Graph representation |
-| 5 | Analyze algorithm using multiple data structures | Medium | Combined analysis |
+| #   | Problem                                          | Difficulty | Focus                    |
+| --- | ------------------------------------------------ | ---------- | ------------------------ |
+| 1   | Choose best data structure for scenario          | Easy       | Data structure selection |
+| 2   | Identify hidden O(n) operations                  | Easy       | List/string gotchas      |
+| 3   | Optimize using hash table                        | Medium     | Trade space for time     |
+| 4   | Compare adjacency list vs matrix                 | Medium     | Graph representation     |
+| 5   | Analyze algorithm using multiple data structures | Medium     | Combined analysis        |
 
 ---
 
@@ -376,21 +378,25 @@ Sorting:
 ## When NOT to Use These Data Structures
 
 ### When NOT to use Hash Tables
+
 - **Need sorted order**: Hash tables don't maintain order
 - **Memory constrained**: Hash tables use ~2x the memory
 - **Small datasets**: For n < 20, list search is often faster (cache locality)
 - **Unhashable keys**: Objects that can't be hashed (mutable types)
 
 ### When NOT to use Heaps
+
 - **Need arbitrary access**: Heaps only efficiently access min/max
 - **Frequent searches**: Searching a heap is O(n)
 - **Need median**: Use two heaps (min and max) or sorted data structure
 
 ### When NOT to use Deques
+
 - **Need random access**: Deques are O(n) for index access
 - **Memory sensitive**: Deques have higher overhead than lists
 
 ### When NOT to use Lists
+
 - **Frequent front insertions**: Use deque instead (O(1) vs O(n))
 - **Frequent membership tests**: Use set instead (O(1) vs O(n))
 - **Need min/max efficiently**: Use heap instead

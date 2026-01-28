@@ -51,21 +51,25 @@ Edge 2-0: 2 and 0 already in SAME set → CYCLE!
 ## When NOT to Use
 
 **Parent-tracking DFS is wrong when:**
+
 - **Graph is directed** → Use three-color DFS instead
 - **Multiple edges between same nodes** → Need edge-index tracking
 - **Self-loops exist** → Special case (always a cycle)
 
 **Union-Find is better when:**
+
 - Processing edges one at a time (streaming)
 - Need to find the SPECIFIC edge causing cycle
 - Building minimum spanning tree (Kruskal's)
 
 **Common mistake scenarios:**
+
 - Not tracking parent → False positives on every edge
 - Using visited-only (like directed) → Every 2-node graph looks like a cycle
 - Forgetting about multiple connected components → Must check all
 
 **The multi-edge trap:**
+
 ```
 Multiple edges between 0 and 1:
 Edge list: [(0,1), (0,1)]  ← duplicate edge
@@ -94,6 +98,7 @@ Cycle detection in undirected graphs is important because:
 ## Core Concept: Parent Tracking
 
 In undirected graphs, every edge can be traversed both ways. To avoid false positives:
+
 - Track the **parent** of each node in DFS
 - An edge back to a visited node (that's not the parent) = cycle
 
@@ -301,6 +306,7 @@ def has_cycle_union_find(n: int, edges: list[list[int]]) -> bool:
 ## Graph Valid Tree
 
 A graph is a valid tree if:
+
 1. Connected (exactly 1 component)
 2. Acyclic (no cycles)
 3. Equivalently: n nodes and exactly n-1 edges, connected
@@ -383,11 +389,11 @@ print(find_redundant_connection(edges))  # [2, 3]
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Best For |
-|----------|------|-------|----------|
-| DFS + Parent | O(V + E) | O(V) | General use |
-| BFS + Parent | O(V + E) | O(V) | Avoid recursion |
-| Union-Find | O(E × α(V)) | O(V) | Edge processing, dynamic |
+| Approach     | Time        | Space | Best For                 |
+| ------------ | ----------- | ----- | ------------------------ |
+| DFS + Parent | O(V + E)    | O(V)  | General use              |
+| BFS + Parent | O(V + E)    | O(V)  | Avoid recursion          |
+| Union-Find   | O(E × α(V)) | O(V)  | Edge processing, dynamic |
 
 ---
 
@@ -455,12 +461,12 @@ edges = [[0, 1], [1, 2], [2, 0], [3, 4]]  # Cycle in first component
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Graph Valid Tree | Medium | Tree validation |
-| 2 | Redundant Connection | Medium | Find cycle edge |
-| 3 | Number of Connected Components | Medium | Component counting |
-| 4 | Redundant Connection II | Hard | Directed variation |
+| #   | Problem                        | Difficulty | Key Variation      |
+| --- | ------------------------------ | ---------- | ------------------ |
+| 1   | Graph Valid Tree               | Medium     | Tree validation    |
+| 2   | Redundant Connection           | Medium     | Find cycle edge    |
+| 3   | Number of Connected Components | Medium     | Component counting |
+| 4   | Redundant Connection II        | Hard       | Directed variation |
 
 ---
 

@@ -1,9 +1,11 @@
 # Solutions: Coin Change Patterns
 
 ## 1. Coin Change (Min Coins)
+
 **Problem:** Minimum number of coins to make a total amount.
 
 ### Optimal Python Solution
+
 ```python
 def coin_change(coins: list[int], amount: int) -> int:
     # State: dp[i] = min coins for amount i
@@ -20,15 +22,18 @@ def coin_change(coins: list[int], amount: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{amount} \times |coins|)$
 - **Space:** $O(\text{amount})$
 
 ---
 
 ## 2. Coin Change II (Count Ways)
+
 **Problem:** Number of combinations that make up the amount.
 
 ### Optimal Python Solution
+
 ```python
 def change(amount: int, coins: list[int]) -> int:
     # Key: Outer loop is coins to ensure combinations (order doesn't matter)
@@ -43,16 +48,19 @@ def change(amount: int, coins: list[int]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{amount} \times |coins|)$
 - **Space:** $O(\text{amount})$
 
 ---
 
 ## 3. Perfect Squares
+
 **Problem:** Minimum perfect squares that sum to $n$.
 
 ### Optimal Python Solution
-```python
+
+````python
 def num_squares(n: int) -> int:
     # Same as Coin Change where coins are [1, 4, 9, ...]
     dp = [float('inf')] * (n + 1)
@@ -65,6 +73,7 @@ def num_squares(n: int) -> int:
             j += 1
     return dp[n]
 
+```
 ---
 
 ## 4. Combination Sum IV
@@ -83,17 +92,20 @@ def combination_sum_4(nums: list[int], target: int) -> int:
             if i >= num:
                 dp[i] += dp[i - num]
     return dp[target]
-```
+````
 
 ### Explanation
+
 1.  **Permutations vs Combinations**: In "Coin Change II", we find combinations (order doesn't matter), so we iterate through coins first. Here, we find permutations (order matters), so we iterate through the target sum first.
 2.  **Logic**: To reach sum `i`, we can take any number `num` from the array and add it to a permutation that sums to `i - num`.
 3.  **Efficiency**: Since we iterate through the target once and check each number, the complexity is $O(\text{target} \times |nums|)$.
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{target} \times n)$
 - **Space:** $O(\text{target})$
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(n\sqrt{n})$
@@ -117,19 +129,22 @@ def combination_sum_4(nums: list[int], target: int) -> int:
                 dp[i] += dp[i - num]
 
     return dp[target]
-```
+````
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{target} \times |nums|)$
 - **Space:** $O(\text{target})$
 
 ---
 
 ## 5. Integer Break
+
 **Problem:** Break integer $n$ into $k \ge 2$ positive integers, maximize product.
 
 ### Optimal Python Solution
-```python
+
+````python
 def integer_break(n: int) -> int:
     # State: dp[i] = max product for number i
     if n <= 3: return n - 1
@@ -144,6 +159,7 @@ def integer_break(n: int) -> int:
 
     return dp[n]
 
+```
 ---
 
 ## 4. Combination Sum IV
@@ -162,18 +178,22 @@ def combination_sum_4(nums: list[int], target: int) -> int:
             if i >= num:
                 dp[i] += dp[i - num]
     return dp[target]
-```
+````
 
 ### Explanation
+
 1.  **Permutations vs Combinations**: In "Coin Change II", we find combinations (order doesn't matter), so we iterate through coins first. Here, we find permutations (order matters), so we iterate through the target sum first.
 2.  **Logic**: To reach sum `i`, we can take any number `num` from the array and add it to a permutation that sums to `i - num`.
 3.  **Efficiency**: Since we iterate through the target once and check each number, the complexity is $O(\text{target} \times |nums|)$.
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{target} \times n)$
 - **Space:** $O(\text{target})$
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$
+```

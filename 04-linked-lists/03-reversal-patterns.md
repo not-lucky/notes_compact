@@ -11,6 +11,7 @@ Linked list reversal is the process of making each node point to its predecessor
 **Why is reversal so important?**
 
 Reversal is like learning multiplication tables—it's used everywhere as a building block:
+
 - Palindrome check? Reverse half and compare.
 - Add two numbers (most significant first)? Reverse, add, reverse back.
 - Reorder list (L0→Ln→L1→Ln-1...)? Split, reverse second half, interleave.
@@ -18,6 +19,7 @@ Reversal is like learning multiplication tables—it's used everywhere as a buil
 **The Core Insight: You Only Need Three Pointers**
 
 At any moment during reversal, you need to track:
+
 1. **prev**: The already-reversed portion (or None initially)
 2. **current**: The node you're currently reversing
 3. **next_temp**: Saved reference to the rest of the list
@@ -25,6 +27,7 @@ At any moment during reversal, you need to track:
 Why save `next_temp`? Because once you point `current.next = prev`, you've lost your only link to the rest of the list! It's like walking across a bridge while dismantling it behind you—you need to know where the next plank is before removing the current one.
 
 **Visual Mental Model**:
+
 ```
 Step N:
 None ← [A] ← [B]       [C] → [D] → [E]
@@ -46,6 +49,7 @@ Key: At each step, `curr` points BACK to `prev`, then everyone moves forward one
 The call stack holds n frames (one per node). Each frame remembers "where to return" and the local variables. Iterative reversal uses O(1) space because we explicitly manage the pointers ourselves.
 
 **Partial Reversal Insight**: When reversing positions left to right, the trick is:
+
 1. Find the node BEFORE position left (this anchors the reversed segment)
 2. The node originally at position left becomes the TAIL of the reversed segment
 3. Keep moving nodes from "after current" to "right after anchor"
@@ -460,13 +464,13 @@ def swap_pairs_recursive(head: ListNode) -> ListNode:
 
 ## Complexity Summary
 
-| Pattern | Time | Space |
-|---------|------|-------|
-| Reverse entire (iterative) | O(n) | O(1) |
-| Reverse entire (recursive) | O(n) | O(n) |
-| Reverse between | O(n) | O(1) |
-| Reverse k-group | O(n) | O(1) |
-| Swap pairs | O(n) | O(1) |
+| Pattern                    | Time | Space |
+| -------------------------- | ---- | ----- |
+| Reverse entire (iterative) | O(n) | O(1)  |
+| Reverse entire (recursive) | O(n) | O(n)  |
+| Reverse between            | O(n) | O(1)  |
+| Reverse k-group            | O(n) | O(1)  |
+| Swap pairs                 | O(n) | O(1)  |
 
 ---
 
@@ -552,15 +556,15 @@ head = create_linked_list([1, 2])
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Reverse Linked List | Easy | Basic reversal |
-| 2 | Reverse Linked List II | Medium | Reverse between positions |
-| 3 | Swap Nodes in Pairs | Medium | Reverse pairs |
-| 4 | Reverse Nodes in k-Group | Hard | Reverse k nodes at a time |
-| 5 | Rotate List | Medium | Rotation via reversal |
-| 6 | Reorder List | Medium | Split + reverse + merge |
-| 7 | Add Two Numbers II | Medium | Reverse, add, reverse |
+| #   | Problem                  | Difficulty | Key Concept               |
+| --- | ------------------------ | ---------- | ------------------------- |
+| 1   | Reverse Linked List      | Easy       | Basic reversal            |
+| 2   | Reverse Linked List II   | Medium     | Reverse between positions |
+| 3   | Swap Nodes in Pairs      | Medium     | Reverse pairs             |
+| 4   | Reverse Nodes in k-Group | Hard       | Reverse k nodes at a time |
+| 5   | Rotate List              | Medium     | Rotation via reversal     |
+| 6   | Reorder List             | Medium     | Split + reverse + merge   |
+| 7   | Add Two Numbers II       | Medium     | Reverse, add, reverse     |
 
 ---
 

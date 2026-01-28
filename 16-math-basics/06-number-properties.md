@@ -7,6 +7,7 @@
 **The "Digit Surgery" Mental Model**
 
 Working with digits is like surgery on numbers:
+
 - `n % 10` extracts the last digit (scalpel)
 - `n // 10` removes the last digit (amputation)
 - Build numbers by `result = result * 10 + digit` (reconstruction)
@@ -23,6 +24,7 @@ Digits: 3, 2, 1 (right to left)
 **The Overflow Trap**
 
 When reversing integers, the result can overflow:
+
 - 32-bit signed int max: 2,147,483,647
 - Reversing 1,000,000,009 gives 9,000,000,001 → overflow!
 
@@ -31,6 +33,7 @@ Always check BEFORE the operation that would cause overflow.
 **Bit Tricks for Powers**
 
 Powers of 2, 3, and 4 have elegant patterns:
+
 - Power of 2: Only one bit set → `n & (n-1) == 0`
 - Power of 4: Power of 2 AND bit at even position → `n & 0x55555555 != 0`
 - Power of 3: 3^19 = 1162261467 is largest in int range → if n divides it, n is power of 3
@@ -40,6 +43,7 @@ Powers of 2, 3, and 4 have elegant patterns:
 ## Interview Context
 
 Number property problems test:
+
 - Digit manipulation without converting to string
 - Integer overflow awareness
 - Edge case handling (negative numbers, zero, boundaries)
@@ -562,13 +566,13 @@ print(plusOne([0]))        # [1]
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Palindrome number | O(log n) | O(1) | Reverse half |
-| Reverse integer | O(log n) | O(1) | Digit extraction |
-| Add digits | O(1) | O(1) | Digital root formula |
-| Power of 2/3/4 | O(1) | O(1) | Bit manipulation or math |
-| Integer ↔ Roman | O(1) | O(1) | Greedy or lookup |
+| Problem           | Time     | Space | Key Technique            |
+| ----------------- | -------- | ----- | ------------------------ |
+| Palindrome number | O(log n) | O(1)  | Reverse half             |
+| Reverse integer   | O(log n) | O(1)  | Digit extraction         |
+| Add digits        | O(1)     | O(1)  | Digital root formula     |
+| Power of 2/3/4    | O(1)     | O(1)  | Bit manipulation or math |
+| Integer ↔ Roman   | O(1)     | O(1)  | Greedy or lookup         |
 
 ---
 
@@ -595,17 +599,17 @@ print(plusOne([0]))        # [1]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Palindrome Number | Easy | Reverse half |
-| 2 | Reverse Integer | Medium | Overflow handling |
-| 3 | Add Digits | Easy | Digital root |
-| 4 | Power of Two/Three/Four | Easy | Bit manipulation |
-| 5 | Plus One | Easy | Carry propagation |
-| 6 | Integer to Roman | Medium | Greedy subtraction |
-| 7 | Excel Sheet Column Number | Easy | Base-26 conversion |
-| 8 | Self Dividing Numbers | Easy | Digit extraction |
-| 9 | Happy Number | Easy | Cycle detection |
+| #   | Problem                   | Difficulty | Key Concept        |
+| --- | ------------------------- | ---------- | ------------------ |
+| 1   | Palindrome Number         | Easy       | Reverse half       |
+| 2   | Reverse Integer           | Medium     | Overflow handling  |
+| 3   | Add Digits                | Easy       | Digital root       |
+| 4   | Power of Two/Three/Four   | Easy       | Bit manipulation   |
+| 5   | Plus One                  | Easy       | Carry propagation  |
+| 6   | Integer to Roman          | Medium     | Greedy subtraction |
+| 7   | Excel Sheet Column Number | Easy       | Base-26 conversion |
+| 8   | Self Dividing Numbers     | Easy       | Digit extraction   |
+| 9   | Happy Number              | Easy       | Cycle detection    |
 
 ---
 
@@ -618,12 +622,13 @@ print(plusOne([0]))        # [1]
 
 ### String vs Math Trade-offs
 
-| Approach | Pros | Cons |
-|----------|------|------|
+| Approach        | Pros                                 | Cons                            |
+| --------------- | ------------------------------------ | ------------------------------- |
 | Math (% and //) | Shows sophistication, no allocations | Harder to read, easy to mess up |
-| String | Clean, readable, easy to debug | Extra memory, may feel "lazy" |
+| String          | Clean, readable, easy to debug       | Extra memory, may feel "lazy"   |
 
 **When to definitely use math**:
+
 - When interviewer explicitly requires it
 - When overflow handling is the point
 - When you need half the digits only (palindrome)

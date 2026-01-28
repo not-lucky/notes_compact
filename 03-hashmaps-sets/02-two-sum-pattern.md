@@ -71,6 +71,7 @@ The pair is found when we reach index 1, not index 0.
 **The Complement Pattern Is Everywhere**
 
 Once you recognize "find two things that combine to X," you'll see it everywhere:
+
 - Two Sum (add to target)
 - Pairs with XOR = k
 - Pairs with product = k
@@ -85,6 +86,7 @@ All use the same insight: store what you've seen, check for complement.
 **1. Array Is Already Sorted**
 
 Use two pointers instead—O(1) space vs O(n):
+
 ```python
 # Sorted array: two pointers is better
 left, right = 0, n-1
@@ -101,12 +103,14 @@ If the problem guarantees unique values and exactly one solution, hashmap is fin
 **3. Memory Is Extremely Constrained**
 
 Hashmap uses O(n) extra space. For huge arrays with strict memory limits:
+
 - Sort + two pointers: O(1) space (if in-place sort allowed)
 - Trade time for space with O(n²) brute force
 
 **4. Looking for K-Sum with Large K**
 
 For 3Sum/4Sum, hashmap alone isn't optimal:
+
 - 3Sum: Sort + fix one + two pointers = O(n²)
 - 4Sum: Sort + fix two + two pointers = O(n³)
 - General K-Sum: Recursive reduction to 2Sum
@@ -114,6 +118,7 @@ For 3Sum/4Sum, hashmap alone isn't optimal:
 Hashmap is the inner primitive, not the whole solution.
 
 **Red Flags:**
+
 - "Array is sorted" → Two pointers (O(1) space)
 - "Count all pairs" → Need Counter, not basic hashmap
 - "Find closest sum to target" → Two pointers + tracking
@@ -489,15 +494,15 @@ def two_sum_closest(nums: list[int], target: int) -> list[int]:
 
 ## Common Variations
 
-| Variation | Key Change |
-|-----------|------------|
-| Return indices | Store index in hashmap |
-| Return values | Use set instead |
-| Count pairs | Use Counter, handle same number case |
-| Sorted array | Two pointers instead of hashmap |
-| 3Sum/4Sum | Fix first element(s), use two pointers |
-| Less than K | Two pointers on sorted array |
-| Closest sum | Track minimum difference |
+| Variation      | Key Change                             |
+| -------------- | -------------------------------------- |
+| Return indices | Store index in hashmap                 |
+| Return values  | Use set instead                        |
+| Count pairs    | Use Counter, handle same number case   |
+| Sorted array   | Two pointers instead of hashmap        |
+| 3Sum/4Sum      | Fix first element(s), use two pointers |
+| Less than K    | Two pointers on sorted array           |
+| Closest sum    | Track minimum difference               |
 
 ---
 
@@ -537,16 +542,16 @@ def two_sum_closest(nums: list[int], target: int) -> list[int]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern Variant |
-|---|---------|------------|-----------------|
-| 1 | Two Sum | Easy | Classic hashmap |
-| 2 | Two Sum II - Input Array Is Sorted | Medium | Two pointers |
-| 3 | 3Sum | Medium | Fix one + two pointers |
-| 4 | 3Sum Closest | Medium | Two pointers + tracking |
-| 5 | 4Sum | Medium | Fix two + two pointers |
-| 6 | Two Sum Less Than K | Easy | Two pointers + max tracking |
-| 7 | Pairs of Songs With Total Duration Divisible by 60 | Medium | Modular two sum |
-| 8 | Count Pairs With XOR in a Range | Hard | Two sum with XOR |
+| #   | Problem                                            | Difficulty | Pattern Variant             |
+| --- | -------------------------------------------------- | ---------- | --------------------------- |
+| 1   | Two Sum                                            | Easy       | Classic hashmap             |
+| 2   | Two Sum II - Input Array Is Sorted                 | Medium     | Two pointers                |
+| 3   | 3Sum                                               | Medium     | Fix one + two pointers      |
+| 4   | 3Sum Closest                                       | Medium     | Two pointers + tracking     |
+| 5   | 4Sum                                               | Medium     | Fix two + two pointers      |
+| 6   | Two Sum Less Than K                                | Easy       | Two pointers + max tracking |
+| 7   | Pairs of Songs With Total Duration Divisible by 60 | Medium     | Modular two sum             |
+| 8   | Count Pairs With XOR in a Range                    | Hard       | Two sum with XOR            |
 
 ---
 

@@ -35,6 +35,7 @@ print(a)       # [1, 2, 3, 4] - a and b are the same list!
 ```
 
 Understanding this model predicts behavior:
+
 - Why shallow copy doesn't copy nested objects (they're references too)
 - Why mutable defaults are shared (the default is a reference stored once)
 - Why `is` and `==` differ (identity vs. value of referenced objects)
@@ -50,18 +51,22 @@ Understanding this model predicts behavior:
 ## When NOT to Worry About These Gotchas
 
 ### Mutable defaults
+
 - **Don't worry** if your default is immutable: `def f(x=5)`, `def f(x="hello")`
 - **Don't worry** if you never mutate the parameter inside the function
 
 ### Shallow copy
+
 - **Don't worry** if your list contains only immutables: `[1, 2, 3].copy()` is fine
 - **Don't worry** if you're making a new list anyway: `[x for x in original]`
 
 ### Integer caching
+
 - **Don't worry** if you always use `==` for comparisons (as you should)
 - The only time you need `is` is for `None` checks: `if x is None`
 
 ### These gotchas matter most in:
+
 - **Interviews**: Interviewers love testing edge case knowledge
 - **Long-running processes**: Mutable defaults accumulate state across calls
 - **Multithreaded code**: Shared mutable state compounds these issues
@@ -485,15 +490,15 @@ print(y)  # 3 - y is accessible outside!
 
 ## Quick Reference Table
 
-| Gotcha | Wrong | Right |
-|--------|-------|-------|
-| Mutable default | `def f(l=[])` | `def f(l=None)` |
-| Copy nested | `b = a.copy()` | `b = copy.deepcopy(a)` |
-| Value comparison | `x is 5` | `x == 5` |
-| None check | `x == None` | `x is None` |
-| String concat | `s += char` in loop | `''.join(chars)` |
+| Gotcha               | Wrong                         | Right                           |
+| -------------------- | ----------------------------- | ------------------------------- |
+| Mutable default      | `def f(l=[])`                 | `def f(l=None)`                 |
+| Copy nested          | `b = a.copy()`                | `b = copy.deepcopy(a)`          |
+| Value comparison     | `x is 5`                      | `x == 5`                        |
+| None check           | `x == None`                   | `x is None`                     |
+| String concat        | `s += char` in loop           | `''.join(chars)`                |
 | Modify while iterate | `for x in lst: lst.remove(x)` | `lst = [x for x in lst if ...]` |
-| Single tuple | `(42)` | `(42,)` |
+| Single tuple         | `(42)`                        | `(42,)`                         |
 
 ---
 

@@ -18,6 +18,7 @@ Expect at least one grid problem in most interview loops.
 ## Core Concept: Grid as Graph
 
 A grid is an **implicit graph** where:
+
 - Each cell is a vertex
 - Adjacent cells (up, down, left, right) are connected
 
@@ -465,16 +466,16 @@ def dfs(r, c):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Number of Islands | Medium | Basic counting |
-| 2 | Max Area of Island | Medium | Return size |
-| 3 | Flood Fill | Easy | Simple traversal |
-| 4 | Surrounded Regions | Medium | Border-connected |
-| 5 | Number of Distinct Islands | Medium | Shape signature |
-| 6 | Making A Large Island | Hard | What-if analysis |
-| 7 | Island Perimeter | Easy | Counting pattern |
-| 8 | Pacific Atlantic Water Flow | Medium | Multi-source |
+| #   | Problem                     | Difficulty | Key Variation    |
+| --- | --------------------------- | ---------- | ---------------- |
+| 1   | Number of Islands           | Medium     | Basic counting   |
+| 2   | Max Area of Island          | Medium     | Return size      |
+| 3   | Flood Fill                  | Easy       | Simple traversal |
+| 4   | Surrounded Regions          | Medium     | Border-connected |
+| 5   | Number of Distinct Islands  | Medium     | Shape signature  |
+| 6   | Making A Large Island       | Hard       | What-if analysis |
+| 7   | Island Perimeter            | Easy       | Counting pattern |
+| 8   | Pacific Atlantic Water Flow | Medium     | Multi-source     |
 
 ---
 

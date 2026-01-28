@@ -24,6 +24,7 @@ The key insight is **deferred computation**. Instead of updating every element i
 **Mental Model**: Imagine you're adjusting thermostat schedules. At 8 AM, set temperature +5°. At 5 PM, set temperature -5° (canceling the increase). During 8 AM - 5 PM, the temperature is elevated. You only set two events, not every hour individually.
 
 **Visual Trace**:
+
 ```
 Range update: add 3 to indices [1, 4]
               add 2 to indices [2, 3]
@@ -58,6 +59,7 @@ Difference arrays have specific requirements:
 5. **Non-Additive Operations**: Difference arrays work for additive updates. For "set range to value" or "multiply range by x," you need different techniques.
 
 **Red Flags:**
+
 - "Query between updates" → Segment tree with lazy propagation
 - "Update single elements" → Direct modification
 - "Set range to value" (not add) → Need different approach
@@ -69,6 +71,7 @@ Difference arrays have specific requirements:
 Difference arrays are the inverse of prefix sums. While prefix sums enable O(1) range queries, difference arrays enable O(1) range updates.
 
 Common interview problems:
+
 - Range addition queries
 - Car pooling / meeting room capacity
 - Flight booking problems
@@ -93,6 +96,7 @@ To recover original: prefix sum of difference array
 ### Key Property
 
 To add value `v` to range `[i, j]`:
+
 - Add `v` to `diff[i]` (start adding)
 - Subtract `v` from `diff[j+1]` (stop adding)
 
@@ -333,13 +337,13 @@ def range_addition_2d(matrix: list[list[int]],
 
 ## Prefix Sum vs Difference Array
 
-| Operation | Prefix Sum | Difference Array |
-|-----------|------------|------------------|
-| Build | O(n) | O(n) |
-| Range Query | O(1) | O(n) |
-| Range Update | O(n) | O(1) |
-| Point Update | O(n) | O(1) |
-| Point Query | O(1) | O(n) |
+| Operation    | Prefix Sum | Difference Array |
+| ------------ | ---------- | ---------------- |
+| Build        | O(n)       | O(n)             |
+| Range Query  | O(1)       | O(n)             |
+| Range Update | O(n)       | O(1)             |
+| Point Update | O(n)       | O(1)             |
+| Point Query  | O(1)       | O(n)             |
 
 **Use Prefix Sum when**: Many queries, few/no updates
 **Use Difference Array when**: Many updates, few queries
@@ -393,14 +397,14 @@ Return original array
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Range Addition | Medium | Basic difference array |
-| 2 | Car Pooling | Medium | Capacity check |
-| 3 | Corporate Flight Bookings | Medium | 1-indexed bookings |
-| 4 | Meeting Rooms II | Medium | Maximum concurrent |
-| 5 | My Calendar III | Hard | Maximum overlapping events |
-| 6 | Brightest Position on Street | Medium | Light intensity |
+| #   | Problem                      | Difficulty | Key Concept                |
+| --- | ---------------------------- | ---------- | -------------------------- |
+| 1   | Range Addition               | Medium     | Basic difference array     |
+| 2   | Car Pooling                  | Medium     | Capacity check             |
+| 3   | Corporate Flight Bookings    | Medium     | 1-indexed bookings         |
+| 4   | Meeting Rooms II             | Medium     | Maximum concurrent         |
+| 5   | My Calendar III              | Hard       | Maximum overlapping events |
+| 6   | Brightest Position on Street | Medium     | Light intensity            |
 
 ---
 

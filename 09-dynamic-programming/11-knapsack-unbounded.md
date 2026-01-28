@@ -50,6 +50,7 @@ Unbounded Knapsack is important because:
 5. **Negative Values**: Unbounded with negative values can lead to infinite loops. Ensure all values are non-negative.
 
 **Distinguish 0/1 vs Unbounded:**
+
 - "Each item can be used once" → 0/1 (backward)
 - "Unlimited supply" → Unbounded (forward)
 - "At most k of each" → Bounded (or k copies as separate items)
@@ -259,12 +260,12 @@ def num_squares(n: int) -> int:
 
 ## 0/1 vs Unbounded Comparison
 
-| Aspect | 0/1 Knapsack | Unbounded Knapsack |
-|--------|--------------|-------------------|
-| Item usage | Once | Unlimited |
-| Iteration | Backward | Forward |
-| Example | Subset sum | Coin change |
-| Key insight | Use dp[i-1] values | Use dp[i] values |
+| Aspect      | 0/1 Knapsack       | Unbounded Knapsack |
+| ----------- | ------------------ | ------------------ |
+| Item usage  | Once               | Unlimited          |
+| Iteration   | Backward           | Forward            |
+| Example     | Subset sum         | Coin change        |
+| Key insight | Use dp[i-1] values | Use dp[i] values   |
 
 ### Side-by-Side Code
 
@@ -353,12 +354,12 @@ for amount in range(1, target + 1):  # Amount first
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Unbounded Knapsack | O(n × W) | O(W) |
-| Coin Change | O(amount × coins) | O(amount) |
-| Rod Cutting | O(n²) | O(n) |
-| Perfect Squares | O(n√n) | O(n) |
+| Problem            | Time              | Space     |
+| ------------------ | ----------------- | --------- |
+| Unbounded Knapsack | O(n × W)          | O(W)      |
+| Coin Change        | O(amount × coins) | O(amount) |
+| Rod Cutting        | O(n²)             | O(n)      |
+| Perfect Squares    | O(n√n)            | O(n)      |
 
 ---
 
@@ -374,13 +375,13 @@ for amount in range(1, target + 1):  # Amount first
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Type |
-|---|---------|------------|------|
-| 1 | Coin Change | Medium | Min coins |
-| 2 | Coin Change II | Medium | Count ways |
-| 3 | Perfect Squares | Medium | Min squares |
-| 4 | Integer Break | Medium | Max product |
-| 5 | Cutting a Rod | Medium | Max value |
+| #   | Problem         | Difficulty | Type        |
+| --- | --------------- | ---------- | ----------- |
+| 1   | Coin Change     | Medium     | Min coins   |
+| 2   | Coin Change II  | Medium     | Count ways  |
+| 3   | Perfect Squares | Medium     | Min squares |
+| 4   | Integer Break   | Medium     | Max product |
+| 5   | Cutting a Rod   | Medium     | Max value   |
 
 ---
 

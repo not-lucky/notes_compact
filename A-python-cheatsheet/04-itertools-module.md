@@ -33,6 +33,7 @@ product: All combinations of choices (Cartesian product)
 ### Visual Mental Model
 
 **Permutations** - "Arrange people in a line"
+
 ```
 3 people, 3 positions: 3! = 6 ways
 ┌─┐┌─┐┌─┐
@@ -41,6 +42,7 @@ product: All combinations of choices (Cartesian product)
 ```
 
 **Combinations** - "Choose a committee"
+
 ```
 3 people, pick 2: C(3,2) = 3 ways
 Who's on the team, not who sits where
@@ -48,6 +50,7 @@ Who's on the team, not who sits where
 ```
 
 **Product** - "Menu choices"
+
 ```
 Entree: [pasta, steak]
 Side:   [salad, soup]
@@ -73,11 +76,13 @@ all_perms = list(permutations(range(10)))  # Uses ~300MB
 ## When NOT to Use
 
 ### Avoid itertools when:
+
 - **Output is huge and you'll consume it all**: `list(permutations(range(12)))` is 479 million items - you'll run out of memory
 - **A mathematical formula exists**: Don't generate all permutations just to count them (use `math.factorial`)
 - **Smarter algorithms exist**: Don't brute-force when DP or greedy works
 
 ### Common mistakes:
+
 ```python
 # WRONG: Converting to list unnecessarily
 all_combos = list(combinations(range(20), 10))  # 184,756 items in memory
@@ -113,6 +118,7 @@ for k, g in groupby(sorted(data)):
 ```
 
 ### Performance considerations:
+
 - **n matters a lot**: `permutations(range(10))` = 3.6M items, `permutations(range(13))` = 6.2 billion
 - **Use early termination**: `any()`, `all()`, or explicit `break` when you find what you need
 - **Consider backtracking**: For constrained problems, backtracking prunes invalid paths earlier than filtering all permutations
@@ -509,13 +515,13 @@ list(zip([1, 2, 3], ['a', 'b']))
 
 ## Complexity Summary
 
-| Function | Time | Notes |
-|----------|------|-------|
-| permutations(n, r) | O(n!/(n-r)!) | All orderings |
-| combinations(n, r) | O(C(n,r)) | All subsets of size r |
-| product(*iterables) | O(∏len) | Cartesian product |
-| groupby | O(n) | Single pass |
-| accumulate | O(n) | Single pass |
+| Function             | Time         | Notes                 |
+| -------------------- | ------------ | --------------------- |
+| permutations(n, r)   | O(n!/(n-r)!) | All orderings         |
+| combinations(n, r)   | O(C(n,r))    | All subsets of size r |
+| product(\*iterables) | O(∏len)      | Cartesian product     |
+| groupby              | O(n)         | Single pass           |
+| accumulate           | O(n)         | Single pass           |
 
 ---
 
@@ -541,15 +547,15 @@ for p in permutations(range(10)):
 
 ## Practice Problems
 
-| # | Problem | Function |
-|---|---------|----------|
-| 1 | Subsets | combinations |
-| 2 | Permutations | permutations |
-| 3 | Letter Combinations | product |
-| 4 | Combination Sum | combinations_with_replacement |
-| 5 | Generate Parentheses | Custom with product |
-| 6 | Count and Say | groupby |
-| 7 | Running Sum | accumulate |
+| #   | Problem              | Function                      |
+| --- | -------------------- | ----------------------------- |
+| 1   | Subsets              | combinations                  |
+| 2   | Permutations         | permutations                  |
+| 3   | Letter Combinations  | product                       |
+| 4   | Combination Sum      | combinations_with_replacement |
+| 5   | Generate Parentheses | Custom with product           |
+| 6   | Count and Say        | groupby                       |
+| 7   | Running Sum          | accumulate                    |
 
 ---
 

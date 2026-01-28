@@ -28,6 +28,7 @@ share node 3 - that's fine!    (can walk forever)
 In the left graph, revisiting node 3 is just "two roads lead to same place." In the right graph, revisiting node 0 while still on the path means we can loop forever.
 
 **The Three-Color Insight**:
+
 - **WHITE (unvisited)**: Haven't touched this node yet
 - **GRAY (in progress)**: Currently exploring this node's subtree
 - **BLACK (done)**: Finished with this node and all descendants
@@ -51,20 +52,24 @@ When we try to go from node 2 to node 0, node 0 is GRAY = still on current path!
 ## When NOT to Use
 
 **Three-color DFS is wrong when:**
+
 - **Graph is undirected** → Use parent tracking instead (simpler)
 - **Need to find the actual cycle** → Need to track parent pointers too
 - **Multiple disconnected components** → Must iterate all nodes
 
 **Kahn's algorithm (BFS) is better when:**
+
 - You also need topological order if no cycle
 - BFS is more intuitive to you
 - Cycle detection is part of topological sort
 
 **Cycle detection is overkill when:**
+
 - You only need to know if graph is a DAG → Same thing, but terminology matters
 - Graph structure guarantees no cycles (tree input) → Trust the input
 
 **Common mistake scenarios:**
+
 - Using simple visited check → False positives on reconvergent paths
 - Not checking all components → Miss cycles in disconnected parts
 - Forgetting to mark BLACK → Incorrect results
@@ -105,6 +110,7 @@ node 3 but no cycle
 ## Three-Color (State) Algorithm
 
 Track three states for each node:
+
 - **WHITE (0)**: Unvisited
 - **GRAY (1)**: Currently being processed (in recursion stack)
 - **BLACK (2)**: Completely processed
@@ -386,11 +392,11 @@ def has_cycle_kahn(n: int, edges: list[list[int]]) -> bool:
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Finds Cycle Nodes |
-|----------|------|-------|-------------------|
-| Three Colors (DFS) | O(V + E) | O(V) | With modification |
-| Recursion Stack (DFS) | O(V + E) | O(V) | With modification |
-| Kahn's (BFS) | O(V + E) | O(V) | No (just detects) |
+| Approach              | Time     | Space | Finds Cycle Nodes |
+| --------------------- | -------- | ----- | ----------------- |
+| Three Colors (DFS)    | O(V + E) | O(V)  | With modification |
+| Recursion Stack (DFS) | O(V + E) | O(V)  | With modification |
+| Kahn's (BFS)          | O(V + E) | O(V)  | No (just detects) |
 
 ---
 
@@ -464,12 +470,12 @@ edges = [[0, 1], [1, 2], ..., [n-2, n-1]]  # No cycle
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Core cycle detection |
-| 2 | Course Schedule II | Medium | Topological sort if no cycle |
-| 3 | Find Eventual Safe States | Medium | Nodes not in any cycle |
-| 4 | Redundant Connection II | Hard | Find edge causing cycle |
+| #   | Problem                   | Difficulty | Key Variation                |
+| --- | ------------------------- | ---------- | ---------------------------- |
+| 1   | Course Schedule           | Medium     | Core cycle detection         |
+| 2   | Course Schedule II        | Medium     | Topological sort if no cycle |
+| 3   | Find Eventual Safe States | Medium     | Nodes not in any cycle       |
+| 4   | Redundant Connection II   | Hard       | Find edge causing cycle      |
 
 ---
 

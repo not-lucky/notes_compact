@@ -5,6 +5,7 @@
 ## Interview Context
 
 Finding boundaries in sorted arrays is a classic interview pattern:
+
 1. **Tests template mastery**: Requires modifying standard binary search
 2. **Common building block**: Used in many other problems
 3. **Edge case focus**: Handling duplicates, not found, boundaries
@@ -29,6 +30,7 @@ Array: [1, 2, 2, 2, 2, 2, 3]
 **The Key Insight: Don't Stop When You Find It**
 
 Instead of returning immediately when `nums[mid] == target`, we:
+
 1. Record the match (it might be our answer)
 2. Keep searching in the direction of the boundary we want
 
@@ -42,6 +44,7 @@ Imagine you're a detective who found ONE suspect matching a description. A lazy 
 **Two Boolean Conditions**
 
 This is really two different binary searches:
+
 - First occurrence: Find leftmost index where `nums[i] >= target` AND `nums[i] == target`
 - Last occurrence: Find rightmost index where `nums[i] <= target` AND `nums[i] == target`
 
@@ -67,22 +70,27 @@ Done: Answer is the last recorded match = index 1
 ## When NOT to Use Boundary Search
 
 **1. When Any Occurrence Is Fine**
+
 - If you just need to check existence, standard binary search is simpler
 - Don't overcomplicate with boundary finding
 
 **2. Unsorted Arrays**
+
 - Boundaries only make sense in sorted order
 - For unsorted: scan linearly for first/last
 
 **3. When You Need the Count, Not Position**
+
 - Use `last - first + 1` only if you ALSO need positions
 - For just counting, consider: `bisect_right(target) - bisect_left(target)`
 
 **4. When There Are No Duplicates**
+
 - Standard binary search gives you the only occurrence
 - Boundary search is overkill
 
 **Red Flags:**
+
 - "Find any element matching..." → Use standard search
 - "Check if element exists..." → Use standard search
 - "Find index in unsorted array..." → Linear scan
@@ -92,6 +100,7 @@ Done: Answer is the last recorded match = index 1
 ## The Problem
 
 Given a sorted array with duplicates, find:
+
 - **First occurrence**: Leftmost index of target
 - **Last occurrence**: Rightmost index of target
 - **Range**: [first, last] positions
@@ -404,12 +413,12 @@ def single_non_duplicate(nums: list[int]) -> int:
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Find first occurrence | O(log n) | O(1) |
-| Find last occurrence | O(log n) | O(1) |
-| Find range [first, last] | O(log n) | O(1) |
-| Count occurrences | O(log n) | O(1) |
+| Operation                | Time     | Space |
+| ------------------------ | -------- | ----- |
+| Find first occurrence    | O(log n) | O(1)  |
+| Find last occurrence     | O(log n) | O(1)  |
+| Find range [first, last] | O(log n) | O(1)  |
+| Count occurrences        | O(log n) | O(1)  |
 
 ---
 
@@ -427,14 +436,14 @@ def single_non_duplicate(nums: list[int]) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Find First and Last Position | Medium | Left and right boundary |
-| 2 | Count of Smaller Numbers After Self | Hard | Binary search tree / merge sort |
-| 3 | Find Smallest Letter Greater Than Target | Easy | Right boundary with wrap |
-| 4 | Single Element in Sorted Array | Medium | Pair index parity |
-| 5 | Find Minimum in Rotated Sorted Array | Medium | Boundary in rotated |
-| 6 | Search Insert Position | Easy | Left boundary |
+| #   | Problem                                  | Difficulty | Key Insight                     |
+| --- | ---------------------------------------- | ---------- | ------------------------------- |
+| 1   | Find First and Last Position             | Medium     | Left and right boundary         |
+| 2   | Count of Smaller Numbers After Self      | Hard       | Binary search tree / merge sort |
+| 3   | Find Smallest Letter Greater Than Target | Easy       | Right boundary with wrap        |
+| 4   | Single Element in Sorted Array           | Medium     | Pair index parity               |
+| 5   | Find Minimum in Rotated Sorted Array     | Medium     | Boundary in rotated             |
+| 6   | Search Insert Position                   | Easy       | Left boundary                   |
 
 ---
 

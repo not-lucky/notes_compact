@@ -17,12 +17,14 @@ The key insight is what information we gain from popping:
 2. **Why we can pop confidently**: Once X is dominated by Y, X can never be the answer for any future element. If Z comes after Y and is looking for its next greater, Z will either be stopped by Y (if Y > Z) or go past Y. Either way, X is irrelevant.
 
 **The Core Insight**:
+
 ```
 In a monotonic stack, popping an element means we've found its answer.
 The new element that caused the pop is the answer.
 ```
 
 **Worked Example - Next Greater Element**:
+
 ```
 Array: [2, 1, 5, 6, 2, 3]
 
@@ -59,6 +61,7 @@ Monotonic stacks are the wrong choice when:
 5. **2D Problems Without Reduction**: Monotonic stacks solve 1D problems. For 2D grids, you often need to reduce rows/columns to 1D first (like in maximal rectangle).
 
 **Signs You Need a Different Approach**:
+
 - "Find all elements greater than X" → Sorting or binary search
 - "Count pairs with property" → Often two pointers or hashing
 - "Queries on ranges with updates" → Segment tree or Fenwick tree
@@ -104,10 +107,10 @@ Elements left in stack (6, 3) have no next greater element.
 
 ## Two Types of Monotonic Stacks
 
-| Type | Property | Use Case |
-|------|----------|----------|
+| Type                 | Property        | Use Case                      |
+| -------------------- | --------------- | ----------------------------- |
 | Monotonic Decreasing | Top is smallest | Find **next greater** element |
-| Monotonic Increasing | Top is largest | Find **next smaller** element |
+| Monotonic Increasing | Top is largest  | Find **next smaller** element |
 
 ### Visual Comparison
 
@@ -403,11 +406,13 @@ print(sum_of_subarray_mins([3, 1, 2, 4]))  # 17
 ## Choosing the Right Direction
 
 ### Monotonic Decreasing Stack
+
 - **When**: Finding next/previous **greater** element
 - **Property**: Stack values decrease from bottom to top
 - **Pop condition**: `while stack and nums[stack[-1]] < nums[i]`
 
 ### Monotonic Increasing Stack
+
 - **When**: Finding next/previous **smaller** element
 - **Property**: Stack values increase from bottom to top
 - **Pop condition**: `while stack and nums[stack[-1]] > nums[i]`
@@ -455,10 +460,10 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build monotonic stack | O(n) | O(n) |
-| Per element (amortized) | O(1) | - |
+| Operation               | Time | Space |
+| ----------------------- | ---- | ----- |
+| Build monotonic stack   | O(n) | O(n)  |
+| Per element (amortized) | O(1) | -     |
 
 **Why O(n)?** Each element is pushed exactly once and popped at most once. Total operations = 2n = O(n).
 
@@ -476,17 +481,17 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Next Greater Element I | Easy | Basic pattern |
-| 2 | Next Greater Element II | Medium | Circular array |
-| 3 | Daily Temperatures | Medium | Days until warmer |
-| 4 | Online Stock Span | Medium | Previous greater count |
-| 5 | Sum of Subarray Minimums | Medium | Contribution counting |
-| 6 | Largest Rectangle in Histogram | Hard | Height boundaries |
-| 7 | Maximal Rectangle | Hard | Histogram per row |
-| 8 | Remove K Digits | Medium | Build smallest number |
-| 9 | 132 Pattern | Medium | Track min and pattern |
+| #   | Problem                        | Difficulty | Key Concept            |
+| --- | ------------------------------ | ---------- | ---------------------- |
+| 1   | Next Greater Element I         | Easy       | Basic pattern          |
+| 2   | Next Greater Element II        | Medium     | Circular array         |
+| 3   | Daily Temperatures             | Medium     | Days until warmer      |
+| 4   | Online Stock Span              | Medium     | Previous greater count |
+| 5   | Sum of Subarray Minimums       | Medium     | Contribution counting  |
+| 6   | Largest Rectangle in Histogram | Hard       | Height boundaries      |
+| 7   | Maximal Rectangle              | Hard       | Histogram per row      |
+| 8   | Remove K Digits                | Medium     | Build smallest number  |
+| 9   | 132 Pattern                    | Medium     | Track min and pattern  |
 
 ---
 

@@ -3,9 +3,11 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Monotonic Stack notes.
 
 ## 1. Next Greater Element I
+
 **Problem Statement**: The next greater element of some element `x` in an array is the first greater element that is to the right of `x` in the same array. Given two arrays `nums1` and `nums2` where `nums1` is a subset of `nums2`, return an array of the next greater elements for `nums1` in `nums2`.
 
 ### Optimal Python Solution
+
 ```python
 def nextGreaterElement(nums1: list[int], nums2: list[int]) -> list[int]:
     # Map to store next greater element for each value in nums2
@@ -24,18 +26,22 @@ def nextGreaterElement(nums1: list[int], nums2: list[int]) -> list[int]:
 ```
 
 ### Explanation
+
 We use a monotonic decreasing stack to process `nums2`. For each number, we pop all smaller numbers from the stack; the current number is the "next greater" for those popped elements. We store these pairs in a hash map for O(1) retrieval when iterating through `nums1`.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n + m), where n and m are lengths of `nums1` and `nums2`. We traverse `nums2` once and `nums1` once.
 - **Space Complexity**: O(m), for the map and stack.
 
 ---
 
 ## 2. Next Greater Element II
+
 **Problem Statement**: Given a circular integer array `nums`, return the next greater number for every element in `nums`.
 
 ### Optimal Python Solution
+
 ```python
 def nextGreaterElements(nums: list[int]) -> list[int]:
     n = len(nums)
@@ -54,15 +60,18 @@ def nextGreaterElements(nums: list[int]) -> list[int]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the length of `nums`. Each index is pushed and popped exactly twice (once per pass) across the 2n iterations.
 - **Space Complexity**: O(n), to store the indices in the stack.
 
 ---
 
 ## 3. Daily Temperatures
+
 **Problem Statement**: Return an array such that `ans[i]` is the number of days you have to wait after the `i-th` day to get a warmer temperature.
 
 ### Optimal Python Solution
+
 ```python
 def dailyTemperatures(temperatures: list[int]) -> list[int]:
     n = len(temperatures)
@@ -79,16 +88,19 @@ def dailyTemperatures(temperatures: list[int]) -> list[int]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), each index is pushed and popped at most once.
 - **Space Complexity**: O(n), for the stack.
 
 ---
 
 ## 4. Online Stock Span
+
 **Problem Statement**: Design an algorithm that collects daily price quotes and returns the span of that day's price. The span is the maximum number of consecutive days for which the price was less than or equal to that day's price.
 
 ### Optimal Python Solution
-```python
+
+````python
 class StockSpanner:
     def __init__(self):
         # Stack stores (price, span)
@@ -100,6 +112,7 @@ class StockSpanner:
         while self.stack and self.stack[-1][0] <= price:
             # Accumulate their spans
             span += self.stack.pop()[1]
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n) amortized. Each call to `next()` might involve multiple pops, but every price is pushed onto the stack exactly once. Across the lifetime of the object, total pops ≤ total pushes.
 - **Space Complexity**: O(n), to store the price history in the stack.
@@ -126,6 +139,7 @@ def sumSubarrayMins(arr: list[int]) -> int:
             res += arr[mid] * (mid - left) * (right - mid)
         stack.append(i)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of the array. Each element is added to the stack once and removed once.
 - **Space Complexity**: O(n), for the monotonic stack.
@@ -149,6 +163,7 @@ def largestRectangleArea(heights: list[int]) -> int:
             max_area = max(max_area, height * width)
         stack.append(i)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the number of bars. Each bar's index is pushed and popped exactly once.
 - **Space Complexity**: O(n), for the stack.
@@ -184,6 +199,7 @@ def maximalRectangle(matrix: list[list[str]]) -> int:
                 max_area = max(max_area, height * width)
             stack.append(i)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(rows * cols), as we iterate through each cell in the binary matrix and perform a linear time histogram calculation for each row.
 - **Space Complexity**: O(cols), to store the histogram heights for the current row.
@@ -209,6 +225,7 @@ def removeKdigits(num: str, k: int) -> str:
     # Remove leading zeros and handle empty result
     return "".join(stack).lstrip('0') or "0"
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the number of digits in `num`. We iterate once, and each digit is pushed/popped at most once.
 - **Space Complexity**: O(n), to store the digits in the stack.
@@ -234,9 +251,11 @@ def find132pattern(nums: list[int]) -> bool:
             s3 = stack.pop()
         stack.append(n)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of `nums`. We traverse the array once, and each element is pushed/popped from the stack at most once.
 - **Space Complexity**: O(n), for the monotonic stack.
 
 ### Explanation
 We search for the pattern from right to left. We use a stack to keep track of the largest values (`3` in the `132` pattern) and a variable `s3` to keep track of the second largest value (`2` in the `132` pattern). If we encounter a value smaller than `s3`, it means we've found our `1`, completing the `1-3-2` sequence.
+````

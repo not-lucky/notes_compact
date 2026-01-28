@@ -16,6 +16,7 @@ Count primes to n → Check each    Use Sieve → O(n log log n)
 **Why Math Matters**
 
 Interview math isn't about showing off—it's about recognizing patterns:
+
 - When you see "divisibility," think GCD/LCM
 - When you see "overflow," think modular arithmetic
 - When you see "random selection from stream," think reservoir sampling
@@ -23,6 +24,7 @@ Interview math isn't about showing off—it's about recognizing patterns:
 **The Hidden Costs**
 
 Watch for operations that seem O(1) but aren't:
+
 - `x in list` is O(n), not O(1)
 - String concatenation in a loop is O(n²)
 - Naive primality check is O(n), not O(√n)
@@ -40,14 +42,14 @@ Watch for operations that seem O(1) but aren't:
 
 ## Core Mathematical Concepts for Interviews
 
-| Concept | Why It Matters | Example Problem |
-|---------|----------------|-----------------|
-| GCD/LCM | Array operations, fraction simplification | Simplify fractions, water jug problem |
-| Prime Numbers | Factorization, divisibility | Count primes, ugly numbers |
-| Modular Arithmetic | Large number handling, hash functions | Pow(x, n), string hashing |
-| Random Sampling | Fair selection from streams | Reservoir sampling, shuffle |
-| Square Root | Search problems, number properties | Valid perfect square, sqrt(x) |
-| Number Properties | Digit manipulation | Palindrome number, reverse integer |
+| Concept            | Why It Matters                            | Example Problem                       |
+| ------------------ | ----------------------------------------- | ------------------------------------- |
+| GCD/LCM            | Array operations, fraction simplification | Simplify fractions, water jug problem |
+| Prime Numbers      | Factorization, divisibility               | Count primes, ugly numbers            |
+| Modular Arithmetic | Large number handling, hash functions     | Pow(x, n), string hashing             |
+| Random Sampling    | Fair selection from streams               | Reservoir sampling, shuffle           |
+| Square Root        | Search problems, number properties        | Valid perfect square, sqrt(x)         |
+| Number Properties  | Digit manipulation                        | Palindrome number, reverse integer    |
 
 ---
 
@@ -84,14 +86,14 @@ Watch for operations that seem O(1) but aren't:
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [GCD and LCM](./01-gcd-lcm.md) | Euclidean algorithm, applications |
-| 02 | [Prime Numbers](./02-prime-numbers.md) | Primality check, Sieve of Eratosthenes |
-| 03 | [Modular Arithmetic](./03-modular-arithmetic.md) | Mod operations, overflow handling |
-| 04 | [Random Sampling](./04-random-sampling.md) | Reservoir sampling, Fisher-Yates shuffle |
-| 05 | [Square Root Problems](./05-sqrt-problems.md) | Integer sqrt, perfect square checks |
-| 06 | [Number Properties](./06-number-properties.md) | Palindrome, reverse integer, digit manipulation |
+| #   | Topic                                            | Key Concepts                                    |
+| --- | ------------------------------------------------ | ----------------------------------------------- |
+| 01  | [GCD and LCM](./01-gcd-lcm.md)                   | Euclidean algorithm, applications               |
+| 02  | [Prime Numbers](./02-prime-numbers.md)           | Primality check, Sieve of Eratosthenes          |
+| 03  | [Modular Arithmetic](./03-modular-arithmetic.md) | Mod operations, overflow handling               |
+| 04  | [Random Sampling](./04-random-sampling.md)       | Reservoir sampling, Fisher-Yates shuffle        |
+| 05  | [Square Root Problems](./05-sqrt-problems.md)    | Integer sqrt, perfect square checks             |
+| 06  | [Number Properties](./06-number-properties.md)   | Palindrome, reverse integer, digit manipulation |
 
 ---
 
@@ -207,13 +209,13 @@ print(MathOperations.integer_sqrt(50))    # 7
 
 ## Time Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| GCD (Euclidean) | O(log n) | O(1) | Iterative version |
-| Primality check | O(√n) | O(1) | Trial division |
-| Sieve of Eratosthenes | O(n log log n) | O(n) | Generate all primes ≤ n |
-| Modular exponentiation | O(log exp) | O(1) | Binary exponentiation |
-| Integer square root | O(log n) | O(1) | Binary search |
+| Operation              | Time           | Space | Notes                   |
+| ---------------------- | -------------- | ----- | ----------------------- |
+| GCD (Euclidean)        | O(log n)       | O(1)  | Iterative version       |
+| Primality check        | O(√n)          | O(1)  | Trial division          |
+| Sieve of Eratosthenes  | O(n log log n) | O(n)  | Generate all primes ≤ n |
+| Modular exponentiation | O(log exp)     | O(1)  | Binary exponentiation   |
+| Integer square root    | O(log n)       | O(1)  | Binary search           |
 
 ---
 
@@ -229,13 +231,13 @@ print(MathOperations.integer_sqrt(50))    # 7
 
 ## Classic Interview Problems by Company
 
-| Company | Favorite Math Problems |
-|---------|----------------------|
-| Google | Pow(x, n), Happy Number, Count Primes |
-| Meta | Reverse Integer, Palindrome Number, Add Digits |
-| Amazon | Valid Perfect Square, Sqrt(x), Excel Column Number |
-| Microsoft | GCD of Strings, Ugly Number, Power of Three |
-| Apple | Plus One, Missing Number, Integer to Roman |
+| Company   | Favorite Math Problems                             |
+| --------- | -------------------------------------------------- |
+| Google    | Pow(x, n), Happy Number, Count Primes              |
+| Meta      | Reverse Integer, Palindrome Number, Add Digits     |
+| Amazon    | Valid Perfect Square, Sqrt(x), Excel Column Number |
+| Microsoft | GCD of Strings, Ugly Number, Power of Three        |
+| Apple     | Plus One, Missing Number, Integer to Roman         |
 
 ---
 
@@ -258,13 +260,13 @@ Look for these keywords/patterns:
 
 ## Comparison: When to Use Math vs Other Approaches
 
-| Scenario | Use Math | Use Alternative |
-|----------|----------|-----------------|
-| Sum 1 to n | `n*(n+1)//2` | Loop (slower) |
-| Check power of 2 | `n & (n-1) == 0` | Loop or log |
+| Scenario             | Use Math           | Use Alternative          |
+| -------------------- | ------------------ | ------------------------ |
+| Sum 1 to n           | `n*(n+1)//2`       | Loop (slower)            |
+| Check power of 2     | `n & (n-1) == 0`   | Loop or log              |
 | Random k from stream | Reservoir sampling | Store all (if memory ok) |
-| Find if prime | Trial division | Sieve (if checking many) |
-| Integer sqrt | Binary search | `math.isqrt()` (simpler) |
+| Find if prime        | Trial division     | Sieve (if checking many) |
+| Integer sqrt         | Binary search      | `math.isqrt()` (simpler) |
 
 ---
 

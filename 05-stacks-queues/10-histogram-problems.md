@@ -13,6 +13,7 @@ Histogram problems ask you to find the largest rectangle that can be inscribed i
 The brute force approach: For each bar, expand left and right until you hit a shorter bar. This is O(n) per bar = O(n²) total.
 
 **The Key Insight**:
+
 ```
 For any bar to be the height of a rectangle, it can extend left
 until it hits a shorter bar, and extend right until it hits a shorter bar.
@@ -65,6 +66,7 @@ i=4: height[3]=6 > 2, pop 3
 ```
 
 **Mental Model**: Imagine you're stacking people by height (increasing from bottom). When a short person joins:
+
 1. All taller people in front get their "rightmost extent" (they can't extend past the short person)
 2. Their "leftmost extent" is whoever was behind them in the stack
 3. You calculate each tall person's rectangle as they leave
@@ -132,11 +134,11 @@ Largest rectangle: 5 × 2 = 10 (bars at index 2 and 3)
 
 ## Approach Comparison
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Brute force | O(n²) | O(1) | For each bar, expand left/right |
-| Divide and conquer | O(n log n) | O(log n) | Segment tree or recursion |
-| Monotonic stack | O(n) | O(n) | Optimal solution |
+| Approach           | Time       | Space    | Notes                           |
+| ------------------ | ---------- | -------- | ------------------------------- |
+| Brute force        | O(n²)      | O(1)     | For each bar, expand left/right |
+| Divide and conquer | O(n log n) | O(log n) | Segment tree or recursion       |
+| Monotonic stack    | O(n)       | O(n)     | Optimal solution                |
 
 ---
 
@@ -517,22 +519,22 @@ print(max_area_container(height))  # 49
 
 ## Comparison of Water Problems
 
-| Problem | Bars Used | Calculation |
-|---------|-----------|-------------|
-| Largest Rectangle | Any contiguous | height × width |
-| Container With Water | Any two | min(h1, h2) × distance |
-| Trapping Rain Water | All | Sum of water above each position |
+| Problem              | Bars Used      | Calculation                      |
+| -------------------- | -------------- | -------------------------------- |
+| Largest Rectangle    | Any contiguous | height × width                   |
+| Container With Water | Any two        | min(h1, h2) × distance           |
+| Trapping Rain Water  | All            | Sum of water above each position |
 
 ---
 
 ## Complexity Summary
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Largest Rectangle | O(n) | O(n) |
-| Maximal Rectangle | O(r × c) | O(c) |
-| Trapping Rain Water | O(n) | O(1) with two pointers |
-| Container With Water | O(n) | O(1) |
+| Problem              | Time     | Space                  |
+| -------------------- | -------- | ---------------------- |
+| Largest Rectangle    | O(n)     | O(n)                   |
+| Maximal Rectangle    | O(r × c) | O(c)                   |
+| Trapping Rain Water  | O(n)     | O(1) with two pointers |
+| Container With Water | O(n)     | O(1)                   |
 
 ---
 
@@ -547,14 +549,14 @@ print(max_area_container(height))  # 49
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Largest Rectangle in Histogram | Hard | Core pattern |
-| 2 | Maximal Rectangle | Hard | Histogram per row |
-| 3 | Trapping Rain Water | Hard | Decreasing stack or two pointers |
-| 4 | Container With Most Water | Medium | Two pointers |
-| 5 | Maximal Square | Medium | DP variant |
-| 6 | Largest Rectangle Containing Only 1s | Hard | Same as Maximal Rectangle |
+| #   | Problem                              | Difficulty | Key Concept                      |
+| --- | ------------------------------------ | ---------- | -------------------------------- |
+| 1   | Largest Rectangle in Histogram       | Hard       | Core pattern                     |
+| 2   | Maximal Rectangle                    | Hard       | Histogram per row                |
+| 3   | Trapping Rain Water                  | Hard       | Decreasing stack or two pointers |
+| 4   | Container With Most Water            | Medium     | Two pointers                     |
+| 5   | Maximal Square                       | Medium     | DP variant                       |
+| 6   | Largest Rectangle Containing Only 1s | Hard       | Same as Maximal Rectangle        |
 
 ---
 

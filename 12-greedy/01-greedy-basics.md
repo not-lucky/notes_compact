@@ -5,6 +5,7 @@
 ## Interview Context
 
 Greedy basics test:
+
 1. **Algorithm design**: Can you recognize when greedy applies?
 2. **Proof skills**: Can you argue why greedy gives optimal solution?
 3. **Counter-examples**: Can you identify when greedy fails?
@@ -17,6 +18,7 @@ Greedy basics test:
 **Why Does Greedy Sometimes Work?**
 
 Imagine you're at a buffet with limited plate space. The greedy strategy is: "Take the best thing you see right now." This works if:
+
 1. What's "best" doesn't change based on what you've already taken
 2. Taking the best thing now never blocks you from an even better overall outcome
 
@@ -41,11 +43,13 @@ DP:        Consider A  →  Consider B  →  Consider C
 **When Does "Locally Best = Globally Best"?**
 
 The magic happens when:
+
 1. **No dependencies**: Choosing item X doesn't affect the value of item Y
 2. **Monotonic improvement**: Each greedy choice gets you closer to the goal
 3. **Decomposability**: The optimal solution is made of optimal sub-solutions
 
 Counter-example: Why greedy fails for 0/1 knapsack:
+
 ```
 Items: [(value=60, weight=10), (value=100, weight=20), (value=120, weight=30)]
 Capacity: 50
@@ -71,6 +75,7 @@ This "blocking" is why greedy fails.
 **1. Overlapping Subproblems with Dependencies**
 
 When the value of one choice depends on what you've already chosen:
+
 ```
 Coin change [1, 3, 4], amount = 6
 Greedy: 4 + 1 + 1 = 3 coins
@@ -92,6 +97,7 @@ If you can't sort or prioritize elements by a single criterion that guarantees o
 If reaching node A via path X gives different options than reaching A via path Y, greedy may miss optimal paths.
 
 **Red Flags:**
+
 - "Choose exactly k items" (subset selection often needs DP)
 - "Minimize/maximize while satisfying constraints" (often DP or ILP)
 - "Count all ways" (almost always DP)
@@ -405,24 +411,24 @@ Can the problem be solved greedily?
 
 ## Common Greedy Patterns
 
-| Pattern | Strategy | Examples |
-|---------|----------|----------|
-| **Sorting First** | Sort by key attribute, then iterate | Activity selection, meeting rooms |
-| **Two Pointers** | Greedy matching from both ends | Assign cookies, boats to save people |
-| **Track Reachability** | Maintain what's achievable | Jump game, gas station |
-| **Two Pass** | Forward pass + backward pass | Candy distribution |
-| **Heap-based** | Always process min/max first | Task scheduler, merge k lists |
+| Pattern                | Strategy                            | Examples                             |
+| ---------------------- | ----------------------------------- | ------------------------------------ |
+| **Sorting First**      | Sort by key attribute, then iterate | Activity selection, meeting rooms    |
+| **Two Pointers**       | Greedy matching from both ends      | Assign cookies, boats to save people |
+| **Track Reachability** | Maintain what's achievable          | Jump game, gas station               |
+| **Two Pass**           | Forward pass + backward pass        | Candy distribution                   |
+| **Heap-based**         | Always process min/max first        | Task scheduler, merge k lists        |
 
 ---
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Sort-based greedy | O(n log n) | O(1) | Sorting dominates |
-| Single pass | O(n) | O(1) | Linear scan |
-| Two pass | O(n) | O(n) | Forward + backward |
-| Heap-based | O(n log n) | O(n) | Heap operations |
+| Operation         | Time       | Space | Notes              |
+| ----------------- | ---------- | ----- | ------------------ |
+| Sort-based greedy | O(n log n) | O(1)  | Sorting dominates  |
+| Single pass       | O(n)       | O(1)  | Linear scan        |
+| Two pass          | O(n)       | O(n)  | Forward + backward |
+| Heap-based        | O(n log n) | O(n)  | Heap operations    |
 
 ---
 
@@ -438,13 +444,13 @@ Can the problem be solved greedily?
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Assign Cookies | Easy | Sort both, greedy matching |
-| 2 | Lemonade Change | Easy | Greedy change giving |
-| 3 | Best Time to Buy and Sell Stock II | Medium | Collect all profits |
-| 4 | Boats to Save People | Medium | Two-pointer greedy |
-| 5 | Minimum Number of Arrows to Burst Balloons | Medium | Interval greedy |
+| #   | Problem                                    | Difficulty | Key Insight                |
+| --- | ------------------------------------------ | ---------- | -------------------------- |
+| 1   | Assign Cookies                             | Easy       | Sort both, greedy matching |
+| 2   | Lemonade Change                            | Easy       | Greedy change giving       |
+| 3   | Best Time to Buy and Sell Stock II         | Medium     | Collect all profits        |
+| 4   | Boats to Save People                       | Medium     | Two-pointer greedy         |
+| 5   | Minimum Number of Arrows to Burst Balloons | Medium     | Interval greedy            |
 
 ---
 

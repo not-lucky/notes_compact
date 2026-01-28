@@ -32,6 +32,7 @@ K=2 closest: B and A (smallest distances)
 **Why Use MAX Heap (Not Min)?**
 
 Same reasoning as Top-K Smallest:
+
 - We want the k CLOSEST (smallest distance)
 - We need to EVICT the furthest candidate when we find a closer one
 - MAX heap gives O(1) access to the furthest in our candidate set
@@ -50,6 +51,7 @@ Final: B and D are k closest
 **Why Skip the Square Root?**
 
 Square root is:
+
 1. Computationally expensive
 2. Introduces floating-point errors
 3. UNNECESSARY for comparisons!
@@ -75,6 +77,7 @@ Imagine a lifeguard at the origin who needs to rescue k swimmers. They can only 
 **The Heap Stores Negated Distances**
 
 Python heapq is min heap. For max heap behavior:
+
 ```python
 # Store (-distance, point)
 # Min of -distance = Max of distance
@@ -110,6 +113,7 @@ return sorted_points[:k]
 **3. Points Are Already Sorted by Distance**
 
 If input is pre-sorted by distance:
+
 ```python
 # Just slice
 return points[:k]
@@ -118,6 +122,7 @@ return points[:k]
 **4. Need Exact Distances (Not Just Ranking)**
 
 If you need actual distance values:
+
 ```python
 # Can't skip sqrt if you need the actual number
 actual_distance = math.sqrt(x**2 + y**2)
@@ -126,6 +131,7 @@ actual_distance = math.sqrt(x**2 + y**2)
 **5. Points in Special Structures (KD-Tree Available)**
 
 For repeated queries on same point set:
+
 ```python
 # KD-tree gives O(k log n) per query after O(n log n) build
 # Better if you'll do many queries
@@ -135,6 +141,7 @@ distances, indices = tree.query([0, 0], k=k)
 ```
 
 **Red Flags:**
+
 - "K is 1" → Use min()
 - "K equals n" → Return all points
 - "Multiple queries on same points" → Consider KD-tree
@@ -325,13 +332,13 @@ def k_closest_quickselect(points: list[list[int]], k: int) -> list[list[int]]:
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Max Heap K | O(n log k) | O(k) | Best for streaming |
-| nsmallest | O(n log k) | O(k) | Cleanest code |
-| Min Heap all | O(n + k log n) | O(n) | Simple but more space |
-| Sort | O(n log n) | O(n) | Simple, not optimal |
-| QuickSelect | O(n) avg | O(1) | Best average, but modifies input |
+| Approach     | Time           | Space | Notes                            |
+| ------------ | -------------- | ----- | -------------------------------- |
+| Max Heap K   | O(n log k)     | O(k)  | Best for streaming               |
+| nsmallest    | O(n log k)     | O(k)  | Cleanest code                    |
+| Min Heap all | O(n + k log n) | O(n)  | Simple but more space            |
+| Sort         | O(n log n)     | O(n)  | Simple, not optimal              |
+| QuickSelect  | O(n) avg       | O(1)  | Best average, but modifies input |
 
 ---
 
@@ -525,13 +532,13 @@ return sorted(heap, key=lambda x: -x[0])
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | K Closest Points to Origin | Medium | Core problem |
-| 2 | Find K Closest Elements | Medium | Sorted array, binary search |
-| 3 | Find K Pairs with Smallest Sums | Medium | Two arrays |
-| 4 | Kth Smallest Element in Sorted Matrix | Medium | Matrix as k lists |
-| 5 | Closest Binary Search Tree Value II | Hard | BST, k closest |
+| #   | Problem                               | Difficulty | Key Variation               |
+| --- | ------------------------------------- | ---------- | --------------------------- |
+| 1   | K Closest Points to Origin            | Medium     | Core problem                |
+| 2   | Find K Closest Elements               | Medium     | Sorted array, binary search |
+| 3   | Find K Pairs with Smallest Sums       | Medium     | Two arrays                  |
+| 4   | Kth Smallest Element in Sorted Matrix | Medium     | Matrix as k lists           |
+| 5   | Closest Binary Search Tree Value II   | Hard       | BST, k closest              |
 
 ---
 
@@ -549,13 +556,13 @@ return sorted(heap, key=lambda x: -x[0])
 
 You've now covered the essential heap patterns:
 
-| Pattern | Key Insight |
-|---------|-------------|
-| Top-K | Opposite heap type, size K |
-| Kth element | Heap root is answer |
+| Pattern        | Key Insight                  |
+| -------------- | ---------------------------- |
+| Top-K          | Opposite heap type, size K   |
+| Kth element    | Heap root is answer          |
 | Merge K sorted | Min heap tracks K candidates |
-| Median stream | Two heaps split at median |
-| Task scheduler | Max heap + cooldown queue |
-| K closest | Max heap, squared distance |
+| Median stream  | Two heaps split at median    |
+| Task scheduler | Max heap + cooldown queue    |
+| K closest      | Max heap, squared distance   |
 
 These patterns cover 90% of heap interview questions at FANG+ companies.

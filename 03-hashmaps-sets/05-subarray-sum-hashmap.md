@@ -22,12 +22,14 @@ The key insight: `sum(i, j) = prefix[j] - prefix[i-1] = k` means `prefix[i-1] = 
 **The Key Insight: Prefix Sums Turn Ranges Into Differences**
 
 Without prefix sums:
+
 ```
 "What's the sum of elements from index 2 to 5?"
 → Add nums[2] + nums[3] + nums[4] + nums[5] → O(n) each time
 ```
 
 With prefix sums (O(n) preprocessing):
+
 ```
 prefix = [0, a, a+b, a+b+c, ...]
 sum(2, 5) = prefix[6] - prefix[2] → O(1)
@@ -36,6 +38,7 @@ sum(2, 5) = prefix[6] - prefix[2] → O(1)
 **The Hashmap Insight: Don't Search—Remember**
 
 Naive approach for "find subarray with sum k":
+
 ```
 For each end position j:
   For each start position i:
@@ -43,6 +46,7 @@ For each end position j:
 ```
 
 Hashmap insight:
+
 ```
 sum(i, j) = k
 → prefix[j] - prefix[i-1] = k
@@ -55,6 +59,7 @@ At position j: "Have I seen prefix_sum = (current_prefix - k) before?"
 **Mental Model: The Bank Account**
 
 Think of prefix sums as a running bank balance:
+
 ```
 Deposits: [+3, +1, -2, +4]
 Balance:  [3, 4, 2, 6]
@@ -69,6 +74,7 @@ Balance:  [3, 4, 2, 6]
 **Why {0: 1} Is Crucial**
 
 The dummy prefix represents "before the array started":
+
 ```
 nums = [3], k = 3
 
@@ -86,6 +92,7 @@ It lets you find subarrays that START at index 0.
 **Why Mod Works for Divisibility**
 
 If two prefix sums have the same remainder when divided by k:
+
 ```
 prefix[i] = a × k + r
 prefix[j] = b × k + r
@@ -102,6 +109,7 @@ So: group by remainder, pairs within same group form valid subarrays.
 **1. All Numbers Are Positive → Use Sliding Window**
 
 For positive-only arrays with sum >= k:
+
 ```python
 # Sliding window: O(1) space
 # Prefix + hashmap: O(n) space
@@ -112,6 +120,7 @@ Sliding window works because sum only increases when expanding, only decreases w
 **2. You Need the Actual Subarray, Not Just Count**
 
 Hashmap stores counts, not positions:
+
 ```python
 # "Find all subarrays with sum k" → Need to store indices, not just counts
 # This changes the data structure significantly
@@ -122,12 +131,14 @@ For returning actual subarrays, track list of indices per prefix sum.
 **3. 2D or Multi-dimensional Arrays**
 
 Prefix sum + hashmap is 1D. For 2D:
+
 - Fix two rows, reduce to 1D problem
 - Or use 2D prefix sum matrix
 
 **4. "At Least K" or "At Most K" Instead of "Exactly K"**
 
 Exact match uses hashmap; range conditions use:
+
 - Sliding window (for positive numbers)
 - Two-pointer approaches
 - Binary search on sorted prefix array
@@ -135,10 +146,12 @@ Exact match uses hashmap; range conditions use:
 **5. Streaming Data with Bounded Memory**
 
 Hashmap grows with unique prefix sums. For streams:
+
 - Sliding window if applicable
 - Approximate algorithms otherwise
 
 **Red Flags:**
+
 - "All positive integers" + "sum >= k" → Sliding window
 - "Return all subarrays" → Store indices, not counts
 - "Sum in range [a, b]" → Different approach needed
@@ -149,6 +162,7 @@ Hashmap grows with unique prefix sums. For streams:
 ## Core Concept
 
 For any subarray `[i, j]`:
+
 - Sum = `prefix[j] - prefix[i-1]`
 - If we want sum = k, then `prefix[j] - k = prefix[i-1]`
 
@@ -531,13 +545,13 @@ def has_zero_sum_subarray(nums: list[int]) -> bool:
 
 ## When to Use What
 
-| Problem Type | Technique | Space |
-|--------------|-----------|-------|
-| Sum = K (with negatives) | Prefix sum + HashMap | O(n) |
-| Sum >= K (positive only) | Sliding window | O(1) |
-| Sum divisible by K | Prefix mod + HashMap | O(k) |
-| Max length with sum K | First occurrence only | O(n) |
-| Count subarrays with sum K | Count all occurrences | O(n) |
+| Problem Type               | Technique             | Space |
+| -------------------------- | --------------------- | ----- |
+| Sum = K (with negatives)   | Prefix sum + HashMap  | O(n)  |
+| Sum >= K (positive only)   | Sliding window        | O(1)  |
+| Sum divisible by K         | Prefix mod + HashMap  | O(k)  |
+| Max length with sum K      | First occurrence only | O(n)  |
+| Count subarrays with sum K | Count all occurrences | O(n)  |
 
 ---
 
@@ -580,16 +594,16 @@ Use Python (no overflow) or be careful in other languages
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | Subarray Sum Equals K | Medium | Count with hashmap |
-| 2 | Subarray Sums Divisible by K | Medium | Mod prefix sum |
-| 3 | Maximum Size Subarray Sum Equals K | Medium | First occurrence |
-| 4 | Contiguous Array | Medium | 0→-1 transform |
-| 5 | Continuous Subarray Sum | Medium | Size >= 2 constraint |
-| 6 | Binary Subarrays With Sum | Medium | Binary array |
-| 7 | Count Nice Subarrays | Medium | Odd count transform |
-| 8 | Minimum Size Subarray Sum | Medium | Sliding window (positive) |
+| #   | Problem                            | Difficulty | Variant                   |
+| --- | ---------------------------------- | ---------- | ------------------------- |
+| 1   | Subarray Sum Equals K              | Medium     | Count with hashmap        |
+| 2   | Subarray Sums Divisible by K       | Medium     | Mod prefix sum            |
+| 3   | Maximum Size Subarray Sum Equals K | Medium     | First occurrence          |
+| 4   | Contiguous Array                   | Medium     | 0→-1 transform            |
+| 5   | Continuous Subarray Sum            | Medium     | Size >= 2 constraint      |
+| 6   | Binary Subarrays With Sum          | Medium     | Binary array              |
+| 7   | Count Nice Subarrays               | Medium     | Odd count transform       |
+| 8   | Minimum Size Subarray Sum          | Medium     | Sliding window (positive) |
 
 ---
 

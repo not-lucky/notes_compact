@@ -1,9 +1,11 @@
 # Solutions: Merge Operations
 
 ## 1. Merge Two Sorted Lists
+
 **Problem Statement**: You are given the heads of two sorted linked lists `list1` and `list2`. Merge the two lists in a one sorted list. The list should be made by splicing together the nodes of the first two lists. Return the head of the merged linked list.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `list1 = [1,2,4], list2 = [1,3,4]` -> `[1,1,2,3,4,4]`
 - **Example 2**: `list1 = [], list2 = []` -> `[]`
 - **Example 3**: `list1 = [], list2 = [0]` -> `[0]`
@@ -11,6 +13,7 @@
 - **Edge Case**: Lists contain duplicate values.
 
 ### Optimal Python Solution
+
 ```python
 def mergeTwoLists(list1: ListNode, list2: ListNode) -> ListNode:
     """
@@ -37,18 +40,22 @@ def mergeTwoLists(list1: ListNode, list2: ListNode) -> ListNode:
 ```
 
 ### Explanation
+
 We use a `dummy` node to avoid handling the head as a special case. A `current` pointer tracks the end of our new merged list. We iterate as long as both lists have nodes, always picking the node with the smaller value. Once one list is empty, we simply point `current.next` to the remaining part of the other list.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n + m), where `n` and `m` are the lengths of the two lists. We visit each node exactly once.
 - **Space Complexity**: O(1). We are only rearranging pointers, not creating new nodes.
 
 ---
 
 ## 2. Merge k Sorted Lists
+
 **Problem Statement**: You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `[[1,4,5],[1,3,4],[2,6]]` -> `[1,1,2,3,4,4,5,6]`
 - **Example 2**: `[]` -> `[]`
 - **Example 3**: `[[]]` -> `[]`
@@ -56,6 +63,7 @@ We use a `dummy` node to avoid handling the head as a special case. A `current` 
 - **Edge Case**: `k` is very large.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -87,24 +95,29 @@ def mergeKLists(lists: list[ListNode]) -> ListNode:
 ```
 
 ### Explanation
+
 We maintain a min-heap of size `k`, containing the current head of each of the `k` lists. In each step, we extract the smallest element from the heap, attach it to our result list, and then push the next node from that same list into the heap. This ensures we always have the next potential smallest element available in `O(log k)` time.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(N log k), where `N` is the total number of nodes across all lists and `k` is the number of lists.
 - **Space Complexity**: O(k) for the priority queue.
 
 ---
 
 ## 3. Sort List
+
 **Problem Statement**: Given the `head` of a linked list, return the list after sorting it in ascending order. (Implement in O(n log n) time and O(1) space).
 
 ### Examples & Edge Cases
+
 - **Example 1**: `head = [4,2,1,3]` -> `[1,2,3,4]`
 - **Example 2**: `head = [-1,5,3,4,0]` -> `[-1,0,3,4,5]`
 - **Edge Case**: Empty list.
 - **Edge Case**: Already sorted list.
 
 ### Optimal Python Solution
+
 ```python
 def sortList(head: ListNode) -> ListNode:
     """
@@ -148,24 +161,29 @@ def merge(l1, l2):
 ```
 
 ### Explanation
+
 Merge Sort is ideal for linked lists because it doesn't require random access. We recursively split the list into two halves using the fast-slow pointer technique until we have single-node lists, then merge them back together in sorted order.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n log n). Standard merge sort complexity.
 - **Space Complexity**: O(log n) due to the recursive call stack. (O(1) is possible using a bottom-up iterative approach).
 
 ---
 
 ## 4. Add Two Numbers
+
 **Problem Statement**: You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `l1 = [2,4,3], l2 = [5,6,4]` -> `[7,0,8]` (342 + 465 = 807)
 - **Example 2**: `l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]` -> `[8,9,9,9,0,0,0,1]`
 - **Edge Case**: Lists of different lengths.
 - **Edge Case**: A carry at the very end (e.g., 5 + 5 = 0 -> 1).
 
 ### Optimal Python Solution
+
 ```python
 def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
     dummy = ListNode(0)
@@ -194,21 +212,26 @@ def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
 ```
 
 ### Explanation
+
 We iterate through both lists simultaneously, adding the values along with any carry from the previous step. If one list is shorter, we treat its missing values as 0. We continue until both lists are finished and any final carry has been processed.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(max(n, m)), where `n` and `m` are the lengths of the two lists.
 - **Space Complexity**: O(max(n, m)) for the new result list.
 
 ---
 
 ## 5. Add Two Numbers II
+
 **Problem Statement**: Add two numbers where the most significant digit comes first.
 
 ### Examples & Edge Cases
+
 - **Example**: `[7,2,4,3] + [5,6,4] = [7,8,0,7]`
 
 ### Optimal Python Solution
+
 ```python
 def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
     # 1. Reverse lists
@@ -237,21 +260,26 @@ def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
 ```
 
 ### Explanation
+
 Since we cannot easily add numbers from left to right (due to carry), we reverse the input lists, perform the standard addition, and then reverse the result back.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n + m).
 - **Space Complexity**: O(max(n, m)).
 
 ---
 
 ## 6. Insertion Sort List
+
 **Problem Statement**: Sort a linked list using insertion sort.
 
 ### Examples & Edge Cases
+
 - **Example**: `[4,2,1,3]` -> `[1,2,3,4]`
 
 ### Optimal Python Solution
+
 ```python
 def insertionSortList(head: ListNode) -> ListNode:
     """
@@ -280,8 +308,10 @@ def insertionSortList(head: ListNode) -> ListNode:
 ```
 
 ### Explanation
+
 We create a new sorted list (starting with a `dummy` node). For each node in the original list, we find its correct position in the new sorted list by traversing from the `dummy` head, and then we insert it.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n²). In the worst case (reverse sorted), we do O(n) work for each of the `n` nodes.
 - **Space Complexity**: O(1). We reuse the existing nodes.

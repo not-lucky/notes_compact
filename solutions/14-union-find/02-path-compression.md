@@ -1,10 +1,12 @@
 # Path Compression Solutions
 
 ## 1. Longest Consecutive Sequence
+
 **Problem Statement**:
 Given an unsorted array of integers `nums`, return the length of the longest consecutive elements sequence. The algorithm must run in $O(n)$ time.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `nums = [100, 4, 200, 1, 3, 2]` → `4` (The sequence is `[1, 2, 3, 4]`).
 - **Example 2**: `nums = [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]` → `9`.
 - **Edge Case**: Empty array → `0`.
@@ -12,6 +14,7 @@ Given an unsorted array of integers `nums`, return the length of the longest con
 - **Edge Case**: Duplicate elements → Should only count unique elements once.
 
 **Optimal Python Solution**:
+
 ```python
 def longestConsecutive(nums: list[int]) -> int:
     if not nums:
@@ -44,6 +47,7 @@ def longestConsecutive(nums: list[int]) -> int:
 ```
 
 **Explanation**:
+
 1. We use a hash set to store unique numbers for $O(1)$ lookups.
 2. We use Union-Find where each number points to itself initially.
 3. For each number `num` in the set, if `num + 1` also exists, we `union` them.
@@ -51,22 +55,26 @@ def longestConsecutive(nums: list[int]) -> int:
 5. We track the size of each component (consecutive sequence) and return the maximum size.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n \alpha(n))$, where $n$ is the number of elements. Each number is processed once, and union/find operations are nearly constant.
 - **Space Complexity**: $O(n)$ to store the set and Union-Find structures.
 
 ---
 
 ## 2. Satisfiability of Equality Equations
+
 **Problem Statement**:
 Given an array of strings `equations` that represent relationships between variables where each string is of length 4 and takes one of two forms: `"a==b"` or `"a!=b"`. Return `True` if it is possible to assign integers to variable names so as to satisfy all the given equations, or `False` otherwise.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `["a==b","b!=a"]` → `False`.
 - **Example 2**: `["b==a","a==b"]` → `True`.
 - **Edge Case**: Self-contradiction `["a!=a"]` → `False`.
 - **Edge Case**: Transitive contradiction `["a==b","b==c","a!=c"]` → `False`.
 
 **Optimal Python Solution**:
+
 ```python
 def equationsPossible(equations: list[str]) -> bool:
     parent = list(range(26))
@@ -97,26 +105,31 @@ def equationsPossible(equations: list[str]) -> bool:
 ```
 
 **Explanation**:
+
 1. Equality is an equivalence relation (reflexive, symmetric, transitive), which maps perfectly to Union-Find.
 2. In the first pass, we `union` variables that are explicitly equal.
 3. In the second pass, we check the `"!= "` equations. If two variables are supposed to be unequal but they share the same root in our Union-Find structure, it means they are transitively equal, causing a contradiction.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n \alpha(26)) \approx O(n)$, where $n$ is the number of equations.
 - **Space Complexity**: $O(26) = O(1)$ for the parent array of fixed size.
 
 ---
 
 ## 3. Number of Operations to Make Network Connected
+
 **Problem Statement**:
 There are `n` computers and a list of `connections`. You can extract a cable from one pair of connected computers and connect another pair of disconnected computers. Find the minimum number of operations to make all computers connected. If it's impossible, return -1.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `n = 4, connections = [[0,1],[0,2],[1,2]]` → `1`.
 - **Example 2**: `n = 6, connections = [[0,1],[0,2],[0,3],[1,2],[1,3]]` → `2`.
 - **Edge Case**: `len(connections) < n - 1` → `-1` (Not enough cables).
 
 **Optimal Python Solution**:
+
 ```python
 def makeConnected(n: int, connections: list[list[int]]) -> int:
     # A graph with n nodes needs at least n-1 edges to be connected
@@ -156,28 +169,33 @@ def makeConnected(n: int, connections: list[list[int]]) -> int:
 ```
 
 **Explanation**:
+
 1. To connect `n` nodes, we need at least `n-1` edges. If `len(connections) < n - 1`, we return `-1`.
 2. We use Union-Find to count the number of connected components.
 3. Every time we perform a successful `union`, the number of components decreases.
 4. If we have `k` components, we need exactly `k-1` additional edges to connect them all. Since we already verified we have enough edges total, we can just move redundant edges to connect the components.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(E \alpha(n))$, where $E$ is the number of connections.
 - **Space Complexity**: $O(n)$ for the parent array.
 
 ---
 
 ## 4. Smallest String With Swaps
+
 **Problem Statement**:
 Given a string `s` and an array of `pairs` where `pairs[i] = [a, b]` denotes that you can swap the characters at indices `a` and `b`. You can apply the swap any number of times. Return the lexicographically smallest string that `s` can be changed to.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `s = "dcab", pairs = [[0,3],[1,2]]` → `"bacd"`.
 - **Example 2**: `s = "dcab", pairs = [[0,3],[1,2],[0,2]]` → `"abcd"`.
 - **Edge Case**: No pairs → Return original string.
 - **Edge Case**: All characters can be swapped → Return sorted string.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import defaultdict
 
@@ -224,28 +242,33 @@ def smallestStringWithSwaps(s: str, pairs: list[list[int]]) -> str:
 ```
 
 **Explanation**:
+
 1. If we can swap index `a` with `b` and `b` with `c`, we can effectively move any character among positions `a`, `b`, and `c` to any other position within that set.
 2. This defines a connected component of indices. Within each component, we can sort the characters to get the lexicographically smallest result.
 3. We use Union-Find to group indices.
 4. For each group, we extract the characters, sort them, and place them back into the original indices in sorted order.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(P \alpha(n) + n \log n)$, where $P$ is the number of pairs and $n$ is string length. Sorting characters in groups takes $O(n \log n)$ total.
 - **Space Complexity**: $O(n)$ to store groups and parent array.
 
 ---
 
 ## 5. Regions Cut By Slashes
+
 **Problem Statement**:
 An `n x n` grid is composed of `1 x 1` squares where each square contains a '/', '\', or blank space. These characters divide the square into regions. Return the total number of regions.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `grid = [" /","/ "]` → `2`.
 - **Example 2**: `grid = [" /","  "]` → `1`.
 - **Edge Case**: `n = 1`, `grid = ["/"]` → `2`.
 - **Edge Case**: All blank → `1`.
 
 **Optimal Python Solution**:
+
 ```python
 def regionsBySlashes(grid: list[str]) -> int:
     n = len(grid)
@@ -302,6 +325,7 @@ def regionsBySlashes(grid: list[str]) -> int:
 ```
 
 **Explanation**:
+
 1. We divide each `1x1` square into 4 small triangles (Top, Right, Bottom, Left).
 2. A blank space connects all 4 triangles.
 3. A `/` connects (Top, Left) and (Bottom, Right).
@@ -310,5 +334,6 @@ def regionsBySlashes(grid: list[str]) -> int:
 6. Each `union` operation reduces the total number of regions. We start with $4n^2$ regions and decrement for every successful merge.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n^2 \alpha(n^2))$, as we process each cell once.
 - **Space Complexity**: $O(n^2)$ for the parent array of size $4n^2$.

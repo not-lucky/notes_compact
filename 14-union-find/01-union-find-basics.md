@@ -15,6 +15,7 @@ Union-Find is a fundamental data structure for managing disjoint sets. It appear
 Imagine a social network where people form clubs. Initially, everyone is in their own private club (a club of one). When two people become friends, their clubs merge—everyone in both clubs is now in the same combined club.
 
 The key operations are:
+
 - **Find**: "Which club is this person in?" (Find the club representative)
 - **Union**: "Make these two people's clubs merge into one"
 
@@ -97,6 +98,7 @@ For one-time static connectivity queries, DFS/BFS might be cleaner:
 **4. When Edges Can Be Removed**
 
 Standard Union-Find only supports adding connections. You can't efficiently "un-merge" two sets. For dynamic graphs with both additions and deletions, consider:
+
 - Link-Cut Trees (O(log n) per operation)
 - Rebuild periodically
 
@@ -332,6 +334,7 @@ def findCircleNum_v2(isConnected: list[list[int]]) -> int:
 **LeetCode 261**: Given `n` nodes labeled from `0` to `n-1` and a list of undirected edges, check if these edges form a valid tree.
 
 A valid tree has:
+
 1. Exactly `n-1` edges
 2. All nodes connected (one component)
 3. No cycles
@@ -402,14 +405,14 @@ Why? With n-1 edges:
 
 ## Complexity Analysis
 
-| Implementation | Find | Union | Connected | Space |
-|----------------|------|-------|-----------|-------|
-| Naive | O(n) | O(n) | O(n) | O(n) |
-| With path compression | O(log n)* | O(log n)* | O(log n)* | O(n) |
-| With union by rank | O(log n) | O(log n) | O(log n) | O(n) |
-| Both optimizations | O(α(n)) | O(α(n)) | O(α(n)) | O(n) |
+| Implementation        | Find       | Union      | Connected  | Space |
+| --------------------- | ---------- | ---------- | ---------- | ----- |
+| Naive                 | O(n)       | O(n)       | O(n)       | O(n)  |
+| With path compression | O(log n)\* | O(log n)\* | O(log n)\* | O(n)  |
+| With union by rank    | O(log n)   | O(log n)   | O(log n)   | O(n)  |
+| Both optimizations    | O(α(n))    | O(α(n))    | O(α(n))    | O(n)  |
 
-*Amortized over many operations
+\*Amortized over many operations
 
 ---
 
@@ -487,13 +490,13 @@ print(uf.find("alice@email.com") == uf.find("alice@work.com"))  # True
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Number of Provinces | Medium | Count components |
-| 2 | Graph Valid Tree | Medium | Cycle detection + connectivity |
-| 3 | Number of Connected Components | Medium | Basic counting |
-| 4 | Earliest Moment When Everyone Becomes Friends | Medium | Process edges in order |
-| 5 | Number of Islands (Union-Find approach) | Medium | Grid as graph |
+| #   | Problem                                       | Difficulty | Key Concept                    |
+| --- | --------------------------------------------- | ---------- | ------------------------------ |
+| 1   | Number of Provinces                           | Medium     | Count components               |
+| 2   | Graph Valid Tree                              | Medium     | Cycle detection + connectivity |
+| 3   | Number of Connected Components                | Medium     | Basic counting                 |
+| 4   | Earliest Moment When Everyone Becomes Friends | Medium     | Process edges in order         |
+| 5   | Number of Islands (Union-Find approach)       | Medium     | Grid as graph                  |
 
 ---
 

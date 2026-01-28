@@ -1,9 +1,11 @@
 # Solutions: Word Break
 
 ## 1. Word Break
+
 **Problem:** Can string $s$ be segmented into dictionary words?
 
 ### Optimal Python Solution
+
 ```python
 def word_break(s: str, wordDict: list[str]) -> bool:
     # State: dp[i] = can s[:i] be segmented
@@ -23,15 +25,18 @@ def word_break(s: str, wordDict: list[str]) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times L \times k)$ where $n$ is string length, $L$ is max word length, and $k$ is string slicing cost.
 - **Space:** $O(n + \text{dictionary\_size})$
 
 ---
 
 ## 2. Word Break II
+
 **Problem:** Return all valid segmentations.
 
 ### Optimal Python Solution
+
 ```python
 def word_break_ii(s: str, wordDict: list[str]) -> list[str]:
     word_set = set(wordDict)
@@ -54,15 +59,18 @@ def word_break_ii(s: str, wordDict: list[str]) -> list[str]:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(2^n)$ in worst case (exponential number of sentences).
 - **Space:** $O(2^n)$ for storing results.
 
 ---
 
 ## 3. Extra Characters in String
+
 **Problem:** Minimum leftover characters after segmenting $s$ into dictionary words.
 
 ### Optimal Python Solution
+
 ```python
 def min_extra_char(s: str, dictionary: list[str]) -> int:
     word_set = set(dictionary)
@@ -81,9 +89,11 @@ def min_extra_char(s: str, dictionary: list[str]) -> int:
 ---
 
 ## 4. Concatenated Words
+
 **Problem:** Find all words in a list that are formed by concatenating at least two other words from the same list.
 
 ### Optimal Python Solution
+
 ```python
 def find_all_concatenated_words_in_a_dict(words: list[str]) -> list[str]:
     word_set = set(words)
@@ -113,14 +123,17 @@ def find_all_concatenated_words_in_a_dict(words: list[str]) -> list[str]:
 ```
 
 ### Explanation
+
 1.  **Word Break Variant**: For each word, we check if it can be broken into at least two other words.
 2.  **Logic**: We split the word into `prefix` and `suffix`. If `prefix` is in the set AND (`suffix` is in the set OR `suffix` itself can be formed from other words), then the word is concatenated.
 3.  **Memoization**: We cache results for suffixes to avoid redundant computations across different words.
 
 ### Complexity Analysis
+
 - **Time:** $O(N \times L^2)$ - Where $N$ is number of words and $L$ is max length.
 - **Space:** $O(N \times L)$ - For the set and memoization cache.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$ - Nested loops + string slicing.
 - **Space:** $O(n + \text{dictionary\_size})$

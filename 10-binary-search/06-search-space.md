@@ -5,6 +5,7 @@
 ## Interview Context
 
 "Binary search on answer" is a powerful pattern for optimization problems:
+
 1. **Hidden binary search**: Not obvious that binary search applies
 2. **FANG+ favorite**: Commonly asked at top companies
 3. **Feasibility checking**: Transform optimization into decision problem
@@ -63,6 +64,7 @@ This monotonic property lets us binary search!
 **Mental Model: The Goldilocks Zone**
 
 Imagine adjusting a dial (the answer):
+
 - Too low: constraints not satisfied
 - Too high: works, but not optimal
 - Just right: the minimum value that works
@@ -121,6 +123,7 @@ Not monotonic! Binary search won't work.
 **2. Discrete Answers with Gaps**
 
 If valid answers aren't contiguous, binary search may miss them:
+
 ```
 Valid answers: {1, 5, 10, 15}  (not all integers in range)
 Binary search assumes continuous search space.
@@ -129,17 +132,20 @@ Binary search assumes continuous search space.
 **3. Expensive Feasibility Check**
 
 If `is_feasible(X)` takes O(n²) time:
+
 - Total time = O(log(range) × n²)
 - Might be worse than brute force O(n × range)
 
 **4. Small Answer Range**
 
 If range is only 10-20 values:
+
 - Linear scan is O(range)
 - Binary search is O(log(range)) — marginal improvement
 - Linear scan is simpler to implement
 
 **Red Flags:**
+
 - "Find exact value X where..." → May not be monotonic
 - "Which of these specific options..." → Discrete choices, not range
 - "Minimize function with multiple local minima" → Ternary search or calculus
@@ -226,6 +232,7 @@ def min_eating_speed(piles: list[int], h: int) -> int:
 ```
 
 **Why this works:**
+
 - If Koko can finish with speed `k`, she can finish with any speed `> k`
 - Monotonic property: [False, False, ..., True, True, True]
 - Binary search finds the first True
@@ -452,12 +459,12 @@ while left < right:
 
 ## Complexity Analysis
 
-| Problem | Binary Search Range | Feasibility Check | Total Time |
-|---------|-------------------|-------------------|------------|
-| Koko Bananas | O(log M) | O(n) | O(n log M) |
-| Ship Packages | O(log S) | O(n) | O(n log S) |
-| Split Array | O(log S) | O(n) | O(n log S) |
-| Gas Stations | O(log D / ε) | O(n) | O(n log(D/ε)) |
+| Problem       | Binary Search Range | Feasibility Check | Total Time    |
+| ------------- | ------------------- | ----------------- | ------------- |
+| Koko Bananas  | O(log M)            | O(n)              | O(n log M)    |
+| Ship Packages | O(log S)            | O(n)              | O(n log S)    |
+| Split Array   | O(log S)            | O(n)              | O(n log S)    |
+| Gas Stations  | O(log D / ε)        | O(n)              | O(n log(D/ε)) |
 
 Where M = max element, S = sum of elements, D = distance range, ε = precision.
 
@@ -508,16 +515,16 @@ mid = left + (right - left + 1) // 2
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Koko Eating Bananas | Medium | Min speed feasibility |
-| 2 | Capacity To Ship Packages | Medium | Min capacity feasibility |
-| 3 | Split Array Largest Sum | Hard | Min max-sum feasibility |
-| 4 | Minimize Max Distance to Gas Station | Hard | Float binary search |
-| 5 | Magnetic Force Between Two Balls | Medium | Max min-distance |
-| 6 | Find the Smallest Divisor | Medium | Min divisor feasibility |
-| 7 | Minimum Time to Complete Trips | Medium | Min time feasibility |
-| 8 | Maximum Candies Allocated to K Children | Medium | Max candies per child |
+| #   | Problem                                 | Difficulty | Key Insight              |
+| --- | --------------------------------------- | ---------- | ------------------------ |
+| 1   | Koko Eating Bananas                     | Medium     | Min speed feasibility    |
+| 2   | Capacity To Ship Packages               | Medium     | Min capacity feasibility |
+| 3   | Split Array Largest Sum                 | Hard       | Min max-sum feasibility  |
+| 4   | Minimize Max Distance to Gas Station    | Hard       | Float binary search      |
+| 5   | Magnetic Force Between Two Balls        | Medium     | Max min-distance         |
+| 6   | Find the Smallest Divisor               | Medium     | Min divisor feasibility  |
+| 7   | Minimum Time to Complete Trips          | Medium     | Min time feasibility     |
+| 8   | Maximum Candies Allocated to K Children | Medium     | Max candies per child    |
 
 ---
 

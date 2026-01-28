@@ -1,15 +1,18 @@
 # Solutions: Copy List with Random Pointer
 
 ## 1. Copy List with Random Pointer
+
 **Problem Statement**: A linked list of length `n` is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`.
 Construct a deep copy of the list. The deep copy should consist of exactly `n` brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list should point to nodes in the original list.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `head = [[7,null],[13,0],[11,4],[10,2],[1,0]]`.
 - **Edge Case**: Empty list.
 - **Edge Case**: `random` pointers pointing to itself or to nodes already processed.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
@@ -55,23 +58,28 @@ def copyRandomList(head: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 The interleaving technique is the most space-efficient way to map old nodes to new nodes. By placing each copy immediately after its original node (`A -> A'`), we can find the copy of any original node `X` by simply looking at `X.next`. This allows us to set `random` pointers easily: the copy of `curr.random` is `curr.random.next`. Finally, we restore the original list and extract the copy list.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). We make three linear passes over the list.
 - **Space Complexity**: O(1). We don't use any extra data structures (like a hashmap) to store the mapping.
 
 ---
 
 ## 2. Clone Graph
+
 **Problem Statement**: Given a reference of a node in a connected undirected graph. Return a deep copy (clone) of the graph. Each node in the graph contains a value (int) and a list (List[Node]) of its neighbors.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `adjList = [[2,4],[1,3],[2,4],[1,3]]` -> `[[2,4],[1,3],[2,4],[1,3]]`
 - **Edge Case**: Empty graph.
 - **Edge Case**: Graph with cycles.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, val = 0, neighbors = None):
@@ -105,18 +113,22 @@ def cloneGraph(node: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 We use a dictionary to keep track of nodes we've already cloned. When we visit a node, we first create its clone. Then, for each of its neighbors, we recursively call the cloning function. If a neighbor has already been cloned, we simply retrieve the clone from our dictionary. This handles cycles and ensures each node is only cloned once.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(V + E), where `V` is the number of vertices and `E` is the number of edges. We visit each node and each edge once.
 - **Space Complexity**: O(V). The dictionary stores a mapping for every node, and the recursion stack can go up to `V` deep.
 
 ---
 
 ## 3. Clone Binary Tree with Random Pointer
+
 **Problem Statement**: Given a binary tree where each node has an additional `random` pointer. Return a deep copy of the tree.
 
 ### Optimal Python Solution
+
 ```python
 def copyRandomBinaryTree(root: 'Node') -> 'Node':
     """
@@ -152,8 +164,10 @@ def copyRandomBinaryTree(root: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 Since tree nodes don't easily allow interleaving (like linked lists), a two-pass approach with a HashMap is the most straightforward. First, we traverse the tree (e.g., using DFS) to create all new nodes and store them in a map. In the second pass, we use the map to set all `left`, `right`, and `random` pointers to their corresponding clones.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). We visit each node twice.
 - **Space Complexity**: O(n). To store the mapping and for the recursion stack.

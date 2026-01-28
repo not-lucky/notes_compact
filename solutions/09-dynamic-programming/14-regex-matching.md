@@ -1,10 +1,12 @@
 # Solutions: Regex Matching
 
 ## 1. Wildcard Matching
+
 **Problem:** Pattern matching with `?` (any char) and `*` (any sequence).
 
 ### Optimal Python Solution
-```python
+
+````python
 def is_match(s: str, p: str) -> bool:
     # State: dp[i][j] = matches s[:i] with p[:j]
     m, n = len(s), len(p)
@@ -28,6 +30,7 @@ def is_match(s: str, p: str) -> bool:
                 dp[i][j] = dp[i-1][j-1]
     return dp[m][n]
 
+```
 ---
 
 ## 3. Valid Parenthesis String
@@ -53,9 +56,10 @@ def check_valid_string(s: str) -> bool:
         if low < 0: low = 0 # Cannot have negative open count
 
     return low == 0
-```
+````
 
 ### Explanation
+
 1.  **Flexible Balance**: Since `*` can be three things, we don't have a single balance count. Instead, we track a **range** of possible open bracket counts.
 2.  **`low`**: Minimum possible open brackets (treating `*` as `)` or empty).
 3.  **`high`**: Maximum possible open brackets (treating `*` as `(`).
@@ -65,9 +69,11 @@ def check_valid_string(s: str) -> bool:
     - Finally, if `low == 0`, it's possible to have perfectly balanced brackets.
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(mn)$
@@ -102,6 +108,7 @@ def is_match_regex(s: str, p: str) -> bool:
                 dp[i][j] = dp[i-1][j-1]
     return dp[m][n]
 
+```
 ---
 
 ## 3. Valid Parenthesis String
@@ -127,9 +134,10 @@ def check_valid_string(s: str) -> bool:
         if low < 0: low = 0 # Cannot have negative open count
 
     return low == 0
-```
+````
 
 ### Explanation
+
 1.  **Flexible Balance**: Since `*` can be three things, we don't have a single balance count. Instead, we track a **range** of possible open bracket counts.
 2.  **`low`**: Minimum possible open brackets (treating `*` as `)` or empty).
 3.  **`high`**: Maximum possible open brackets (treating `*` as `(`).
@@ -139,10 +147,13 @@ def check_valid_string(s: str) -> bool:
     - Finally, if `low == 0`, it's possible to have perfectly balanced brackets.
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(mn)$
 - **Space:** $O(mn)$
+```

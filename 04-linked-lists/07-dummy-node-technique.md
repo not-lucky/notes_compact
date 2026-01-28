@@ -11,6 +11,7 @@ A dummy node (sentinel node) is a placeholder node placed before the actual head
 **Why do we need dummy nodes?**
 
 Consider deleting nodes that match a value. Without a dummy node:
+
 ```python
 # What if head itself needs to be deleted?
 while head and head.val == target:
@@ -28,6 +29,7 @@ while current and current.next:
 Two different code paths! One for head, one for rest. This is a bug magnet.
 
 With a dummy node:
+
 ```python
 dummy = ListNode(0)
 dummy.next = head
@@ -46,6 +48,7 @@ One unified code path. The dummy "absorbs" the head edge case.
 
 **The Mental Model**:
 Think of the dummy as a "pre-head anchor." No matter what happens to the actual head, you always have a stable reference point:
+
 ```
 dummy → [head] → [next] → [next] → None
   ↑
@@ -58,6 +61,7 @@ dummy → [new_head] → [next] → None
 ```
 
 **The Pattern**:
+
 ```python
 dummy = ListNode(0)  # Value doesn't matter
 dummy.next = head    # Point to actual list
@@ -70,6 +74,7 @@ After modifications, `head` might be stale (pointing to a deleted node). But `du
 
 **Multiple Dummies for Partitioning**:
 When splitting a list (like partition around a pivot):
+
 ```python
 before_dummy = ListNode(0)  # For nodes < pivot
 after_dummy = ListNode(0)   # For nodes >= pivot
@@ -118,6 +123,7 @@ Using dummy nodes shows maturity in handling linked list problems.
 ## Core Concept
 
 A dummy node is a fake node placed before the head. It:
+
 - Has an arbitrary value (usually 0)
 - Points to the actual head
 - Simplifies operations that might modify the head
@@ -471,11 +477,13 @@ def reverse_between(head: ListNode, left: int, right: int) -> ListNode:
 ## When to Use Dummy Node
 
 **Use dummy when:**
+
 - The head might change (delete head, insert before head)
 - Merging/partitioning where new head is unknown
 - Any operation that modifies list structure from the beginning
 
 **Don't need dummy when:**
+
 - Just traversing the list
 - Operations that never affect the head
 - Finding/searching operations
@@ -484,17 +492,17 @@ def reverse_between(head: ListNode, left: int, right: int) -> ListNode:
 
 ## Common Patterns Summary
 
-| Operation | Needs Dummy? | Why |
-|-----------|--------------|-----|
-| Remove by value | Yes | Head might be removed |
-| Insert at position | Yes | Position 0 needs it |
-| Merge two lists | Yes | Result head unknown |
-| Partition list | Yes | Result head unknown |
-| Remove nth from end | Yes | First node might be removed |
-| Remove duplicates (all) | Yes | Head might be duplicate |
-| Remove duplicates (keep first) | No | Head always stays |
-| Reverse entire list | No | New head is predictable |
-| Find middle | No | Just traversal |
+| Operation                      | Needs Dummy? | Why                         |
+| ------------------------------ | ------------ | --------------------------- |
+| Remove by value                | Yes          | Head might be removed       |
+| Insert at position             | Yes          | Position 0 needs it         |
+| Merge two lists                | Yes          | Result head unknown         |
+| Partition list                 | Yes          | Result head unknown         |
+| Remove nth from end            | Yes          | First node might be removed |
+| Remove duplicates (all)        | Yes          | Head might be duplicate     |
+| Remove duplicates (keep first) | No           | Head always stays           |
+| Reverse entire list            | No           | New head is predictable     |
+| Find middle                    | No           | Just traversal              |
 
 ---
 
@@ -548,14 +556,14 @@ return dummy1.next
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Remove Linked List Elements | Easy | Basic dummy usage |
-| 2 | Remove Nth Node From End | Medium | Dummy + two pointers |
-| 3 | Partition List | Medium | Two dummy nodes |
-| 4 | Remove Duplicates II | Medium | Dummy for head deletion |
-| 5 | Merge Two Sorted Lists | Easy | Dummy for unknown head |
-| 6 | Reverse Linked List II | Medium | Dummy for position operations |
+| #   | Problem                     | Difficulty | Key Concept                   |
+| --- | --------------------------- | ---------- | ----------------------------- |
+| 1   | Remove Linked List Elements | Easy       | Basic dummy usage             |
+| 2   | Remove Nth Node From End    | Medium     | Dummy + two pointers          |
+| 3   | Partition List              | Medium     | Two dummy nodes               |
+| 4   | Remove Duplicates II        | Medium     | Dummy for head deletion       |
+| 5   | Merge Two Sorted Lists      | Easy       | Dummy for unknown head        |
+| 6   | Reverse Linked List II      | Medium     | Dummy for position operations |
 
 ---
 

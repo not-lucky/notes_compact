@@ -17,6 +17,7 @@ The key insight is recognizing which elements can never be the answer:
 2. **Expiration principle**: Elements outside the current window are irrelevant. We need to efficiently remove them.
 
 **The Core Insight**:
+
 ```
 An element is only useful if:
 1. It might be the maximum (no larger element to its right in the window)
@@ -26,6 +27,7 @@ We can maintain exactly these "useful" elements in a monotonic deque.
 ```
 
 **Worked Example - Sliding Window Maximum (k=3)**:
+
 ```
 Array: [1, 3, -1, -3, 5, 3, 6, 7]
 
@@ -49,11 +51,13 @@ i=4: 5 > -3, pop 3   deque: [1,2]
 ```
 
 **Why We Need a Deque (Not Just Stack)**:
+
 - **Pop from back**: Remove elements smaller than the new element (maintaining monotonic property)
 - **Pop from front**: Remove elements outside the window (maintaining window constraint)
 - A stack only allows pop from one end, but we need both!
 
 **Mental Model**: Imagine a "hall of champions" where only potential winners stay. When a new contender arrives:
+
 1. Anyone weaker (to the right of the door) is kicked out—they'll never win
 2. Anyone whose time has passed (too old) leaves through the other door
 3. The current champion (front) is the window maximum
@@ -117,11 +121,11 @@ Output: [3, 3, 5, 5, 6, 7]
 
 ## Approach Comparison
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Brute force | O(n·k) | O(1) | Check all k elements for each window |
-| Heap | O(n log k) | O(k) | Max heap with lazy deletion |
-| Monotonic Deque | O(n) | O(k) | Optimal solution |
+| Approach        | Time       | Space | Notes                                |
+| --------------- | ---------- | ----- | ------------------------------------ |
+| Brute force     | O(n·k)     | O(1)  | Check all k elements for each window |
+| Heap            | O(n log k) | O(k)  | Max heap with lazy deletion          |
+| Monotonic Deque | O(n)       | O(k)  | Optimal solution                     |
 
 ---
 
@@ -492,11 +496,11 @@ def monotonic_deque_template(nums: list[int], k: int) -> list[int]:
 
 ## Complexity Analysis
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Process n elements | O(n) | Each element added/removed once |
-| Per element | O(1) amortized | Constant work on average |
-| Space | O(k) | Deque stores at most k indices |
+| Operation          | Time           | Notes                           |
+| ------------------ | -------------- | ------------------------------- |
+| Process n elements | O(n)           | Each element added/removed once |
+| Per element        | O(1) amortized | Constant work on average        |
+| Space              | O(k)           | Deque stores at most k indices  |
 
 **Why O(n)?** Each index is added to deque exactly once and removed at most once (either from front when out of window, or from back when a larger element arrives). Total operations = 2n = O(n).
 
@@ -539,14 +543,14 @@ nums = [5, 4, 3, 2, 1], k = 3
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Sliding Window Maximum | Hard | Core pattern |
-| 2 | Shortest Subarray with Sum at Least K | Hard | Prefix sums + deque |
-| 3 | Jump Game VI | Medium | DP optimization |
-| 4 | Constrained Subsequence Sum | Hard | DP with deque |
-| 5 | Longest Continuous Subarray With Abs Diff <= Limit | Medium | Two deques |
-| 6 | Max Value of Equation | Hard | Deque optimization |
+| #   | Problem                                            | Difficulty | Key Concept         |
+| --- | -------------------------------------------------- | ---------- | ------------------- |
+| 1   | Sliding Window Maximum                             | Hard       | Core pattern        |
+| 2   | Shortest Subarray with Sum at Least K              | Hard       | Prefix sums + deque |
+| 3   | Jump Game VI                                       | Medium     | DP optimization     |
+| 4   | Constrained Subsequence Sum                        | Hard       | DP with deque       |
+| 5   | Longest Continuous Subarray With Abs Diff <= Limit | Medium     | Two deques          |
+| 6   | Max Value of Equation                              | Hard       | Deque optimization  |
 
 ---
 

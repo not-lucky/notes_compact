@@ -1,14 +1,17 @@
 # Tree Diameter Solutions
 
 ## 1. Diameter of Binary Tree
+
 **Problem Statement**: Given the `root` of a binary tree, return the length of the **diameter** of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [1,2,3,4,5]` → Output: `3` (Path `4->2->5` or `4->2->1->3`)
 - **Edge Case - Single Node**: `root = [1]` → Output: `0`
 - **Edge Case - Path not through root**: A very deep branch on the left can contain the diameter.
 
 ### Optimal Python Solution
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -40,20 +43,24 @@ def diameterOfBinaryTree(root: TreeNode) -> int:
 ```
 
 ### Explanation
-1.  **Insight**: For any node in the tree, the longest path that *peaks* at that node is the sum of the heights of its left and right subtrees.
+
+1.  **Insight**: For any node in the tree, the longest path that _peaks_ at that node is the sum of the heights of its left and right subtrees.
 2.  **Global Maximum**: We perform a post-order traversal ($O(n)$) to calculate heights. As we compute the height for each node, we "sneakily" calculate the diameter through that node and update a global variable if it's the largest seen so far.
 3.  **Recursive Step**: Each node returns its height ($1 + \max(\text{left}, \text{right})$) so that its parent can perform its own calculation.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. We visit every node once.
 - **Space Complexity**: **O(h)**. The space used by the recursion stack.
 
 ---
 
 ## 2. Binary Tree Maximum Path Sum
+
 **Problem Statement**: Find the maximum path sum of any non-empty path.
 
 ### Optimal Python Solution
+
 ```python
 def maxPathSum(root: TreeNode) -> int:
     max_path = float('-inf')
@@ -78,20 +85,24 @@ def maxPathSum(root: TreeNode) -> int:
 ```
 
 ### Explanation
+
 - This follows the exact same pattern as Diameter. Instead of height, we calculate "Max Gain".
-- At each node, we check if the path *starting in left subtree, going through current node, and ending in right subtree* is the maximum.
+- At each node, we check if the path _starting in left subtree, going through current node, and ending in right subtree_ is the maximum.
 - We return only the best single-branch contribution to the parent.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 3. Longest Univalue Path
+
 **Problem Statement**: Find the length of the longest path where each node in the path has the same value.
 
 ### Optimal Python Solution
+
 ```python
 def longestUnivaluePath(root: TreeNode) -> int:
     ans = 0
@@ -118,15 +129,18 @@ def longestUnivaluePath(root: TreeNode) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 4. Longest Path With Different Adjacent Characters
+
 **Problem Statement**: Given a tree where each node has a character, find the longest path such that no two adjacent nodes have the same character.
 
 ### Optimal Python Solution
+
 ```python
 def longestPath(parent: list[int], s: str) -> int:
     from collections import defaultdict
@@ -162,19 +176,23 @@ def longestPath(parent: list[int], s: str) -> int:
 ```
 
 ### Explanation
+
 - This is a generalization of binary tree diameter to **N-ary trees**.
 - Instead of just `left` and `right`, we iterate through all children and keep track of the **two longest valid paths**.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Each node and edge is processed once.
 - **Space Complexity**: **O(n)**. For child adjacency list and recursion.
 
 ---
 
 ## 5. Tree Diameter
+
 **Problem Statement**: Given an undirected tree (as an edge list), find its diameter.
 
 ### Optimal Python Solution
+
 ```python
 def treeDiameter(edges: list[list[int]]) -> int:
     from collections import defaultdict, deque
@@ -213,8 +231,10 @@ def treeDiameter(edges: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Two BFS Theorem**: In an undirected tree, if you start a BFS from any node `A` and find the farthest node `B`, then a BFS starting from `B` will find the farthest node `C` in the entire tree. The distance `B-C` is the diameter.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. Two BFS passes.
 - **Space Complexity**: **O(n)**. Adjacency list and BFS queue.

@@ -2,20 +2,21 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Number of Islands | Medium | Grid components |
-| 2 | Max Area of Island | Medium | Component size |
-| 3 | Number of Connected Components in an Undirected Graph | Medium | Graph components |
-| 4 | Friend Circles (Number of Provinces) | Medium | Adjacency matrix |
-| 5 | Surrounded Regions | Medium | Border-connected |
-| 6 | Number of Provinces | Medium | Same as friend circles |
+| #   | Problem                                               | Difficulty | Key Variation          |
+| --- | ----------------------------------------------------- | ---------- | ---------------------- |
+| 1   | Number of Islands                                     | Medium     | Grid components        |
+| 2   | Max Area of Island                                    | Medium     | Component size         |
+| 3   | Number of Connected Components in an Undirected Graph | Medium     | Graph components       |
+| 4   | Friend Circles (Number of Provinces)                  | Medium     | Adjacency matrix       |
+| 5   | Surrounded Regions                                    | Medium     | Border-connected       |
+| 6   | Number of Provinces                                   | Medium     | Same as friend circles |
 
 ---
 
 ## 1. Number of Islands
 
 ### Problem Statement
+
 Given an `m x n` 2D binary grid, count the number of islands.
 
 ### Optimal Python Solution
@@ -43,6 +44,7 @@ def numIslands(grid: list[list[str]]) -> int:
 ```
 
 ### Explanation
+
 - **Concept**: Each connected group of "1"s forms a component.
 - **Algorithm**: Iterate through the grid. When a "1" is found, increment the counter and trigger a DFS to mark all connected "1"s as "0".
 - **Complexity**: Time O(MN), Space O(MN) due to recursion.
@@ -52,9 +54,11 @@ def numIslands(grid: list[list[str]]) -> int:
 ## 2. Max Area of Island
 
 ### Problem Statement
+
 Given an `m x n` binary grid, return the maximum area of an island. The area of an island is the number of cells with value 1 in the island.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `grid = [[0,1,1],[1,1,0],[0,0,1]]` -> Output: 4 (The island at top-left)
 
 ### Optimal Python Solution
@@ -81,6 +85,7 @@ def maxAreaOfIsland(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Concept**: Finding the size of each component.
 - **Algorithm**: Instead of just marking nodes as visited, the DFS returns the total number of nodes it visited in that component.
 - **Complexity**: Time O(MN), Space O(MN).
@@ -90,6 +95,7 @@ def maxAreaOfIsland(grid: list[list[int]]) -> int:
 ## 3. Number of Connected Components in an Undirected Graph
 
 ### Problem Statement
+
 Given `n` nodes and a list of edges, find the number of connected components.
 
 ### Optimal Python Solution
@@ -121,6 +127,7 @@ def countComponents(n: int, edges: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Concept**: Finding components in an explicit graph.
 - **Algorithm**: Standard graph traversal (DFS or BFS) applied to every node. If a node hasn't been visited, it's part of a new component.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -130,6 +137,7 @@ def countComponents(n: int, edges: list[list[int]]) -> int:
 ## 4. Friend Circles (Number of Provinces)
 
 ### Problem Statement
+
 There are `n` cities. Some of them are connected, while some are not. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`. A province is a group of directly or indirectly connected cities. Given an `n x n` matrix `isConnected` where `isConnected[i][j] = 1` if the `i-th` city and the `j-th` city are directly connected, return the total number of provinces.
 
 ### Optimal Python Solution
@@ -156,6 +164,7 @@ def findCircleNum(isConnected: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Input Format**: The graph is given as an adjacency matrix.
 - **Algorithm**: We iterate through each city. If it's not visited, we start a DFS. Inside DFS, we check all other cities (`enumerate(isConnected[city])`) to find neighbors.
 - **Complexity**: Time O(N²), Space O(N).
@@ -165,6 +174,7 @@ def findCircleNum(isConnected: list[list[int]]) -> int:
 ## 5. Surrounded Regions
 
 ### Problem Statement
+
 Given an `m x n` matrix `board` containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'. A region is captured by flipping all 'O's into 'X's in that surrounded region.
 
 ### Optimal Python Solution
@@ -198,11 +208,12 @@ def solve(board: list[list[str]]) -> None:
 ```
 
 ### Explanation
-- **Insight**: An 'O' region is *not* surrounded if and only if it is connected to the border.
+
+- **Insight**: An 'O' region is _not_ surrounded if and only if it is connected to the border.
 - **Algorithm**:
-    1. Identify all 'O's on the borders and run DFS to mark all reachable 'O's with a temporary character 'T'.
-    2. Any remaining 'O's are surrounded and should be flipped to 'X'.
-    3. Flip 'T' back to 'O'.
+  1. Identify all 'O's on the borders and run DFS to mark all reachable 'O's with a temporary character 'T'.
+  2. Any remaining 'O's are surrounded and should be flipped to 'X'.
+  3. Flip 'T' back to 'O'.
 - **Complexity**: Time O(MN), Space O(MN).
 
 ---
@@ -210,6 +221,7 @@ def solve(board: list[list[str]]) -> None:
 ## 6. Number of Provinces
 
 ### Problem Statement
+
 Same as **Friend Circles** (Problem 4).
 
 ### Optimal Python Solution (Union-Find Approach)
@@ -242,5 +254,6 @@ def findCircleNum(isConnected: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Union-Find**: Excellent for connectivity problems. Each connection between cities `i` and `j` results in a `union` operation.
 - **Complexity**: Time O(N² × α(N)), Space O(N).

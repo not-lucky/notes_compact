@@ -15,6 +15,7 @@ Union by rank is the second key optimization for Union-Find. While path compress
 Imagine two companies merging. Which CEO becomes the new overall CEO?
 
 Bad strategy (arbitrary choice):
+
 ```
 Company A (1000 employees) + Company B (10 employees)
 If B's CEO becomes overall CEO:
@@ -23,6 +24,7 @@ If B's CEO becomes overall CEO:
 ```
 
 Good strategy (smaller under larger):
+
 ```
 Company A (1000 employees) + Company B (10 employees)
 A's CEO becomes overall CEO:
@@ -32,7 +34,7 @@ A's CEO becomes overall CEO:
 
 **The Key Insight**
 
-*Attach the smaller/shorter tree under the larger/taller one.*
+_Attach the smaller/shorter tree under the larger/taller one._
 
 This minimizes the maximum depth any node can reach. If we always attach the tree with fewer levels under the taller tree, the combined tree's height grows minimally.
 
@@ -299,13 +301,13 @@ class UnionFind:
 
 ## Rank vs Size
 
-| Aspect | Rank | Size |
-|--------|------|------|
+| Aspect     | Rank                    | Size                |
+| ---------- | ----------------------- | ------------------- |
 | Represents | Approximate tree height | Exact element count |
-| Update | Only when ranks equal | Always add sizes |
-| Use case | Pure optimization | When size needed |
-| Complexity | Same O(α(n)) | Same O(α(n)) |
-| Extra info | None | Component sizes |
+| Update     | Only when ranks equal   | Always add sizes    |
+| Use case   | Pure optimization       | When size needed    |
+| Complexity | Same O(α(n))            | Same O(α(n))        |
+| Extra info | None                    | Component sizes     |
 
 ```python
 # Rank: Only tracks height, not count
@@ -453,13 +455,13 @@ def swimInWater(grid: list[list[int]]) -> int:
 ## Complexity Analysis
 
 | Operation | Naive | Union by Rank Only | Path Compression Only | Both Optimizations |
-|-----------|-------|-------------------|----------------------|-------------------|
-| Find | O(n) | O(log n) | O(log n)* | O(α(n))* |
-| Union | O(n) | O(log n) | O(log n)* | O(α(n))* |
-| Connected | O(n) | O(log n) | O(log n)* | O(α(n))* |
-| Space | O(n) | O(n) | O(n) | O(n) |
+| --------- | ----- | ------------------ | --------------------- | ------------------ |
+| Find      | O(n)  | O(log n)           | O(log n)\*            | O(α(n))\*          |
+| Union     | O(n)  | O(log n)           | O(log n)\*            | O(α(n))\*          |
+| Connected | O(n)  | O(log n)           | O(log n)\*            | O(α(n))\*          |
+| Space     | O(n)  | O(n)               | O(n)                  | O(n)               |
 
-*Amortized. α(n) = inverse Ackermann function ≈ O(1) for practical inputs.
+\*Amortized. α(n) = inverse Ackermann function ≈ O(1) for practical inputs.
 
 ### Height Bound with Union by Rank
 
@@ -491,6 +493,7 @@ For all practical purposes: O(1) per operation
 ## Common Mistakes
 
 1. **Wrong rank update**:
+
    ```python
    # Wrong: always increment
    self.rank[px] += 1
@@ -501,6 +504,7 @@ For all practical purposes: O(1) per operation
    ```
 
 2. **Forgetting to swap**:
+
    ```python
    # Wrong: might attach larger under smaller
    self.parent[py] = px
@@ -512,6 +516,7 @@ For all practical purposes: O(1) per operation
    ```
 
 3. **Mixing rank and size semantics**:
+
    ```python
    # Wrong: treating rank as size
    self.rank[px] += self.rank[py]  # This is size logic!
@@ -543,13 +548,13 @@ For all practical purposes: O(1) per operation
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Most Stones Removed | Medium | Row/column as virtual nodes |
-| 2 | Swim in Rising Water | Hard | Process in sorted order |
-| 3 | Minimize Malware Spread | Hard | Component sizes matter |
-| 4 | Minimize Malware Spread II | Hard | Remove node, recount |
-| 5 | Making A Large Island | Hard | Try flipping each 0 |
+| #   | Problem                    | Difficulty | Key Concept                 |
+| --- | -------------------------- | ---------- | --------------------------- |
+| 1   | Most Stones Removed        | Medium     | Row/column as virtual nodes |
+| 2   | Swim in Rising Water       | Hard       | Process in sorted order     |
+| 3   | Minimize Malware Spread    | Hard       | Component sizes matter      |
+| 4   | Minimize Malware Spread II | Hard       | Remove node, recount        |
+| 5   | Making A Large Island      | Hard       | Try flipping each 0         |
 
 ---
 

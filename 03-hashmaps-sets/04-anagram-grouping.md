@@ -44,6 +44,7 @@ Same signature = Same anagram group!
 **Mental Model: The Signature as a "Name Tag"**
 
 Imagine a party where everyone wearing the same "name tag" is grouped together:
+
 - Instead of comparing everyone to everyone (O(n²))
 - Give each person a name tag based on their letters
 - People with matching name tags go to the same table
@@ -53,10 +54,12 @@ The hashmap groups by name tag in O(1) per lookup.
 **Why Sliding Window for Substring Anagrams**
 
 Naive approach for "find all anagrams of 'abc' in 'cbaebabacd'":
+
 - Check every substring of length 3: O(n × k) where k=3
 - Each check sorts or counts: O(k log k) or O(k)
 
 Sliding window optimization:
+
 - Start with first window, compute signature
 - Slide right: add new char, remove old char
 - Update signature incrementally → O(1) per slide
@@ -66,11 +69,13 @@ Total: O(n) instead of O(n × k)
 **The Delete-Zero Trick**
 
 When using Counter comparison:
+
 ```python
 Counter({'a': 1, 'b': 0}) != Counter({'a': 1})  # Different!
 ```
 
 Always delete zero-count entries:
+
 ```python
 if window[char] == 0:
     del window[char]
@@ -85,6 +90,7 @@ This ensures Counter equality works correctly.
 **1. Order Matters Within Groups**
 
 Anagram grouping treats "abc", "bca", "cab" as equivalent. If you need:
+
 - Lexicographically smallest in each group
 - Original order preserved
 - Specific ordering within groups
@@ -94,6 +100,7 @@ You need post-processing after grouping.
 **2. Substrings/Subsequences (Not Anagrams)**
 
 Related but different:
+
 ```python
 # Substring: contiguous slice ("abc" in "xabcy")
 # Subsequence: not necessarily contiguous ("ace" in "abcde")
@@ -105,12 +112,14 @@ Don't confuse these—they have different solutions.
 **3. Partial Matches Are Acceptable**
 
 Anagram requires EXACT character match. For "at least 50% overlap":
+
 - Use set intersection with threshold
 - Not anagram grouping
 
 **4. Very Long Strings with Unicode**
 
 For strings with arbitrary Unicode characters:
+
 - 26-element count array won't work
 - sorted() still works but may be slow
 - Counter is the safe choice (but signature is a large frozenset)
@@ -118,11 +127,13 @@ For strings with arbitrary Unicode characters:
 **5. Approximate/Fuzzy Matching**
 
 "Similar enough" isn't "anagram":
+
 - Levenshtein distance for edit distance
 - Soundex/Metaphone for phonetic similarity
 - n-gram similarity for fuzzy matching
 
 **Red Flags:**
+
 - "Find similar strings" → Fuzzy matching, not anagrams
 - "Preserve original order in output" → Need extra tracking
 - "Any characters including Unicode" → Use Counter, not array[26]
@@ -539,12 +550,12 @@ def count_anagram_substrings(text: str, pattern: str) -> int:
 
 ## Signature Strategies
 
-| Strategy | Key Type | Time per String | When to Use |
-|----------|----------|-----------------|-------------|
-| Sorted string | `str` | O(k log k) | Short strings, simple code |
-| Character count tuple | `tuple` | O(k) | Long strings, lowercase only |
-| Prime product | `int` | O(k) | Unique product (overflow risk) |
-| Frozen Counter | `frozenset` | O(k) | When Counter comparison needed |
+| Strategy              | Key Type    | Time per String | When to Use                    |
+| --------------------- | ----------- | --------------- | ------------------------------ |
+| Sorted string         | `str`       | O(k log k)      | Short strings, simple code     |
+| Character count tuple | `tuple`     | O(k)            | Long strings, lowercase only   |
+| Prime product         | `int`       | O(k)            | Unique product (overflow risk) |
+| Frozen Counter        | `frozenset` | O(k)            | When Counter comparison needed |
 
 ### Prime Product Example (Careful of Overflow)
 
@@ -607,16 +618,16 @@ def anagram_signature_prime(s: str) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Valid Anagram | Easy | Compare Counters |
-| 2 | Group Anagrams | Medium | Signature grouping |
-| 3 | Find All Anagrams in a String | Medium | Sliding window |
-| 4 | Permutation in String | Medium | Sliding window |
-| 5 | Minimum Window Substring | Hard | Variable window |
-| 6 | Longest Substring Without Repeating Characters | Medium | Sliding window + set |
-| 7 | Longest Repeating Character Replacement | Medium | Sliding window + count |
-| 8 | Smallest Window Containing Substring | Hard | Variable window |
+| #   | Problem                                        | Difficulty | Pattern                |
+| --- | ---------------------------------------------- | ---------- | ---------------------- |
+| 1   | Valid Anagram                                  | Easy       | Compare Counters       |
+| 2   | Group Anagrams                                 | Medium     | Signature grouping     |
+| 3   | Find All Anagrams in a String                  | Medium     | Sliding window         |
+| 4   | Permutation in String                          | Medium     | Sliding window         |
+| 5   | Minimum Window Substring                       | Hard       | Variable window        |
+| 6   | Longest Substring Without Repeating Characters | Medium     | Sliding window + set   |
+| 7   | Longest Repeating Character Replacement        | Medium     | Sliding window + count |
+| 8   | Smallest Window Containing Substring           | Hard       | Variable window        |
 
 ---
 

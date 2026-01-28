@@ -176,6 +176,7 @@ max_val = sorted_arr[-1]  # O(1)
 ```
 
 **Red Flags:**
+
 - "Find if X exists in the heap" → Need hash set or BST
 - "Get both minimum and maximum" → Need different structure
 - "Update priority of specific item" → Need indexed priority queue
@@ -189,8 +190,8 @@ A **heap** is a complete binary tree stored as an array where each parent satisf
 
 ### Min Heap vs Max Heap
 
-| Type | Property | Root Contains |
-|------|----------|---------------|
+| Type         | Property          | Root Contains   |
+| ------------ | ----------------- | --------------- |
 | **Min Heap** | Parent ≤ Children | Minimum element |
 | **Max Heap** | Parent ≥ Children | Maximum element |
 
@@ -210,6 +211,7 @@ Array: [1, 3, 2, 7, 4]       Array: [9, 7, 8, 3, 5]
 ## Array Representation
 
 A heap is stored as an array where:
+
 - **Root** is at index 0
 - For node at index `i`:
   - **Left child**: `2*i + 1`
@@ -237,10 +239,12 @@ Right child of index 1: 2*1+2 = 4 → value 4 ✓
 ## Complete Binary Tree Property
 
 A heap is always a **complete binary tree**:
+
 - All levels fully filled except possibly the last
 - Last level filled from left to right
 
 This guarantees:
+
 - Height is always O(log n)
 - No gaps in array representation
 - Efficient memory usage
@@ -367,6 +371,7 @@ def build_heap(arr: list) -> None:
 **Why Build Heap is O(n), not O(n log n)?**
 
 Most nodes are near the bottom and do little work:
+
 - n/2 nodes at leaves: 0 swaps
 - n/4 nodes at level 1: at most 1 swap
 - n/8 nodes at level 2: at most 2 swaps
@@ -443,13 +448,13 @@ class MinHeap:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| push | O(log n) | O(1) | Heapify up |
-| pop | O(log n) | O(1) | Heapify down |
-| peek | O(1) | O(1) | Access root |
-| build_heap | O(n) | O(1) | In-place heapify |
-| search | O(n) | O(1) | Must check all (no ordering) |
+| Operation  | Time     | Space | Notes                        |
+| ---------- | -------- | ----- | ---------------------------- |
+| push       | O(log n) | O(1)  | Heapify up                   |
+| pop        | O(log n) | O(1)  | Heapify down                 |
+| peek       | O(1)     | O(1)  | Access root                  |
+| build_heap | O(n)     | O(1)  | In-place heapify             |
+| search     | O(n)     | O(1)  | Must check all (no ordering) |
 
 ---
 
@@ -517,13 +522,13 @@ heap = [5, 4, 3, 2, 1]
 
 ## Heap vs Other Data Structures
 
-| Operation | Heap | Sorted Array | BST (balanced) |
-|-----------|------|--------------|----------------|
-| Find min/max | O(1) | O(1) | O(log n) |
-| Insert | O(log n) | O(n) | O(log n) |
-| Delete min/max | O(log n) | O(1) or O(n) | O(log n) |
-| Search | O(n) | O(log n) | O(log n) |
-| Build | O(n) | O(n log n) | O(n log n) |
+| Operation      | Heap     | Sorted Array | BST (balanced) |
+| -------------- | -------- | ------------ | -------------- |
+| Find min/max   | O(1)     | O(1)         | O(log n)       |
+| Insert         | O(log n) | O(n)         | O(log n)       |
+| Delete min/max | O(log n) | O(1) or O(n) | O(log n)       |
+| Search         | O(n)     | O(log n)     | O(log n)       |
+| Build          | O(n)     | O(n log n)   | O(n log n)     |
 
 **Use heap when**: You only need min/max, not arbitrary search.
 
@@ -541,12 +546,12 @@ heap = [5, 4, 3, 2, 1]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Last Stone Weight | Easy | Basic heap operations |
-| 2 | Kth Largest Element in a Stream | Easy | Maintain heap of size K |
-| 3 | Sort an Array (Heap Sort) | Medium | Build heap + extract |
-| 4 | Kth Largest Element in an Array | Medium | Heap or QuickSelect |
+| #   | Problem                         | Difficulty | Key Concept             |
+| --- | ------------------------------- | ---------- | ----------------------- |
+| 1   | Last Stone Weight               | Easy       | Basic heap operations   |
+| 2   | Kth Largest Element in a Stream | Easy       | Maintain heap of size K |
+| 3   | Sort an Array (Heap Sort)       | Medium     | Build heap + extract    |
+| 4   | Kth Largest Element in an Array | Medium     | Heap or QuickSelect     |
 
 ---
 

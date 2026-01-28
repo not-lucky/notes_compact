@@ -1,9 +1,11 @@
 # Solutions: 0/1 Knapsack Patterns
 
 ## 1. 0/1 Knapsack (Basic)
+
 **Problem:** Maximize value within capacity $W$ using each item at most once.
 
 ### Optimal Python Solution
+
 ```python
 def knapsack(weights: list[int], values: list[int], capacity: int) -> int:
     # State: dp[w] = max value for capacity w
@@ -16,15 +18,18 @@ def knapsack(weights: list[int], values: list[int], capacity: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times W)$
 - **Space:** $O(W)$
 
 ---
 
 ## 2. Partition Equal Subset Sum
+
 **Problem:** Can array be partitioned into two subsets with equal sum?
 
 ### Optimal Python Solution
+
 ```python
 def can_partition(nums: list[int]) -> bool:
     total = sum(nums)
@@ -41,15 +46,18 @@ def can_partition(nums: list[int]) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times \text{sum})$
 - **Space:** $O(\text{sum})$
 
 ---
 
 ## 3. Target Sum
+
 **Problem:** Ways to assign +/- to get target.
 
 ### Optimal Python Solution
+
 ```python
 def find_target_sum_ways(nums: list[int], target: int) -> int:
     # P - N = target, P + N = sum => 2P = target + sum
@@ -66,16 +74,19 @@ def find_target_sum_ways(nums: list[int], target: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times \text{sum})$
 - **Space:** $O(\text{sum})$
 
 ---
 
 ## 4. Last Stone Weight II
+
 **Problem:** Minimize remaining weight after smashing stones.
 
 ### Optimal Python Solution
-```python
+
+````python
 def last_stone_weight_ii(stones: list[int]) -> int:
     # Insight: Minimize difference between two groups
     # Maximize one group's sum up to total // 2
@@ -93,6 +104,7 @@ def last_stone_weight_ii(stones: list[int]) -> int:
             return total - 2 * i
     return 0
 
+```
 ---
 
 ## 5. Ones and Zeroes
@@ -115,18 +127,22 @@ def find_max_form(strs: list[str], m: int, n: int) -> int:
                 dp[i][j] = max(dp[i][j], 1 + dp[i - zeros][j - ones])
 
     return dp[m][n]
-```
+````
 
 ### Explanation
+
 1.  **Multiple Constraints**: Unlike standard knapsack with one capacity, this has two (zeros and ones).
 2.  **State**: `dp[i][j]` stores the maximum number of strings achievable with `i` zeros and `j` ones available.
 3.  **Iteration**: For each string, we calculate its "cost" (zeros and ones) and update the DP table backwards to ensure we only use each string once.
 
 ### Complexity Analysis
+
 - **Time:** $O(L \times m \times n)$ - Where $L$ is the number of strings.
 - **Space:** $O(m \times n)$ - To store the 2D capacity table.
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n \times \text{sum})$
 - **Space:** $O(\text{sum})$
+```

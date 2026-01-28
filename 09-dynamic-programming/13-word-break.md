@@ -49,6 +49,7 @@ Word Break is a FANG+ favorite because:
 5. **Need All Segmentations (Word Break II)**: DP gives boolean. For enumeration, use memoized backtracking, but beware exponential output.
 
 **Recognize Word Break Pattern When:**
+
 - Segment string into dictionary words
 - Boolean feasibility or count ways
 - String matching with multiple valid splits
@@ -369,12 +370,12 @@ max_len = max((len(w) for w in wordDict), default=0)
 
 ## Complexity
 
-| Variant | Time | Space |
-|---------|------|-------|
-| Word Break I | O(n² × k) | O(n) |
-| Word Break I (optimized) | O(n × m × k) | O(n) |
-| Word Break I (Trie) | O(n²) | O(Σ word lengths) |
-| Word Break II | O(2ⁿ) worst | O(2ⁿ) |
+| Variant                  | Time         | Space             |
+| ------------------------ | ------------ | ----------------- |
+| Word Break I             | O(n² × k)    | O(n)              |
+| Word Break I (optimized) | O(n × m × k) | O(n)              |
+| Word Break I (Trie)      | O(n²)        | O(Σ word lengths) |
+| Word Break II            | O(2ⁿ) worst  | O(2ⁿ)             |
 
 n = string length, k = average word length for hashing, m = max word length
 
@@ -392,12 +393,12 @@ n = string length, k = average word length for hashing, m = max word length
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | Word Break | Medium | Boolean |
-| 2 | Word Break II | Hard | All sentences |
-| 3 | Concatenated Words | Hard | Self-concat |
-| 4 | Extra Characters in String | Medium | Min leftover |
+| #   | Problem                    | Difficulty | Variant       |
+| --- | -------------------------- | ---------- | ------------- |
+| 1   | Word Break                 | Medium     | Boolean       |
+| 2   | Word Break II              | Hard       | All sentences |
+| 3   | Concatenated Words         | Hard       | Self-concat   |
+| 4   | Extra Characters in String | Medium     | Min leftover  |
 
 ---
 

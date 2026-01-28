@@ -29,6 +29,7 @@ Most elements are leaves. Leaves don't need to sift down. Only half the elements
 ### Mental Model for heapq
 
 Think of a heap as a "minimum-finder-machine":
+
 - Put things in → they settle to their natural level
 - Ask for minimum → instantly available at top
 - Remove minimum → next smallest bubbles up
@@ -51,21 +52,25 @@ Result: [5, 8, 9] (the 3 largest)
 ## When NOT to Use
 
 ### Use sorting instead when:
+
 - **k is close to n**: `heapq.nlargest(n-1, items)` is slower than `sorted(items)[1:]`
 - **k is 1**: Just use `min()` or `max()` - O(n) with tiny constant
 - **You need the elements sorted**: Heap gives you k elements in heap order, not sorted order
 
 ### Use other structures when:
+
 - **You need both min and max**: Use a sorted container or two heaps
 - **You need to delete arbitrary elements**: Heaps only efficiently remove the min; use a balanced BST instead
 - **You need random access**: Heaps are for min-extraction, not indexing
 
 ### Be careful when:
+
 - **Using with mutable objects**: If you modify an object after insertion, heap property breaks
 - **Forgetting it's min-heap only**: Python has no max-heap. Negate values or use a wrapper class
 - **Confusing heap with sorted array**: `heap[1]` is NOT the second smallest
 
 ### Python-specific gotchas:
+
 ```python
 # WRONG: Assuming heap is sorted
 heap = [3, 1, 4, 1, 5]
@@ -459,14 +464,14 @@ print(heapq.heappop(heap).name)  # 'high'
 
 ## Complexity Summary
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| heapify | O(n) | Build heap from list |
-| heappush | O(log n) | Add element |
-| heappop | O(log n) | Remove min |
-| heap[0] | O(1) | Peek min |
-| nlargest(k, n) | O(n log k) | Find k largest |
-| nsmallest(k, n) | O(n log k) | Find k smallest |
+| Operation       | Time       | Notes                |
+| --------------- | ---------- | -------------------- |
+| heapify         | O(n)       | Build heap from list |
+| heappush        | O(log n)   | Add element          |
+| heappop         | O(log n)   | Remove min           |
+| heap[0]         | O(1)       | Peek min             |
+| nlargest(k, n)  | O(n log k) | Find k largest       |
+| nsmallest(k, n) | O(n log k) | Find k smallest      |
 
 ---
 
@@ -481,15 +486,15 @@ print(heapq.heappop(heap).name)  # 'high'
 
 ## Practice Problems
 
-| # | Problem | Pattern |
-|---|---------|---------|
-| 1 | Kth Largest Element | Min-heap of size k |
-| 2 | Top K Frequent Elements | Counter + heap |
-| 3 | Merge K Sorted Lists | Multi-way merge |
-| 4 | Find Median from Data Stream | Two heaps |
-| 5 | Task Scheduler | Max-heap + simulation |
-| 6 | K Closest Points to Origin | Max-heap of size k |
-| 7 | Ugly Number II | Min-heap for generation |
+| #   | Problem                      | Pattern                 |
+| --- | ---------------------------- | ----------------------- |
+| 1   | Kth Largest Element          | Min-heap of size k      |
+| 2   | Top K Frequent Elements      | Counter + heap          |
+| 3   | Merge K Sorted Lists         | Multi-way merge         |
+| 4   | Find Median from Data Stream | Two heaps               |
+| 5   | Task Scheduler               | Max-heap + simulation   |
+| 6   | K Closest Points to Origin   | Max-heap of size k      |
+| 7   | Ugly Number II               | Min-heap for generation |
 
 ---
 

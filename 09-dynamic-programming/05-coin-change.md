@@ -46,6 +46,7 @@ Coin Change is a must-know problem because:
 5. **Negative Coin Values**: Coin Change assumes positive denominations. Negative values break the subproblem ordering.
 
 **Recognize Coin Change Pattern When:**
+
 - Unlimited use of items
 - Target sum/amount to reach
 - Minimize count OR count combinations
@@ -200,11 +201,11 @@ def num_ways_permutations(amount: int, coins: list[int]) -> int:
 
 ## Comparison: Combinations vs Permutations
 
-| Aspect | Combinations | Permutations |
-|--------|--------------|--------------|
-| Loop order | Coins outer | Amount outer |
-| {1,2} and {2,1} | Same | Different |
-| Use case | Coin Change II | Climbing Stairs variant |
+| Aspect          | Combinations   | Permutations            |
+| --------------- | -------------- | ----------------------- |
+| Loop order      | Coins outer    | Amount outer            |
+| {1,2} and {2,1} | Same           | Different               |
+| Use case        | Coin Change II | Climbing Stairs variant |
 
 ---
 
@@ -401,11 +402,11 @@ Greedy fails because larger coin isn't always better!
 
 ## Complexity Analysis
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Min coins | O(amount × coins) | O(amount) |
-| Count ways | O(amount × coins) | O(amount) |
-| Perfect squares | O(n√n) | O(n) |
+| Problem         | Time              | Space     |
+| --------------- | ----------------- | --------- |
+| Min coins       | O(amount × coins) | O(amount) |
+| Count ways      | O(amount × coins) | O(amount) |
+| Perfect squares | O(n√n)            | O(n)      |
 
 ---
 
@@ -421,13 +422,13 @@ Greedy fails because larger coin isn't always better!
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | Coin Change | Medium | Min coins |
-| 2 | Coin Change II | Medium | Count combinations |
-| 3 | Perfect Squares | Medium | Special coins |
-| 4 | Combination Sum IV | Medium | Count permutations |
-| 5 | Integer Break | Medium | Max product |
+| #   | Problem            | Difficulty | Variant            |
+| --- | ------------------ | ---------- | ------------------ |
+| 1   | Coin Change        | Medium     | Min coins          |
+| 2   | Coin Change II     | Medium     | Count combinations |
+| 3   | Perfect Squares    | Medium     | Special coins      |
+| 4   | Combination Sum IV | Medium     | Count permutations |
+| 5   | Integer Break      | Medium     | Max product        |
 
 ---
 

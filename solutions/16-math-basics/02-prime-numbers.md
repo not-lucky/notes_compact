@@ -10,12 +10,14 @@ This file contains optimal Python solutions for the practice problems listed in 
 Given an integer `n`, return the number of prime numbers that are strictly less than `n`.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 10` -> Output: `4` (Primes: 2, 3, 5, 7)
 - **Example 2:** `n = 0` -> Output: `0`
 - **Example 3:** `n = 1` -> Output: `0`
 - **Edge Case:** `n` is large (e.g., $5 \times 10^6$) -> Requires $O(n \log \log n)$ time.
 
 **Optimal Python Solution:**
+
 ```python
 def countPrimes(n: int) -> int:
     """
@@ -40,12 +42,14 @@ def countPrimes(n: int) -> int:
 ```
 
 **Explanation:**
+
 1. **Sieve of Eratosthenes**: This is the most efficient way to find all primes up to $n$.
 2. **Elimination**: We start with all numbers marked as prime. Starting from 2, we mark all of its multiples (4, 6, 8...) as non-prime. We repeat this for every prime we encounter.
 3. **Optimization**: For a prime $i$, we only need to start marking its multiples from $i^2$, because smaller multiples like $2i, 3i, \dots$ would have already been marked by smaller primes.
 4. **Boundary**: We only need to iterate up to $\sqrt{n}$.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(n \log \log n)$. This is a well-known complexity for the Sieve of Eratosthenes.
 - **Space Complexity:** $O(n)$ to store the boolean array representing the primality of each number.
 
@@ -57,12 +61,14 @@ def countPrimes(n: int) -> int:
 An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5. Given an integer `n`, return `True` if `n` is an ugly number.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 6` -> Output: `True` ($6 = 2 \times 3$)
 - **Example 2:** `n = 1` -> Output: `True` (1 has no prime factors, vacuously true)
 - **Example 3:** `n = 14` -> Output: `False` ($14 = 2 \times 7$, contains prime factor 7)
 - **Edge Case:** `n <= 0` -> Output: `False` (ugly numbers must be positive).
 
 **Optimal Python Solution:**
+
 ```python
 def isUgly(n: int) -> bool:
     """
@@ -81,11 +87,13 @@ def isUgly(n: int) -> bool:
 ```
 
 **Explanation:**
+
 1. **Factor Removal**: We divide the number $n$ by 2 as many times as possible, then by 3, then by 5.
 2. **Termination**: If $n$ was composed solely of these three prime factors, after all divisions, $n$ must be reduced to 1.
 3. **Constraint**: If $n \le 0$, it cannot be an ugly number by definition.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\log n)$. Each division significantly reduces the size of $n$.
 - **Space Complexity:** $O(1)$ as we only use a few constant-sized variables.
 
@@ -97,10 +105,12 @@ def isUgly(n: int) -> bool:
 Given an integer `n`, return the `n`-th ugly number. Ugly numbers are positive integers whose prime factors are limited to 2, 3, and 5.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 10` -> Output: `12`
 - **Edge Case:** `n = 1` -> Output: `1`.
 
 **Optimal Python Solution:**
+
 ```python
 def nthUglyNumber(n: int) -> int:
     """
@@ -127,11 +137,13 @@ def nthUglyNumber(n: int) -> int:
 ```
 
 **Explanation:**
+
 1. **Sequential Generation**: Since we need the $n$-th number in sorted order, we use DP to generate them sequentially.
 2. **Min-Selection**: At each step, we look at the smallest multiple of 2, 3, and 5 that we haven't included yet.
 3. **Deduplication**: By checking `if` for all three pointers separately, we handle cases where multiple products yield the same value (like $2 \times 3 = 6$ and $3 \times 2 = 6$), incrementing both pointers to avoid duplicates.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(n)$ to iterate through $n$ steps.
 - **Space Complexity:** $O(n)$ to store the array of ugly numbers.
 
@@ -143,10 +155,12 @@ def nthUglyNumber(n: int) -> int:
 A super ugly number is a positive integer whose prime factors are in the given list of `primes`. Given an integer `n` and a list of integers `primes`, return the `n`-th super ugly number.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 12, primes = [2,7,13,19]` -> Output: `32`
 - **Edge Case:** Large number of primes -> $O(n \times k)$ where $k$ is the number of primes.
 
 **Optimal Python Solution:**
+
 ```python
 import heapq
 
@@ -177,11 +191,13 @@ def nthSuperUglyNumber(n: int, primes: list[int]) -> int:
 ```
 
 **Explanation:**
+
 1. **Generalization**: This is a direct generalization of Ugly Number II. Instead of 3 pointers, we use $k$ pointers where $k$ is the length of the `primes` list.
 2. **Efficiency**: For each new ugly number, we scan the $k$ possible next candidates.
 3. **Pointers**: `pointers[j]` keeps track of which ugly number `primes[j]` should multiply next to generate a potential candidate.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(n \cdot k)$, where $n$ is the target index and $k$ is the number of primes.
 - **Space Complexity:** $O(n + k)$ to store the result array and pointer arrays.
 
@@ -193,10 +209,12 @@ def nthSuperUglyNumber(n: int, primes: list[int]) -> int:
 A happy number is defined by replacing the number with the sum of the squares of its digits. Repeat the process. If it eventually reaches 1, it is happy. If it loops endlessly in a cycle that does not include 1, it is not happy.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 19` -> Output: `True` ($1^2 + 9^2 = 82 \to 8^2 + 2^2 = 68 \to 6^2 + 8^2 = 100 \to 1^2 + 0^2 + 0^2 = 1$).
 - **Example 2:** `n = 2` -> Output: `False` (Enter cycle).
 
 **Optimal Python Solution:**
+
 ```python
 def isHappy(n: int) -> bool:
     """
@@ -222,11 +240,13 @@ def isHappy(n: int) -> bool:
 ```
 
 **Explanation:**
+
 1. **Cycle Detection**: The sequence will either converge to 1 or enter a cycle. We can use Floyd's "Tortoise and Hare" algorithm to detect cycles with constant space.
 2. **Transition**: The `get_next` function calculates the sum of squares of digits.
 3. **Termination**: If `fast` reaches 1, the number is happy. If `fast` meets `slow` at a value other than 1, it's stuck in a cycle and not happy.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\log n)$. The number of steps to reach 1 or a cycle is relatively small and related to the number of digits.
 - **Space Complexity:** $O(1)$ since we only store two integers (`slow` and `fast`).
 
@@ -238,11 +258,13 @@ def isHappy(n: int) -> bool:
 A perfect number is a positive integer that is equal to the sum of its positive divisors, excluding the number itself. Given an integer `n`, return `True` if `n` is a perfect number.
 
 **Examples & Edge Cases:**
+
 - **Example 1:** `n = 28` -> Output: `True` (Divisors: 1, 2, 4, 7, 14. $1+2+4+7+14 = 28$).
 - **Example 2:** `n = 7` -> Output: `False`.
 - **Edge Case:** `n = 1` -> Output: `False` (Divisors: none excluding itself).
 
 **Optimal Python Solution:**
+
 ```python
 def checkPerfectNumber(num: int) -> bool:
     """
@@ -265,10 +287,12 @@ def checkPerfectNumber(num: int) -> bool:
 ```
 
 **Explanation:**
+
 1. **Divisor Pairs**: If $i$ is a divisor of $n$, then $n/i$ is also a divisor.
 2. **Efficiency**: By iterating only up to $\sqrt{n}$, we find all divisor pairs in $O(\sqrt{n})$ time.
-3. **Special Case**: We handle 1 separately as its only divisor is itself, and the problem requires divisors *excluding* the number itself.
+3. **Special Case**: We handle 1 separately as its only divisor is itself, and the problem requires divisors _excluding_ the number itself.
 
 **Complexity Analysis:**
+
 - **Time Complexity:** $O(\sqrt{n})$.
 - **Space Complexity:** $O(1)$.

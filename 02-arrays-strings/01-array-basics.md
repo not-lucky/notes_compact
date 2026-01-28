@@ -13,6 +13,7 @@ An array is a contiguous block of memory that stores elements of the same type, 
 Think of an array as a row of numbered mailboxes in an apartment building. Each mailbox has an address (index), and you can go directly to any mailbox without checking the others. This is the O(1) random access superpower that makes arrays unique.
 
 **The Memory Model**:
+
 1. **Contiguous Allocation**: Arrays occupy consecutive memory locations. If element 0 is at address 1000 and each element takes 4 bytes, element 5 is at address 1000 + (5 × 4) = 1020. The CPU calculates this in one step—no searching required.
 
 2. **Cache Friendliness**: Because elements are adjacent in memory, accessing one element often pre-loads nearby elements into the CPU cache. This makes sequential array traversal extremely fast—often 10-100x faster than pointer-chasing through scattered memory (like linked lists).
@@ -36,6 +37,7 @@ Arrays aren't always the best choice. Consider alternatives when:
 5. **Need Fast Min/Max with Updates**: Finding min/max is O(n). Use a heap (O(log n) insert, O(1) min) if you need repeated min/max operations.
 
 **Red Flags in Problem Statements:**
+
 - "Insert/delete frequently" → Consider linked list
 - "Find if element exists" → Consider hash set
 - "Get minimum/maximum repeatedly" → Consider heap
@@ -86,18 +88,18 @@ n = len(arr)             # O(1)
 
 ## Core Operations and Complexity
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Access by index | O(1) | O(1) | `arr[i]` |
-| Update by index | O(1) | O(1) | `arr[i] = x` |
-| Append | O(1)* | O(1) | `arr.append(x)` - amortized |
-| Insert at index | O(n) | O(1) | `arr.insert(i, x)` - shifts elements |
-| Delete by index | O(n) | O(1) | `arr.pop(i)` - shifts elements |
-| Delete from end | O(1) | O(1) | `arr.pop()` |
-| Search (unsorted) | O(n) | O(1) | `x in arr` |
-| Search (sorted) | O(log n) | O(1) | Binary search |
+| Operation         | Time     | Space | Notes                                |
+| ----------------- | -------- | ----- | ------------------------------------ |
+| Access by index   | O(1)     | O(1)  | `arr[i]`                             |
+| Update by index   | O(1)     | O(1)  | `arr[i] = x`                         |
+| Append            | O(1)\*   | O(1)  | `arr.append(x)` - amortized          |
+| Insert at index   | O(n)     | O(1)  | `arr.insert(i, x)` - shifts elements |
+| Delete by index   | O(n)     | O(1)  | `arr.pop(i)` - shifts elements       |
+| Delete from end   | O(1)     | O(1)  | `arr.pop()`                          |
+| Search (unsorted) | O(n)     | O(1)  | `x in arr`                           |
+| Search (sorted)   | O(log n) | O(1)  | Binary search                        |
 
-*Amortized O(1) due to dynamic resizing
+\*Amortized O(1) due to dynamic resizing
 
 ---
 
@@ -340,14 +342,14 @@ Cache               Friendly ✓      Unfriendly
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Rotate Array | Medium | Reversal trick |
-| 2 | Plus One | Easy | Carry propagation |
-| 3 | Move Zeroes | Easy | Two pointers |
-| 4 | Remove Element | Easy | In-place modification |
-| 5 | Find All Duplicates in an Array | Medium | Index as hash |
-| 6 | Product of Array Except Self | Medium | Prefix/suffix products |
+| #   | Problem                         | Difficulty | Key Concept            |
+| --- | ------------------------------- | ---------- | ---------------------- |
+| 1   | Rotate Array                    | Medium     | Reversal trick         |
+| 2   | Plus One                        | Easy       | Carry propagation      |
+| 3   | Move Zeroes                     | Easy       | Two pointers           |
+| 4   | Remove Element                  | Easy       | In-place modification  |
+| 5   | Find All Duplicates in an Array | Medium     | Index as hash          |
+| 6   | Product of Array Except Self    | Medium     | Prefix/suffix products |
 
 ---
 

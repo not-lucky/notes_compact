@@ -1,22 +1,28 @@
 # Set Operations - Solutions
 
 ## 1. Intersection of Two Arrays
+
 Given two integer arrays `nums1` and `nums2`, return an array of their intersection. Each element in the result must be unique and you may return the result in any order.
 
 ### Problem Statement
+
 Find common unique elements between two arrays.
 
 ### Examples & Edge Cases
+
 **Example:**
+
 - Input: `nums1 = [1, 2, 2, 1], nums2 = [2, 2]`
 - Output: `[2]`
 
 **Edge Cases:**
+
 - No common elements.
 - Arrays are identical.
 - One array is empty.
 
 ### Optimal Python Solution
+
 ```python
 def intersection(nums1: list[int], nums2: list[int]) -> list[int]:
     """
@@ -28,18 +34,22 @@ def intersection(nums1: list[int], nums2: list[int]) -> list[int]:
 ```
 
 ### Explanation
+
 By converting the arrays to sets, we automatically remove duplicates within each array. The `&` operator then finds the elements that exist in both sets.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n + m), where n and m are lengths of the arrays.
 - **Space Complexity**: O(n + m).
 
 ---
 
 ## 2. Intersection of Two Arrays II
+
 Find common elements, but include duplicates based on their frequency in both arrays.
 
 ### Optimal Python Solution
+
 ```python
 from collections import Counter
 
@@ -57,25 +67,30 @@ def intersect(nums1: list[int], nums2: list[int]) -> list[int]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n + m).
 - **Space Complexity**: O(min(n, m)) to store counts of the smaller array.
 
 ---
 
 ## 3. Contains Duplicate
+
 (Discussed in earlier files). Use `len(set(nums)) != len(nums)`.
 
 ---
 
 ## 4. Single Number
+
 (Discussed in Frequency file). Use `res ^= num`.
 
 ---
 
 ## 5. Happy Number
+
 Write an algorithm to determine if a number `n` is happy. A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits. Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.
 
 ### Optimal Python Solution
+
 ```python
 def isHappy(n: int) -> bool:
     """
@@ -97,15 +112,18 @@ def isHappy(n: int) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(log n).
 - **Space Complexity**: O(log n).
 
 ---
 
 ## 6. Longest Consecutive Sequence
+
 Given an unsorted array of integers `nums`, return the length of the longest consecutive elements sequence.
 
 ### Optimal Python Solution
+
 ```python
 def longestConsecutive(nums: list[int]) -> int:
     """
@@ -127,18 +145,22 @@ def longestConsecutive(nums: list[int]) -> int:
 ```
 
 ### Explanation
+
 We only check for a sequence starting from the smallest element of that sequence. This ensures we don't redundantly count the same sequence for every element in it.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n). Each number is visited at most twice.
 - **Space Complexity**: O(n).
 
 ---
 
 ## 7. Missing Number
+
 Given an array `nums` containing `n` distinct numbers in the range `[0, n]`, return the only number in the range that is missing from the array.
 
 ### Optimal Python Solution
+
 ```python
 def missingNumber(nums: list[int]) -> int:
     """
@@ -153,14 +175,17 @@ def missingNumber(nums: list[int]) -> int:
 ---
 
 ## 8. Find All Numbers Disappeared in an Array
+
 (Discussed in Frequency file - Index Marking).
 
 ---
 
 ## 9. Isomorphic Strings
+
 Given two strings `s` and `t`, determine if they are isomorphic. Two strings are isomorphic if the characters in `s` can be replaced to get `t`.
 
 ### Optimal Python Solution
+
 ```python
 def isIsomorphic(s: str, t: str) -> bool:
     """
@@ -182,8 +207,10 @@ def isIsomorphic(s: str, t: str) -> bool:
 ---
 
 ## 10. Word Pattern
+
 Given a `pattern` and a string `s`, find if `s` follows the same pattern.
 
 ### Optimal Python Solution
+
 Similar to Isomorphic Strings. Split `s` into words and perform bidirectional mapping between `pattern` characters and `words`.
 O(n) Time, O(n) Space.

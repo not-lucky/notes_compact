@@ -24,6 +24,7 @@ Think of building a permutation as filling slots in a sequence. At each slot, yo
    - n=10: 3,628,800 ways—factorial grows FAST!
 
 4. **Visual Intuition—Position-by-Position**:
+
 ```
 Position 1:  Choose from {1,2,3}
                /      |      \
@@ -59,6 +60,7 @@ Permutations have n! complexity—avoid when possible:
 5. **When Elements Can Be Reused**: If the same element can appear multiple times, you're dealing with permutations with repetition—a different formula (n^k, not n!).
 
 **Red Flags Against Full Permutation Enumeration:**
+
 - n > 10 in constraints → n! won't fit in time limit
 - Problem asks for "minimum/maximum" → usually DP
 - Problem asks for "any valid" → greedy or targeted search
@@ -78,6 +80,7 @@ Permutations have n! complexity—avoid when possible:
 ## Interview Context
 
 Permutation problems test:
+
 1. **Order matters**: Unlike subsets, [1,2] ≠ [2,1]
 2. **Element tracking**: Knowing which elements are already used
 3. **Duplicate handling**: Avoiding duplicate permutations
@@ -414,21 +417,21 @@ Result: "213"
 
 ## Approach Comparison
 
-| Approach | Time | Space | Best For |
-|----------|------|-------|----------|
-| Used array | O(n × n!) | O(n) | Most readable |
-| Swapping | O(n × n!) | O(n) | In-place modification |
-| With duplicates | O(n × n!) | O(n) | Handling duplicates |
+| Approach        | Time      | Space | Best For              |
+| --------------- | --------- | ----- | --------------------- |
+| Used array      | O(n × n!) | O(n)  | Most readable         |
+| Swapping        | O(n × n!) | O(n)  | In-place modification |
+| With duplicates | O(n × n!) | O(n)  | Handling duplicates   |
 
 ---
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| All permutations | O(n × n!) | O(n) | n! permutations, O(n) each |
-| Next permutation | O(n) | O(1) | Single iteration |
-| Kth permutation | O(n²) | O(n) | Pop from list is O(n) |
+| Operation        | Time      | Space | Notes                      |
+| ---------------- | --------- | ----- | -------------------------- |
+| All permutations | O(n × n!) | O(n)  | n! permutations, O(n) each |
+| Next permutation | O(n)      | O(1)  | Single iteration           |
+| Kth permutation  | O(n²)     | O(n)  | Pop from list is O(n)      |
 
 ---
 
@@ -443,13 +446,13 @@ Result: "213"
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Permutations | Medium | Basic backtracking |
-| 2 | Permutations II | Medium | Sort + skip duplicates |
-| 3 | Next Permutation | Medium | Find pattern, O(n) |
-| 4 | Permutation Sequence | Hard | Math-based, skip counting |
-| 5 | Palindrome Permutation II | Medium | Build from half |
+| #   | Problem                   | Difficulty | Key Insight               |
+| --- | ------------------------- | ---------- | ------------------------- |
+| 1   | Permutations              | Medium     | Basic backtracking        |
+| 2   | Permutations II           | Medium     | Sort + skip duplicates    |
+| 3   | Next Permutation          | Medium     | Find pattern, O(n)        |
+| 4   | Permutation Sequence      | Hard       | Math-based, skip counting |
+| 5   | Palindrome Permutation II | Medium     | Build from half           |
 
 ---
 

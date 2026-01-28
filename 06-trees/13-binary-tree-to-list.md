@@ -395,14 +395,14 @@ def increasing_bst(root: TreeNode) -> TreeNode:
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Flatten to preorder | O(n) | O(1)* | Morris approach |
-| BST to doubly linked | O(n) | O(h) | Inorder traversal |
-| Sorted list to BST | O(n) | O(log n) | Optimal approach |
-| Increasing BST | O(n) | O(h) | Simple inorder |
+| Problem              | Time | Space    | Notes             |
+| -------------------- | ---- | -------- | ----------------- |
+| Flatten to preorder  | O(n) | O(1)\*   | Morris approach   |
+| BST to doubly linked | O(n) | O(h)     | Inorder traversal |
+| Sorted list to BST   | O(n) | O(log n) | Optimal approach  |
+| Increasing BST       | O(n) | O(h)     | Simple inorder    |
 
-*O(1) space for Morris, O(h) for recursive
+\*O(1) space for Morris, O(h) for recursive
 
 ---
 
@@ -448,13 +448,13 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Flatten Binary Tree to Linked List | Medium | Preorder flatten |
-| 2 | Convert BST to Sorted Doubly Linked List | Medium | Inorder + circular |
-| 3 | Convert Sorted List to Binary Search Tree | Medium | Find middle |
-| 4 | Increasing Order Search Tree | Easy | Simple inorder |
-| 5 | Flatten a Multilevel Doubly Linked List | Medium | Similar pattern |
+| #   | Problem                                   | Difficulty | Key Concept        |
+| --- | ----------------------------------------- | ---------- | ------------------ |
+| 1   | Flatten Binary Tree to Linked List        | Medium     | Preorder flatten   |
+| 2   | Convert BST to Sorted Doubly Linked List  | Medium     | Inorder + circular |
+| 3   | Convert Sorted List to Binary Search Tree | Medium     | Find middle        |
+| 4   | Increasing Order Search Tree              | Easy       | Simple inorder     |
+| 5   | Flatten a Multilevel Doubly Linked List   | Medium     | Similar pattern    |
 
 ---
 

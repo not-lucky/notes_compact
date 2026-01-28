@@ -11,6 +11,7 @@ LRU Cache is built on a simple observation about how we access data:
 > **If you accessed something recently, you're likely to access it again soon.**
 
 This is called **temporal locality**, and it's everywhere:
+
 - You re-read the same documentation page while coding
 - You visit the same websites repeatedly during a day
 - You use the same files in your editor
@@ -318,12 +319,12 @@ Dummy nodes eliminate all null checks and edge cases.
 
 ## Complexity Analysis
 
-| Operation | Time | Explanation |
-|-----------|------|-------------|
-| get() | O(1) | HashMap lookup + linked list move |
+| Operation      | Time | Explanation                       |
+| -------------- | ---- | --------------------------------- |
+| get()          | O(1) | HashMap lookup + linked list move |
 | put() (update) | O(1) | HashMap lookup + linked list move |
-| put() (insert) | O(1) | HashMap insert + linked list add |
-| put() (evict) | O(1) | Remove tail + delete from HashMap |
+| put() (insert) | O(1) | HashMap insert + linked list add  |
+| put() (evict)  | O(1) | Remove tail + delete from HashMap |
 
 **Space: O(capacity)** - we store at most `capacity` nodes
 
@@ -332,6 +333,7 @@ Dummy nodes eliminate all null checks and edge cases.
 Let's prove each operation is truly O(1):
 
 **get(key):**
+
 ```
 Step 1: HashMap lookup           → O(1) average
 Step 2: Access node.prev/next    → O(1) pointer access
@@ -340,6 +342,7 @@ Total: O(1)
 ```
 
 **put(key, value) - existing key:**
+
 ```
 Step 1: HashMap lookup           → O(1)
 Step 2: Update node.value        → O(1)
@@ -348,6 +351,7 @@ Total: O(1)
 ```
 
 **put(key, value) - new key, no eviction:**
+
 ```
 Step 1: Create new node          → O(1)
 Step 2: HashMap insert           → O(1)
@@ -356,6 +360,7 @@ Total: O(1)
 ```
 
 **put(key, value) - new key, with eviction:**
+
 ```
 Step 1-3: Same as above          → O(1)
 Step 4: Access tail.prev         → O(1)
@@ -371,6 +376,7 @@ LRU isn't always the right choice. Here's when to consider alternatives:
 ### Access Patterns Where LRU Fails
 
 **1. Scan-Based Access (Sequential Reading)**
+
 ```
 Problem: You sequentially scan through data (e.g., reading a file)
 What happens: Each new access evicts old items, cache is useless
@@ -383,6 +389,7 @@ Solution: Don't cache, or use scan-resistant variants (LRU-K, 2Q)
 ```
 
 **2. Frequency-Based Popularity**
+
 ```
 Problem: Some items are accessed frequently, others rarely
 What happens: A burst of access to cold items can evict hot items
@@ -394,6 +401,7 @@ Solution: LFU (Least Frequently Used) or hybrid (ARC, LIRS)
 ```
 
 **3. Predictable Access Patterns**
+
 ```
 Problem: You know exactly when data will be needed
 What happens: LRU ignores your knowledge
@@ -570,13 +578,13 @@ A: Add a callback function to fetch on miss,
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | LRU Cache | Medium | Core implementation |
-| 2 | Design Linked List | Medium | Practice DLL operations |
-| 3 | All O(1) Data Structure | Hard | Similar combination pattern |
-| 4 | Design Browser History | Medium | Simpler linked list |
-| 5 | LRU Cache (Follow-up) | Hard | With TTL or persistence |
+| #   | Problem                 | Difficulty | Key Concept                 |
+| --- | ----------------------- | ---------- | --------------------------- |
+| 1   | LRU Cache               | Medium     | Core implementation         |
+| 2   | Design Linked List      | Medium     | Practice DLL operations     |
+| 3   | All O(1) Data Structure | Hard       | Similar combination pattern |
+| 4   | Design Browser History  | Medium     | Simpler linked list         |
+| 5   | LRU Cache (Follow-up)   | Hard       | With TTL or persistence     |
 
 ---
 

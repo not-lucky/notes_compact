@@ -111,6 +111,7 @@ Trie overhead isn't justified.
 **2. Full-Text Search (Not Just Prefix)**
 
 Autocomplete is PREFIX matching. If you need:
+
 - "Find sentences containing 'apple'" (not just starting with)
 - Fuzzy matching ("aple" → "apple")
 - Synonym matching ("car" → also show "automobile")
@@ -124,10 +125,12 @@ If suggestions depend heavily on user history, location, time of day, etc., you 
 **4. Rapidly Changing Data**
 
 If sentences and frequencies change every second, maintaining trie consistency becomes expensive. Consider:
+
 - Streaming updates with eventual consistency
 - Separate hot/cold trie paths
 
 **Red Flags:**
+
 - "Search by keyword anywhere in text" → Inverted index
 - "Correct typos in query" → Edit distance / fuzzy matching
 - "Personalized per user" → User-specific tries or ML ranking
@@ -138,6 +141,7 @@ If sentences and frequencies change every second, maintaining trie consistency b
 ## Problem Statement
 
 Design a search autocomplete system that:
+
 1. Provides suggestions as user types each character
 2. Returns top 3 hot sentences that start with the user's input
 3. Records new sentences when user presses '#'
@@ -412,13 +416,14 @@ class AutocompleteSystem:
 
 ## Complexity Analysis
 
-| Operation | Basic Approach | Optimized (Heap) | Pre-computed |
-|-----------|---------------|------------------|--------------|
-| Init | O(n × L) | O(n × L) | O(n × L × L) |
-| Input (per char) | O(m × L + m log m) | O(m × L + m log k) | O(k log k) |
-| Space | O(total chars) | O(total chars) | O(total chars × avg sentences per prefix) |
+| Operation        | Basic Approach     | Optimized (Heap)   | Pre-computed                              |
+| ---------------- | ------------------ | ------------------ | ----------------------------------------- |
+| Init             | O(n × L)           | O(n × L)           | O(n × L × L)                              |
+| Input (per char) | O(m × L + m log m) | O(m × L + m log k) | O(k log k)                                |
+| Space            | O(total chars)     | O(total chars)     | O(total chars × avg sentences per prefix) |
 
 Where:
+
 - n = number of sentences
 - L = average sentence length
 - m = matching sentences
@@ -430,11 +435,11 @@ Where:
 
 ### What to Store at Each Node?
 
-| Approach | Store at Node | Pros | Cons |
-|----------|---------------|------|------|
-| Terminal only | sentence, freq at end | Less memory | Must traverse to collect |
-| Each node | sentence map | O(1) per prefix | More memory |
-| Pre-computed | top-k sentences | Fastest query | Most memory, update cost |
+| Approach      | Store at Node         | Pros            | Cons                     |
+| ------------- | --------------------- | --------------- | ------------------------ |
+| Terminal only | sentence, freq at end | Less memory     | Must traverse to collect |
+| Each node     | sentence map          | O(1) per prefix | More memory              |
+| Pre-computed  | top-k sentences       | Fastest query   | Most memory, update cost |
 
 ### Handling Ties
 
@@ -587,13 +592,13 @@ For system design interviews, extend the solution:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Design Search Autocomplete System | Hard | Trie + frequency sorting |
-| 2 | Top K Frequent Words | Medium | Heap + frequency |
-| 3 | Search Suggestions System | Medium | Trie or binary search |
-| 4 | Implement Trie II | Medium | Trie with counts |
-| 5 | Design File System | Medium | Trie for paths |
+| #   | Problem                           | Difficulty | Key Concept              |
+| --- | --------------------------------- | ---------- | ------------------------ |
+| 1   | Design Search Autocomplete System | Hard       | Trie + frequency sorting |
+| 2   | Top K Frequent Words              | Medium     | Heap + frequency         |
+| 3   | Search Suggestions System         | Medium     | Trie or binary search    |
+| 4   | Implement Trie II                 | Medium     | Trie with counts         |
+| 5   | Design File System                | Medium     | Trie for paths           |
 
 ---
 

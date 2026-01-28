@@ -17,20 +17,22 @@ Binary search:   Click once per halving → log n clicks → O(log n)
 **The "Doubling Test"**
 
 A quick mental check for complexity:
+
 1. Imagine doubling your input size
 2. Ask: "How much more work?"
 
-| If work... | Then complexity is... |
-|------------|----------------------|
-| Stays same | O(1) |
-| Adds constant | O(log n) |
-| Doubles | O(n) |
-| Slightly more than doubles | O(n log n) |
-| Quadruples | O(n²) |
+| If work...                 | Then complexity is... |
+| -------------------------- | --------------------- |
+| Stays same                 | O(1)                  |
+| Adds constant              | O(log n)              |
+| Doubles                    | O(n)                  |
+| Slightly more than doubles | O(n log n)            |
+| Quadruples                 | O(n²)                 |
 
 **Why This Matters**
 
 Understanding time complexity lets you predict performance:
+
 - O(n) with n=1,000,000 → ~1 second on modern hardware
 - O(n²) with n=1,000,000 → ~12 days (!!)
 
@@ -41,6 +43,7 @@ Understanding time complexity lets you predict performance:
 Interviewers expect you to analyze code on the spot. The skill isn't just knowing Big-O—it's breaking down any algorithm and determining its complexity systematically.
 
 Common interview moments:
+
 - "What's the time complexity of your solution?"
 - "How does this change if the array is sorted?"
 - "Your solution is O(n²). Can you optimize it?"
@@ -343,19 +346,19 @@ def merge_sort(arr: list[int]) -> list[int]:
 
 For recurrences of the form: T(n) = aT(n/b) + O(n^d)
 
-| Condition | Complexity |
-|-----------|------------|
-| d > log_b(a) | O(n^d) |
-| d = log_b(a) | O(n^d log n) |
+| Condition    | Complexity      |
+| ------------ | --------------- |
+| d > log_b(a) | O(n^d)          |
+| d = log_b(a) | O(n^d log n)    |
 | d < log_b(a) | O(n^(log_b(a))) |
 
 ### Common Examples
 
-| Algorithm | Recurrence | Complexity |
-|-----------|------------|------------|
-| Binary search | T(n) = T(n/2) + O(1) | O(log n) |
-| Merge sort | T(n) = 2T(n/2) + O(n) | O(n log n) |
-| Linear scan | T(n) = T(n/2) + O(n) | O(n) |
+| Algorithm     | Recurrence            | Complexity |
+| ------------- | --------------------- | ---------- |
+| Binary search | T(n) = T(n/2) + O(1)  | O(log n)   |
+| Merge sort    | T(n) = 2T(n/2) + O(n) | O(n log n) |
+| Linear scan   | T(n) = T(n/2) + O(n)  | O(n)       |
 
 ---
 
@@ -400,15 +403,15 @@ class DynamicArray:
 
 ## Common Complexity Patterns
 
-| Pattern | Complexity | Example |
-|---------|------------|---------|
-| Single loop | O(n) | Linear search |
-| Two nested loops (same array) | O(n²) | Bubble sort |
-| Loop with halving | O(log n) | Binary search |
-| Divide & conquer + merge | O(n log n) | Merge sort |
-| All subsets | O(2^n) | Subset generation |
-| All permutations | O(n!) | Permutation generation |
-| Two pointers (converging) | O(n) | Container with most water |
+| Pattern                       | Complexity | Example                   |
+| ----------------------------- | ---------- | ------------------------- |
+| Single loop                   | O(n)       | Linear search             |
+| Two nested loops (same array) | O(n²)      | Bubble sort               |
+| Loop with halving             | O(log n)   | Binary search             |
+| Divide & conquer + merge      | O(n log n) | Merge sort                |
+| All subsets                   | O(2^n)     | Subset generation         |
+| All permutations              | O(n!)      | Permutation generation    |
+| Two pointers (converging)     | O(n)       | Container with most water |
 
 ---
 
@@ -428,6 +431,7 @@ def mystery1(n):
 <summary>Answer 1</summary>
 
 O(n log n). Outer loop runs log n times (i doubles), inner loop runs n times each.
+
 </details>
 
 ```python
@@ -444,6 +448,7 @@ def mystery2(arr):
 <summary>Answer 2</summary>
 
 O(n³). Three nested loops. More precisely, it's n(n+1)(n+2)/6 ≈ n³/6, but constants drop.
+
 </details>
 
 ```python
@@ -460,19 +465,20 @@ def mystery3(arr):
 <summary>Answer 3</summary>
 
 O(n²). The `+` creates a new list each time, copying all previous elements. Total: 1 + 2 + 3 + ... + n = O(n²).
+
 </details>
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Analyze a given code snippet | Easy | Loop analysis |
-| 2 | Compare recursive vs iterative | Easy | Recursion basics |
-| 3 | Identify amortized operations | Medium | Dynamic array |
-| 4 | Solve recurrence relations | Medium | Master theorem |
-| 5 | Two pointer complexity proof | Medium | Non-obvious O(n) |
+| #   | Problem                        | Difficulty | Focus            |
+| --- | ------------------------------ | ---------- | ---------------- |
+| 1   | Analyze a given code snippet   | Easy       | Loop analysis    |
+| 2   | Compare recursive vs iterative | Easy       | Recursion basics |
+| 3   | Identify amortized operations  | Medium     | Dynamic array    |
+| 4   | Solve recurrence relations     | Medium     | Master theorem   |
+| 5   | Two pointer complexity proof   | Medium     | Non-obvious O(n) |
 
 ---
 

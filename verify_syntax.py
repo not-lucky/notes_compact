@@ -1,20 +1,24 @@
 import os
+import py_compile
 import re
 import sys
-import py_compile
 import tempfile
+import textwrap
+
 
 def extract_python_blocks(md_file):
-    with open(md_file, 'r', encoding='utf-8') as f:
+    with open(md_file, "r", encoding="utf-8") as f:
         content = f.read()
 
     # Simple regex to extract python code blocks
-    blocks = re.findall(r'```python\n([\s\S]*?)```', content)
+    blocks = re.findall(r"```python\n([\s\S]*?)```", content)
     return blocks
 
+
 def verify_syntax(code_block):
-    with tempfile.NamedTemporaryFile(suffix='.py', delete=False) as tf:
-        tf.write(code_block.encode('utf-8'))
+    code_block = textwrap.dedent(code_block)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False) as tf:
+        tf.write(code_block.encode("utf-8"))
         temp_name = tf.name
 
     try:
@@ -26,14 +30,15 @@ def verify_syntax(code_block):
         if os.path.exists(temp_name):
             os.remove(temp_name)
 
+
 def main():
-    solutions_dir = 'solutions'
+    solutions_dir = "solutions"
     errors = []
     total_blocks = 0
 
     for root, dirs, files in os.walk(solutions_dir):
         for file in files:
-            if file.endswith('.md'):
+            if file.endswith(".md"):
                 full_path = os.path.join(root, file)
                 blocks = extract_python_blocks(full_path)
                 for i, block in enumerate(blocks):
@@ -51,6 +56,7 @@ def main():
         sys.exit(1)
     else:
         print("All Python blocks have valid syntax.")
+
 
 if __name__ == "__main__":
     main()

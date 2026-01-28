@@ -2,20 +2,21 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Rotting Oranges | Medium | Core problem |
-| 2 | 01 Matrix | Medium | Distance to 0 |
-| 3 | Walls and Gates | Medium | Distance to gate |
-| 4 | Shortest Bridge | Medium | Two islands |
-| 5 | As Far from Land as Possible | Medium | Max distance |
-| 6 | Map of Highest Peak | Medium | Distance from water |
+| #   | Problem                      | Difficulty | Key Variation       |
+| --- | ---------------------------- | ---------- | ------------------- |
+| 1   | Rotting Oranges              | Medium     | Core problem        |
+| 2   | 01 Matrix                    | Medium     | Distance to 0       |
+| 3   | Walls and Gates              | Medium     | Distance to gate    |
+| 4   | Shortest Bridge              | Medium     | Two islands         |
+| 5   | As Far from Land as Possible | Medium     | Max distance        |
+| 6   | Map of Highest Peak          | Medium     | Distance from water |
 
 ---
 
 ## 1. Rotting Oranges
 
 ### Problem Statement
+
 Minimum minutes until no fresh oranges remain.
 
 ### Optimal Python Solution
@@ -49,6 +50,7 @@ def orangesRotting(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: Multi-source BFS.
 - **Complexity**: Time O(MN), Space O(MN).
 
@@ -57,6 +59,7 @@ def orangesRotting(grid: list[list[int]]) -> int:
 ## 2. 01 Matrix
 
 ### Problem Statement
+
 Distance of the nearest 0 for each cell.
 
 ### Optimal Python Solution
@@ -87,6 +90,7 @@ def updateMatrix(mat: list[list[int]]) -> list[list[int]]:
 ## 3. Walls and Gates
 
 ### Problem Statement
+
 Fill empty rooms with distance to the nearest gate.
 
 ### Optimal Python Solution
@@ -116,6 +120,7 @@ def wallsAndGates(rooms: list[list[int]]) -> None:
 ## 4. Shortest Bridge
 
 ### Problem Statement
+
 Find the shortest path between two islands.
 
 ### Optimal Python Solution
@@ -159,6 +164,7 @@ def shortestBridge(grid: list[list[int]]) -> int:
 ## 5. As Far from Land as Possible
 
 ### Problem Statement
+
 Find a water cell such that its distance to the nearest land cell is maximized.
 
 ### Optimal Python Solution
@@ -192,6 +198,7 @@ def maxDistance(grid: list[list[int]]) -> int:
 ## 6. Map of Highest Peak
 
 ### Problem Statement
+
 Assign heights to each cell such that the maximum height is minimized, with water cells at height 0.
 
 ### Optimal Python Solution

@@ -22,6 +22,7 @@ Think of it as a systematic search with early rejection of invalid paths.
    - **Anti-diagonal (↙)**: Cells where `row + col` is constant
 
 4. **Visual Intuition—Diagonal Math**:
+
 ```
     col→  0  1  2  3
 row↓
@@ -37,6 +38,7 @@ row↓
   2      [2][3][4][5]
   3      [3][4][5][6]
 ```
+
 If two queens have the same diagonal ID, they attack each other.
 
 5. **Why Backtracking is Needed**: Not all partial solutions lead to complete solutions. For n=4, if you place queens at (0,0) and (1,2), there's no valid place for row 2. You must undo (backtrack) and try (1,3) instead.
@@ -58,6 +60,7 @@ This constraint satisfaction approach isn't always best:
 5. **When Symmetry Can Be Exploited**: N-Queens has 8-fold symmetry (rotations and reflections). For counting or finding all solutions, you can solve for 1/8 of the cases and multiply.
 
 **Red Flags for N-Queens Pattern:**
+
 - n > 15 and need ALL solutions → too slow
 - Need just one solution → use heuristics
 - Just need count → use specialized algorithms
@@ -76,6 +79,7 @@ This constraint satisfaction approach isn't always best:
 ## Interview Context
 
 N-Queens is a classic constraint satisfaction problem that tests:
+
 1. **Backtracking mastery**: Systematic exploration with constraints
 2. **Constraint checking**: Efficient validation of queen placement
 3. **State representation**: How to represent the board
@@ -305,19 +309,19 @@ def total_n_queens(n: int) -> int:
 
 ## Solution Counts by N
 
-| n | Solutions | Time to Compute |
-|---|-----------|-----------------|
-| 1 | 1 | Instant |
-| 2 | 0 | Instant |
-| 3 | 0 | Instant |
-| 4 | 2 | Instant |
-| 5 | 10 | Instant |
-| 6 | 4 | Instant |
-| 7 | 40 | Instant |
-| 8 | 92 | Fast |
-| 9 | 352 | Fast |
-| 10 | 724 | ~1 second |
-| 12 | 14,200 | ~1 minute |
+| n   | Solutions | Time to Compute |
+| --- | --------- | --------------- |
+| 1   | 1         | Instant         |
+| 2   | 0         | Instant         |
+| 3   | 0         | Instant         |
+| 4   | 2         | Instant         |
+| 5   | 10        | Instant         |
+| 6   | 4         | Instant         |
+| 7   | 40        | Instant         |
+| 8   | 92        | Fast            |
+| 9   | 352       | Fast            |
+| 10  | 724       | ~1 second       |
+| 12  | 14,200    | ~1 minute       |
 
 ---
 
@@ -399,12 +403,12 @@ def solve_n_queens_positions(n: int) -> list[list[tuple[int, int]]]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Basic backtracking | O(n! × n) | O(n) | n for is_valid check |
-| With sets | O(n!) | O(n) | O(1) validation |
-| With bitmasks | O(n!) | O(n) | Fastest constant factor |
-| Count only | O(n!) | O(n) | No string building |
+| Operation          | Time      | Space | Notes                   |
+| ------------------ | --------- | ----- | ----------------------- |
+| Basic backtracking | O(n! × n) | O(n)  | n for is_valid check    |
+| With sets          | O(n!)     | O(n)  | O(1) validation         |
+| With bitmasks      | O(n!)     | O(n)  | Fastest constant factor |
+| Count only         | O(n!)     | O(n)  | No string building      |
 
 ---
 
@@ -454,12 +458,12 @@ cols.remove(col)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | N-Queens | Hard | Classic backtracking |
-| 2 | N-Queens II | Hard | Count only |
-| 3 | Valid Sudoku | Medium | Similar constraint checking |
-| 4 | Robot Room Cleaner | Hard | Backtracking in unknown space |
+| #   | Problem            | Difficulty | Key Insight                   |
+| --- | ------------------ | ---------- | ----------------------------- |
+| 1   | N-Queens           | Hard       | Classic backtracking          |
+| 2   | N-Queens II        | Hard       | Count only                    |
+| 3   | Valid Sudoku       | Medium     | Similar constraint checking   |
+| 4   | Robot Room Cleaner | Hard       | Backtracking in unknown space |
 
 ---
 

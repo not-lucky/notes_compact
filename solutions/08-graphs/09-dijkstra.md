@@ -2,19 +2,20 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Network Delay Time | Medium | Basic Dijkstra |
-| 2 | Path with Minimum Effort | Medium | Dijkstra on Grid |
-| 3 | Cheapest Flights Within K Stops | Medium | Hops constraint |
-| 4 | Swim in Rising Water | Hard | Dijkstra on Grid |
-| 5 | Path with Maximum Probability | Medium | Product of weights |
+| #   | Problem                         | Difficulty | Key Variation      |
+| --- | ------------------------------- | ---------- | ------------------ |
+| 1   | Network Delay Time              | Medium     | Basic Dijkstra     |
+| 2   | Path with Minimum Effort        | Medium     | Dijkstra on Grid   |
+| 3   | Cheapest Flights Within K Stops | Medium     | Hops constraint    |
+| 4   | Swim in Rising Water            | Hard       | Dijkstra on Grid   |
+| 5   | Path with Maximum Probability   | Medium     | Product of weights |
 
 ---
 
 ## 1. Network Delay Time
 
 ### Problem Statement
+
 Find the minimum time for all nodes to receive a signal from a source node `k`.
 
 ### Optimal Python Solution
@@ -46,6 +47,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: Standard Dijkstra.
 - **Complexity**: Time O(E log V), Space O(V + E).
 
@@ -54,6 +56,7 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
 ## 2. Path with Minimum Effort
 
 ### Problem Statement
+
 Find a path from top-left to bottom-right such that the maximum absolute difference in heights between adjacent cells is minimized.
 
 ### Optimal Python Solution
@@ -83,6 +86,7 @@ def minimumEffortPath(heights: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Logic**: Use Dijkstra where the "distance" is the maximum edge weight on the path.
 - **Complexity**: Time O(MN log(MN)), Space O(MN).
 
@@ -91,6 +95,7 @@ def minimumEffortPath(heights: list[list[int]]) -> int:
 ## 3. Cheapest Flights Within K Stops
 
 ### Problem Statement
+
 Find the cheapest price from `src` to `dst` with at most `k` stops.
 
 ### Optimal Python Solution
@@ -121,15 +126,17 @@ def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: i
 ```
 
 ### Explanation
+
 - **Constraint**: Regular Dijkstra can fail because a more expensive path with fewer stops might be better later.
 - **Optimization**: We track the number of stops to prune paths.
-- **Complexity**: Time O(E * K log E), Space O(V + E).
+- **Complexity**: Time O(E \* K log E), Space O(V + E).
 
 ---
 
 ## 4. Swim in Rising Water
 
 ### Problem Statement
+
 Find the minimum time to swim from top-left to bottom-right, where you can swim in water of level `t` if the grid value is `≤ t`.
 
 ### Optimal Python Solution
@@ -154,6 +161,7 @@ def swimInWater(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Logic**: Similar to Path with Minimum Effort. The time is the maximum height on the path.
 - **Complexity**: Time O(N² log N), Space O(N²).
 
@@ -162,6 +170,7 @@ def swimInWater(grid: list[list[int]]) -> int:
 ## 5. Path with Maximum Probability
 
 ### Problem Statement
+
 Find the path with the maximum probability of success.
 
 ### Optimal Python Solution
@@ -194,5 +203,6 @@ def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start:
 ```
 
 ### Explanation
+
 - **Variation**: Instead of adding weights, we multiply probabilities. Instead of minimizing, we maximize.
 - **Complexity**: Time O(E log V), Space O(V + E).

@@ -183,6 +183,7 @@ Negative numbers can't be powers of positive integers:
 ```
 
 **Red Flags (Don't Use Bit Tricks):**
+
 - Base isn't 2 (or 4, which is 2²)
 - You need the next/previous power, not just a check
 - Input might be zero or negative (need explicit checks)
@@ -509,12 +510,12 @@ The common prefix is 1, and we shift it back.
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Technique |
-|---------|------|-------|-----------|
-| Power of Two | O(1) | O(1) | n & (n-1) == 0 |
-| Power of Four | O(1) | O(1) | Power of 2 + mask check |
-| Power of Three | O(1) | O(1) | Modulo by max power |
-| Range Bitwise AND | O(log n) | O(1) | Find common prefix |
+| Problem           | Time     | Space | Technique               |
+| ----------------- | -------- | ----- | ----------------------- |
+| Power of Two      | O(1)     | O(1)  | n & (n-1) == 0          |
+| Power of Four     | O(1)     | O(1)  | Power of 2 + mask check |
+| Power of Three    | O(1)     | O(1)  | Modulo by max power     |
+| Range Bitwise AND | O(log n) | O(1)  | Find common prefix      |
 
 ---
 
@@ -628,13 +629,13 @@ print(log2_ceil(10))   # 4
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Power of Two | Easy | n & (n-1) |
-| 2 | Power of Three | Easy | Modulo by max power |
-| 3 | Power of Four | Easy | Mask for even positions |
-| 4 | Bitwise AND of Numbers Range | Medium | Common prefix |
-| 5 | Find Highest Set Bit | Easy | bit_length() |
+| #   | Problem                      | Difficulty | Key Concept             |
+| --- | ---------------------------- | ---------- | ----------------------- |
+| 1   | Power of Two                 | Easy       | n & (n-1)               |
+| 2   | Power of Three               | Easy       | Modulo by max power     |
+| 3   | Power of Four                | Easy       | Mask for even positions |
+| 4   | Bitwise AND of Numbers Range | Medium     | Common prefix           |
+| 5   | Find Highest Set Bit         | Easy       | bit_length()            |
 
 ---
 

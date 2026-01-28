@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Maximum Subarray
+
 **Problem Statement**: Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
 
 **Examples & Edge Cases**:
+
 - Example: `[-2,1,-3,4,-1,2,1,-5,4]` -> `6` (subarray `[4,-1,2,1]`)
 - Edge Case: Array with all negative numbers (should return the largest single element).
 - Edge Case: Array with one element.
 
 **Optimal Python Solution**:
+
 ```python
 def maxSubArray(nums: list[int]) -> int:
     # current_sum tracks the max subarray sum ending at the current index
@@ -30,15 +33,18 @@ def maxSubArray(nums: list[int]) -> int:
 At each step, we calculate the maximum sum of a subarray ending at the current index. If the sum of the subarray ending at the previous index is positive, it's beneficial to extend it; otherwise, we start a new subarray from the current element. We update the global maximum at each step.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), where n is the length of the array. We traverse the array once.
 - **Space Complexity**: O(1), only a few variables used.
 
 ---
 
 ### 2. Maximum Product Subarray
+
 **Problem Statement**: Find a contiguous non-empty subarray within an array (containing at least one number) which has the largest product.
 
 **Optimal Python Solution**:
+
 ```python
 def maxProduct(nums: list[int]) -> int:
     if not nums:
@@ -64,15 +70,18 @@ def maxProduct(nums: list[int]) -> int:
 When multiplying by a negative number, the largest product can become the smallest, and the smallest can become the largest. Therefore, we track both the maximum and minimum products ending at the current position.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 3. Maximum Sum Circular Subarray
+
 **Problem Statement**: Given a circular integer array `nums` of length `n`, return the maximum possible sum of a non-empty subarray of `nums`.
 
 **Optimal Python Solution**:
+
 ```python
 def maxSubarraySumCircular(nums: list[int]) -> int:
     # Case 1: Max sum is in the middle (standard Kadane)
@@ -105,15 +114,18 @@ def maxSubarraySumCircular(nums: list[int]) -> int:
 A circular subarray can either be a standard subarray (Case 1) or it can wrap around the end. The "wrap around" sum is equal to the total sum minus the minimum subarray sum in the middle. We calculate both using Kadane-style logic.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 4. House Robber
+
 **Problem Statement**: You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Return the maximum amount of money you can rob.
 
 **Optimal Python Solution**:
+
 ```python
 def rob(nums: list[int]) -> int:
     # This is effectively "Max sum with no adjacent elements"
@@ -137,15 +149,18 @@ def rob(nums: list[int]) -> int:
 For each house, we have two choices: rob it (which means we couldn't have robbed the previous house) or skip it (taking the maximum we could have from the previous house).
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 5. House Robber II
+
 **Problem Statement**: Same as House Robber, but houses are arranged in a circle.
 
 **Optimal Python Solution**:
+
 ```python
 def rob(nums: list[int]) -> int:
     if not nums: return 0
@@ -165,15 +180,18 @@ def rob(nums: list[int]) -> int:
 Since the first and last houses are adjacent, we cannot rob both. We solve the problem twice: once excluding the first house and once excluding the last house, then take the maximum.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 6. Best Time to Buy and Sell Stock
+
 **Problem Statement**: You are given an array `prices` where `prices[i]` is the price of a given stock on the `i-th` day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
 
 **Optimal Python Solution**:
+
 ```python
 def maxProfit(prices: list[int]) -> int:
     if not prices:
@@ -195,15 +213,18 @@ def maxProfit(prices: list[int]) -> int:
 This can be viewed as finding the maximum subarray sum of the differences between consecutive days. However, the standard implementation of tracking the minimum price seen so far and calculating the profit if sold today is more intuitive.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 7. Maximum Sum Rectangle (2D)
+
 **Problem Statement**: Given a 2D matrix, find the sub-rectangle with the largest sum.
 
 **Optimal Python Solution**:
+
 ```python
 def maxSumRectangle(matrix: list[list[int]]) -> int:
     if not matrix or not matrix[0]: return 0
@@ -234,15 +255,18 @@ def maxSumRectangle(matrix: list[list[int]]) -> int:
 We iterate over all possible pairs of left and right columns. For each pair, we compress the 2D problem into a 1D problem by summing elements row-wise between those columns. Then we apply standard 1D Kadane's algorithm on the resulting array.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(C² * R), where C is columns and R is rows.
+
+- **Time Complexity**: O(C² \* R), where C is columns and R is rows.
 - **Space Complexity**: O(R).
 
 ---
 
 ### 8. Maximum Subarray Sum with One Deletion
+
 **Problem Statement**: Given an array of integers, return the maximum sum for a non-empty subarray (contiguous elements) with at most one element deletion.
 
 **Optimal Python Solution**:
+
 ```python
 def maximumSum(arr: list[int]) -> int:
     n = len(arr)
@@ -270,5 +294,6 @@ def maximumSum(arr: list[int]) -> int:
 We use two variables to track the maximum subarray sum ending at each index: one where we have already deleted one element, and one where we haven't. For the `ignored` state, we can either delete the current element (inheriting the `not_ignored` sum from the previous step) or keep the current element (adding it to the `ignored` sum from the previous step).
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).

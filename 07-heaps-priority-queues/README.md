@@ -18,28 +18,28 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 
 ## Core Patterns to Master
 
-| Pattern | Frequency | Key Problems |
-|---------|-----------|--------------|
-| Top-K Elements | Very High | Kth largest, K most frequent |
-| Merge K Sorted | High | Merge K lists, smallest range |
-| Two Heaps | High | Find median, sliding window median |
-| Scheduling | Medium | Task scheduler, meeting rooms II |
-| K Closest/Smallest | High | K closest points, K smallest pairs |
+| Pattern            | Frequency | Key Problems                       |
+| ------------------ | --------- | ---------------------------------- |
+| Top-K Elements     | Very High | Kth largest, K most frequent       |
+| Merge K Sorted     | High      | Merge K lists, smallest range      |
+| Two Heaps          | High      | Find median, sliding window median |
+| Scheduling         | Medium    | Task scheduler, meeting rooms II   |
+| K Closest/Smallest | High      | K closest points, K smallest pairs |
 
 ---
 
 ## Chapter Sections
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-heap-basics](./01-heap-basics.md) | Heap Fundamentals | Heap property, heapify, push/pop |
-| [02-python-heapq](./02-python-heapq.md) | Python heapq Module | Using Python's heap implementation |
-| [03-top-k-pattern](./03-top-k-pattern.md) | Top-K Pattern | Find K largest/smallest efficiently |
-| [04-kth-largest-element](./04-kth-largest-element.md) | Kth Largest Element | Heap vs QuickSelect approaches |
-| [05-merge-k-sorted](./05-merge-k-sorted.md) | Merge K Sorted | Combine multiple sorted sources |
-| [06-median-stream](./06-median-stream.md) | Median from Stream | Two-heap pattern |
-| [07-task-scheduler](./07-task-scheduler.md) | Task Scheduling | Priority queue with cooldown |
-| [08-k-closest-points](./08-k-closest-points.md) | K Closest Points | Distance-based heap problems |
+| Section                                               | Topic               | Key Takeaway                        |
+| ----------------------------------------------------- | ------------------- | ----------------------------------- |
+| [01-heap-basics](./01-heap-basics.md)                 | Heap Fundamentals   | Heap property, heapify, push/pop    |
+| [02-python-heapq](./02-python-heapq.md)               | Python heapq Module | Using Python's heap implementation  |
+| [03-top-k-pattern](./03-top-k-pattern.md)             | Top-K Pattern       | Find K largest/smallest efficiently |
+| [04-kth-largest-element](./04-kth-largest-element.md) | Kth Largest Element | Heap vs QuickSelect approaches      |
+| [05-merge-k-sorted](./05-merge-k-sorted.md)           | Merge K Sorted      | Combine multiple sorted sources     |
+| [06-median-stream](./06-median-stream.md)             | Median from Stream  | Two-heap pattern                    |
+| [07-task-scheduler](./07-task-scheduler.md)           | Task Scheduling     | Priority queue with cooldown        |
+| [08-k-closest-points](./08-k-closest-points.md)       | K Closest Points    | Distance-based heap problems        |
 
 ---
 
@@ -57,11 +57,11 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 
 ## Time Targets
 
-| Difficulty | Target Time | Examples |
-|------------|-------------|----------|
-| Easy | 10-15 min | Kth Largest in Array, Last Stone Weight |
-| Medium | 15-25 min | Top K Frequent, Merge K Lists, Task Scheduler |
-| Hard | 25-40 min | Find Median from Data Stream, Sliding Window Median |
+| Difficulty | Target Time | Examples                                            |
+| ---------- | ----------- | --------------------------------------------------- |
+| Easy       | 10-15 min   | Kth Largest in Array, Last Stone Weight             |
+| Medium     | 15-25 min   | Top K Frequent, Merge K Lists, Task Scheduler       |
+| Hard       | 25-40 min   | Find Median from Data Stream, Sliding Window Median |
 
 ---
 
@@ -98,22 +98,22 @@ Root = minimum              Root = maximum
 
 ## Key Complexity Facts
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| heappush | O(log n) | Bubble up to maintain heap property |
-| heappop | O(log n) | Remove root, bubble down |
-| heapify | O(n) | Build heap from list (NOT O(n log n)) |
-| peek (heap[0]) | O(1) | Access root without removal |
-| nlargest(k, list) | O(n log k) | Uses heap internally |
-| nsmallest(k, list) | O(n log k) | Uses heap internally |
+| Operation          | Time       | Notes                                 |
+| ------------------ | ---------- | ------------------------------------- |
+| heappush           | O(log n)   | Bubble up to maintain heap property   |
+| heappop            | O(log n)   | Remove root, bubble down              |
+| heapify            | O(n)       | Build heap from list (NOT O(n log n)) |
+| peek (heap[0])     | O(1)       | Access root without removal           |
+| nlargest(k, list)  | O(n log k) | Uses heap internally                  |
+| nsmallest(k, list) | O(n log k) | Uses heap internally                  |
 
 ### Why Use Heap Over Sorting?
 
-| Approach | Time | When Better |
-|----------|------|-------------|
-| Sort then slice | O(n log n) | When K ≈ N |
-| Heap of size K | O(n log k) | When K << N |
-| QuickSelect | O(n) average | When only Kth element needed |
+| Approach        | Time         | When Better                  |
+| --------------- | ------------ | ---------------------------- |
+| Sort then slice | O(n log n)   | When K ≈ N                   |
+| Heap of size K  | O(n log k)   | When K << N                  |
+| QuickSelect     | O(n) average | When only Kth element needed |
 
 ---
 

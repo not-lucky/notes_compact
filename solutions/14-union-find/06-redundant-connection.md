@@ -1,15 +1,18 @@
 # Redundant Connection Solutions
 
 ## 1. Redundant Connection
+
 **Problem Statement**:
 In this problem, a rooted tree is an undirected graph such that there is exactly one path between any two nodes. You are given a graph that started as a tree with `n` nodes, and then one additional edge was added. Find the edge that can be removed so that the resulting graph is a tree of `n` nodes. If there are multiple answers, return the one that occurs last in the input.
 
 **Examples & Edge Cases**:
+
 - **Example 1**: `edges = [[1,2], [1,3], [2,3]]` → `[2,3]`.
 - **Example 2**: `edges = [[1,2], [2,3], [3,4], [1,4], [1,5]]` → `[1,4]`.
 - **Edge Case**: The redundant edge connects the root to a leaf or two leaves.
 
 **Optimal Python Solution**:
+
 ```python
 def findRedundantConnection(edges: list[list[int]]) -> list[int]:
     n = len(edges)
@@ -44,6 +47,7 @@ def findRedundantConnection(edges: list[list[int]]) -> list[int]:
 ```
 
 **Explanation**:
+
 1. A tree with $n$ nodes has exactly $n-1$ edges and no cycles.
 2. We are given $n$ edges, which means there is exactly one cycle.
 3. We use Union-Find to process edges one by one.
@@ -51,16 +55,19 @@ def findRedundantConnection(edges: list[list[int]]) -> list[int]:
 5. If they are, then $(u, v)$ is the redundant edge that creates the cycle. Since we return the first one that triggers this (and there is only one extra edge), we fulfill the "last in input" requirement.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n \alpha(n))$, where $n$ is the number of nodes.
 - **Space Complexity**: $O(n)$ for the parent and rank arrays.
 
 ---
 
 ## 2. Redundant Connection II
+
 **Problem Statement**:
 This is similar to Redundant Connection I, but the graph is directed. The graph started as a directed tree (every node has exactly one parent except the root) and then one directed edge was added.
 
 **Optimal Python Solution**:
+
 ```python
 def findRedundantDirectedConnection(edges: list[list[int]]) -> list[int]:
     n = len(edges)
@@ -123,6 +130,7 @@ def findRedundantDirectedConnection(edges: list[list[int]]) -> list[int]:
 ```
 
 **Explanation**:
+
 1. There are two potential issues in a directed "tree + 1 edge":
    - A node has two parents (in-degree 2).
    - There is a directed cycle.
@@ -131,16 +139,19 @@ def findRedundantDirectedConnection(edges: list[list[int]]) -> list[int]:
 4. Case C: Both. One of the two incoming edges to the node with in-degree 2 is part of the cycle. We must remove that one.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n \alpha(n))$.
 - **Space Complexity**: $O(n)$.
 
 ---
 
 ## 3. Graph Valid Tree
+
 **Problem Statement**:
 Check if an undirected graph with `n` nodes and `edges` forms a valid tree.
 
 **Optimal Python Solution**:
+
 ```python
 def validTree(n: int, edges: list[list[int]]) -> bool:
     if len(edges) != n - 1:
@@ -171,21 +182,25 @@ def validTree(n: int, edges: list[list[int]]) -> bool:
 ```
 
 **Explanation**:
+
 1. A tree must have $n-1$ edges and no cycles.
 2. We first check the edge count.
 3. Then we use Union-Find to ensure no cycles exist while processing the edges.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n \alpha(n))$.
 - **Space Complexity**: $O(n)$.
 
 ---
 
 ## 4. Detect Cycles in 2D Grid
+
 **Problem Statement**:
 Given an `m x n` grid of characters, find if there is a cycle of length 4 or more consisting of the same character.
 
 **Optimal Python Solution**:
+
 ```python
 def containsCycle(grid: list[list[str]]) -> bool:
     rows, cols = len(grid), len(grid[0])
@@ -223,21 +238,25 @@ def containsCycle(grid: list[list[str]]) -> bool:
 ```
 
 **Explanation**:
+
 1. We use Union-Find on grid cells.
 2. Two adjacent cells with the same character are "connected".
 3. If we try to connect two cells that are already in the same component, we've found a cycle.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(mn \alpha(mn))$.
 - **Space Complexity**: $O(mn)$.
 
 ---
 
 ## 5. Min Cost to Connect All Points
+
 **Problem Statement**:
 You are given an array `points` representing coordinates. The cost of connecting two points is the Manhattan distance. Return the minimum cost to make all points connected.
 
 **Optimal Python Solution**:
+
 ```python
 def minCostConnectPoints(points: list[list[int]]) -> int:
     n = len(points)
@@ -268,21 +287,25 @@ def minCostConnectPoints(points: list[list[int]]) -> int:
 ```
 
 **Explanation**:
+
 1. This is a Minimum Spanning Tree (MST) problem.
 2. We generate all possible edges between points and sort them by distance.
 3. We use Kruskal's algorithm (Union-Find) to pick the smallest edges that don't form cycles until everyone is connected.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(n^2 \log n)$ due to sorting $n^2$ edges.
 - **Space Complexity**: $O(n^2)$ to store all edges.
 
 ---
 
 ## 6. Critical Connections in a Network
+
 **Problem Statement**:
 Find all bridges in an undirected graph. A bridge is an edge whose removal increases the number of connected components.
 
 **Optimal Python Solution**:
+
 ```python
 def criticalConnections(n: int, connections: list[list[int]]) -> list[list[int]]:
     # Note: While Union-Find can detect cycles, Tarjan's Bridge-Finding
@@ -317,10 +340,12 @@ def criticalConnections(n: int, connections: list[list[int]]) -> list[list[int]]
 ```
 
 **Explanation**:
+
 1. A "critical connection" is a bridge.
 2. We use Tarjan's algorithm (or similar DFS approach). We track the `discovery_time` and the `low_link` (the earliest discovered node reachable through a back-edge in the DFS tree).
 3. If a neighbor `v` of `u` cannot reach `u` or any ancestor of `u` through any other path (`low_link[v] > discovery_time[u]`), then `(u, v)` is a bridge.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: $O(V + E)$.
 - **Space Complexity**: $O(V + E)$ for adjacency list.

@@ -18,29 +18,29 @@ At FANG+ companies, linked list problems are often used as warm-up or to test fu
 
 ## Core Patterns to Master
 
-| Pattern | Frequency | Key Problems |
-|---------|-----------|--------------|
-| Fast-Slow Pointers | Very High | Cycle Detection, Find Middle, Nth from End |
-| Reversal Patterns | Very High | Reverse List, Reverse Between, Reverse K-Group |
-| Merge Operations | High | Merge Two Sorted, Merge K Sorted |
-| Dummy Node Technique | High | Most insert/delete operations |
-| Intersection Detection | Medium | Intersection of Two Lists |
-| Deep Copy | Medium | Copy List with Random Pointer |
+| Pattern                | Frequency | Key Problems                                   |
+| ---------------------- | --------- | ---------------------------------------------- |
+| Fast-Slow Pointers     | Very High | Cycle Detection, Find Middle, Nth from End     |
+| Reversal Patterns      | Very High | Reverse List, Reverse Between, Reverse K-Group |
+| Merge Operations       | High      | Merge Two Sorted, Merge K Sorted               |
+| Dummy Node Technique   | High      | Most insert/delete operations                  |
+| Intersection Detection | Medium    | Intersection of Two Lists                      |
+| Deep Copy              | Medium    | Copy List with Random Pointer                  |
 
 ---
 
 ## Chapter Sections
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-linked-list-basics](./01-linked-list-basics.md) | Node Structure & Traversal | Foundation for all linked list operations |
-| [02-fast-slow-pointers](./02-fast-slow-pointers.md) | Fast-Slow Pointer Technique | Cycle detection, find middle, nth from end |
-| [03-reversal-patterns](./03-reversal-patterns.md) | Reversal Patterns | Reverse entire, partial, and k-group |
-| [04-merge-lists](./04-merge-lists.md) | Merge Operations | Merge sorted lists efficiently |
-| [05-intersection-detection](./05-intersection-detection.md) | Find Intersection | Two-pointer technique for intersection |
-| [06-palindrome-list](./06-palindrome-list.md) | Palindrome Check | Combine fast-slow with reversal |
-| [07-dummy-node-technique](./07-dummy-node-technique.md) | Dummy Node Pattern | Simplify edge cases in list operations |
-| [08-copy-with-random](./08-copy-with-random.md) | Deep Copy with Random | Handle complex node relationships |
+| Section                                                     | Topic                       | Key Takeaway                               |
+| ----------------------------------------------------------- | --------------------------- | ------------------------------------------ |
+| [01-linked-list-basics](./01-linked-list-basics.md)         | Node Structure & Traversal  | Foundation for all linked list operations  |
+| [02-fast-slow-pointers](./02-fast-slow-pointers.md)         | Fast-Slow Pointer Technique | Cycle detection, find middle, nth from end |
+| [03-reversal-patterns](./03-reversal-patterns.md)           | Reversal Patterns           | Reverse entire, partial, and k-group       |
+| [04-merge-lists](./04-merge-lists.md)                       | Merge Operations            | Merge sorted lists efficiently             |
+| [05-intersection-detection](./05-intersection-detection.md) | Find Intersection           | Two-pointer technique for intersection     |
+| [06-palindrome-list](./06-palindrome-list.md)               | Palindrome Check            | Combine fast-slow with reversal            |
+| [07-dummy-node-technique](./07-dummy-node-technique.md)     | Dummy Node Pattern          | Simplify edge cases in list operations     |
+| [08-copy-with-random](./08-copy-with-random.md)             | Deep Copy with Random       | Handle complex node relationships          |
 
 ---
 
@@ -57,11 +57,11 @@ At FANG+ companies, linked list problems are often used as warm-up or to test fu
 
 ## Time Targets
 
-| Difficulty | Target Time | Examples |
-|------------|-------------|----------|
-| Easy | 10-15 min | Reverse List, Merge Two Sorted, Delete Node |
-| Medium | 15-25 min | Add Two Numbers, Remove Nth from End, Reorder List |
-| Hard | 25-40 min | Merge K Sorted Lists, Reverse Nodes in K-Group |
+| Difficulty | Target Time | Examples                                           |
+| ---------- | ----------- | -------------------------------------------------- |
+| Easy       | 10-15 min   | Reverse List, Merge Two Sorted, Delete Node        |
+| Medium     | 15-25 min   | Add Two Numbers, Remove Nth from End, Reorder List |
+| Hard       | 25-40 min   | Merge K Sorted Lists, Reverse Nodes in K-Group     |
 
 ---
 
@@ -95,17 +95,17 @@ This is the standard definition used in LeetCode and most interviews.
 
 ## Key Complexity Facts
 
-| Operation | Singly Linked | Doubly Linked | Array |
-|-----------|---------------|---------------|-------|
-| Access by index | O(n) | O(n) | O(1) |
-| Insert at head | O(1) | O(1) | O(n) |
-| Insert at tail | O(n)* | O(1)** | O(1) amortized |
-| Insert at position | O(n) | O(n) | O(n) |
-| Delete at head | O(1) | O(1) | O(n) |
-| Search | O(n) | O(n) | O(n) |
+| Operation          | Singly Linked | Doubly Linked | Array          |
+| ------------------ | ------------- | ------------- | -------------- |
+| Access by index    | O(n)          | O(n)          | O(1)           |
+| Insert at head     | O(1)          | O(1)          | O(n)           |
+| Insert at tail     | O(n)\*        | O(1)\*\*      | O(1) amortized |
+| Insert at position | O(n)          | O(n)          | O(n)           |
+| Delete at head     | O(1)          | O(1)          | O(n)           |
+| Search             | O(n)          | O(n)          | O(n)           |
 
-*O(1) if tail pointer maintained
-**Requires tail pointer
+\*O(1) if tail pointer maintained
+\*\*Requires tail pointer
 
 ---
 

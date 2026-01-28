@@ -23,6 +23,7 @@ The key insight is **sorted intervals reveal structure**:
 **Mental Model - Meeting Rooms**: Think of people entering (+1) and leaving (-1) a room. Sort all enter/leave events by time. Walk through events, tracking the current count. The peak count is the max occupancy = rooms needed.
 
 **Why Sort by Start for Merging**:
+
 ```
 Unsorted: [[8,10], [1,3], [2,6], [15,18]]
 Sorted:   [[1,3], [2,6], [8,10], [15,18]]
@@ -38,6 +39,7 @@ No sorting = must compare all pairs O(n²)
 ```
 
 **Why Sort by End for Minimum Removals**:
+
 ```
 Goal: Keep maximum non-overlapping intervals
 (equivalently: remove minimum)
@@ -70,6 +72,7 @@ Interval problems have variations needing different approaches:
 5. **Circular Intervals**: If time wraps around (like daily schedules), need to handle the wrap-around case specially.
 
 **Red Flags:**
+
 - "Maximum value from non-overlapping intervals" → Weighted interval DP
 - "Assign to k resources optimally" → Complex scheduling
 - "Intervals added/removed + queries" → Interval tree
@@ -441,12 +444,12 @@ def employee_free_time(schedule: list[list[list[int]]]) -> list[list[int]]:
 
 ## Sorting Strategies
 
-| Sort By | Use Case |
-|---------|----------|
-| Start time | Merging, insertion |
-| End time | Activity selection, min removals |
-| Start asc, end desc | Covered intervals |
-| Events (start/end) | Counting concurrent |
+| Sort By             | Use Case                         |
+| ------------------- | -------------------------------- |
+| Start time          | Merging, insertion               |
+| End time            | Activity selection, min removals |
+| Start asc, end desc | Covered intervals                |
+| Events (start/end)  | Counting concurrent              |
 
 ---
 
@@ -478,16 +481,16 @@ def employee_free_time(schedule: list[list[list[int]]]) -> list[list[int]]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Technique |
-|---|---------|------------|---------------|
-| 1 | Merge Intervals | Medium | Sort + merge |
-| 2 | Insert Interval | Medium | Three passes |
-| 3 | Meeting Rooms | Easy | Check overlaps |
-| 4 | Meeting Rooms II | Medium | Events or heap |
-| 5 | Non-overlapping Intervals | Medium | Greedy by end time |
-| 6 | Interval List Intersections | Medium | Two pointers |
-| 7 | Remove Covered Intervals | Medium | Sort by start, -end |
-| 8 | Employee Free Time | Hard | Merge all |
+| #   | Problem                     | Difficulty | Key Technique       |
+| --- | --------------------------- | ---------- | ------------------- |
+| 1   | Merge Intervals             | Medium     | Sort + merge        |
+| 2   | Insert Interval             | Medium     | Three passes        |
+| 3   | Meeting Rooms               | Easy       | Check overlaps      |
+| 4   | Meeting Rooms II            | Medium     | Events or heap      |
+| 5   | Non-overlapping Intervals   | Medium     | Greedy by end time  |
+| 6   | Interval List Intersections | Medium     | Two pointers        |
+| 7   | Remove Covered Intervals    | Medium     | Sort by start, -end |
+| 8   | Employee Free Time          | Hard       | Merge all           |
 
 ---
 

@@ -27,6 +27,7 @@ Preorder [1, 2, 3] could be:      Inorder [1, 2, 3] could be:
 But (preorder + inorder) or (postorder + inorder) uniquely determines the tree!
 
 **The recursive construction insight**:
+
 1. Find root from preorder[0] (or postorder[-1])
 2. Locate root in inorder → splits left/right subtrees
 3. Calculate sizes → determine preorder/postorder ranges for subtrees
@@ -43,6 +44,7 @@ Recurse on each subtree!
 ```
 
 **Why inorder is always needed**:
+
 - Preorder/postorder can identify the root
 - Only inorder can tell us which nodes belong to left vs right subtree
 - Without inorder, we can't determine subtree boundaries
@@ -55,16 +57,19 @@ Finding root in inorder is O(n) per node → O(n²) total. Build a hashmap of va
 ## When NOT to Use
 
 **Tree construction doesn't work when:**
+
 - **Only one traversal given** → Multiple valid trees exist (unless special constraints)
 - **Duplicate values exist** → Cannot uniquely locate root in inorder
 - **Preorder + Postorder only** → Cannot determine left/right boundary (for general BT)
 
 **Special cases where one traversal suffices:**
+
 - Full binary tree + preorder + postorder → Unique reconstruction possible
 - BST + one traversal → BST property constrains structure
 - Complete binary tree + level order → Positions are deterministic
 
 **Common mistake scenarios:**
+
 - Forgetting to handle empty subtrees (left_size = 0)
 - Off-by-one errors in slicing arrays
 - Not using hashmap → TLE on large inputs
@@ -440,13 +445,13 @@ def build_from_level_order(values: list) -> TreeNode:
 
 ## Complexity Analysis
 
-| Construction | Time | Space | Notes |
-|--------------|------|-------|-------|
-| Preorder + Inorder | O(n) | O(n) | With hashmap |
-| Postorder + Inorder | O(n) | O(n) | With hashmap |
-| BST from Preorder | O(n) | O(h) | Uses bounds |
+| Construction        | Time | Space    | Notes           |
+| ------------------- | ---- | -------- | --------------- |
+| Preorder + Inorder  | O(n) | O(n)     | With hashmap    |
+| Postorder + Inorder | O(n) | O(n)     | With hashmap    |
+| BST from Preorder   | O(n) | O(h)     | Uses bounds     |
 | Sorted Array to BST | O(n) | O(log n) | Balanced result |
-| Level-order | O(n) | O(w) | BFS-based |
+| Level-order         | O(n) | O(w)     | BFS-based       |
 
 ---
 
@@ -532,14 +537,14 @@ inorder = [3, 2, 1]  # Left skewed
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Construct Binary Tree from Preorder and Inorder Traversal | Medium | Classic construction |
-| 2 | Construct Binary Tree from Inorder and Postorder Traversal | Medium | Similar approach |
-| 3 | Construct Binary Search Tree from Preorder Traversal | Medium | BST bounds |
-| 4 | Convert Sorted Array to Binary Search Tree | Easy | Balanced BST |
-| 5 | Maximum Binary Tree | Medium | Max element root |
-| 6 | Convert Sorted List to Binary Search Tree | Medium | Slow-fast pointer |
+| #   | Problem                                                    | Difficulty | Key Concept          |
+| --- | ---------------------------------------------------------- | ---------- | -------------------- |
+| 1   | Construct Binary Tree from Preorder and Inorder Traversal  | Medium     | Classic construction |
+| 2   | Construct Binary Tree from Inorder and Postorder Traversal | Medium     | Similar approach     |
+| 3   | Construct Binary Search Tree from Preorder Traversal       | Medium     | BST bounds           |
+| 4   | Convert Sorted Array to Binary Search Tree                 | Easy       | Balanced BST         |
+| 5   | Maximum Binary Tree                                        | Medium     | Max element root     |
+| 6   | Convert Sorted List to Binary Search Tree                  | Medium     | Slow-fast pointer    |
 
 ---
 

@@ -18,6 +18,7 @@ This problem appears frequently at Amazon, Meta, and Google.
 ## Problem Statement
 
 In a grid:
+
 - `0` = empty cell
 - `1` = fresh orange
 - `2` = rotten orange
@@ -404,11 +405,11 @@ return time if fresh_count == 0 else -1
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
+| Operation    | Time           | Space          |
+| ------------ | -------------- | -------------- |
 | Initial scan | O(rows × cols) | O(rows × cols) |
-| BFS | O(rows × cols) | O(rows × cols) |
-| Total | O(rows × cols) | O(rows × cols) |
+| BFS          | O(rows × cols) | O(rows × cols) |
+| Total        | O(rows × cols) | O(rows × cols) |
 
 Each cell is visited at most once.
 
@@ -426,14 +427,14 @@ Each cell is visited at most once.
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Rotting Oranges | Medium | Core problem |
-| 2 | 01 Matrix | Medium | Distance to 0 |
-| 3 | Walls and Gates | Medium | Distance to gate |
-| 4 | Shortest Bridge | Medium | Two islands |
-| 5 | As Far from Land as Possible | Medium | Max distance |
-| 6 | Map of Highest Peak | Medium | Distance from water |
+| #   | Problem                      | Difficulty | Key Variation       |
+| --- | ---------------------------- | ---------- | ------------------- |
+| 1   | Rotting Oranges              | Medium     | Core problem        |
+| 2   | 01 Matrix                    | Medium     | Distance to 0       |
+| 3   | Walls and Gates              | Medium     | Distance to gate    |
+| 4   | Shortest Bridge              | Medium     | Two islands         |
+| 5   | As Far from Land as Possible | Medium     | Max distance        |
+| 6   | Map of Highest Peak          | Medium     | Distance from water |
 
 ---
 

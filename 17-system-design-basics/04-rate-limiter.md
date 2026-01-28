@@ -11,6 +11,7 @@ Rate limiting is about **protecting resources from being overwhelmed**. Think of
 > **"You can only let in 100 people per hour. After that, everyone waits in line."**
 
 Without rate limiting:
+
 - A single user can consume all server resources
 - Denial of service attacks succeed easily
 - Expensive operations drain your budget (API calls, database queries)
@@ -34,6 +35,7 @@ Smart approach: Use data structures that give O(1) operations
 ### The Five Algorithms: Mental Models
 
 **1. Token Bucket** - "The Arcade Token Dispenser"
+
 ```
 Imagine an arcade that gives you 10 tokens per hour, max 10 at a time.
 - Tokens accumulate while you're away (up to max)
@@ -44,6 +46,7 @@ Key insight: Allows BURSTS (if you saved tokens)
 ```
 
 **2. Leaky Bucket** - "The Water Tank with a Hole"
+
 ```
 Water (requests) pours in at any rate.
 Water leaks out at a fixed rate.
@@ -53,6 +56,7 @@ Key insight: SMOOTHS output (constant rate out, regardless of input pattern)
 ```
 
 **3. Fixed Window** - "The Hourly Counter"
+
 ```
 Count resets every hour on the hour.
 "100 requests per hour" = counter resets at :00
@@ -62,6 +66,7 @@ Key insight: SIMPLE but has boundary problem
 ```
 
 **4. Sliding Window Log** - "The Receipt Box"
+
 ```
 Keep every timestamp (receipt) in a box.
 To check limit: count receipts from last N seconds.
@@ -71,6 +76,7 @@ Key insight: ACCURATE but memory-intensive
 ```
 
 **5. Sliding Window Counter** - "The Smart Estimator"
+
 ```
 Keep counts for current and previous window.
 Estimate current window using weighted average.
@@ -114,13 +120,13 @@ Common interview questions: "Implement a rate limiter" or "Design an API rate li
 
 ## Rate Limiting Algorithms
 
-| Algorithm | Pros | Cons | Use Case |
-|-----------|------|------|----------|
-| Token Bucket | Allows bursts, smooth | Complex | API gateways |
-| Leaky Bucket | Smooth output | No bursts | Streaming |
-| Fixed Window | Simple | Boundary spike | Basic limiting |
-| Sliding Window Log | Accurate | Memory intensive | Low-volume APIs |
-| Sliding Window Counter | Memory efficient | Approximate | High-volume APIs |
+| Algorithm              | Pros                  | Cons             | Use Case         |
+| ---------------------- | --------------------- | ---------------- | ---------------- |
+| Token Bucket           | Allows bursts, smooth | Complex          | API gateways     |
+| Leaky Bucket           | Smooth output         | No bursts        | Streaming        |
+| Fixed Window           | Simple                | Boundary spike   | Basic limiting   |
+| Sliding Window Log     | Accurate              | Memory intensive | Low-volume APIs  |
+| Sliding Window Counter | Memory efficient      | Approximate      | High-volume APIs |
 
 ---
 
@@ -565,15 +571,15 @@ class DistributedRateLimiter:
 
 ## Complexity Analysis
 
-| Algorithm | Time | Space | Accuracy |
-|-----------|------|-------|----------|
-| Token Bucket | O(1) | O(1) | Exact for burst control |
-| Leaky Bucket | O(1) | O(1) | Exact for rate smoothing |
-| Fixed Window | O(1) | O(1) | Boundary issues |
-| Sliding Window Log | O(1)* | O(limit) | Exact |
-| Sliding Window Counter | O(1) | O(1) | Approximate |
+| Algorithm              | Time   | Space    | Accuracy                 |
+| ---------------------- | ------ | -------- | ------------------------ |
+| Token Bucket           | O(1)   | O(1)     | Exact for burst control  |
+| Leaky Bucket           | O(1)   | O(1)     | Exact for rate smoothing |
+| Fixed Window           | O(1)   | O(1)     | Boundary issues          |
+| Sliding Window Log     | O(1)\* | O(limit) | Exact                    |
+| Sliding Window Counter | O(1)   | O(1)     | Approximate              |
 
-*Amortized O(1), cleanup is O(n) but distributed over requests
+\*Amortized O(1), cleanup is O(n) but distributed over requests
 
 ### Complexity Derivation: Why Sliding Window Counter is O(1)
 
@@ -598,6 +604,7 @@ Total: O(1)
 ```
 
 **Why the estimate works:**
+
 ```
 If we're 30% into the current window:
 - 70% of requests from previous window are "in scope"
@@ -637,6 +644,7 @@ Rate limiting isn't always the answer. Here's when to skip it or use alternative
 ### When You Need Something Else
 
 **Problem: Protecting against slow clients**
+
 ```
 Rate limiting says: "You can only send 100 requests/minute"
 But what if each request takes 30 seconds to process?
@@ -645,6 +653,7 @@ Better: Connection limits, request timeouts, thread pool sizing
 ```
 
 **Problem: Protecting expensive operations**
+
 ```
 Rate limiting treats all requests equally.
 But GET /users is cheap, POST /analyze-video is expensive.
@@ -653,6 +662,7 @@ Better: Operation-based limits (10 videos/day) or cost-based tokens
 ```
 
 **Problem: Fair sharing among users**
+
 ```
 Rate limiting per user, but some users share IP.
 Or: enterprise customers need higher limits.
@@ -702,13 +712,13 @@ Real systems often use hybrid:
 
 ### When to Use Each Algorithm
 
-| Scenario | Best Algorithm | Why |
-|----------|---------------|-----|
-| API gateway | Token Bucket | Allows bursts for bursty clients |
-| Video streaming | Leaky Bucket | Smooth, constant bitrate needed |
-| Simple API | Fixed Window | Easy to implement and explain |
-| Financial transactions | Sliding Window Log | Accuracy critical, low volume |
-| High-traffic public API | Sliding Window Counter | Memory-efficient, good accuracy |
+| Scenario                | Best Algorithm         | Why                              |
+| ----------------------- | ---------------------- | -------------------------------- |
+| API gateway             | Token Bucket           | Allows bursts for bursty clients |
+| Video streaming         | Leaky Bucket           | Smooth, constant bitrate needed  |
+| Simple API              | Fixed Window           | Easy to implement and explain    |
+| Financial transactions  | Sliding Window Log     | Accuracy critical, low volume    |
+| High-traffic public API | Sliding Window Counter | Memory-efficient, good accuracy  |
 
 ---
 
@@ -772,13 +782,13 @@ A: Store limits in a config service, look up per request,
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Design Hit Counter | Medium | Sliding window basics |
-| 2 | Logger Rate Limiter | Easy | Simple timestamp tracking |
-| 3 | Design Rate Limiter | Medium | System design question |
-| 4 | API Rate Limiter | Medium | Token bucket implementation |
-| 5 | Sliding Window Maximum | Hard | Related sliding window concept |
+| #   | Problem                | Difficulty | Key Concept                    |
+| --- | ---------------------- | ---------- | ------------------------------ |
+| 1   | Design Hit Counter     | Medium     | Sliding window basics          |
+| 2   | Logger Rate Limiter    | Easy       | Simple timestamp tracking      |
+| 3   | Design Rate Limiter    | Medium     | System design question         |
+| 4   | API Rate Limiter       | Medium     | Token bucket implementation    |
+| 5   | Sliding Window Maximum | Hard       | Related sliding window concept |
 
 ---
 

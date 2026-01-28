@@ -3,14 +3,17 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Expression Evaluation notes.
 
 ## 1. Evaluate Reverse Polish Notation
+
 **Problem Statement**: Evaluate the value of an arithmetic expression in Reverse Polish Notation (postfix). Valid operators are `+`, `-`, `*`, and `/`. Each operand may be an integer or another expression. Division between two integers should truncate toward zero.
 
 ### Examples & Edge Cases
+
 - **Example**: `["10","6","9","3","+","-11","*","/","*","17","+","5","+"]` -> `22`
 - **Edge Case**: Negative numbers in division (truncation behavior).
 - **Edge Case**: Single token expression `["42"]`.
 
 ### Optimal Python Solution
+
 ```python
 def evalRPN(tokens: list[str]) -> int:
     stack = []
@@ -35,21 +38,26 @@ def evalRPN(tokens: list[str]) -> int:
 ```
 
 ### Explanation
+
 Reverse Polish Notation (postfix) is easily evaluated using a stack. We process tokens from left to right:
+
 1. If the token is a number, push it to the stack.
 2. If the token is an operator, pop the top two numbers, apply the operator, and push the result back.
-Note: For subtraction and division, the order of operands matters (the first one popped is the right operand).
+   Note: For subtraction and division, the order of operands matters (the first one popped is the right operand).
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the number of tokens. We visit each token exactly once.
 - **Space Complexity**: O(n), for the stack in the worst case (e.g., all numbers followed by all operators).
 
 ---
 
 ## 2. Basic Calculator
+
 **Problem Statement**: Implement a basic calculator to evaluate a simple expression string containing non-negative integers, `+`, `-`, `(`, `)`, and spaces.
 
 ### Optimal Python Solution
+
 ```python
 def calculate(s: str) -> int:
     stack = [] # Stores (result, sign) before a parenthesis
@@ -87,14 +95,17 @@ def calculate(s: str) -> int:
 ```
 
 ### Explanation
+
 We use a stack to handle nested parentheses. When we see an opening parenthesis `(`, we save our current `curr_res` and `sign` and start fresh. When we see a closing parenthesis `)`, we finish the sub-calculation, multiply it by the saved sign, and add it to the saved previous result.
 
 ---
 
 ## 3. Basic Calculator II
+
 **Problem Statement**: Implement a basic calculator to evaluate a simple expression string containing non-negative integers, `+`, `-`, `*`, `/` and spaces. (No parentheses).
 
 ### Optimal Python Solution
+
 ```python
 def calculate(s: str) -> int:
     if not s: return 0
@@ -122,14 +133,17 @@ def calculate(s: str) -> int:
 ```
 
 ### Explanation
+
 Because `*` and `/` have higher precedence than `+` and `-`, we perform them immediately by popping the stack, calculating, and pushing back. `+` and `-` are essentially treated as positive/negative additions to the final sum.
 
 ---
 
 ## 4. Basic Calculator III
+
 **Problem Statement**: Evaluate a string expression with `+`, `-`, `*`, `/`, `(`, and `)`.
 
 ### Optimal Python Solution (Recursive Approach)
+
 ```python
 def calculate(s: str) -> int:
     def solve(it):
@@ -161,9 +175,11 @@ def calculate(s: str) -> int:
 ---
 
 ## 5. Decode String
+
 **Problem Statement**: Decode an encoded string like `3[a2[c]]` to `accaccacc`.
 
 ### Optimal Python Solution
+
 ```python
 def decodeString(s: str) -> str:
     stack = [] # stores (prev_string, repeat_count)
@@ -189,10 +205,12 @@ def decodeString(s: str) -> str:
 ---
 
 ## 6. Number of Atoms
+
 **Problem Statement**: Given a chemical formula (e.g., `H2O`, `Mg(OH)2`), return the count of all elements.
 
 ### Optimal Python Solution
-```python
+
+````python
 from collections import Counter
 import re
 
@@ -234,6 +252,7 @@ def countOfAtoms(formula: str) -> str:
         if counts[elem] > 1: res.append(str(counts[elem]))
     return "".join(res)
 
+```
 ---
 
 ## 7. Parse Lisp Expression
@@ -281,5 +300,8 @@ def evaluate(expression: str) -> int:
             return res
 
     return solve(expression)
+````
+
 ```
+
 ```

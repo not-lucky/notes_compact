@@ -166,6 +166,7 @@ max(nums)  # O(n), less overhead
 ```
 
 **Red Flags:**
+
 - "K is greater than half the array" → Just sort
 - "Need only the kth value, not all k" → QuickSelect
 - "Elements change after initial query" → Need different structure
@@ -177,12 +178,12 @@ max(nums)  # O(n), less overhead
 
 This is **the most common mistake** in heap interviews:
 
-| Problem | Heap Type | Size | Why |
-|---------|-----------|------|-----|
-| K **largest** | **Min** heap | K | Evict smallest of the large |
-| K **smallest** | **Max** heap | K | Evict largest of the small |
-| K **most** frequent | **Min** heap | K | Evict least frequent |
-| K **closest** | **Max** heap | K | Evict furthest |
+| Problem             | Heap Type    | Size | Why                         |
+| ------------------- | ------------ | ---- | --------------------------- |
+| K **largest**       | **Min** heap | K    | Evict smallest of the large |
+| K **smallest**      | **Max** heap | K    | Evict largest of the small  |
+| K **most** frequent | **Min** heap | K    | Evict least frequent        |
+| K **closest**       | **Max** heap | K    | Evict furthest              |
 
 **The Rule**: Use the **opposite** heap type. The heap root is what you might evict.
 
@@ -429,12 +430,12 @@ def k_largest_unique(nums: list[int], k: int) -> list[int]:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | When to Use |
-|----------|------|-------|-------------|
-| Sort + slice | O(n log n) | O(n) | k ≈ n |
-| Heap of size k | O(n log k) | O(k) | k << n |
-| nlargest/nsmallest | O(n log k) | O(k) | Simple cases |
-| QuickSelect | O(n) avg | O(1) | Only need kth, not all k |
+| Approach           | Time       | Space | When to Use              |
+| ------------------ | ---------- | ----- | ------------------------ |
+| Sort + slice       | O(n log n) | O(n)  | k ≈ n                    |
+| Heap of size k     | O(n log k) | O(k)  | k << n                   |
+| nlargest/nsmallest | O(n log k) | O(k)  | Simple cases             |
+| QuickSelect        | O(n) avg   | O(1)  | Only need kth, not all k |
 
 **Break-even point**: When k ≈ n/log(n), heap and sort are similar.
 
@@ -512,15 +513,15 @@ k_largest([], 3)  # → []
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Kth Largest Element in an Array | Medium | Basic top-k |
-| 2 | Top K Frequent Elements | Medium | Frequency + heap |
-| 3 | K Closest Points to Origin | Medium | Distance-based |
-| 4 | Kth Largest Element in a Stream | Easy | Streaming top-k |
-| 5 | Top K Frequent Words | Medium | Ties + alphabetical |
-| 6 | Sort Characters By Frequency | Medium | Frequency counting |
-| 7 | K Closest Elements | Medium | Two approaches possible |
+| #   | Problem                         | Difficulty | Key Variation           |
+| --- | ------------------------------- | ---------- | ----------------------- |
+| 1   | Kth Largest Element in an Array | Medium     | Basic top-k             |
+| 2   | Top K Frequent Elements         | Medium     | Frequency + heap        |
+| 3   | K Closest Points to Origin      | Medium     | Distance-based          |
+| 4   | Kth Largest Element in a Stream | Easy       | Streaming top-k         |
+| 5   | Top K Frequent Words            | Medium     | Ties + alphabetical     |
+| 6   | Sort Characters By Frequency    | Medium     | Frequency counting      |
+| 7   | K Closest Elements              | Medium     | Two approaches possible |
 
 ---
 

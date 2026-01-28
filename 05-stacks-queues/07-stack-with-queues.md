@@ -11,10 +11,12 @@ This problem asks you to implement a stack (LIFO) using only queue (FIFO) operat
 **Why is this conversion hard?**
 
 The fundamental conflict:
+
 - **Queue**: Gives you the oldest element (front)
 - **Stack**: Needs the newest element (top)
 
 **The Key Insight**:
+
 ```
 After every push, we can rearrange the queue so that the newest
 element moves to the front. This makes it "look like" a stack
@@ -22,6 +24,7 @@ from the perspective of pop operations.
 ```
 
 **How Rotation Works**:
+
 ```
 Starting queue: [A, B, C] (A is front, C is back)
 
@@ -40,6 +43,7 @@ Pop:
 **Why This Works**: After rotation, elements are ordered newest-to-oldest from front to back. This is exactly LIFO order! Each pop takes the front (newest), and each push places the new element at front.
 
 **The Trade-off**:
+
 ```
 Push-costly approach:
 - Push: O(n) - rotate after adding
@@ -67,11 +71,13 @@ Implementing stack with queues is wrong when:
 4. **Two-Queue Approach Wastes Space**: The two-queue solution uses twice the memory of a single-queue approach with no performance benefit.
 
 **When This IS Useful**:
+
 - Interview questions testing your understanding
 - Systems where you only have queue primitives (rare)
 - Educational purposes to understand LIFO/FIFO relationships
 
 **Important Limitation**:
+
 ```
 Unlike Queue-with-Stacks (which achieves O(1) amortized),
 Stack-with-Queues cannot achieve O(1) amortized for all operations.
@@ -94,6 +100,7 @@ Interviewers use this to assess your ability to think creatively within constrai
 ## The Problem
 
 Implement a stack using only queue operations:
+
 - `push(x)` — Push element x onto stack
 - `pop()` — Remove and return the top element
 - `top()` — Get the top element
@@ -105,11 +112,11 @@ Implement a stack using only queue operations:
 
 ## Approach Comparison
 
-| Approach | push | pop | top | Space |
-|----------|------|-----|-----|-------|
-| Two queues (push costly) | O(n) | O(1) | O(1) | O(n) |
-| Two queues (pop costly) | O(1) | O(n) | O(n) | O(n) |
-| One queue | O(n) | O(1) | O(1) | O(n) |
+| Approach                 | push | pop  | top  | Space |
+| ------------------------ | ---- | ---- | ---- | ----- |
+| Two queues (push costly) | O(n) | O(1) | O(1) | O(n)  |
+| Two queues (pop costly)  | O(1) | O(n) | O(n) | O(n)  |
+| One queue                | O(n) | O(1) | O(1) | O(n)  |
 
 ---
 
@@ -387,11 +394,11 @@ Amortized: O(n) per push, O(1) per pop
 
 ## When to Use Which Approach
 
-| Scenario | Best Approach |
-|----------|---------------|
-| Many pushes, few pops | Pop-costly |
-| Many pops, few pushes | Push-costly |
-| Balanced operations | Either works |
+| Scenario                 | Best Approach            |
+| ------------------------ | ------------------------ |
+| Many pushes, few pops    | Pop-costly               |
+| Many pops, few pushes    | Push-costly              |
+| Balanced operations      | Either works             |
 | Minimize code complexity | Single queue push-costly |
 
 ---
@@ -424,12 +431,15 @@ s.pop()           # 1
 ## Follow-up Questions
 
 ### Q: Can you do better than O(n)?
+
 A: No, without additional data structures. We need O(n) to reverse FIFO to LIFO ordering at some point.
 
 ### Q: What if you have limited queue size?
+
 A: Use circular queue implementation to prevent overflow.
 
 ### Q: How about making top() O(1) in pop-costly version?
+
 A: Cache the last pushed element:
 
 ```python
@@ -456,12 +466,12 @@ class MyStack:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Implement Stack using Queues | Easy | Core problem |
-| 2 | Implement Queue using Stacks | Easy | Reverse direction |
-| 3 | Design Circular Queue | Medium | Related structure |
-| 4 | Design Front Middle Back Queue | Medium | Multiple operations |
+| #   | Problem                        | Difficulty | Key Concept         |
+| --- | ------------------------------ | ---------- | ------------------- |
+| 1   | Implement Stack using Queues   | Easy       | Core problem        |
+| 2   | Implement Queue using Stacks   | Easy       | Reverse direction   |
+| 3   | Design Circular Queue          | Medium     | Related structure   |
+| 4   | Design Front Middle Back Queue | Medium     | Multiple operations |
 
 ---
 

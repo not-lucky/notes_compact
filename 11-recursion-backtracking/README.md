@@ -19,6 +19,7 @@ Recursion is a problem-solving technique where a function solves a problem by ca
 3. **Why "Make Choice, Explore, Undo" Works**: By systematically trying every possibility and undoing choices that don't work, you guarantee finding all solutions without missing any. The key insight: **undoing is what makes exploration reusable**.
 
 4. **Visual Intuition—The Decision Tree**:
+
 ```
 Every backtracking problem is a tree traversal:
 
@@ -50,6 +51,7 @@ Backtracking is powerful but not always optimal:
 5. **When n Is Large**: Backtracking is often O(2^n), O(n!), or worse. For n > 20, reconsider the approach.
 
 **Red Flags Against Backtracking:**
+
 - Problem asks for minimum/maximum → probably DP
 - Only need one solution → BFS or greedy may be faster
 - n > 20 in constraints → exponential won't work
@@ -69,11 +71,13 @@ Backtracking is powerful but not always optimal:
 ## The Core Insight
 
 **Recursion** breaks a problem into smaller subproblems of the same type:
+
 ```
 solve(problem) = combine(solve(smaller_problem_1), solve(smaller_problem_2), ...)
 ```
 
 **Backtracking** explores all possibilities by making choices and undoing them:
+
 ```
 for each choice:
     make choice
@@ -85,41 +89,41 @@ for each choice:
 
 ## Recursion vs Backtracking
 
-| Aspect | Recursion | Backtracking |
-|--------|-----------|--------------|
-| Goal | Compute result | Find all solutions |
-| Structure | Divide and conquer | Explore and undo |
-| State | Usually return value | Usually modify shared state |
-| Example | Factorial, Fibonacci | N-Queens, Subsets |
+| Aspect    | Recursion            | Backtracking                |
+| --------- | -------------------- | --------------------------- |
+| Goal      | Compute result       | Find all solutions          |
+| Structure | Divide and conquer   | Explore and undo            |
+| State     | Usually return value | Usually modify shared state |
+| Example   | Factorial, Fibonacci | N-Queens, Subsets           |
 
 ---
 
 ## Backtracking Patterns Overview
 
-| Pattern | Problems | Key Insight |
-|---------|----------|-------------|
-| Subsets | All subsets, power set | Include/exclude each element |
-| Permutations | All orderings | Use remaining elements |
-| Combinations | Choose k from n | Order doesn't matter |
-| Constraint Satisfaction | N-Queens, Sudoku | Place and validate |
-| Path Finding | Word search, maze | Explore grid with backtrack |
+| Pattern                 | Problems               | Key Insight                  |
+| ----------------------- | ---------------------- | ---------------------------- |
+| Subsets                 | All subsets, power set | Include/exclude each element |
+| Permutations            | All orderings          | Use remaining elements       |
+| Combinations            | Choose k from n        | Order doesn't matter         |
+| Constraint Satisfaction | N-Queens, Sudoku       | Place and validate           |
+| Path Finding            | Word search, maze      | Explore grid with backtrack  |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Recursion Basics](./01-recursion-basics.md) | Call stack, base cases, thinking recursively |
-| 02 | [Subsets](./02-subsets.md) | Generate all subsets, power set |
-| 03 | [Permutations](./03-permutations.md) | Generate all orderings |
-| 04 | [Combinations](./04-combinations.md) | Choose k elements from n |
-| 05 | [Combination Sum](./05-combination-sum.md) | Sum variants, duplicates |
-| 06 | [N-Queens](./06-n-queens.md) | Classic constraint satisfaction |
-| 07 | [Sudoku Solver](./07-sudoku-solver.md) | 9x9 constraint propagation |
-| 08 | [Word Search](./08-word-search.md) | Grid-based path finding |
-| 09 | [Generate Parentheses](./09-generate-parentheses.md) | Valid sequence generation |
-| 10 | [Letter Combinations](./10-letter-combinations.md) | Phone keypad combinations |
+| #   | Topic                                                | Key Concepts                                 |
+| --- | ---------------------------------------------------- | -------------------------------------------- |
+| 01  | [Recursion Basics](./01-recursion-basics.md)         | Call stack, base cases, thinking recursively |
+| 02  | [Subsets](./02-subsets.md)                           | Generate all subsets, power set              |
+| 03  | [Permutations](./03-permutations.md)                 | Generate all orderings                       |
+| 04  | [Combinations](./04-combinations.md)                 | Choose k elements from n                     |
+| 05  | [Combination Sum](./05-combination-sum.md)           | Sum variants, duplicates                     |
+| 06  | [N-Queens](./06-n-queens.md)                         | Classic constraint satisfaction              |
+| 07  | [Sudoku Solver](./07-sudoku-solver.md)               | 9x9 constraint propagation                   |
+| 08  | [Word Search](./08-word-search.md)                   | Grid-based path finding                      |
+| 09  | [Generate Parentheses](./09-generate-parentheses.md) | Valid sequence generation                    |
+| 10  | [Letter Combinations](./10-letter-combinations.md)   | Phone keypad combinations                    |
 
 ---
 
@@ -170,25 +174,25 @@ def backtrack(state, choices, result):
 
 ## Time Complexity
 
-| Problem Type | Time | Space | Why |
-|--------------|------|-------|-----|
-| Subsets | O(2^n) | O(n) | 2 choices per element |
-| Permutations | O(n!) | O(n) | n choices, then n-1, etc. |
-| Combinations | O(C(n,k)) | O(k) | Binomial coefficient |
-| N-Queens | O(n!) | O(n) | Worst case, all placements |
-| Sudoku | O(9^81) | O(1) | Worst case, but pruning helps |
+| Problem Type | Time      | Space | Why                           |
+| ------------ | --------- | ----- | ----------------------------- |
+| Subsets      | O(2^n)    | O(n)  | 2 choices per element         |
+| Permutations | O(n!)     | O(n)  | n choices, then n-1, etc.     |
+| Combinations | O(C(n,k)) | O(k)  | Binomial coefficient          |
+| N-Queens     | O(n!)     | O(n)  | Worst case, all placements    |
+| Sudoku       | O(9^81)   | O(1)  | Worst case, but pruning helps |
 
 ---
 
 ## Common Interview Problems by Company
 
-| Company | Favorite Backtracking Problems |
-|---------|-------------------------------|
-| Google | Word Search II, N-Queens, Generate Parentheses |
-| Meta | Subsets, Permutations, Letter Combinations |
-| Amazon | Combination Sum, Word Search, Palindrome Partitioning |
-| Microsoft | Sudoku Solver, N-Queens, Restore IP Addresses |
-| Apple | Combinations, Generate Parentheses, Subsets II |
+| Company   | Favorite Backtracking Problems                        |
+| --------- | ----------------------------------------------------- |
+| Google    | Word Search II, N-Queens, Generate Parentheses        |
+| Meta      | Subsets, Permutations, Letter Combinations            |
+| Amazon    | Combination Sum, Word Search, Palindrome Partitioning |
+| Microsoft | Sudoku Solver, N-Queens, Restore IP Addresses         |
+| Apple     | Combinations, Generate Parentheses, Subsets II        |
 
 ---
 
@@ -232,6 +236,7 @@ def factorial_iter(n):
 ```
 
 For interviews, recursive solutions are usually preferred for clarity unless:
+
 - Recursion depth exceeds stack limit (Python default: ~1000)
 - Interviewer specifically asks for iterative
 

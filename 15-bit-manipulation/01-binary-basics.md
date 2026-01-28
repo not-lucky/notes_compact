@@ -98,6 +98,7 @@ is_even = n % 2 == 0
 ```
 
 In most code, the second version is better. Save bit manipulation for:
+
 - Hot paths where every nanosecond counts
 - Interview problems that specifically require it
 - Problems where bit properties are essential (not just optimizations)
@@ -128,6 +129,7 @@ result = n // 4  # Clearer than n >> 2 in most contexts
 **4. Variable-Width Integers (Python's Arbitrary Precision)**
 
 Python integers can be arbitrarily large, which means:
+
 - `~n` doesn't give you a simple bit flip (no fixed width)
 - Two's complement behavior differs from C/Java
 - Some tricks that work with 32-bit integers need masking
@@ -141,6 +143,7 @@ result = ~n & 0xFFFFFFFF  # Mask to 32 bits
 ```
 
 **Red Flags (Don't Use Bit Manipulation):**
+
 - Problem doesn't mention bits, binary, or XOR specifically
 - Floating point input
 - When a hashmap or set would be clearer
@@ -543,13 +546,13 @@ print(findComplement(10))  # 5 (1010 -> 0101)
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Get bit | O(1) | O(1) | Single AND + shift |
-| Set bit | O(1) | O(1) | Single OR + shift |
-| Clear bit | O(1) | O(1) | AND with NOT |
-| Toggle bit | O(1) | O(1) | Single XOR |
-| Decimal ↔ Binary | O(log n) | O(log n) | Process each bit |
+| Operation        | Time     | Space    | Notes              |
+| ---------------- | -------- | -------- | ------------------ |
+| Get bit          | O(1)     | O(1)     | Single AND + shift |
+| Set bit          | O(1)     | O(1)     | Single OR + shift  |
+| Clear bit        | O(1)     | O(1)     | AND with NOT       |
+| Toggle bit       | O(1)     | O(1)     | Single XOR         |
+| Decimal ↔ Binary | O(log n) | O(log n) | Process each bit   |
 
 ---
 
@@ -634,13 +637,13 @@ def is_negative_32bit(n: int) -> bool:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Add Binary | Easy | Binary addition with carry |
-| 2 | Number Complement | Easy | XOR with mask |
-| 3 | Reverse Bits | Easy | Bit by bit reconstruction |
-| 4 | Convert Binary Number in Linked List | Easy | Binary to decimal |
-| 5 | Concatenation of Consecutive Binary Numbers | Medium | Bit shifting |
+| #   | Problem                                     | Difficulty | Key Concept                |
+| --- | ------------------------------------------- | ---------- | -------------------------- |
+| 1   | Add Binary                                  | Easy       | Binary addition with carry |
+| 2   | Number Complement                           | Easy       | XOR with mask              |
+| 3   | Reverse Bits                                | Easy       | Bit by bit reconstruction  |
+| 4   | Convert Binary Number in Linked List        | Easy       | Binary to decimal          |
+| 5   | Concatenation of Consecutive Binary Numbers | Medium     | Bit shifting               |
 
 ---
 

@@ -7,6 +7,7 @@
 **The "Goldilocks Search" Mental Model**
 
 Finding √n is like finding the perfect temperature:
+
 - If guess² < n: too cold, go higher
 - If guess² > n: too hot, go lower
 - If guess² = n: just right!
@@ -16,6 +17,7 @@ Binary search naturally fits this pattern.
 **Why √n Appears Everywhere**
 
 Square root is special because it's the "balance point":
+
 - If n = a × b, at least one of a or b is ≤ √n
 - This is why primality checking only goes to √n
 - This is why some algorithms have O(√n) complexity (checking divisors)
@@ -23,6 +25,7 @@ Square root is special because it's the "balance point":
 **Newton's Method: Faster Than Binary Search**
 
 Instead of halving the search range, Newton's method uses calculus:
+
 - If x is too big, n/x is too small
 - Average them: (x + n/x) / 2 is a better guess
 - Converges quadratically (doubles correct digits each iteration)
@@ -34,6 +37,7 @@ For integers, this means ~log(log(n)) iterations vs log(n) for binary search.
 ## Interview Context
 
 Square root problems test:
+
 - Binary search implementation skills
 - Edge case handling (0, 1, large numbers)
 - Understanding of mathematical properties
@@ -199,6 +203,7 @@ def isPerfectSquare_bit(num: int) -> bool:
 ## Pattern: Newton's Method (Heron's Method)
 
 Iteratively improve an estimate of √n using:
+
 ```
 x_next = (x + n/x) / 2
 ```
@@ -416,13 +421,13 @@ print(arrangeCoins(8))   # 3 (1+2+3=6 ≤ 8, but 1+2+3+4=10 > 8)
 
 ## Complexity Analysis
 
-| Algorithm | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Binary search sqrt | O(log n) | O(1) | Most common |
-| Newton's method | O(log n) | O(1) | Faster convergence |
-| Perfect square check | O(log n) | O(1) | Binary search |
-| Sum of squares (two pointer) | O(√n) | O(1) | a² + b² = c |
-| numSquares (DP) | O(n√n) | O(n) | Lagrange's theorem |
+| Algorithm                    | Time     | Space | Notes              |
+| ---------------------------- | -------- | ----- | ------------------ |
+| Binary search sqrt           | O(log n) | O(1)  | Most common        |
+| Newton's method              | O(log n) | O(1)  | Faster convergence |
+| Perfect square check         | O(log n) | O(1)  | Binary search      |
+| Sum of squares (two pointer) | O(√n)    | O(1)  | a² + b² = c        |
+| numSquares (DP)              | O(n√n)   | O(n)  | Lagrange's theorem |
 
 ---
 
@@ -506,7 +511,7 @@ print(count_perfect_squares(10, 20))   # 1 (16)
 
 1. **n = 0**: sqrt(0) = 0
 2. **n = 1**: sqrt(1) = 1
-3. **Large n**: Avoid overflow in mid * mid (use mid <= n // mid)
+3. **Large n**: Avoid overflow in mid \* mid (use mid <= n // mid)
 4. **Perfect squares**: Should return exact value
 5. **Negative input**: Undefined for real sqrt, return error or 0
 
@@ -548,14 +553,14 @@ def mySqrt_safe(x: int) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Sqrt(x) | Easy | Binary search |
-| 2 | Valid Perfect Square | Easy | Binary search or math |
-| 3 | Sum of Square Numbers | Medium | Two pointers |
-| 4 | Perfect Squares | Medium | DP or BFS |
-| 5 | Arranging Coins | Easy | Binary search or quadratic formula |
-| 6 | Kth Smallest in Multiplication Table | Hard | Binary search with counting |
+| #   | Problem                              | Difficulty | Key Concept                        |
+| --- | ------------------------------------ | ---------- | ---------------------------------- |
+| 1   | Sqrt(x)                              | Easy       | Binary search                      |
+| 2   | Valid Perfect Square                 | Easy       | Binary search or math              |
+| 3   | Sum of Square Numbers                | Medium     | Two pointers                       |
+| 4   | Perfect Squares                      | Medium     | DP or BFS                          |
+| 5   | Arranging Coins                      | Easy       | Binary search or quadratic formula |
+| 6   | Kth Smallest in Multiplication Table | Hard       | Binary search with counting        |
 
 ---
 

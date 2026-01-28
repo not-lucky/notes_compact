@@ -2,28 +2,30 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Find if Path Exists in Graph | Easy | Basic graph traversal |
-| 2 | Clone Graph | Medium | Graph construction |
-| 3 | Number of Islands | Medium | Grid as graph |
-| 4 | Graph Valid Tree | Medium | Connected + acyclic |
+| #   | Problem                      | Difficulty | Key Concept           |
+| --- | ---------------------------- | ---------- | --------------------- |
+| 1   | Find if Path Exists in Graph | Easy       | Basic graph traversal |
+| 2   | Clone Graph                  | Medium     | Graph construction    |
+| 3   | Number of Islands            | Medium     | Grid as graph         |
+| 4   | Graph Valid Tree             | Medium     | Connected + acyclic   |
 
 ---
 
 ## 1. Find if Path Exists in Graph
 
 ### Problem Statement
+
 Given an undirected graph, determine if there is a valid path between a source vertex and a destination vertex. The graph is given as an edge list.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `n = 3, edges = [[0,1],[1,2],[2,0]], source = 0, destination = 2` -> `True` (Path: 0 -> 1 -> 2 or 0 -> 2)
 - **Example 2**: `n = 6, edges = [[0,1],[0,2],[3,5],[5,4],[4,3]], source = 0, destination = 5` -> `False` (Components {0,1,2} and {3,4,5} are disconnected)
 - **Edge Cases**:
-    - `source == destination`: Always `True`.
-    - `n = 1`: Always `True` if `source == destination == 0`.
-    - Disconnected components: Must handle nodes that aren't reachable.
-    - Cyclic graphs: Must use a `visited` set to avoid infinite loops.
+  - `source == destination`: Always `True`.
+  - `n = 1`: Always `True` if `source == destination == 0`.
+  - Disconnected components: Must handle nodes that aren't reachable.
+  - Cyclic graphs: Must use a `visited` set to avoid infinite loops.
 
 ### Optimal Python Solution
 
@@ -62,12 +64,14 @@ def validPath(n: int, edges: list[list[int]], source: int, destination: int) -> 
 ```
 
 ### Explanation
+
 1. **Graph Construction**: We first convert the edge list into an adjacency list for efficient neighbor lookup. Using `defaultdict(list)` simplifies this process.
 2. **Traversal**: We use Breadth-First Search (BFS) starting from the `source`. BFS explores neighbors layer by layer, which is ideal for finding connectivity.
 3. **Cycle Prevention**: The `visited` set ensures we don't process the same node multiple times, preventing infinite loops in cyclic graphs.
 4. **Early Exit**: If we encounter the `destination` node during traversal, we immediately return `True`.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(V + E)**. We spend O(E) to build the graph and O(V + E) to traverse it (visiting each node once and each edge twice).
 - **Space Complexity**: **O(V + E)**. The adjacency list takes O(V + E) space, and the `visited` set/queue take O(V) space.
 
@@ -76,14 +80,16 @@ def validPath(n: int, edges: list[list[int]], source: int, destination: int) -> 
 ## 2. Clone Graph
 
 ### Problem Statement
+
 Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph. Each node contains a `val` (int) and a list of its `neighbors`.
 
 ### Examples & Edge Cases
+
 - **Example 1**: Input `adjList = [[2,4],[1,3],[2,4],[1,3]]` -> Output a deep copy of the same structure.
 - **Edge Cases**:
-    - `None` input: Return `None`.
-    - Single node graph: Return a copy of that node with empty neighbors.
-    - Graph with cycles: Must track cloned nodes to avoid infinite recursion and ensure we link to the same instance.
+  - `None` input: Return `None`.
+  - Single node graph: Return a copy of that node with empty neighbors.
+  - Graph with cycles: Must track cloned nodes to avoid infinite recursion and ensure we link to the same instance.
 
 ### Optimal Python Solution
 
@@ -118,13 +124,15 @@ def cloneGraph(node: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 1. **Mapping**: We use a dictionary `clones` to map original nodes to their copies. This serves two purposes: storing the result and acting as a `visited` set.
 2. **Traversal**: We use BFS (or DFS) to explore the graph. When we encounter a neighbor, we check if it has already been cloned.
 3. **Cloning & Linking**:
-    - If the neighbor isn't in `clones`, we create a new `Node` and add it to the queue.
-    - We then append the cloned neighbor to the `neighbors` list of the current cloned node.
+   - If the neighbor isn't in `clones`, we create a new `Node` and add it to the queue.
+   - We then append the cloned neighbor to the `neighbors` list of the current cloned node.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(V + E)**. We visit every vertex and every edge once to perform the cloning and linking.
 - **Space Complexity**: **O(V)**. The `clones` map stores V nodes, and the queue stores at most V nodes.
 
@@ -133,15 +141,17 @@ def cloneGraph(node: 'Node') -> 'Node':
 ## 3. Number of Islands
 
 ### Problem Statement
+
 Given an `m x n` 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `grid = [["1","1","0"],["1","1","0"],["0","0","1"]]` -> Output: 2
 - **Edge Cases**:
-    - Empty grid: 0 islands.
-    - Grid with all '0's: 0 islands.
-    - Grid with all '1's: 1 island.
-    - Grid with diagonal land: Diagonals don't count as connected.
+  - Empty grid: 0 islands.
+  - Grid with all '0's: 0 islands.
+  - Grid with all '1's: 1 island.
+  - Grid with diagonal land: Diagonals don't count as connected.
 
 ### Optimal Python Solution
 
@@ -175,12 +185,14 @@ def numIslands(grid: list[list[str]]) -> int:
 ```
 
 ### Explanation
+
 1. **Grid as Graph**: Each cell is a node, and adjacent '1's have edges between them.
 2. **Traversal Strategy**: We iterate through every cell. When we find a '1', we've found a new island.
 3. **Sinking the Island**: To mark cells as visited without extra space, we flip '1' to '0' during BFS.
 4. **BFS Expansion**: The `bfs` function explores all connected land for the current island, ensuring each island is counted exactly once.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(M × N)**. We visit each cell at most once.
 - **Space Complexity**: **O(min(M, N))**. The queue in BFS can grow to the size of the smaller dimension of the grid in the worst case.
 
@@ -189,15 +201,17 @@ def numIslands(grid: list[list[str]]) -> int:
 ## 4. Graph Valid Tree
 
 ### Problem Statement
+
 Given `n` nodes labeled from `0` to `n - 1` and a list of undirected edges, write a function to check whether these edges make up a valid tree.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `n = 5, edges = [[0,1], [0,2], [0,3], [1,4]]` -> `True`
 - **Example 2**: `n = 5, edges = [[0,1], [1,2], [2,3], [1,3], [1,4]]` -> `False` (Contains cycle)
 - **Edge Cases**:
-    - `n = 1, edges = []`: `True` (Single node is a tree).
-    - Disconnected components: `False` (A tree must be connected).
-    - Cyclic graph: `False`.
+  - `n = 1, edges = []`: `True` (Single node is a tree).
+  - Disconnected components: `False` (A tree must be connected).
+  - Cyclic graph: `False`.
 
 ### Optimal Python Solution
 
@@ -229,14 +243,16 @@ def validTree(n: int, edges: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 1. **Math Property**: A valid tree must satisfy two conditions:
-    - It is connected.
-    - It has no cycles.
-    - **Key Insight**: In a graph with `n` nodes, if it has exactly `n-1` edges AND is connected, it MUST be acyclic.
+   - It is connected.
+   - It has no cycles.
+   - **Key Insight**: In a graph with `n` nodes, if it has exactly `n-1` edges AND is connected, it MUST be acyclic.
 2. **Edge Count**: We first check if `len(edges) == n - 1`. If not, it's either disconnected or has a cycle.
 3. **Connectivity**: We use BFS to see if we can reach all `n` nodes starting from node `0`.
 4. **Conclusion**: If `len(visited) == n`, the graph is connected and has the correct number of edges, making it a valid tree.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(V + E)**. Building the graph takes O(E) and BFS takes O(V + E).
 - **Space Complexity**: **O(V + E)**. To store the adjacency list and the visited set.

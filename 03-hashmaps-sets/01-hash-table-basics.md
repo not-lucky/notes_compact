@@ -11,7 +11,7 @@ Understanding hash tables at a conceptual level is crucial because:
 3. **Trade-off awareness**: Space vs time, load factor decisions
 4. **Edge case handling**: Collision scenarios, worst-case behavior
 
-Interviewers want to see that you understand *why* hash tables work, not just *that* they work.
+Interviewers want to see that you understand _why_ hash tables work, not just _that_ they work.
 
 ---
 
@@ -37,6 +37,7 @@ The hash function is like a magical index that tells you EXACTLY where to look.
 **The Fundamental Trade-off: Space for Time**
 
 Hash tables sacrifice memory for speed:
+
 - You allocate MORE buckets than you have items
 - Most buckets are empty (wasted space)
 - But lookups are instant (no searching)
@@ -52,6 +53,7 @@ BUT: Every lookup is O(1) instead of O(n)
 **Why Collisions Are Inevitable (Birthday Paradox)**
 
 Even with a good hash function, collisions happen surprisingly often:
+
 - With 23 people, there's a 50% chance two share a birthday
 - With n buckets and √n items, expect at least one collision
 
@@ -73,6 +75,7 @@ Hash Table (Direct Dial):
 **Why Only Immutable Keys?**
 
 Imagine you file "John Doe" in drawer 47 (based on hash). Then "John" changes to "Jonathan":
+
 - New hash = 89
 - But the file is still in drawer 47
 - Looking for "Jonathan" checks drawer 89 → NOT FOUND
@@ -86,6 +89,7 @@ The file is "lost" because the key changed. This is why Python requires immutabl
 **1. Order Matters**
 
 Hash tables don't maintain insertion order (historically) or sorted order:
+
 ```python
 # Need sorted iteration? → Use list + sort, or sortedcontainers
 # Need oldest-first? → Use OrderedDict or deque
@@ -96,6 +100,7 @@ Note: Python 3.7+ dicts maintain insertion order, but this is a CPython implemen
 **2. Memory Is Critical**
 
 Hash tables use 2-3× more memory than the data alone:
+
 ```python
 # 1000 integers
 list: ~8KB
@@ -107,6 +112,7 @@ For embedded systems or huge datasets, arrays may be better.
 **3. Keys Aren't Hashable**
 
 Lists, dicts, and other mutable objects can't be keys:
+
 ```python
 d[["a", "b"]] = 1  # TypeError!
 # Solution: d[tuple(["a", "b"])] = 1
@@ -117,6 +123,7 @@ If your keys are naturally mutable, you need a different structure.
 **4. Range Queries or Nearest Neighbors**
 
 Hash tables only support exact match:
+
 ```python
 # "Find all keys between 10 and 20" → O(n) scan
 # "Find key closest to 15" → O(n) scan
@@ -127,12 +134,14 @@ Hash tables only support exact match:
 **5. Very Small Data Sets (n < 10)**
 
 The overhead of hashing isn't worth it:
+
 ```python
 # For 5 items, linear search in list is often faster
 # Cache locality matters more than O(1) vs O(n)
 ```
 
 **Red Flags:**
+
 - "Maintain sorted order" → Use sorted structure
 - "Find range of keys" → Use BST or sorted array
 - "Memory-constrained environment" → Use arrays
@@ -285,7 +294,7 @@ Insert "fish" (hash = 4), but bucket 4 is occupied by "cat":
 ## Time Complexity Analysis
 
 | Operation | Average Case | Worst Case |
-|-----------|--------------|------------|
+| --------- | ------------ | ---------- |
 | Insert    | O(1)         | O(n)       |
 | Lookup    | O(1)         | O(n)       |
 | Delete    | O(1)         | O(n)       |
@@ -494,24 +503,24 @@ def good_function(d=None):  # RIGHT: create new each time
 
 ## Complexity Summary
 
-| Operation | dict | set | list (for comparison) |
-|-----------|------|-----|----------------------|
-| Insert | O(1) avg | O(1) avg | O(1) append, O(n) insert |
-| Lookup | O(1) avg | O(1) avg | O(n) |
-| Delete | O(1) avg | O(1) avg | O(n) |
-| Space | O(n) | O(n) | O(n) |
+| Operation | dict     | set      | list (for comparison)    |
+| --------- | -------- | -------- | ------------------------ |
+| Insert    | O(1) avg | O(1) avg | O(1) append, O(n) insert |
+| Lookup    | O(1) avg | O(1) avg | O(n)                     |
+| Delete    | O(1) avg | O(1) avg | O(n)                     |
+| Space     | O(n)     | O(n)     | O(n)                     |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Design HashMap | Easy | Chaining implementation |
-| 2 | Design HashSet | Easy | Set implementation |
-| 3 | Contains Duplicate | Easy | Set for uniqueness |
-| 4 | Jewels and Stones | Easy | Set lookup |
-| 5 | First Unique Character | Easy | Frequency counting |
+| #   | Problem                | Difficulty | Key Concept             |
+| --- | ---------------------- | ---------- | ----------------------- |
+| 1   | Design HashMap         | Easy       | Chaining implementation |
+| 2   | Design HashSet         | Easy       | Set implementation      |
+| 3   | Contains Duplicate     | Easy       | Set for uniqueness      |
+| 4   | Jewels and Stones      | Easy       | Set lookup              |
+| 5   | First Unique Character | Easy       | Frequency counting      |
 
 ---
 

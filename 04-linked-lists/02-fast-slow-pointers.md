@@ -21,6 +21,7 @@ The fast-slow pointer technique (tortoise and hare) uses two pointers moving at 
 **Why O(1) Space?**: We only use two pointers, no matter the list size. Alternatives like "convert to array then analyze" use O(n) space.
 
 **The Cycle Detection Proof** (simplified):
+
 ```
 If there's a cycle of length C, and slow enters the cycle:
 - Both pointers are now on the cycle
@@ -47,6 +48,7 @@ This pattern isn't always the answer:
 5. **When Length is Readily Available**: If you already know the list length, direct calculation is cleaner than fast-slow for midpoint/nth-from-end.
 
 **Red Flags**:
+
 - "Return all positions of X" → Simple traversal
 - "Memory doesn't matter" → Consider hash-based approaches for clarity
 - "Need to backtrack" → Doubly-linked list or stack
@@ -67,6 +69,7 @@ Master this pattern and you'll solve many problems elegantly.
 ## Core Concept
 
 Use two pointers moving at different speeds:
+
 - **Slow pointer**: Moves 1 step at a time
 - **Fast pointer**: Moves 2 steps at a time
 
@@ -421,13 +424,13 @@ def reverse_list(head: ListNode) -> ListNode:
 
 ## Complexity Summary
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Find middle | O(n) | O(1) |
-| Detect cycle | O(n) | O(1) |
-| Find cycle start | O(n) | O(1) |
-| Remove nth from end | O(n) | O(1) |
-| Palindrome check | O(n) | O(1) |
+| Problem             | Time | Space |
+| ------------------- | ---- | ----- |
+| Find middle         | O(n) | O(1)  |
+| Detect cycle        | O(n) | O(1)  |
+| Find cycle start    | O(n) | O(1)  |
+| Remove nth from end | O(n) | O(1)  |
+| Palindrome check    | O(n) | O(1)  |
 
 ---
 
@@ -512,15 +515,15 @@ node2.next = node1  # Full cycle
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Middle of the Linked List | Easy | Basic fast-slow |
-| 2 | Linked List Cycle | Easy | Cycle detection |
-| 3 | Linked List Cycle II | Medium | Find cycle start |
-| 4 | Remove Nth Node From End | Medium | Two-pointer gap |
-| 5 | Palindrome Linked List | Easy | Fast-slow + reverse |
-| 6 | Reorder List | Medium | Split + reverse + merge |
-| 7 | Happy Number | Easy | Cycle detection on numbers |
+| #   | Problem                   | Difficulty | Key Concept                |
+| --- | ------------------------- | ---------- | -------------------------- |
+| 1   | Middle of the Linked List | Easy       | Basic fast-slow            |
+| 2   | Linked List Cycle         | Easy       | Cycle detection            |
+| 3   | Linked List Cycle II      | Medium     | Find cycle start           |
+| 4   | Remove Nth Node From End  | Medium     | Two-pointer gap            |
+| 5   | Palindrome Linked List    | Easy       | Fast-slow + reverse        |
+| 6   | Reorder List              | Medium     | Split + reverse + merge    |
+| 7   | Happy Number              | Easy       | Cycle detection on numbers |
 
 ---
 
