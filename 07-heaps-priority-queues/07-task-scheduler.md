@@ -53,6 +53,7 @@ Key: Always do the most frequent available task.
 **Mental Model: Radio Station Playlist**
 
 Imagine a radio station that can't repeat a song within n songs. The DJ has a stack of requests:
+
 - Prioritize most-requested songs (highest frequency)
 - After playing a song, it goes on "cooldown" for n songs
 - If no song is available, play an ad (idle)
@@ -117,6 +118,7 @@ But we have 9 tasks, so max(9, 9) = 9. No idles!
 **Don't Use Heap When:**
 
 1. **n = 0 (no cooldown)**: Just return len(tasks)
+
 ```python
 if n == 0:
     return len(tasks)  # No scheduling needed
@@ -129,6 +131,7 @@ if n == 0:
 **Don't Use Formula When:**
 
 1. **You need the actual schedule (not just count)**:
+
 ```python
 # Formula gives: 8 slots needed
 # But interviewer asks: "What's the actual order?"
@@ -148,6 +151,7 @@ if n == 0:
 3. **Tasks have deadlines**: Becomes real-time scheduling (EDF algorithm)
 
 **Red Flags:**
+
 - "What's the actual execution order?" → Need heap simulation
 - "Tasks take different amounts of time" → Modified problem
 - "Some tasks depend on others" → Topological sort
@@ -398,11 +402,11 @@ Less efficient but easier to understand.
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Heap + Queue | O(T log U) | O(U) | Most intuitive |
-| Formula | O(T) | O(1) | Fastest |
-| Simulation | O(T * U) | O(U) | Simple but slow |
+| Approach     | Time       | Space | Notes           |
+| ------------ | ---------- | ----- | --------------- |
+| Heap + Queue | O(T log U) | O(U)  | Most intuitive  |
+| Formula      | O(T)       | O(1)  | Fastest         |
+| Simulation   | O(T \* U)  | O(U)  | Simple but slow |
 
 T = total tasks, U = unique tasks (≤ 26)
 
@@ -548,13 +552,13 @@ result = (max_count - 1) * (n + 1) + num_max
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Task Scheduler | Medium | Core problem |
-| 2 | Reorganize String | Medium | Cooldown of 1 |
-| 3 | Task Scheduler II | Medium | Different formulation |
-| 4 | Distant Barcodes | Medium | Reorganize array |
-| 5 | Course Schedule III | Hard | Heap + greedy |
+| #   | Problem             | Difficulty | Key Variation         |
+| --- | ------------------- | ---------- | --------------------- |
+| 1   | Task Scheduler      | Medium     | Core problem          |
+| 2   | Reorganize String   | Medium     | Cooldown of 1         |
+| 3   | Task Scheduler II   | Medium     | Different formulation |
+| 4   | Distant Barcodes    | Medium     | Reorganize array      |
+| 5   | Course Schedule III | Hard       | Heap + greedy         |
 
 ---
 
@@ -562,7 +566,7 @@ result = (max_count - 1) * (n + 1) + num_max
 
 1. **Greedy strategy**: Always do highest-frequency task not on cooldown
 2. **Max heap + cooldown queue**: Track remaining counts and availability
-3. **Formula approach**: (max_count - 1) * (n + 1) + num_max
+3. **Formula approach**: (max_count - 1) \* (n + 1) + num_max
 4. **Must take max**: Result could be just len(tasks) if many unique tasks
 5. **Related patterns**: Reorganize string, distant barcodes
 

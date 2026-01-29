@@ -5,6 +5,7 @@
 **The "Speed vs Memory" Trade-off Mental Model**
 
 Think of complexity analysis like planning a road trip:
+
 - **Time complexity** = How long will the trip take?
 - **Space complexity** = How much luggage space do we need?
 
@@ -13,6 +14,7 @@ Just as you'd estimate "This route takes about 4 hours" rather than "exactly 237
 **Why Approximations Are Enough**
 
 When comparing algorithms, we care about **how they scale**, not exact counts:
+
 - An O(n²) algorithm with n=1000 does ~1,000,000 operations
 - An O(n) algorithm with n=1000 does ~1,000 operations
 - The exact constants (1.5n vs 2n) become irrelevant at scale
@@ -20,6 +22,7 @@ When comparing algorithms, we care about **how they scale**, not exact counts:
 **The Interview Mindset**
 
 Interviewers don't want mathematical proofs—they want you to:
+
 1. Quickly identify complexity class (O(n), O(n²), etc.)
 2. Justify why it's that complexity
 3. Know when you can do better
@@ -44,27 +47,27 @@ At FANG+ companies, failing to analyze complexity correctly is often an automati
 
 This chapter covers:
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-big-o-notation](./01-big-o-notation.md) | Big-O Fundamentals | Understand and compare growth rates |
-| [02-time-complexity](./02-time-complexity.md) | Time Complexity Analysis | Analyze loops, recursion, and nested structures |
-| [03-space-complexity](./03-space-complexity.md) | Space Complexity Analysis | Track memory usage including call stack |
-| [04-common-patterns](./04-common-patterns.md) | Common Operation Complexities | Quick reference for data structure operations |
-| [05-interview-tips](./05-interview-tips.md) | Interview Discussion Tips | How to communicate complexity effectively |
+| Section                                         | Topic                         | Key Takeaway                                    |
+| ----------------------------------------------- | ----------------------------- | ----------------------------------------------- |
+| [01-big-o-notation](./01-big-o-notation.md)     | Big-O Fundamentals            | Understand and compare growth rates             |
+| [02-time-complexity](./02-time-complexity.md)   | Time Complexity Analysis      | Analyze loops, recursion, and nested structures |
+| [03-space-complexity](./03-space-complexity.md) | Space Complexity Analysis     | Track memory usage including call stack         |
+| [04-common-patterns](./04-common-patterns.md)   | Common Operation Complexities | Quick reference for data structure operations   |
+| [05-interview-tips](./05-interview-tips.md)     | Interview Discussion Tips     | How to communicate complexity effectively       |
 
 ---
 
 ## Common Complexity Classes (Quick Reference)
 
-| Complexity | Name | Example |
-|------------|------|---------|
-| O(1) | Constant | Array access, hash lookup |
-| O(log n) | Logarithmic | Binary search |
-| O(n) | Linear | Single loop through array |
-| O(n log n) | Linearithmic | Merge sort, heap sort |
-| O(n²) | Quadratic | Nested loops, bubble sort |
-| O(2ⁿ) | Exponential | Recursive subsets generation |
-| O(n!) | Factorial | Permutations |
+| Complexity | Name         | Example                      |
+| ---------- | ------------ | ---------------------------- |
+| O(1)       | Constant     | Array access, hash lookup    |
+| O(log n)   | Logarithmic  | Binary search                |
+| O(n)       | Linear       | Single loop through array    |
+| O(n log n) | Linearithmic | Merge sort, heap sort        |
+| O(n²)      | Quadratic    | Nested loops, bubble sort    |
+| O(2ⁿ)      | Exponential  | Recursive subsets generation |
+| O(n!)      | Factorial    | Permutations                 |
 
 ---
 
@@ -90,17 +93,18 @@ This chapter covers:
 
 ## Time Targets
 
-| Task | Target Time |
-|------|-------------|
-| State complexity of your approach | 30 seconds |
-| Justify a trade-off decision | 1 minute |
-| Optimize when prompted | 2-5 minutes |
+| Task                              | Target Time |
+| --------------------------------- | ----------- |
+| State complexity of your approach | 30 seconds  |
+| Justify a trade-off decision      | 1 minute    |
+| Optimize when prompted            | 2-5 minutes |
 
 ---
 
 ## Prerequisites
 
 This is the first chapter - no prerequisites required. However, basic familiarity with:
+
 - Loops and conditionals
 - Basic math (exponents, logarithms)
 - What an algorithm is

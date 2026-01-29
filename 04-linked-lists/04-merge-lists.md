@@ -14,6 +14,7 @@ Unlike arrays, merging linked lists requires no extra space for the result. You'
 
 **The Two-Finger Technique**:
 Imagine you have two sorted stacks of papers and want to combine them:
+
 1. Compare the top paper of each stack
 2. Take the smaller one and put it in your result pile
 3. Repeat until both stacks are empty
@@ -22,12 +23,14 @@ Imagine you have two sorted stacks of papers and want to combine them:
 This is exactly what the algorithm does, but with pointers instead of physical movement.
 
 **Why a Dummy Node?**
+
 ```python
 dummy = ListNode(0)
 current = dummy
 # ... build the list ...
 return dummy.next  # The real head
 ```
+
 Without a dummy, you'd need special logic for "which list's head becomes the result's head?" The dummy eliminates this edge case—you always append to `current`, and `dummy.next` is your answer.
 
 **Merge K Lists: Two Approaches**
@@ -39,11 +42,13 @@ Without a dummy, you'd need special logic for "which list's head becomes the res
 Which is better? Heap has consistent O(log k) per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
 
 **The Index Trick for Heaps**:
+
 ```python
 # Why (val, index, node) instead of (val, node)?
 heappush(heap, (5, 0, node_a))
 heappush(heap, (5, 1, node_b))  # Same val, different index
 ```
+
 Python's heap compares tuples element-by-element. If two nodes have the same value, it tries to compare the nodes themselves—which fails! The index is a tiebreaker that makes equal values distinguishable.
 
 ## When NOT to Use Linked List Merge
@@ -502,14 +507,14 @@ def add_two_numbers_ii(l1: ListNode, l2: ListNode) -> ListNode:
 
 ## Complexity Comparison
 
-| Approach | Time | Space |
-|----------|------|-------|
-| Merge two sorted | O(n + m) | O(1) |
-| Merge k sorted (divide & conquer) | O(N log k) | O(log k) |
-| Merge k sorted (heap) | O(N log k) | O(k) |
-| Merge sort (recursive) | O(n log n) | O(log n) |
-| Merge sort (bottom-up) | O(n log n) | O(1) |
-| Add two numbers | O(max(n, m)) | O(max(n, m)) |
+| Approach                          | Time         | Space        |
+| --------------------------------- | ------------ | ------------ |
+| Merge two sorted                  | O(n + m)     | O(1)         |
+| Merge k sorted (divide & conquer) | O(N log k)   | O(log k)     |
+| Merge k sorted (heap)             | O(N log k)   | O(k)         |
+| Merge sort (recursive)            | O(n log n)   | O(log n)     |
+| Merge sort (bottom-up)            | O(n log n)   | O(1)         |
+| Add two numbers                   | O(max(n, m)) | O(max(n, m)) |
 
 ---
 
@@ -608,14 +613,14 @@ def insertion_sort_list(head: ListNode) -> ListNode:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Merge Two Sorted Lists | Easy | Basic merge |
-| 2 | Merge k Sorted Lists | Hard | Divide & conquer or heap |
-| 3 | Sort List | Medium | Merge sort on linked list |
-| 4 | Add Two Numbers | Medium | Merge with carry |
-| 5 | Add Two Numbers II | Medium | Reverse + add |
-| 6 | Insertion Sort List | Medium | Insertion sort variant |
+| #   | Problem                | Difficulty | Key Concept               |
+| --- | ---------------------- | ---------- | ------------------------- |
+| 1   | Merge Two Sorted Lists | Easy       | Basic merge               |
+| 2   | Merge k Sorted Lists   | Hard       | Divide & conquer or heap  |
+| 3   | Sort List              | Medium     | Merge sort on linked list |
+| 4   | Add Two Numbers        | Medium     | Merge with carry          |
+| 5   | Add Two Numbers II     | Medium     | Reverse + add             |
+| 6   | Insertion Sort List    | Medium     | Insertion sort variant    |
 
 ---
 

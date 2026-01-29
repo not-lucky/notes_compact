@@ -49,6 +49,7 @@ Edit Distance (Levenshtein Distance) is essential because:
 5. **Strings Are Similar (Low Distance Expected)**: When k is known to be small, use Ukkonen's algorithm or the band optimization for O(n×k) time.
 
 **Recognize Edit Distance Pattern When:**
+
 - Transform one string to another
 - Operations: insert, delete, replace (with costs)
 - Need minimum operations or similarity measure
@@ -391,12 +392,12 @@ Delete distance = 3 + 3 - 2*2 = 2
 
 ## Complexity
 
-| Variant | Time | Space |
-|---------|------|-------|
-| Standard | O(mn) | O(n) |
-| With reconstruction | O(mn) | O(mn) |
-| One edit check | O(n) | O(1) |
-| Delete only (via LCS) | O(mn) | O(n) |
+| Variant               | Time  | Space |
+| --------------------- | ----- | ----- |
+| Standard              | O(mn) | O(n)  |
+| With reconstruction   | O(mn) | O(mn) |
+| One edit check        | O(n)  | O(1)  |
+| Delete only (via LCS) | O(mn) | O(n)  |
 
 ---
 
@@ -412,13 +413,13 @@ Delete distance = 3 + 3 - 2*2 = 2
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | Edit Distance | Medium | Classic |
-| 2 | One Edit Distance | Medium | Boolean check |
-| 3 | Delete Operations | Medium | LCS-based |
-| 4 | Min ASCII Delete Sum | Medium | Weighted delete |
-| 5 | Distinct Subsequences | Hard | Count variations |
+| #   | Problem               | Difficulty | Variant          |
+| --- | --------------------- | ---------- | ---------------- |
+| 1   | Edit Distance         | Medium     | Classic          |
+| 2   | One Edit Distance     | Medium     | Boolean check    |
+| 3   | Delete Operations     | Medium     | LCS-based        |
+| 4   | Min ASCII Delete Sum  | Medium     | Weighted delete  |
+| 5   | Distinct Subsequences | Hard       | Count variations |
 
 ---
 

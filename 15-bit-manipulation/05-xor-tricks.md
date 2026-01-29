@@ -195,6 +195,7 @@ XOR of multiple unique elements gives their combined XOR, which isn't directly u
 ```
 
 **Red Flags (Don't Use XOR):**
+
 - Need to track positions or order
 - More than 2 unique elements among pairs
 - Floating point data
@@ -611,13 +612,13 @@ print(decode([1, 2, 3], 1))  # [1, 0, 2, 1]
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Key Technique |
-|---------|------|-------|---------------|
-| Missing Number | O(n) | O(1) | XOR indices and values |
-| Two Missing Numbers | O(n) | O(1) | XOR + partition by diff bit |
-| Sum of Two Integers | O(1) | O(1) | XOR + carry with AND |
-| Swap | O(1) | O(1) | Triple XOR |
-| Decode XORed Array | O(n) | O(n) | Reversibility of XOR |
+| Problem             | Time | Space | Key Technique               |
+| ------------------- | ---- | ----- | --------------------------- |
+| Missing Number      | O(n) | O(1)  | XOR indices and values      |
+| Two Missing Numbers | O(n) | O(1)  | XOR + partition by diff bit |
+| Sum of Two Integers | O(1) | O(1)  | XOR + carry with AND        |
+| Swap                | O(1) | O(1)  | Triple XOR                  |
+| Decode XORed Array  | O(n) | O(n)  | Reversibility of XOR        |
 
 ---
 
@@ -697,14 +698,14 @@ def xor_range_ab(a, b):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Missing Number | Easy | XOR indices and values |
-| 2 | Single Number III | Medium | XOR + partition |
-| 3 | Sum of Two Integers | Medium | XOR for sum, AND for carry |
-| 4 | Decode XORed Array | Easy | XOR reversibility |
-| 5 | XOR Queries of a Subarray | Medium | Prefix XOR |
-| 6 | Maximum XOR of Two Numbers | Medium | Trie for XOR |
+| #   | Problem                    | Difficulty | Key Concept                |
+| --- | -------------------------- | ---------- | -------------------------- |
+| 1   | Missing Number             | Easy       | XOR indices and values     |
+| 2   | Single Number III          | Medium     | XOR + partition            |
+| 3   | Sum of Two Integers        | Medium     | XOR for sum, AND for carry |
+| 4   | Decode XORed Array         | Easy       | XOR reversibility          |
+| 5   | XOR Queries of a Subarray  | Medium     | Prefix XOR                 |
+| 6   | Maximum XOR of Two Numbers | Medium     | Trie for XOR               |
 
 ---
 

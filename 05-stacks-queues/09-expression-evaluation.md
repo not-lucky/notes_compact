@@ -11,10 +11,12 @@ Expression evaluation uses stacks to handle operator precedence and parentheses 
 **Why do stacks solve expression evaluation?**
 
 Two challenges make expressions tricky:
+
 1. **Operator precedence**: `2 + 3 * 4` = 14, not 20 (multiply before add)
 2. **Parentheses**: `(2 + 3) * 4` = 20 (override precedence)
 
 **The Key Insight for Precedence**:
+
 ```
 We can't evaluate an operator immediately because we don't know
 what comes next. In "2 + 3 * 4", we can't compute "2 + 3" right away
@@ -25,6 +27,7 @@ When we see a high-precedence operator, we evaluate it immediately.
 ```
 
 **How Delayed Evaluation Works**:
+
 ```
 Expression: 2 + 3 * 4
 
@@ -40,6 +43,7 @@ End    Now evaluate:
 ```
 
 **The Key Insight for Parentheses**:
+
 ```
 Parentheses create a "sub-expression" that must be evaluated completely
 before continuing the outer expression. This is a nested structure!
@@ -49,6 +53,7 @@ When we see ')', finish the sub-expression and restore context.
 ```
 
 **How Parentheses Work**:
+
 ```
 Expression: 1 - (2 + 3)
 
@@ -65,6 +70,7 @@ Token  Action                   Stack      Result
 ```
 
 **Why Postfix (RPN) is Simpler**:
+
 ```
 Infix:   2 + 3 * 4  (needs precedence rules)
 Postfix: 2 3 4 * +  (no precedence needed!)
@@ -117,13 +123,14 @@ Interviewers use this to assess your ability to handle complex multi-step algori
 
 ## Expression Notations
 
-| Notation | Example | Evaluation Order |
-|----------|---------|-----------------|
-| Infix | `3 + 4 * 2` | Needs precedence rules |
-| Postfix (RPN) | `3 4 2 * +` | Left to right |
-| Prefix | `+ 3 * 4 2` | Right to left |
+| Notation      | Example     | Evaluation Order       |
+| ------------- | ----------- | ---------------------- |
+| Infix         | `3 + 4 * 2` | Needs precedence rules |
+| Postfix (RPN) | `3 4 2 * +` | Left to right          |
+| Prefix        | `+ 3 * 4 2` | Right to left          |
 
 ### Why Postfix?
+
 - No parentheses needed
 - No operator precedence rules
 - Simple left-to-right evaluation
@@ -269,7 +276,7 @@ The stack saves the "context" before entering parentheses.
 
 ---
 
-## Pattern 3: Basic Calculator II (Infix with +, -, *, /)
+## Pattern 3: Basic Calculator II (Infix with +, -, \*, /)
 
 ```python
 def calculate_ii(s: str) -> int:
@@ -501,11 +508,11 @@ print(decode_string("2[abc]3[cd]ef"))  # "abcabccdcdcdef"
 
 ## Operator Precedence Summary
 
-| Operator | Precedence | Associativity |
-|----------|------------|---------------|
-| `^` | 3 (highest) | Right |
-| `*`, `/` | 2 | Left |
-| `+`, `-` | 1 (lowest) | Left |
+| Operator | Precedence  | Associativity |
+| -------- | ----------- | ------------- |
+| `^`      | 3 (highest) | Right         |
+| `*`, `/` | 2           | Left          |
+| `+`, `-` | 1 (lowest)  | Left          |
 
 ### Why Associativity Matters
 
@@ -566,15 +573,15 @@ calculate("7 / 3")  # 2 (truncated)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Evaluate Reverse Polish Notation | Medium | RPN evaluation |
-| 2 | Basic Calculator | Hard | + - and () |
-| 3 | Basic Calculator II | Medium | + - * / |
-| 4 | Basic Calculator III | Hard | Full expression |
-| 5 | Decode String | Medium | Nested encoding |
-| 6 | Number of Atoms | Hard | Chemical formula |
-| 7 | Parse Lisp Expression | Hard | Nested function calls |
+| #   | Problem                          | Difficulty | Key Concept           |
+| --- | -------------------------------- | ---------- | --------------------- |
+| 1   | Evaluate Reverse Polish Notation | Medium     | RPN evaluation        |
+| 2   | Basic Calculator                 | Hard       | + - and ()            |
+| 3   | Basic Calculator II              | Medium     | + - \* /              |
+| 4   | Basic Calculator III             | Hard       | Full expression       |
+| 5   | Decode String                    | Medium     | Nested encoding       |
+| 6   | Number of Atoms                  | Hard       | Chemical formula      |
+| 7   | Parse Lisp Expression            | Hard       | Nested function calls |
 
 ---
 

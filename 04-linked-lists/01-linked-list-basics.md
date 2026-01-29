@@ -17,12 +17,14 @@ Think of the difference between a train and a marching band:
 2. **Linked lists are like a train**: Each car (node) only knows about the car behind it. Want to remove a car in the middle? Just reconnect the links—the cars before and after don't need to move at all. Adding a new car? Just update two connections.
 
 **The Core Trade-off**:
+
 ```
 Arrays:   Fast access (O(1)) | Slow insert/delete at middle (O(n))
 Linked:   Slow access (O(n)) | Fast insert/delete at known position (O(1))
 ```
 
 **Why O(1) insertion is a big deal**: In arrays, inserting at position i requires shifting all n-i elements. With linked lists, you just update 2 pointers, regardless of list size. This matters enormously for:
+
 - Implementing stacks/queues (constant-time push/pop)
 - LRU caches (move recently used items to front)
 - Real-time systems where worst-case matters
@@ -46,6 +48,7 @@ Linked lists are often the wrong choice:
 5. **Simple Stack/Queue is Enough**: Python's `collections.deque` uses a block-based approach that's faster than a pure linked list for most use cases.
 
 **Red Flags in Interviews**:
+
 - "Find the kth element frequently" → Use array
 - "Sort the data structure" → Arrays sort faster (cache effects)
 - "Need to access by index" → Definitely array
@@ -395,20 +398,20 @@ def delete_node(node: ListNode) -> None:
 
 ## Complexity Summary
 
-| Operation | Time Complexity | Space Complexity |
-|-----------|-----------------|------------------|
-| Create from array | O(n) | O(n) |
-| Traverse | O(n) | O(1) |
-| Search | O(n) | O(1) |
-| Get length | O(n) | O(1) |
-| Insert at head | O(1) | O(1) |
-| Insert at tail | O(n)* | O(1) |
-| Insert at position | O(n) | O(1) |
-| Delete at head | O(1) | O(1) |
-| Delete at tail | O(n) | O(1) |
-| Delete by value | O(n) | O(1) |
+| Operation          | Time Complexity | Space Complexity |
+| ------------------ | --------------- | ---------------- |
+| Create from array  | O(n)            | O(n)             |
+| Traverse           | O(n)            | O(1)             |
+| Search             | O(n)            | O(1)             |
+| Get length         | O(n)            | O(1)             |
+| Insert at head     | O(1)            | O(1)             |
+| Insert at tail     | O(n)\*          | O(1)             |
+| Insert at position | O(n)            | O(1)             |
+| Delete at head     | O(1)            | O(1)             |
+| Delete at tail     | O(n)            | O(1)             |
+| Delete by value    | O(n)            | O(1)             |
 
-*O(1) with tail pointer
+\*O(1) with tail pointer
 
 ---
 
@@ -500,13 +503,13 @@ def debug_list(head: ListNode, max_nodes: int = 100) -> None:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Delete Node in a Linked List | Medium | Delete without previous pointer |
-| 2 | Remove Linked List Elements | Easy | Delete all occurrences |
-| 3 | Design Linked List | Medium | Full implementation |
-| 4 | Middle of the Linked List | Easy | Find middle (see next section) |
-| 5 | Convert Binary Number in LL to Integer | Easy | Traversal with computation |
+| #   | Problem                                | Difficulty | Key Concept                     |
+| --- | -------------------------------------- | ---------- | ------------------------------- |
+| 1   | Delete Node in a Linked List           | Medium     | Delete without previous pointer |
+| 2   | Remove Linked List Elements            | Easy       | Delete all occurrences          |
+| 3   | Design Linked List                     | Medium     | Full implementation             |
+| 4   | Middle of the Linked List              | Easy       | Find middle (see next section)  |
+| 5   | Convert Binary Number in LL to Integer | Easy       | Traversal with computation      |
 
 ---
 

@@ -1,14 +1,17 @@
 # Serialize and Deserialize Binary Tree Solutions
 
 ## 1. Serialize and Deserialize Binary Tree
+
 **Problem Statement**: Design an algorithm to serialize and deserialize a binary tree. Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [1,2,3,None,None,4,5]` → Serialized: `"1,2,#,#,3,4,#,#,5,#,#"`
 - **Edge Case - Empty Tree**: `root = None` → Serialized: `""`
 - **Edge Case - Single Node**: `root = [1]` → Serialized: `"1,#,#"`
 
 ### Optimal Python Solution (Preorder DFS)
+
 ```python
 class TreeNode:
     def __init__(self, x):
@@ -55,20 +58,24 @@ class Codec:
 ```
 
 ### Explanation
+
 1.  **Serialization Choice**: Preorder traversal (`Root, Left, Right`) is excellent for serialization because the root of the tree (or subtree) is always the first element processed.
-2.  **Handling Nulls**: To preserve the structure, we MUST explicitly record `None` children (using a marker like `#`). A preorder traversal *without* null markers is insufficient to uniquely reconstruct a general binary tree.
+2.  **Handling Nulls**: To preserve the structure, we MUST explicitly record `None` children (using a marker like `#`). A preorder traversal _without_ null markers is insufficient to uniquely reconstruct a general binary tree.
 3.  **Deserialization Logic**: We split the string and use an iterator. The recursive function `dfs()` creates a node, then calls itself for the left child, then for the right. Because of the preorder nature, the next value in the iterator is always the correct value for the current child we are building.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. We visit every node once during both serialization and deserialization.
 - **Space Complexity**: **O(n)**. The serialized string and the recursion stack take $O(n)$ space.
 
 ---
 
 ## 2. Serialize and Deserialize BST
+
 **Problem Statement**: Optimize the codec specifically for Binary Search Trees (BST).
 
 ### Optimal Python Solution (Compact Representation)
+
 ```python
 class CodecBST:
     def serialize(self, root: TreeNode) -> str:
@@ -104,19 +111,23 @@ class CodecBST:
 ```
 
 ### Explanation
+
 - **Optimization**: For a BST, the inorder traversal is just the sorted preorder array. Since `Preorder + Inorder` uniquely identifies a tree, we only need to store the `Preorder`.
 - **Space**: This saves space by not storing any `#` markers for null children.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(n)**.
 
 ---
 
 ## 3. Serialize and Deserialize N-ary Tree
+
 **Problem Statement**: Serialize a tree where each node can have $N$ children.
 
 ### Optimal Python Solution
+
 ```python
 class Node:
     def __init__(self, val=None, children=None):
@@ -151,18 +162,22 @@ class CodecNary:
 ```
 
 ### Explanation
+
 - **Structure**: For N-ary trees, knowing "where children end" is harder. We solve this by recording the **number of children** (`len(node.children)`) immediately after the node's value.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(n)**.
 
 ---
 
 ## 4. Construct Binary Tree from String
+
 **Problem Statement**: Construct a binary tree from a string consisting of an integer followed by zero, one or two pairs of parentheses (e.g., `"4(2(3)(1))(6(5))"`).
 
 ### Optimal Python Solution
+
 ```python
 def str2tree(s: str) -> TreeNode:
     if not s: return None
@@ -192,15 +207,18 @@ def str2tree(s: str) -> TreeNode:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n²)** (due to string slicing). Can be optimized to $O(n)$ with global index.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 5. Verify Preorder Serialization of a Binary Tree
+
 **Problem Statement**: Without reconstructing the tree, verify if a string represents a valid preorder serialization.
 
 ### Optimal Python Solution
+
 ```python
 def isValidSerialization(preorder: str) -> bool:
     # Use the concept of 'slots' or 'indegree/outdegree'
@@ -224,5 +242,6 @@ def isValidSerialization(preorder: str) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(1)** (if we use a generator instead of split).

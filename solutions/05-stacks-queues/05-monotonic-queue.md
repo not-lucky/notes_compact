@@ -3,14 +3,17 @@
 This file provides optimal Python solutions and explanations for the practice problems listed in the Monotonic Queue notes.
 
 ## 1. Sliding Window Maximum
+
 **Problem Statement**: You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. Return the max sliding window.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `nums = [1,3,-1,-3,5,3,6,7], k = 3` -> `[3,3,5,5,6,7]`
 - **Edge Case**: `k = 1` -> Return `nums`
 - **Edge Case**: `k = len(nums)` -> Return `[max(nums)]`
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -39,18 +42,22 @@ def maxSlidingWindow(nums: list[int], k: int) -> list[int]:
 ```
 
 ### Explanation
+
 We use a `deque` to store indices of elements in the current window. We maintain a "Monotonic Decreasing" property: elements in the deque are ordered from largest to smallest. When a new element comes, we remove all smaller elements from the back because they can never be the maximum of any future window. The front of the deque always contains the index of the maximum element for the current window.
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the number of elements. Each index is added and removed from the deque at most once.
 - **Space Complexity**: O(k), the deque stores at most k indices.
 
 ---
 
 ## 2. Shortest Subarray with Sum at Least K
+
 **Problem Statement**: Return the length of the shortest, non-empty, contiguous subarray of `nums` with sum at least `k`. `nums` can contain negative numbers.
 
 ### Optimal Python Solution
+
 ```python
 from collections import deque
 
@@ -81,16 +88,19 @@ def shortestSubarray(nums: list[int], k: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: O(n), where n is the length of `nums`. We compute prefix sums in O(n) and then perform a single pass where each index is added/removed from the deque at most once.
 - **Space Complexity**: O(n), to store prefix sums and the deque.
 
 ---
 
 ## 3. Jump Game VI
+
 **Problem Statement**: You are at index 0. In each step, you can jump between 1 to `k` steps forward. Each cell has a score. Return the maximum score you can get to reach the last index.
 
 ### Optimal Python Solution
-```python
+
+````python
 from collections import deque
 
 def maxResult(nums: list[int], k: int) -> int:
@@ -115,6 +125,7 @@ def maxResult(nums: list[int], k: int) -> int:
             dq.pop()
         dq.append(i)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the number of elements. We perform a single pass where each element is processed using O(1) deque operations.
 - **Space Complexity**: O(k), where k is the jump limit, to store potential candidates in the deque.
@@ -155,6 +166,7 @@ def constrainedSubsetSum(nums: list[int], k: int) -> int:
             dq.pop()
         dq.append(i)
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the number of elements. We traverse the array once and perform amortized O(1) work per element using the monotonic queue.
 - **Space Complexity**: O(k), where k is the distance limit, to store indices in the deque.
@@ -191,6 +203,7 @@ def longestSubarray(nums: list[int], limit: int) -> int:
 
     return res
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of `nums`. We use two pointers (sliding window) and each element is added/removed from each deque at most once.
 - **Space Complexity**: O(n), to store indices in the two deques in the worst case.
@@ -225,10 +238,11 @@ def findMaxValueOfEquation(points: list[list[int]], k: int) -> int:
             dq.pop()
         dq.append((curr_val, xj))
 
+```
 ### Complexity Analysis
 - **Time Complexity**: O(n), where n is the length of `nums`. We use two pointers (sliding window) and each element is added/removed from each deque at most once.
 - **Space Complexity**: O(n), to store indices in the two deques in the worst case.
 
 ### Explanation
 We rewrite the equation `yi + yj + |xi - xj|` as `(yi - xi) + (yj + xj)` since `xj > xi`. For each point `j`, we want to find a point `i` that maximizes `yi - xi` within the window `xj - xi <= k`. A monotonic queue efficiently maintains the best `yi - xi` candidates.
-```
+````

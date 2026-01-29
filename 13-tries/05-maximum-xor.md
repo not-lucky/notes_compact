@@ -150,6 +150,7 @@ For n = 100, brute force is 5,000 comparisons. Trie setup might have higher cons
 XOR on signed integers is tricky. The sign bit can mess up the MSB-first greedy approach. You'd need to handle two's complement carefully.
 
 **Red Flags:**
+
 - "XOR of range" → Use mathematical formula
 - "Count pairs with XOR = K" → Hashmap counting better
 - "XOR exists/doesn't exist" → Hashmap sufficient
@@ -181,6 +182,7 @@ XOR= 11100 = 28
 To maximize XOR, for each bit position, we want opposite bits (1 XOR 0 = 1).
 
 **Strategy**: Build a trie where:
+
 - Each node has at most 2 children: 0 and 1
 - Each path from root to leaf represents a number's binary form
 - For each number, traverse the trie trying to take the opposite bit at each level
@@ -375,19 +377,19 @@ class Solution:
 
 ## Complexity Analysis
 
-| Aspect | Complexity | Notes |
-|--------|------------|-------|
-| Time (build trie) | O(n × L) | L = max bit length (32 for int) |
-| Time (query) | O(n × L) | Query for each of n numbers |
-| Total Time | O(n × L) = O(n) | L is constant for 32-bit |
-| Space | O(n × L) = O(n) | At most n × L nodes |
+| Aspect            | Complexity      | Notes                           |
+| ----------------- | --------------- | ------------------------------- |
+| Time (build trie) | O(n × L)        | L = max bit length (32 for int) |
+| Time (query)      | O(n × L)        | Query for each of n numbers     |
+| Total Time        | O(n × L) = O(n) | L is constant for 32-bit        |
+| Space             | O(n × L) = O(n) | At most n × L nodes             |
 
 ### Comparison with Brute Force
 
-| Approach | Time | Space |
-|----------|------|-------|
-| Brute force (all pairs) | O(n²) | O(1) |
-| Bitwise Trie | O(n × 32) = O(n) | O(n × 32) |
+| Approach                | Time             | Space     |
+| ----------------------- | ---------------- | --------- |
+| Brute force (all pairs) | O(n²)            | O(1)      |
+| Bitwise Trie            | O(n × 32) = O(n) | O(n × 32) |
 
 For n = 10^5, trie is ~3000x faster.
 
@@ -658,13 +660,13 @@ This matches 5 XOR 25:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Maximum XOR of Two Numbers in an Array | Medium | Basic bitwise trie |
-| 2 | Maximum XOR With an Element From Array | Hard | Offline queries + trie |
-| 3 | Maximum Genetic Difference Query | Hard | DFS + dynamic trie |
-| 4 | Count Pairs With XOR in a Range | Hard | Counting with trie |
-| 5 | Maximum XOR After Operations | Medium | XOR properties + trie |
+| #   | Problem                                | Difficulty | Key Concept            |
+| --- | -------------------------------------- | ---------- | ---------------------- |
+| 1   | Maximum XOR of Two Numbers in an Array | Medium     | Basic bitwise trie     |
+| 2   | Maximum XOR With an Element From Array | Hard       | Offline queries + trie |
+| 3   | Maximum Genetic Difference Query       | Hard       | DFS + dynamic trie     |
+| 4   | Count Pairs With XOR in a Range        | Hard       | Counting with trie     |
+| 5   | Maximum XOR After Operations           | Medium     | XOR properties + trie  |
 
 ---
 

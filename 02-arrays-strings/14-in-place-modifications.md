@@ -21,6 +21,7 @@ The key insight is **overwritten data is no longer needed**:
 **Mental Model - Move Zeroes**: Imagine a deck of cards where you're pulling out all non-joker cards and stacking them at the front. Once you've processed a card and decided it's a joker, you don't need to look at it again—just keep stacking non-jokers at the write position.
 
 **Why Dutch National Flag Works**:
+
 ```
 Three regions: [0s | 1s | unknown | 2s]
               0    low  mid      high   n-1
@@ -39,6 +40,7 @@ On each step:
 ```
 
 **Index Encoding Trick**:
+
 ```
 Array: [4, 3, 2, 7, 8, 2, 3, 1] (values 1-8, indices 0-7)
 Task: Find duplicates (O(1) space)
@@ -72,6 +74,7 @@ In-place isn't always appropriate:
 5. **When O(n) Space Is Acceptable**: If extra space is cheap and simplifies code significantly, it may be worth it. Correctness > optimization.
 
 **Red Flags:**
+
 - "Return original and modified" → Need copy
 - "Stable partition" (preserve relative order) → May need extra space or O(n²) time
 - "String modification" in Python → Must convert to list first
@@ -507,13 +510,13 @@ def segregate_negatives_unordered(arr: list[int]) -> None:
 
 ## Common Techniques Summary
 
-| Technique | Use Case | Example |
-|-----------|----------|---------|
-| Two Pointers (same dir) | Remove/filter | Move Zeroes, Remove Element |
-| Two Pointers (opposite) | Reverse, Partition | Reverse Array, Sort Colors |
-| Three Pointers | 3-way partition | Dutch National Flag |
-| Reversal Trick | Rotate | Rotate Array |
-| Index Encoding | Use array as storage | Find Duplicates |
+| Technique               | Use Case             | Example                     |
+| ----------------------- | -------------------- | --------------------------- |
+| Two Pointers (same dir) | Remove/filter        | Move Zeroes, Remove Element |
+| Two Pointers (opposite) | Reverse, Partition   | Reverse Array, Sort Colors  |
+| Three Pointers          | 3-way partition      | Dutch National Flag         |
+| Reversal Trick          | Rotate               | Rotate Array                |
+| Index Encoding          | Use array as storage | Find Duplicates             |
 
 ---
 
@@ -575,16 +578,16 @@ Rotate by k % n
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Technique |
-|---|---------|------------|-----------|
-| 1 | Move Zeroes | Easy | Two pointers |
-| 2 | Remove Element | Easy | Two pointers |
-| 3 | Remove Duplicates from Sorted Array | Easy | Two pointers |
-| 4 | Sort Colors | Medium | Dutch flag |
-| 5 | Rotate Array | Medium | Reversal trick |
-| 6 | Next Permutation | Medium | Find pivot, swap, reverse |
-| 7 | Find All Duplicates in Array | Medium | Index encoding |
-| 8 | Wiggle Sort II | Medium | Virtual indexing |
+| #   | Problem                             | Difficulty | Technique                 |
+| --- | ----------------------------------- | ---------- | ------------------------- |
+| 1   | Move Zeroes                         | Easy       | Two pointers              |
+| 2   | Remove Element                      | Easy       | Two pointers              |
+| 3   | Remove Duplicates from Sorted Array | Easy       | Two pointers              |
+| 4   | Sort Colors                         | Medium     | Dutch flag                |
+| 5   | Rotate Array                        | Medium     | Reversal trick            |
+| 6   | Next Permutation                    | Medium     | Find pivot, swap, reverse |
+| 7   | Find All Duplicates in Array        | Medium     | Index encoding            |
+| 8   | Wiggle Sort II                      | Medium     | Virtual indexing          |
 
 ---
 

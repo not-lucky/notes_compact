@@ -22,6 +22,7 @@ This problem appears at Google, Amazon, and many other companies.
 **Why This Problem Matters**
 
 "Design a HashMap" isn't about memorizing code—it tests whether you truly understand:
+
 - How hash tables achieve O(1) average time
 - What happens when things go wrong (collisions)
 - The trade-offs between different approaches
@@ -29,6 +30,7 @@ This problem appears at Google, Amazon, and many other companies.
 **Mental Model: The Postal System**
 
 Think of a HashMap like a post office with numbered PO boxes:
+
 ```
 Key "John" → hash("John") = 42 → PO Box #42
 
@@ -63,6 +65,7 @@ Lookup: Same process—start at hash, probe until found or empty.
 **Why Prime Numbers for Bucket Size?**
 
 Keys often have patterns (IDs like 100, 200, 300...). If bucket size is 100:
+
 ```
 100 % 100 = 0
 200 % 100 = 0
@@ -70,6 +73,7 @@ Keys often have patterns (IDs like 100, 200, 300...). If bucket size is 100:
 ```
 
 Prime bucket size (e.g., 97) breaks patterns:
+
 ```
 100 % 97 = 3
 200 % 97 = 6
@@ -95,6 +99,7 @@ Python dict resizes at ~0.66 load factor.
 **1. Production Code**
 
 Built-in `dict` is:
+
 - Heavily optimized (C implementation)
 - Tested for edge cases
 - Thread-safe for basic operations (GIL)
@@ -104,6 +109,7 @@ Roll your own only for learning or specialized needs.
 **2. Ordered Access Required**
 
 Standard hashmaps don't maintain order:
+
 ```python
 # Need sorted keys? → Use sortedcontainers.SortedDict
 # Need insertion order? → Use collections.OrderedDict (or Python 3.7+ dict)
@@ -112,6 +118,7 @@ Standard hashmaps don't maintain order:
 **3. Range Queries**
 
 Hashmaps only support exact key lookup:
+
 ```python
 # "All keys between 10 and 20" → O(n) scan
 # Use BST or sorted structure instead
@@ -120,12 +127,14 @@ Hashmaps only support exact key lookup:
 **4. Persistent/Immutable Version Needed**
 
 Standard hashmap mutates in place. For immutable versions:
+
 - Functional data structures (HAMTs)
 - Copy-on-write patterns
 
 **5. Memory Is Extremely Constrained**
 
 Hashmaps trade space for time:
+
 ```python
 # 1000 integers: list ~8KB, dict ~36KB
 # For embedded/constrained environments, consider alternatives
@@ -139,14 +148,17 @@ Interviewers want to see you CAN implement a hashmap. But always mention that in
 ## Core Design Decisions
 
 ### 1. Hash Function
+
 - Use Python's built-in `hash()` or a custom function
 - Apply modulo to fit within array bounds
 
 ### 2. Collision Handling
+
 - **Chaining**: Each bucket stores a list of key-value pairs
 - **Open Addressing**: Probe for next available slot
 
 ### 3. Bucket Size
+
 - Larger = fewer collisions, more space
 - Common choice: 1000 or prime number
 
@@ -514,14 +526,14 @@ class StringHashMap:
 
 ## Chaining vs Open Addressing
 
-| Aspect | Chaining | Open Addressing |
-|--------|----------|-----------------|
-| Collision handling | Linked list per bucket | Probe for next slot |
-| Space | Extra for pointers | Compact |
-| Cache performance | Poor (pointer chasing) | Good (contiguous) |
-| Deletion | Simple | Needs tombstones |
-| Load factor tolerance | Can exceed 1.0 | Must stay < 1.0 |
-| Implementation | Simpler | More complex |
+| Aspect                | Chaining               | Open Addressing     |
+| --------------------- | ---------------------- | ------------------- |
+| Collision handling    | Linked list per bucket | Probe for next slot |
+| Space                 | Extra for pointers     | Compact             |
+| Cache performance     | Poor (pointer chasing) | Good (contiguous)   |
+| Deletion              | Simple                 | Needs tombstones    |
+| Load factor tolerance | Can exceed 1.0         | Must stay < 1.0     |
+| Implementation        | Simpler                | More complex        |
 
 **Interview tip**: Chaining is easier to implement and explain. Choose it unless asked specifically about open addressing.
 
@@ -557,12 +569,12 @@ def _resize(self):
 
 ## Choosing Bucket Size
 
-| Size | Pros | Cons |
-|------|------|------|
-| Small (100) | Less memory | More collisions |
-| Medium (1000) | Good balance | Standard choice |
-| Large (10007) | Fewer collisions | More memory |
-| Prime | Better distribution | Slightly slower mod |
+| Size          | Pros                | Cons                |
+| ------------- | ------------------- | ------------------- |
+| Small (100)   | Less memory         | More collisions     |
+| Medium (1000) | Good balance        | Standard choice     |
+| Large (10007) | Fewer collisions    | More memory         |
+| Prime         | Better distribution | Slightly slower mod |
 
 **Why prime?** Reduces clustering when keys have patterns (e.g., multiples of 10).
 
@@ -615,15 +627,15 @@ hashmap.get(999)  # Should return -1 or None
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Design HashMap | Easy | Basic implementation |
-| 2 | Design HashSet | Easy | Simpler variant |
-| 3 | Two Sum | Easy | Use HashMap |
-| 4 | LRU Cache | Medium | HashMap + doubly linked list |
-| 5 | Insert Delete GetRandom O(1) | Medium | HashMap + array |
-| 6 | First Unique Character | Easy | HashMap counting |
-| 7 | Logger Rate Limiter | Easy | HashMap with timestamps |
+| #   | Problem                      | Difficulty | Focus                        |
+| --- | ---------------------------- | ---------- | ---------------------------- |
+| 1   | Design HashMap               | Easy       | Basic implementation         |
+| 2   | Design HashSet               | Easy       | Simpler variant              |
+| 3   | Two Sum                      | Easy       | Use HashMap                  |
+| 4   | LRU Cache                    | Medium     | HashMap + doubly linked list |
+| 5   | Insert Delete GetRandom O(1) | Medium     | HashMap + array              |
+| 6   | First Unique Character       | Easy       | HashMap counting             |
+| 7   | Logger Rate Limiter          | Easy       | HashMap with timestamps      |
 
 ---
 

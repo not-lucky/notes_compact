@@ -17,6 +17,7 @@ Amazon is the only FANG company that explicitly evaluates you against a defined 
 ### What Leadership Principles Really Test
 
 LPs aren't arbitrary corporate values—they encode what Amazon believes makes effective employees:
+
 - **Customer Obsession**: Do you think from the user's perspective?
 - **Ownership**: Do you take responsibility beyond your job description?
 - **Bias for Action**: Do you act decisively with incomplete information?
@@ -28,11 +29,11 @@ Interviewers evaluate whether you naturally think this way, not whether you can 
 
 Think of LPs as lenses for viewing any situation:
 
-| Situation | Without LP Lens | With LP Lens |
-|-----------|----------------|--------------|
-| Fixed a bug | "I found and fixed the bug" | "I dove deep into the logs, found the root cause affecting customer checkout, and fixed it" |
-| Made a decision | "I decided to use Redis" | "I owned the caching decision, chose Redis for our customer latency requirements" |
-| Shipped fast | "I delivered on time" | "I had a bias for action—shipped MVP in 2 weeks despite incomplete specs" |
+| Situation       | Without LP Lens             | With LP Lens                                                                                |
+| --------------- | --------------------------- | ------------------------------------------------------------------------------------------- |
+| Fixed a bug     | "I found and fixed the bug" | "I dove deep into the logs, found the root cause affecting customer checkout, and fixed it" |
+| Made a decision | "I decided to use Redis"    | "I owned the caching decision, chose Redis for our customer latency requirements"           |
+| Shipped fast    | "I delivered on time"       | "I had a bias for action—shipped MVP in 2 weeks despite incomplete specs"                   |
 
 ### Why the Bar Raiser Matters
 
@@ -54,7 +55,7 @@ The Bar Raiser is Amazon's quality control mechanism. They're from a different t
 
 ### Common Amazon Interview Mistakes
 
-- **"We" instead of "I"**: Amazon wants to know what *you* did, not what your team did. Use "I" throughout your STAR stories.
+- **"We" instead of "I"**: Amazon wants to know what _you_ did, not what your team did. Use "I" throughout your STAR stories.
 - **No quantified results**: "It was successful" is weak. "We reduced latency by 40%, improving customer satisfaction scores by 15%" is strong.
 - **Ignoring the Bar Raiser**: Treating the Bar Raiser interview casually is dangerous. They often ask the hardest behavioral questions.
 - **Separate tech and behavioral**: At Amazon, technical decisions should demonstrate LPs naturally.
@@ -64,6 +65,7 @@ The Bar Raiser is Amazon's quality control mechanism. They're from a different t
 ## Interview Structure
 
 ### Typical Process
+
 1. **Recruiter screen** (30 min) - Background, role fit
 2. **Online Assessment (OA)** - 2-3 coding problems (70 min)
 3. **Onsite/Virtual Loop** (4-5 hours)
@@ -73,13 +75,13 @@ The Bar Raiser is Amazon's quality control mechanism. They're from a different t
 
 ### The Loop Breakdown
 
-| Interview | Format | Focus |
-|-----------|--------|-------|
-| Technical 1 | Coding + LPs | DSA + behavioral |
-| Technical 2 | Coding + LPs | DSA + behavioral |
-| System Design | Design + LPs | Architecture + ownership |
-| Hiring Manager | Behavioral | Leadership, fit |
-| Bar Raiser | Behavioral/Mixed | Raise the bar, LPs |
+| Interview      | Format           | Focus                    |
+| -------------- | ---------------- | ------------------------ |
+| Technical 1    | Coding + LPs     | DSA + behavioral         |
+| Technical 2    | Coding + LPs     | DSA + behavioral         |
+| System Design  | Design + LPs     | Architecture + ownership |
+| Hiring Manager | Behavioral       | Leadership, fit          |
+| Bar Raiser     | Behavioral/Mixed | Raise the bar, LPs       |
 
 ---
 
@@ -87,24 +89,24 @@ The Bar Raiser is Amazon's quality control mechanism. They're from a different t
 
 ### The 16 LPs You Must Know
 
-| # | Principle | Key Phrase | What It Means |
-|---|-----------|------------|---------------|
-| 1 | Customer Obsession | Start with customer | Think backward from customer needs |
-| 2 | Ownership | Think long-term | Never say "that's not my job" |
-| 3 | Invent and Simplify | Seek simplicity | Innovation + removing complexity |
-| 4 | Are Right, A Lot | Good judgment | Make quality decisions |
-| 5 | Learn and Be Curious | Never stop learning | Hunger for knowledge |
-| 6 | Hire and Develop the Best | Raise the bar | Hire people better than you |
-| 7 | Insist on Highest Standards | Keep raising the bar | Never settle for "good enough" |
-| 8 | Think Big | Bold direction | Think differently, broadly |
-| 9 | Bias for Action | Speed matters | Take calculated risks |
-| 10 | Frugality | Do more with less | Constraints drive innovation |
-| 11 | Earn Trust | Vocally self-critical | Admit mistakes openly |
-| 12 | Dive Deep | Stay connected to details | Know your metrics |
-| 13 | Have Backbone; Disagree and Commit | Respectfully challenge | Speak up, then commit |
-| 14 | Deliver Results | Focus on outputs | Get things done |
-| 15 | Strive to be Earth's Best Employer | Create safety | Work environment |
-| 16 | Success and Scale Bring Broad Responsibility | Leave better than you found | Social responsibility |
+| #   | Principle                                    | Key Phrase                  | What It Means                      |
+| --- | -------------------------------------------- | --------------------------- | ---------------------------------- |
+| 1   | Customer Obsession                           | Start with customer         | Think backward from customer needs |
+| 2   | Ownership                                    | Think long-term             | Never say "that's not my job"      |
+| 3   | Invent and Simplify                          | Seek simplicity             | Innovation + removing complexity   |
+| 4   | Are Right, A Lot                             | Good judgment               | Make quality decisions             |
+| 5   | Learn and Be Curious                         | Never stop learning         | Hunger for knowledge               |
+| 6   | Hire and Develop the Best                    | Raise the bar               | Hire people better than you        |
+| 7   | Insist on Highest Standards                  | Keep raising the bar        | Never settle for "good enough"     |
+| 8   | Think Big                                    | Bold direction              | Think differently, broadly         |
+| 9   | Bias for Action                              | Speed matters               | Take calculated risks              |
+| 10  | Frugality                                    | Do more with less           | Constraints drive innovation       |
+| 11  | Earn Trust                                   | Vocally self-critical       | Admit mistakes openly              |
+| 12  | Dive Deep                                    | Stay connected to details   | Know your metrics                  |
+| 13  | Have Backbone; Disagree and Commit           | Respectfully challenge      | Speak up, then commit              |
+| 14  | Deliver Results                              | Focus on outputs            | Get things done                    |
+| 15  | Strive to be Earth's Best Employer           | Create safety               | Work environment                   |
+| 16  | Success and Scale Bring Broad Responsibility | Leave better than you found | Social responsibility              |
 
 ### Most Commonly Tested LPs
 
@@ -153,22 +155,27 @@ R - RESULT
 ### Sample LP Questions by Principle
 
 #### Customer Obsession
+
 - "Tell me about a time you had to make a decision that was unpopular with your team but right for the customer"
 - "Describe a situation where you had to balance customer needs with business constraints"
 
 #### Ownership
+
 - "Tell me about a time you took on something outside your job description"
 - "Describe a project where you saw it through from start to finish"
 
 #### Bias for Action
+
 - "Tell me about a time you made a decision without all the data"
 - "Describe a situation where speed was more important than perfection"
 
 #### Dive Deep
+
 - "Tell me about a time you had to dig into the details to solve a problem"
 - "Describe a situation where data analysis changed your approach"
 
 #### Earn Trust
+
 - "Tell me about a time you failed and how you handled it"
 - "Describe a time you received critical feedback"
 
@@ -179,6 +186,7 @@ R - RESULT
 ### How Technical Rounds Work
 
 Each technical interview typically:
+
 - 5-10 min: Behavioral question (LP-focused)
 - 30-35 min: Coding problem
 - 5-10 min: Your questions
@@ -186,12 +194,14 @@ Each technical interview typically:
 ### Connecting Coding to LPs
 
 **During problem clarification:**
+
 ```
 "I want to make sure I understand the customer use case here..."
 (Customer Obsession)
 ```
 
 **When discussing approach:**
+
 ```
 "The simplest solution would be O(n²), but thinking long-term about
 scale, I should optimize to O(n)..."
@@ -199,6 +209,7 @@ scale, I should optimize to O(n)..."
 ```
 
 **When handling errors:**
+
 ```
 "Let me trace through this carefully to make sure I haven't
 missed anything..."
@@ -206,6 +217,7 @@ missed anything..."
 ```
 
 **When finishing:**
+
 ```
 "If I had more time, I'd add error handling for these edge cases..."
 (Ownership, Highest Standards)
@@ -245,21 +257,21 @@ missed anything..."
 
 ### Online Assessment (OA)
 
-| Category | Frequency | Notes |
-|----------|-----------|-------|
-| Arrays/Strings | High | Often 2-3 problems |
-| Trees | Medium | Usually one problem |
-| Graphs | Medium | Grid or network problems |
-| DP | Medium-Low | Usually easier DP |
+| Category       | Frequency  | Notes                    |
+| -------------- | ---------- | ------------------------ |
+| Arrays/Strings | High       | Often 2-3 problems       |
+| Trees          | Medium     | Usually one problem      |
+| Graphs         | Medium     | Grid or network problems |
+| DP             | Medium-Low | Usually easier DP        |
 
 ### Onsite Technical
 
-| Category | Frequency | Difficulty |
-|----------|-----------|------------|
-| Arrays/Strings | High | Medium |
-| Trees/Graphs | High | Medium-Hard |
-| System Design | High (Senior) | Medium-Hard |
-| OOP Design | Medium | Medium |
+| Category       | Frequency     | Difficulty  |
+| -------------- | ------------- | ----------- |
+| Arrays/Strings | High          | Medium      |
+| Trees/Graphs   | High          | Medium-Hard |
+| System Design  | High (Senior) | Medium-Hard |
+| OOP Design     | Medium        | Medium      |
 
 ### Amazon Favorite Problems
 
@@ -276,13 +288,13 @@ missed anything..."
 
 ### Common Topics
 
-| Topic | Amazon Context |
-|-------|----------------|
-| E-commerce platform | Amazon's core business |
-| Delivery/logistics | Prime delivery |
+| Topic                 | Amazon Context          |
+| --------------------- | ----------------------- |
+| E-commerce platform   | Amazon's core business  |
+| Delivery/logistics    | Prime delivery          |
 | Recommendation system | Product recommendations |
-| Inventory management | Warehouse systems |
-| Rate limiting | API management |
+| Inventory management  | Warehouse systems       |
+| Rate limiting         | API management          |
 
 ### What They Look For
 
@@ -355,27 +367,27 @@ RESULT:
 
 ### Story Bank Requirements
 
-| Category | # of Stories |
-|----------|--------------|
-| Technical challenges | 2-3 |
-| Conflict/disagreement | 2-3 |
-| Customer focus | 2 |
-| Failure/learning | 2 |
-| Leadership/influence | 2 |
-| Working under pressure | 1-2 |
+| Category               | # of Stories |
+| ---------------------- | ------------ |
+| Technical challenges   | 2-3          |
+| Conflict/disagreement  | 2-3          |
+| Customer focus         | 2            |
+| Failure/learning       | 2            |
+| Leadership/influence   | 2            |
+| Working under pressure | 1-2          |
 
 ---
 
 ## Common Mistakes at Amazon
 
-| Mistake | Impact | Fix |
-|---------|--------|-----|
-| Not knowing LPs | Can't connect stories | Memorize all 16 |
-| Weak STAR stories | Vague, not compelling | Prepare 10+ stories |
-| "We" not "I" | Can't assess your role | Use "I" throughout |
-| No quantified results | Impact unclear | Add numbers |
-| Ignoring Bar Raiser | Underestimate difficulty | Prepare for deep dives |
-| Tech-only focus | Miss LP connection | Weave LPs naturally |
+| Mistake               | Impact                   | Fix                    |
+| --------------------- | ------------------------ | ---------------------- |
+| Not knowing LPs       | Can't connect stories    | Memorize all 16        |
+| Weak STAR stories     | Vague, not compelling    | Prepare 10+ stories    |
+| "We" not "I"          | Can't assess your role   | Use "I" throughout     |
+| No quantified results | Impact unclear           | Add numbers            |
+| Ignoring Bar Raiser   | Underestimate difficulty | Prepare for deep dives |
+| Tech-only focus       | Miss LP connection       | Weave LPs naturally    |
 
 ---
 
@@ -384,12 +396,14 @@ RESULT:
 Before your Amazon interview, ensure:
 
 ### Technical
+
 - [ ] Solve medium problems in 25-30 minutes
 - [ ] Can naturally mention LPs during coding
 - [ ] Handle follow-up questions smoothly
 - [ ] Know basic system design patterns
 
 ### Behavioral
+
 - [ ] 10-12 prepared STAR stories
 - [ ] Each story maps to 2-3 LPs
 - [ ] Stories have quantified results

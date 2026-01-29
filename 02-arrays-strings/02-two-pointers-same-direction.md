@@ -21,6 +21,7 @@ Think of two pointers as a "reader" and a "writer" in a copy-editing process:
 **Mental Model**: Imagine you're compacting files on a hard drive. You have a read head scanning through all files and a write head placing kept files at the start. The read head moves faster, skipping deleted files, while the write head only moves when it receives a file to keep.
 
 **The Fundamental Pattern**:
+
 ```
 [processed valid portion] | [garbage/unknown] | [unprocessed]
                           ↑                    ↑
@@ -42,6 +43,7 @@ This pattern has limitations:
 5. **When Counting, Not Removing**: If you just need to count elements (not remove them), a simple loop with a counter is cleaner.
 
 **Red Flags:**
+
 - "Find all pairs" → Usually opposite-direction or hash map
 - "Maintain specific ordering in output" → May need stable sort
 - "Elements depend on future values" → Consider right-to-left or DP
@@ -453,15 +455,15 @@ Use when: sorted array pair finding, palindromes, reversing
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Remove Duplicates from Sorted Array | Easy | Basic slow/fast |
-| 2 | Remove Duplicates from Sorted Array II | Medium | Allow k duplicates |
-| 3 | Move Zeroes | Easy | Partition |
-| 4 | Remove Element | Easy | Filter in-place |
-| 5 | Sort Colors (Dutch Flag) | Medium | Three-way partition |
-| 6 | Squares of a Sorted Array | Easy | Fill from ends |
-| 7 | Linked List Cycle | Easy | Fast/slow pointers |
+| #   | Problem                                | Difficulty | Pattern             |
+| --- | -------------------------------------- | ---------- | ------------------- |
+| 1   | Remove Duplicates from Sorted Array    | Easy       | Basic slow/fast     |
+| 2   | Remove Duplicates from Sorted Array II | Medium     | Allow k duplicates  |
+| 3   | Move Zeroes                            | Easy       | Partition           |
+| 4   | Remove Element                         | Easy       | Filter in-place     |
+| 5   | Sort Colors (Dutch Flag)               | Medium     | Three-way partition |
+| 6   | Squares of a Sorted Array              | Easy       | Fill from ends      |
+| 7   | Linked List Cycle                      | Easy       | Fast/slow pointers  |
 
 ---
 

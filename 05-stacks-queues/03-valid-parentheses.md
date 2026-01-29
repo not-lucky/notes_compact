@@ -19,12 +19,14 @@ Think about how you naturally check brackets in your head:
 3. **Why "most recent"?**: Because of nesting! In `([])`, when you see `]`, you must match the `[` that opened most recently—not the `(` that opened first.
 
 **The Core Insight**:
+
 ```
 Nested structures have an "inside-out" property: the innermost
 pair must close before outer pairs. This is exactly LIFO ordering.
 ```
 
 **Visual proof of why stack works**:
+
 ```
 Expression: ( [ { } ] )
             ↑
@@ -60,6 +62,7 @@ The stack-based parentheses pattern is wrong when:
 4. **Non-Nested Matching**: If brackets don't need to nest properly (like HTML tags that can overlap), stack matching doesn't apply.
 
 **Simpler Alternative for Single Type**:
+
 ```python
 # No stack needed for just '(' and ')'
 def is_valid_simple(s: str) -> bool:
@@ -92,6 +95,7 @@ Interviewers use this to assess your understanding of stacks and ability to hand
 Given a string containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['`, and `']'`, determine if the input string is valid.
 
 A string is valid if:
+
 1. Open brackets are closed by the same type of brackets
 2. Open brackets are closed in the correct order
 3. Every close bracket has a corresponding open bracket
@@ -388,11 +392,11 @@ print(check_valid_string("*("))    # False
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Stack-based | O(n) | O(n) | Standard approach |
-| Count-based (single type) | O(n) | O(1) | Only works for one bracket type |
-| Two-pass counter | O(n) | O(1) | Alternative for one bracket type |
+| Approach                  | Time | Space | Notes                            |
+| ------------------------- | ---- | ----- | -------------------------------- |
+| Stack-based               | O(n) | O(n)  | Standard approach                |
+| Count-based (single type) | O(n) | O(1)  | Only works for one bracket type  |
+| Two-pass counter          | O(n) | O(1)  | Alternative for one bracket type |
 
 ---
 
@@ -465,15 +469,15 @@ def is_valid_optimized(s: str) -> bool:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Valid Parentheses | Easy | Basic stack matching |
-| 2 | Generate Parentheses | Medium | Backtracking |
-| 3 | Longest Valid Parentheses | Hard | Stack with indices |
-| 4 | Remove Invalid Parentheses | Hard | BFS or backtracking |
-| 5 | Minimum Remove to Make Valid | Medium | Track indices |
-| 6 | Valid Parenthesis String | Medium | Two-pointer/range |
-| 7 | Score of Parentheses | Medium | Nested scoring |
+| #   | Problem                      | Difficulty | Key Concept          |
+| --- | ---------------------------- | ---------- | -------------------- |
+| 1   | Valid Parentheses            | Easy       | Basic stack matching |
+| 2   | Generate Parentheses         | Medium     | Backtracking         |
+| 3   | Longest Valid Parentheses    | Hard       | Stack with indices   |
+| 4   | Remove Invalid Parentheses   | Hard       | BFS or backtracking  |
+| 5   | Minimum Remove to Make Valid | Medium     | Track indices        |
+| 6   | Valid Parenthesis String     | Medium     | Two-pointer/range    |
+| 7   | Score of Parentheses         | Medium     | Nested scoring       |
 
 ---
 

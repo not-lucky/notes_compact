@@ -55,10 +55,12 @@ Two heaps, each tracking one half!
 **Mental Model: Two Buckets on a Scale**
 
 Imagine a balance scale with two buckets:
+
 - Left bucket: holds the smaller numbers (max at top)
 - Right bucket: holds the larger numbers (min at top)
 
 Rules:
+
 1. Buckets must be balanced (same size, or left has one extra)
 2. Everything in left bucket ≤ everything in right bucket
 
@@ -159,6 +161,7 @@ Two heaps give the 50th percentile (median). For arbitrary percentiles:
 ```
 
 **Red Flags:**
+
 - "Remove specific elements from the stream" → Need lazy deletion
 - "Find the kth percentile" → Need modified heap ratios or different structure
 - "All data available at once" → Just sort
@@ -169,6 +172,7 @@ Two heaps give the 50th percentile (median). For arbitrary percentiles:
 ## Problem Statement
 
 Design a data structure that supports:
+
 - `addNum(int num)`: Add a number from the data stream
 - `findMedian() -> float`: Return the median of all numbers so far
 
@@ -186,6 +190,7 @@ findMedian() → 2        # middle of [1, 2, 3]
 ## Core Insight: Two Heaps
 
 Divide numbers into two halves:
+
 - **Max heap (left)**: Stores smaller half
 - **Min heap (right)**: Stores larger half
 
@@ -202,6 +207,7 @@ Median = 3 (right's root since odd count)
 ```
 
 **Invariants:**
+
 1. Left max ≤ Right min (left elements ≤ right elements)
 2. Size difference ≤ 1 (balanced)
 
@@ -321,12 +327,12 @@ class MedianFinder:
 
 ## Why Two Heaps?
 
-| Approach | addNum | findMedian | Notes |
-|----------|--------|------------|-------|
-| Two Heaps | O(log n) | O(1) | Optimal |
-| Sorted List | O(n) | O(1) | Insert is slow |
-| BST (balanced) | O(log n) | O(log n) | More complex |
-| Array + Sort | O(1) | O(n log n) | Sort every time |
+| Approach       | addNum   | findMedian | Notes           |
+| -------------- | -------- | ---------- | --------------- |
+| Two Heaps      | O(log n) | O(1)       | Optimal         |
+| Sorted List    | O(n)     | O(1)       | Insert is slow  |
+| BST (balanced) | O(log n) | O(log n)   | More complex    |
+| Array + Sort   | O(1)     | O(n log n) | Sort every time |
 
 Two heaps give the best balance of add and find operations.
 
@@ -499,11 +505,11 @@ return (-self.left[0] + self.right[0]) / 2  # Float division
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| addNum | O(log n) | O(1) |
-| findMedian | O(1) | O(1) |
-| Overall space | - | O(n) |
+| Operation     | Time     | Space |
+| ------------- | -------- | ----- |
+| addNum        | O(log n) | O(1)  |
+| findMedian    | O(1)     | O(1)  |
+| Overall space | -        | O(n)  |
 
 For sliding window:
 | Operation | Time |
@@ -527,12 +533,12 @@ For sliding window:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Find Median from Data Stream | Hard | Core problem |
-| 2 | Sliding Window Median | Hard | With removal |
-| 3 | IPO | Hard | Two heaps + greedy |
-| 4 | K Closest Points to Origin | Medium | Related pattern |
+| #   | Problem                      | Difficulty | Key Variation      |
+| --- | ---------------------------- | ---------- | ------------------ |
+| 1   | Find Median from Data Stream | Hard       | Core problem       |
+| 2   | Sliding Window Median        | Hard       | With removal       |
+| 3   | IPO                          | Hard       | Two heaps + greedy |
+| 4   | K Closest Points to Origin   | Medium     | Related pattern    |
 
 ---
 

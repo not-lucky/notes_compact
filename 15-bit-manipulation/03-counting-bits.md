@@ -13,6 +13,7 @@ Counting set bits (popcount) and calculating Hamming distance are fundamental bi
 **Why Counting Bits is Fundamental**
 
 At the hardware level, processors have dedicated instructions for counting bits (POPCNT). Understanding this operation conceptually helps you:
+
 - Recognize when bit counting is the right approach
 - Choose between O(log n) and O(k) algorithms
 - Build dynamic programming solutions for counting bits efficiently
@@ -167,6 +168,7 @@ is_power_of_2 = n > 0 and (n & (n-1)) == 0
 ```
 
 **Red Flags (Don't Use Bit Counting):**
+
 - You need bit positions, not count
 - You're checking a property that has a direct formula (power of 2)
 - The problem involves floating point
@@ -509,14 +511,14 @@ Total: 0 + 2 + 2 + 2 = 6
 
 ## Complexity Analysis
 
-| Problem | Approach | Time | Space |
-|---------|----------|------|-------|
-| Number of 1 Bits | Iterate | O(32) | O(1) |
-| Number of 1 Bits | Brian Kernighan | O(k) | O(1) |
-| Counting Bits | Brute force | O(n log n) | O(n) |
-| Counting Bits | DP | O(n) | O(n) |
-| Hamming Distance | XOR + count | O(k) | O(1) |
-| Total Hamming Distance | Bit counting | O(32n) | O(1) |
+| Problem                | Approach        | Time       | Space |
+| ---------------------- | --------------- | ---------- | ----- |
+| Number of 1 Bits       | Iterate         | O(32)      | O(1)  |
+| Number of 1 Bits       | Brian Kernighan | O(k)       | O(1)  |
+| Counting Bits          | Brute force     | O(n log n) | O(n)  |
+| Counting Bits          | DP              | O(n)       | O(n)  |
+| Hamming Distance       | XOR + count     | O(k)       | O(1)  |
+| Total Hamming Distance | Bit counting    | O(32n)     | O(1)  |
 
 ---
 
@@ -598,14 +600,14 @@ def count_bits_at_positions(n: int, positions: list[int]) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Number of 1 Bits | Easy | Brian Kernighan |
-| 2 | Counting Bits | Easy | DP relationship |
-| 3 | Hamming Distance | Easy | XOR then count |
-| 4 | Total Hamming Distance | Medium | Per-bit counting |
-| 5 | Minimum Bit Flips to Convert | Easy | Same as Hamming |
-| 6 | Prime Number of Set Bits | Easy | Count + prime check |
+| #   | Problem                      | Difficulty | Key Concept         |
+| --- | ---------------------------- | ---------- | ------------------- |
+| 1   | Number of 1 Bits             | Easy       | Brian Kernighan     |
+| 2   | Counting Bits                | Easy       | DP relationship     |
+| 3   | Hamming Distance             | Easy       | XOR then count      |
+| 4   | Total Hamming Distance       | Medium     | Per-bit counting    |
+| 5   | Minimum Bit Flips to Convert | Easy       | Same as Hamming     |
+| 6   | Prime Number of Set Bits     | Easy       | Count + prime check |
 
 ---
 

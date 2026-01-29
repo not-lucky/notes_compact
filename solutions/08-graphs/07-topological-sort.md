@@ -2,19 +2,20 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Cycle detection |
-| 2 | Course Schedule II | Medium | Return order |
-| 3 | Alien Dictionary | Hard | Build graph from constraints |
-| 4 | Parallel Courses | Medium | Minimum levels |
-| 5 | Sequence Reconstruction | Medium | Unique order check |
+| #   | Problem                 | Difficulty | Key Variation                |
+| --- | ----------------------- | ---------- | ---------------------------- |
+| 1   | Course Schedule         | Medium     | Cycle detection              |
+| 2   | Course Schedule II      | Medium     | Return order                 |
+| 3   | Alien Dictionary        | Hard       | Build graph from constraints |
+| 4   | Parallel Courses        | Medium     | Minimum levels               |
+| 5   | Sequence Reconstruction | Medium     | Unique order check           |
 
 ---
 
 ## 1. Course Schedule
 
 ### Problem Statement
+
 Check if all courses can be finished.
 
 ### Optimal Python Solution
@@ -44,6 +45,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Algorithm**: Kahn's Algorithm (BFS).
 - **Logic**: If we can't process all nodes, there must be a cycle.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -53,6 +55,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ## 2. Course Schedule II
 
 ### Problem Statement
+
 Return the ordering of courses.
 
 ### Optimal Python Solution
@@ -82,6 +85,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Algorithm**: Kahn's Algorithm. The nodes are appended to the result in topological order.
 - **Complexity**: Time O(V + E), Space O(V + E).
 
@@ -90,6 +94,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ## 3. Alien Dictionary
 
 ### Problem Statement
+
 Given a list of words from an alien language sorted lexicographically, find the order of characters in this language.
 
 ### Optimal Python Solution
@@ -134,6 +139,7 @@ def alienOrder(words: list[str]) -> str:
 ```
 
 ### Explanation
+
 - **Concept**: Compare adjacent words to find character priorities.
 - **Algorithm**: Build an adjacency list and use Kahn's algorithm for topological sort.
 - **Complexity**: Time O(C) where C is the total number of characters in all words. Space O(1) or O(min(U, N)) where U is unique characters.
@@ -143,6 +149,7 @@ def alienOrder(words: list[str]) -> str:
 ## 4. Parallel Courses
 
 ### Problem Statement
+
 Find the minimum semesters needed to finish all courses if you can take as many as you want in parallel.
 
 ### Optimal Python Solution
@@ -175,6 +182,7 @@ def minimumSemesters(n: int, relations: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Concept**: Each "level" in Kahn's algorithm represents a semester.
 - **Algorithm**: BFS with level tracking.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -184,6 +192,7 @@ def minimumSemesters(n: int, relations: list[list[int]]) -> int:
 ## 5. Sequence Reconstruction
 
 ### Problem Statement
+
 Check if a sequence `nums` can be uniquely reconstructed from a set of `sequences`.
 
 ### Optimal Python Solution
@@ -221,5 +230,6 @@ def sequenceReconstruction(nums: list[int], sequences: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Unique Order**: A topological sort is unique if and only if at every step of Kahn's algorithm, the queue has exactly one node.
 - **Complexity**: Time O(V + E), Space O(V + E).

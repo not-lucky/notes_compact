@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The University Registration Mental Model**: Imagine planning your 4-year course schedule. Some courses require prerequisites:
+
 - Data Structures requires Intro to Programming
 - Algorithms requires Data Structures
 - Machine Learning requires Algorithms AND Linear Algebra
@@ -34,6 +35,7 @@ No valid ordering exists!
 ```
 
 **Key insight: Course Schedule IS Topological Sort**:
+
 - Course Schedule I = "Does a topological order exist?" = "Is the graph a DAG?"
 - Course Schedule II = "Give me the topological order"
 
@@ -42,21 +44,25 @@ No valid ordering exists!
 ## When NOT to Use
 
 **Course Schedule approach is overkill when:**
+
 - No dependencies at all → Answer is trivially "yes" / "any order"
 - Linear chain of dependencies → Just follow the chain
 - Tree structure → Level-order traversal works
 
 **Don't confuse with:**
+
 - **Shortest path problems** → Different question entirely
 - **Finding a cycle** → We only need to detect, not return the cycle
 - **Minimum spanning tree** → Wrong algorithm family
 
 **Common mistake scenarios:**
+
 - Wrong edge direction → [a, b] means b→a, not a→b
 - Not handling disconnected components → Must check all courses
 - Returning wrong format → II returns list of courses, not true/false
 
 **When DFS vs BFS (Kahn's) matters:**
+
 - Both work equally well for correctness
 - Kahn's is often more intuitive (process available courses first)
 - DFS is shorter code if you're comfortable with recursion
@@ -287,6 +293,7 @@ def find_order_dfs(numCourses: int, prerequisites: list[list[int]]) -> list[int]
 ### 1. Edge Direction
 
 The prerequisite `[a, b]` means `b` must come before `a`:
+
 - Edge direction: `b → a`
 - NOT `a → b` (common mistake!)
 
@@ -424,11 +431,11 @@ prerequisites = [[2, 0], [2, 1]]
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build graph | O(E) | O(V + E) |
-| DFS/Kahn's | O(V + E) | O(V) |
-| Total | O(V + E) | O(V + E) |
+| Operation   | Time     | Space    |
+| ----------- | -------- | -------- |
+| Build graph | O(E)     | O(V + E) |
+| DFS/Kahn's  | O(V + E) | O(V)     |
+| Total       | O(V + E) | O(V + E) |
 
 V = numCourses, E = len(prerequisites)
 
@@ -446,13 +453,13 @@ V = numCourses, E = len(prerequisites)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Cycle detection |
-| 2 | Course Schedule II | Medium | Return order |
-| 3 | Parallel Courses | Medium | Minimum semesters |
-| 4 | Course Schedule III | Hard | Deadline constraints |
-| 5 | Course Schedule IV | Medium | Reachability queries |
+| #   | Problem             | Difficulty | Key Variation        |
+| --- | ------------------- | ---------- | -------------------- |
+| 1   | Course Schedule     | Medium     | Cycle detection      |
+| 2   | Course Schedule II  | Medium     | Return order         |
+| 3   | Parallel Courses    | Medium     | Minimum semesters    |
+| 4   | Course Schedule III | Hard       | Deadline constraints |
+| 5   | Course Schedule IV  | Medium     | Reachability queries |
 
 ---
 

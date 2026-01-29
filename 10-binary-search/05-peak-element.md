@@ -5,6 +5,7 @@
 ## Interview Context
 
 Peak finding demonstrates binary search on non-sorted arrays:
+
 1. **Creative application**: Binary search without sorted order
 2. **Neighbor comparison**: Different from typical value comparison
 3. **Multiple valid answers**: Any peak is acceptable
@@ -85,8 +86,10 @@ Binary search finds ONE of them—and that's fine for most problems.
 ## When NOT to Use Peak Binary Search
 
 **1. You Need THE Maximum (Not Just A Peak)**
+
 - Peak search finds A local maximum
 - If you need THE global maximum, you need O(n) scan
+
 ```
 [1, 5, 1, 3, 1]
     ↑     ↑
@@ -94,19 +97,23 @@ Both are peaks, but 5 is the maximum. Binary search might find 3.
 ```
 
 **2. You Need ALL Peaks**
+
 - Finding all peaks requires O(n) linear scan
 - No way around it—each element must be checked
 
 **3. Equal Elements Allowed**
+
 - If plateau is allowed (nums[i] == nums[i+1]), the "uphill" direction is ambiguous
 - Some problems define peak as ">=" instead of ">"
 - Check problem definition carefully
 
 **4. Very Small Arrays (n <= 3)**
+
 - Just check all elements directly
 - Binary search overhead not worth it
 
 **Red Flags:**
+
 - "Find the maximum element" → Linear scan or different approach
 - "Find all peaks" → Linear scan
 - "Elements may be equal" → Carefully read peak definition
@@ -378,13 +385,13 @@ def find_peak_2d(mat: list[list[int]]) -> list[int]:
 
 ## Complexity Analysis
 
-| Problem | Time | Space |
-|---------|------|-------|
-| Find one peak | O(log n) | O(1) |
-| Find all peaks | O(n) | O(k) |
-| Peak in bitonic | O(log n) | O(1) |
-| Search in bitonic | O(log n) | O(1) |
-| Peak in 2D matrix | O(m log n) | O(1) |
+| Problem           | Time       | Space |
+| ----------------- | ---------- | ----- |
+| Find one peak     | O(log n)   | O(1)  |
+| Find all peaks    | O(n)       | O(k)  |
+| Peak in bitonic   | O(log n)   | O(1)  |
+| Search in bitonic | O(log n)   | O(1)  |
+| Peak in 2D matrix | O(m log n) | O(1)  |
 
 ---
 
@@ -435,13 +442,13 @@ while left < right:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Find Peak Element | Medium | Follow uphill direction |
-| 2 | Peak Index in Mountain Array | Medium | Same as bitonic peak |
-| 3 | Find in Mountain Array | Hard | Find peak + two binary searches |
-| 4 | Find a Peak Element II | Medium | Column binary search + row max |
-| 5 | Longest Mountain in Array | Medium | Expand from each peak |
+| #   | Problem                      | Difficulty | Key Insight                     |
+| --- | ---------------------------- | ---------- | ------------------------------- |
+| 1   | Find Peak Element            | Medium     | Follow uphill direction         |
+| 2   | Peak Index in Mountain Array | Medium     | Same as bitonic peak            |
+| 3   | Find in Mountain Array       | Hard       | Find peak + two binary searches |
+| 4   | Find a Peak Element II       | Medium     | Column binary search + row max  |
+| 5   | Longest Mountain in Array    | Medium     | Expand from each peak           |
 
 ---
 

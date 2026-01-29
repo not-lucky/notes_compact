@@ -1,12 +1,15 @@
 # Peak Element Solutions
 
 ## 1. Find Peak Element
+
 [LeetCode 162](https://leetcode.com/problems/find-peak-element/)
 
 ### Problem Description
+
 A peak element is an element that is strictly greater than its neighbors. Given a `0`-indexed integer array `nums`, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks. You may imagine that `nums[-1] = nums[n] = -∞`.
 
 ### Solution
+
 ```python
 def findPeakElement(nums: list[int]) -> int:
     left, right = 0, len(nums) - 1
@@ -22,23 +25,28 @@ def findPeakElement(nums: list[int]) -> int:
 
     return left
 ```
+
 - **Time Complexity**: O(log n)
 - **Space Complexity**: O(1)
 
 ---
 
 ## 2. Peak Index in a Mountain Array
+
 [LeetCode 852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
 
 ### Problem Description
+
 An array `arr` is a mountain if:
+
 - `arr.length >= 3`
 - There exists some `i` with `0 < i < arr.length - 1` such that:
   - `arr[0] < arr[1] < ... < arr[i - 1] < arr[i]`
   - `arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`
-Given a mountain array `arr`, return the index `i` such that `arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`.
+    Given a mountain array `arr`, return the index `i` such that `arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1]`.
 
 ### Solution
+
 ```python
 def peakIndexInMountainArray(arr: list[int]) -> int:
     left, right = 0, len(arr) - 1
@@ -52,18 +60,22 @@ def peakIndexInMountainArray(arr: list[int]) -> int:
 
     return left
 ```
+
 - **Time Complexity**: O(log n)
 - **Space Complexity**: O(1)
 
 ---
 
 ## 3. Find in Mountain Array
+
 [LeetCode 1095](https://leetcode.com/problems/find-in-mountain-array/)
 
 ### Problem Description
+
 Given a mountain array `mountainArr`, return the minimum `index` such that `mountainArr.get(index) == target`. If such an index does not exist, return `-1`.
 
 ### Solution
+
 ```python
 # """
 # This is MountainArray's API interface.
@@ -112,19 +124,23 @@ def findInMountainArray(target: int, mountain_arr: 'MountainArray') -> int:
 
     return -1
 ```
+
 - **Time Complexity**: O(log n)
 - **Space Complexity**: O(1)
 
 ---
 
 ## 4. Find a Peak Element II (2D)
+
 [LeetCode 1901](https://leetcode.com/problems/find-a-peak-element-ii/)
 
 ### Problem Description
+
 A peak element in a 2D grid is an element that is strictly greater than all of its adjacent neighbors to the left, right, top, and bottom. Given a 0-indexed `m x n` matrix `mat` where no two adjacent cells are equal, find any peak element `[r, c]` and return the length 2 array `[r, c]`.
 
 ### Solution
-```python
+
+````python
 def findPeakGrid(mat: list[list[int]]) -> list[int]:
     rows = len(mat)
     cols = len(mat[0])
@@ -152,6 +168,8 @@ def findPeakGrid(mat: list[list[int]]) -> list[int]:
             left_col = mid_col + 1
 
     return [-1, -1]
+```
+
 ---
 
 ## 5. Longest Mountain in Array
@@ -187,6 +205,7 @@ def longestMountain(arr: list[int]) -> int:
             res = max(res, right - left + 1)
 
     return res
-```
+````
+
 - **Time Complexity**: O(n)
 - **Space Complexity**: O(1)

@@ -23,6 +23,7 @@ The key insight is **monotonic progress**. Both pointers only move forward, guar
 **Mental Model**: Imagine an accordion. You stretch it open (expand right), and when it gets too wide to handle, you compress the left side (shrink left). You're looking for either the widest manageable stretch or the narrowest sufficient stretch.
 
 **The Two Scenarios**:
+
 ```
 For MAXIMUM valid window:
   - Keep expanding right
@@ -50,6 +51,7 @@ This pattern has important limitations:
 5. **When Window State Is Expensive**: If updating window state isn't O(1) (e.g., maintaining sorted order), the O(n) guarantee breaks.
 
 **Red Flags:**
+
 - "Subarray sum = k" with negative numbers → Prefix sum + hash map
 - "Subsequence" (not substring/subarray) → Usually DP
 - "Partition array into..." → Interval DP or greedy
@@ -459,13 +461,13 @@ def sliding_window_variable(arr, condition_func):
 
 ## When to Use Which Technique
 
-| Problem Type | Technique | Example |
-|--------------|-----------|---------|
-| Longest with constraint | Variable window | Longest without repeating |
-| Shortest containing | Variable window | Minimum window substring |
-| Fixed size aggregation | Fixed window | Max sum of k elements |
-| Sum equals target (negatives) | Prefix sum + map | Subarray sum = k |
-| Sum equals target (positives) | Variable window | Min subarray sum >= k |
+| Problem Type                  | Technique        | Example                   |
+| ----------------------------- | ---------------- | ------------------------- |
+| Longest with constraint       | Variable window  | Longest without repeating |
+| Shortest containing           | Variable window  | Minimum window substring  |
+| Fixed size aggregation        | Fixed window     | Max sum of k elements     |
+| Sum equals target (negatives) | Prefix sum + map | Subarray sum = k          |
+| Sum equals target (positives) | Variable window  | Min subarray sum >= k     |
 
 ---
 
@@ -502,16 +504,16 @@ Return 0 or ""
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Longest Substring Without Repeating Characters | Medium | Set/Map window |
-| 2 | Minimum Window Substring | Hard | Character matching |
-| 3 | Longest Substring with At Most K Distinct | Medium | Counter window |
-| 4 | Longest Repeating Character Replacement | Medium | Max count tracking |
-| 5 | Fruit Into Baskets | Medium | At most 2 distinct |
-| 6 | Subarray Product Less Than K | Medium | Product window |
-| 7 | Minimum Size Subarray Sum | Medium | Sum >= target |
-| 8 | Maximum Erasure Value | Medium | Unique elements sum |
+| #   | Problem                                        | Difficulty | Pattern             |
+| --- | ---------------------------------------------- | ---------- | ------------------- |
+| 1   | Longest Substring Without Repeating Characters | Medium     | Set/Map window      |
+| 2   | Minimum Window Substring                       | Hard       | Character matching  |
+| 3   | Longest Substring with At Most K Distinct      | Medium     | Counter window      |
+| 4   | Longest Repeating Character Replacement        | Medium     | Max count tracking  |
+| 5   | Fruit Into Baskets                             | Medium     | At most 2 distinct  |
+| 6   | Subarray Product Less Than K                   | Medium     | Product window      |
+| 7   | Minimum Size Subarray Sum                      | Medium     | Sum >= target       |
+| 8   | Maximum Erasure Value                          | Medium     | Unique elements sum |
 
 ---
 

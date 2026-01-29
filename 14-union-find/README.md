@@ -7,6 +7,7 @@ Union-Find (also called Disjoint Set Union or DSU) is a data structure that trac
 **The "Friendship Groups" Mental Model**
 
 Imagine a school where students form friend groups:
+
 - Initially, everyone is a stranger (n groups of 1)
 - When two people become friends, their entire friend circles merge
 - The question "Are A and B in the same friend group?" becomes easy
@@ -22,6 +23,7 @@ Alice befriends Carol:  {Alice, Bob, Carol, Dave}  ← All connected!
 **Why Union-Find is Elegant**
 
 The magic is in how we answer "Are X and Y connected?":
+
 - Each group has a "representative" (the root)
 - Two people are in the same group if they have the same representative
 - No need to store or search through member lists!
@@ -37,6 +39,7 @@ Time: O(α(n)) ≈ O(1) per query
 **When Does Union-Find Shine?**
 
 Union-Find is the go-to when you see:
+
 1. **Dynamic grouping**: Elements merge over time
 2. **Connectivity queries**: "Are these connected?"
 3. **Cycle detection**: In undirected graphs
@@ -55,12 +58,12 @@ Union-Find is the go-to when you see:
 
 ## Union-Find vs Other Approaches
 
-| Problem | Union-Find | DFS/BFS | Time Comparison |
-|---------|------------|---------|-----------------|
-| Connected components (static) | O(n × α(n)) | O(V + E) | Similar |
-| Connected components (dynamic) | O(n × α(n)) | O(n × (V + E)) | UF much faster |
-| Cycle detection (undirected) | O(E × α(n)) | O(V + E) | Similar |
-| Path connectivity queries | O(α(n)) per query | O(V + E) per query | UF much faster |
+| Problem                        | Union-Find        | DFS/BFS            | Time Comparison |
+| ------------------------------ | ----------------- | ------------------ | --------------- |
+| Connected components (static)  | O(n × α(n))       | O(V + E)           | Similar         |
+| Connected components (dynamic) | O(n × α(n))       | O(n × (V + E))     | UF much faster  |
+| Cycle detection (undirected)   | O(E × α(n))       | O(V + E)           | Similar         |
+| Path connectivity queries      | O(α(n)) per query | O(V + E) per query | UF much faster  |
 
 α(n) = inverse Ackermann function, effectively constant (≤ 4 for any practical n)
 
@@ -121,38 +124,38 @@ Parent: [0, 0, 0, 2, 4]  (2's root now points to 0)
 
 ## Core Operations
 
-| Operation | Time (naive) | Time (optimized) | Description |
-|-----------|--------------|------------------|-------------|
-| MakeSet | O(1) | O(1) | Create new set with single element |
-| Find | O(n) | O(α(n)) ≈ O(1) | Find root/representative of element's set |
-| Union | O(n) | O(α(n)) ≈ O(1) | Merge two sets |
-| Connected | O(n) | O(α(n)) ≈ O(1) | Check if two elements in same set |
+| Operation | Time (naive) | Time (optimized) | Description                               |
+| --------- | ------------ | ---------------- | ----------------------------------------- |
+| MakeSet   | O(1)         | O(1)             | Create new set with single element        |
+| Find      | O(n)         | O(α(n)) ≈ O(1)   | Find root/representative of element's set |
+| Union     | O(n)         | O(α(n)) ≈ O(1)   | Merge two sets                            |
+| Connected | O(n)         | O(α(n)) ≈ O(1)   | Check if two elements in same set         |
 
 ---
 
 ## Union-Find Patterns Overview
 
-| Pattern | Problems | Key Strategy |
-|---------|----------|--------------|
-| Basic UF | Number of provinces, friend circles | Simple connectivity |
-| UF + Rank | Most problems | Balanced trees |
-| UF + Path Compression | Most problems | Flat trees |
-| UF + Both | Optimal solution | Near O(1) operations |
-| UF + Graph | Cycle detection, MST | Process edges |
-| UF + Mapping | Accounts merge | Map strings to indices |
+| Pattern               | Problems                            | Key Strategy           |
+| --------------------- | ----------------------------------- | ---------------------- |
+| Basic UF              | Number of provinces, friend circles | Simple connectivity    |
+| UF + Rank             | Most problems                       | Balanced trees         |
+| UF + Path Compression | Most problems                       | Flat trees             |
+| UF + Both             | Optimal solution                    | Near O(1) operations   |
+| UF + Graph            | Cycle detection, MST                | Process edges          |
+| UF + Mapping          | Accounts merge                      | Map strings to indices |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Union-Find Basics](./01-union-find-basics.md) | Basic implementation, find, union |
-| 02 | [Path Compression](./02-path-compression.md) | Flatten tree during find |
-| 03 | [Union by Rank](./03-union-by-rank.md) | Balance trees during union |
-| 04 | [Connected Components](./04-connected-components.md) | Count and identify groups |
-| 05 | [Accounts Merge](./05-accounts-merge.md) | Complex merging with mapping |
-| 06 | [Redundant Connection](./06-redundant-connection.md) | Cycle detection |
+| #   | Topic                                                | Key Concepts                      |
+| --- | ---------------------------------------------------- | --------------------------------- |
+| 01  | [Union-Find Basics](./01-union-find-basics.md)       | Basic implementation, find, union |
+| 02  | [Path Compression](./02-path-compression.md)         | Flatten tree during find          |
+| 03  | [Union by Rank](./03-union-by-rank.md)               | Balance trees during union        |
+| 04  | [Connected Components](./04-connected-components.md) | Count and identify groups         |
+| 05  | [Accounts Merge](./05-accounts-merge.md)             | Complex merging with mapping      |
+| 06  | [Redundant Connection](./06-redundant-connection.md) | Cycle detection                   |
 
 ---
 
@@ -211,11 +214,12 @@ class UnionFind:
 
 ## Time Complexity Analysis
 
-| Operation Sequence | Naive | Path Compression Only | Union by Rank Only | Both |
-|--------------------|-------|----------------------|-------------------|------|
-| n unions + m finds | O(n × m) | O(n + m × log n) | O(n + m × log n) | O(n + m × α(n)) |
+| Operation Sequence | Naive    | Path Compression Only | Union by Rank Only | Both            |
+| ------------------ | -------- | --------------------- | ------------------ | --------------- |
+| n unions + m finds | O(n × m) | O(n + m × log n)      | O(n + m × log n)   | O(n + m × α(n)) |
 
 The inverse Ackermann function α(n) grows extremely slowly:
+
 - α(10^80) < 5
 - For all practical purposes, α(n) ≤ 4
 
@@ -238,13 +242,13 @@ Storage:
 
 ## Classic Interview Problems by Company
 
-| Company | Favorite Union-Find Problems |
-|---------|------------------------------|
-| Google | Accounts Merge, Number of Islands II, Satisfiability of Equality Equations |
-| Meta | Friend Circles, Redundant Connection, Most Stones Removed |
-| Amazon | Number of Provinces, Regions Cut By Slashes |
-| Microsoft | Evaluate Division, Smallest String With Swaps |
-| Apple | Graph Valid Tree, Longest Consecutive Sequence |
+| Company   | Favorite Union-Find Problems                                               |
+| --------- | -------------------------------------------------------------------------- |
+| Google    | Accounts Merge, Number of Islands II, Satisfiability of Equality Equations |
+| Meta      | Friend Circles, Redundant Connection, Most Stones Removed                  |
+| Amazon    | Number of Provinces, Regions Cut By Slashes                                |
+| Microsoft | Evaluate Division, Smallest String With Swaps                              |
+| Apple     | Graph Valid Tree, Longest Consecutive Sequence                             |
 
 ---
 
@@ -266,15 +270,15 @@ Look for these keywords/patterns:
 
 ## Comparison: When Union-Find vs DFS/BFS
 
-| Scenario | Use Union-Find | Use DFS/BFS |
-|----------|---------------|-------------|
-| Dynamic edge additions | Yes | |
-| Multiple connectivity queries | Yes | |
-| Need actual path | | Yes |
-| One-time component count | | Yes (simpler) |
-| Cycle detection (undirected) | Yes | Yes |
-| Cycle detection (directed) | | Yes |
-| Shortest path | | Yes |
+| Scenario                      | Use Union-Find | Use DFS/BFS   |
+| ----------------------------- | -------------- | ------------- |
+| Dynamic edge additions        | Yes            |               |
+| Multiple connectivity queries | Yes            |               |
+| Need actual path              |                | Yes           |
+| One-time component count      |                | Yes (simpler) |
+| Cycle detection (undirected)  | Yes            | Yes           |
+| Cycle detection (directed)    |                | Yes           |
+| Shortest path                 |                | Yes           |
 
 ---
 
@@ -344,12 +348,12 @@ def find(self, x):
 
 ## Quick Reference: When to Use Which Variant
 
-| Variant | Use When |
-|---------|----------|
-| Basic + Path Compression + Rank | Default choice, most problems |
-| With Size | Need size of largest component |
-| With Count | Need number of components |
-| Weighted | Ratios/relationships between elements |
+| Variant                         | Use When                              |
+| ------------------------------- | ------------------------------------- |
+| Basic + Path Compression + Rank | Default choice, most problems         |
+| With Size                       | Need size of largest component        |
+| With Count                      | Need number of components             |
+| Weighted                        | Ratios/relationships between elements |
 
 ---
 

@@ -19,11 +19,11 @@ Postorder: Left → Right → Process  (process LAST)
 
 **Why these orderings matter:**
 
-| Traversal | Mental Model | Use Case |
-|-----------|--------------|----------|
-| **Preorder** | "Copy as you go" | Serializing tree, cloning |
-| **Inorder** | "Left, me, right" | BST → sorted order |
-| **Postorder** | "Clean up after" | Delete tree, compute subtree values |
+| Traversal     | Mental Model      | Use Case                            |
+| ------------- | ----------------- | ----------------------------------- |
+| **Preorder**  | "Copy as you go"  | Serializing tree, cloning           |
+| **Inorder**   | "Left, me, right" | BST → sorted order                  |
+| **Postorder** | "Clean up after"  | Delete tree, compute subtree values |
 
 **The BST + Inorder magic**:
 For a BST, inorder traversal visits nodes in sorted order. This is because: left < root < right, and we visit left first.
@@ -38,6 +38,7 @@ BST:            Inorder:
 ```
 
 **Recursive vs Iterative - the trade-off**:
+
 - **Recursive**: More elegant, uses call stack implicitly
 - **Iterative**: Explicit stack, avoids stack overflow, sometimes needed for O(1) space (Morris)
 
@@ -49,16 +50,19 @@ The call stack in recursion does three things: (1) remember where to return, (2)
 ## When NOT to Use
 
 **Don't use DFS traversals when:**
+
 - **Need level-by-level processing** → Use BFS (level-order)
 - **Finding shortest path in unweighted tree** → Use BFS
 - **Need to process all nodes at same depth together** → Use BFS
 
 **Specific traversal anti-patterns:**
+
 - **Inorder for general binary tree** → Order is arbitrary (only meaningful for BST)
 - **Recursive on very deep trees** → Risk stack overflow; use iterative or Morris
 - **Any traversal for "widest level"** → Use BFS with level tracking
 
 **Common mistake scenarios:**
+
 - Using preorder when you need postorder (e.g., delete tree)
 - Expecting inorder to be useful for non-BST
 - Forgetting that recursive traversal uses O(h) stack space
@@ -104,10 +108,10 @@ Postorder (Left, Right, Root): 4, 5, 2, 3, 1
 
 ### When to Use Each Traversal
 
-| Traversal | Use Case |
-|-----------|----------|
-| **Inorder** | BST → sorted order, expression tree evaluation |
-| **Preorder** | Copy/serialize tree, prefix expression |
+| Traversal     | Use Case                                               |
+| ------------- | ------------------------------------------------------ |
+| **Inorder**   | BST → sorted order, expression tree evaluation         |
+| **Preorder**  | Copy/serialize tree, prefix expression                 |
 | **Postorder** | Delete tree, postfix expression, calculate size/height |
 
 ---
@@ -400,12 +404,12 @@ def morris_inorder(root: TreeNode) -> list[int]:
 ## Complexity Analysis
 
 | Traversal | Time | Space (Recursive) | Space (Iterative) | Space (Morris) |
-|-----------|------|-------------------|-------------------|----------------|
-| Inorder | O(n) | O(h) | O(h) | O(1) |
-| Preorder | O(n) | O(h) | O(h) | O(1) |
-| Postorder | O(n) | O(h) | O(h) or O(n)* | O(1) |
+| --------- | ---- | ----------------- | ----------------- | -------------- |
+| Inorder   | O(n) | O(h)              | O(h)              | O(1)           |
+| Preorder  | O(n) | O(h)              | O(h)              | O(1)           |
+| Postorder | O(n) | O(h)              | O(h) or O(n)\*    | O(1)           |
 
-*Two-stack method uses O(n), single-stack uses O(h)
+\*Two-stack method uses O(n), single-stack uses O(h)
 
 h = height: O(log n) balanced, O(n) skewed
 
@@ -499,15 +503,15 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Binary Tree Inorder Traversal | Easy | Basic inorder |
-| 2 | Binary Tree Preorder Traversal | Easy | Basic preorder |
-| 3 | Binary Tree Postorder Traversal | Easy | Basic postorder |
-| 4 | Kth Smallest Element in BST | Medium | Inorder + counting |
-| 5 | Validate Binary Search Tree | Medium | Inorder sorted check |
-| 6 | Flatten Binary Tree to Linked List | Medium | Preorder modification |
-| 7 | Construct Binary Tree from Preorder and Inorder | Medium | Tree construction |
+| #   | Problem                                         | Difficulty | Key Concept           |
+| --- | ----------------------------------------------- | ---------- | --------------------- |
+| 1   | Binary Tree Inorder Traversal                   | Easy       | Basic inorder         |
+| 2   | Binary Tree Preorder Traversal                  | Easy       | Basic preorder        |
+| 3   | Binary Tree Postorder Traversal                 | Easy       | Basic postorder       |
+| 4   | Kth Smallest Element in BST                     | Medium     | Inorder + counting    |
+| 5   | Validate Binary Search Tree                     | Medium     | Inorder sorted check  |
+| 6   | Flatten Binary Tree to Linked List              | Medium     | Preorder modification |
+| 7   | Construct Binary Tree from Preorder and Inorder | Medium     | Tree construction     |
 
 ---
 

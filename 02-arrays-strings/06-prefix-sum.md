@@ -15,12 +15,14 @@ The key insight is **telescoping cancellation**. A prefix sum is like a running 
 1. **The Running Total Model**: Imagine a bank account where prefix[i] represents your total balance after i deposits. The deposits from day 5 to day 10 equal (balance after day 10) minus (balance after day 4).
 
 2. **Mathematical Foundation**:
+
    ```
    prefix[j] = arr[0] + arr[1] + ... + arr[j-1]
    prefix[i] = arr[0] + arr[1] + ... + arr[i-1]
 
    prefix[j] - prefix[i] = arr[i] + arr[i+1] + ... + arr[j-1]
    ```
+
    The common terms (arr[0] to arr[i-1]) cancel out!
 
 3. **The Leading Zero Trick**: Adding a 0 at the start (`prefix = [0, ...]`) makes formulas cleaner. Range [i, j] = prefix[j+1] - prefix[i]. No off-by-one gymnastics.
@@ -28,6 +30,7 @@ The key insight is **telescoping cancellation**. A prefix sum is like a running 
 **Mental Model**: Think of milestones on a highway. Mile marker 50 to mile marker 80 is 30 miles—you subtract the lower marker from the higher one. Prefix sums are just "mile markers" for cumulative values.
 
 **Why Prefix + HashMap Works for "Sum = k"**:
+
 ```
 If prefix[j] - prefix[i] = k, then prefix[i] = prefix[j] - k
 
@@ -51,6 +54,7 @@ Prefix sums have specific use cases:
 5. **When Subarray Endpoints Don't Align Simply**: Some problems need subarrays with specific properties where endpoints depend on values, not just indices.
 
 **Red Flags:**
+
 - "Update element, then query" → Segment tree or Fenwick tree
 - "Range minimum/maximum" → Sparse table or segment tree
 - "Only one or two queries needed" → Direct computation may be simpler
@@ -459,13 +463,13 @@ def pivot_index(nums: list[int]) -> int:
 
 ## Prefix Sum vs Sliding Window
 
-| Use Case | Prefix Sum | Sliding Window |
-|----------|------------|----------------|
-| Has negative numbers | ✓ Yes | ✗ No |
-| Exact sum queries | ✓ Yes | ✓ Yes (for positives) |
-| Modification needed | ✗ No (immutable) | N/A |
-| Range sum query | ✓ O(1) | ✗ O(n) |
-| Minimum/maximum window | ✗ Limited | ✓ Yes |
+| Use Case               | Prefix Sum       | Sliding Window        |
+| ---------------------- | ---------------- | --------------------- |
+| Has negative numbers   | ✓ Yes            | ✗ No                  |
+| Exact sum queries      | ✓ Yes            | ✓ Yes (for positives) |
+| Modification needed    | ✗ No (immutable) | N/A                   |
+| Range sum query        | ✓ O(1)           | ✗ O(n)                |
+| Minimum/maximum window | ✗ Limited        | ✓ Yes                 |
 
 ---
 
@@ -492,16 +496,16 @@ Consider using modular arithmetic if needed
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Technique |
-|---|---------|------------|---------------|
-| 1 | Range Sum Query - Immutable | Easy | Basic prefix sum |
-| 2 | Range Sum Query 2D - Immutable | Medium | 2D prefix sum |
-| 3 | Subarray Sum Equals K | Medium | Prefix + hashmap |
-| 4 | Subarray Sums Divisible by K | Medium | Mod prefix sum |
-| 5 | Product of Array Except Self | Medium | Prefix + suffix |
-| 6 | Find Pivot Index | Easy | Left = right sum |
-| 7 | Continuous Subarray Sum | Medium | Mod prefix sum |
-| 8 | Maximum Size Subarray Sum Equals K | Medium | Prefix + hashmap |
+| #   | Problem                            | Difficulty | Key Technique    |
+| --- | ---------------------------------- | ---------- | ---------------- |
+| 1   | Range Sum Query - Immutable        | Easy       | Basic prefix sum |
+| 2   | Range Sum Query 2D - Immutable     | Medium     | 2D prefix sum    |
+| 3   | Subarray Sum Equals K              | Medium     | Prefix + hashmap |
+| 4   | Subarray Sums Divisible by K       | Medium     | Mod prefix sum   |
+| 5   | Product of Array Except Self       | Medium     | Prefix + suffix  |
+| 6   | Find Pivot Index                   | Easy       | Left = right sum |
+| 7   | Continuous Subarray Sum            | Medium     | Mod prefix sum   |
+| 8   | Maximum Size Subarray Sum Equals K | Medium     | Prefix + hashmap |
 
 ---
 

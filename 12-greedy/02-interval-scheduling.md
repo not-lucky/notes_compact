@@ -5,6 +5,7 @@
 ## Interview Context
 
 Interval scheduling tests:
+
 1. **Greedy intuition**: Sorting by end time (not start time)
 2. **Proof understanding**: Why earliest end time is optimal
 3. **Pattern recognition**: Identifying interval selection problems
@@ -18,7 +19,7 @@ Interval scheduling tests:
 
 Imagine you're scheduling meetings in a single conference room. You want to fit as many meetings as possible. The key insight:
 
-*The earlier a meeting ends, the more time remains for future meetings.*
+_The earlier a meeting ends, the more time remains for future meetings._
 
 This is why we sort by END time, not start time. Starting early doesn't help if the meeting runs long—what matters is when you're FREE again.
 
@@ -120,6 +121,7 @@ This is the classic **Activity Selection Problem**.
 **Sort by end time, greedily pick earliest-ending non-overlapping activity.**
 
 Why end time, not start time?
+
 - Earliest end time leaves maximum room for future activities
 - Starting early doesn't help if the activity runs long
 
@@ -227,12 +229,14 @@ Result: [(1,4), (5,7), (8,11)] - 3 activities
 **Claim**: The greedy algorithm selects as many activities as any optimal solution.
 
 **Proof**:
+
 1. Let G = {g₁, g₂, ..., gₖ} be greedy's selection (sorted by end time)
 2. Let O = {o₁, o₂, ..., oₘ} be any optimal solution (sorted by end time)
 
 **Lemma**: end(gᵢ) ≤ end(oᵢ) for all i ≤ min(k, m)
 
 **By induction**:
+
 - **Base (i=1)**: g₁ has earliest end time by construction, so end(g₁) ≤ end(o₁) ✓
 - **Inductive step**: Assume end(gᵢ) ≤ end(oᵢ)
   - oᵢ₊₁ starts after end(oᵢ) ≥ end(gᵢ)
@@ -402,12 +406,12 @@ def max_meetings(start: list[int], end: list[int]) -> list[int]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Activity Selection | O(n log n) | O(1) | Sorting dominates |
-| Non-overlapping Intervals | O(n log n) | O(1) | Same algorithm |
-| Min Arrows | O(n log n) | O(1) | Same algorithm |
-| Weighted (DP) | O(n log n) | O(n) | DP + binary search |
+| Operation                 | Time       | Space | Notes              |
+| ------------------------- | ---------- | ----- | ------------------ |
+| Activity Selection        | O(n log n) | O(1)  | Sorting dominates  |
+| Non-overlapping Intervals | O(n log n) | O(1)  | Same algorithm     |
+| Min Arrows                | O(n log n) | O(1)  | Same algorithm     |
+| Weighted (DP)             | O(n log n) | O(n)  | DP + binary search |
 
 ---
 
@@ -440,13 +444,13 @@ Check condition:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Non-overlapping Intervals | Medium | total - max_keep |
-| 2 | Minimum Number of Arrows to Burst Balloons | Medium | Same as activity selection |
-| 3 | Maximum Number of Events That Can Be Attended | Medium | Heap for earliest deadline |
-| 4 | Maximum Profit in Job Scheduling | Hard | Weighted interval scheduling |
-| 5 | Video Stitching | Medium | Interval covering variant |
+| #   | Problem                                       | Difficulty | Key Insight                  |
+| --- | --------------------------------------------- | ---------- | ---------------------------- |
+| 1   | Non-overlapping Intervals                     | Medium     | total - max_keep             |
+| 2   | Minimum Number of Arrows to Burst Balloons    | Medium     | Same as activity selection   |
+| 3   | Maximum Number of Events That Can Be Attended | Medium     | Heap for earliest deadline   |
+| 4   | Maximum Profit in Job Scheduling              | Hard       | Weighted interval scheduling |
+| 5   | Video Stitching                               | Medium     | Interval covering variant    |
 
 ---
 

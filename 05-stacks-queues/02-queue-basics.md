@@ -19,12 +19,14 @@ FIFO is the natural ordering for fairness and breadth exploration:
 3. **Exploring a maze level-by-level**: When finding the shortest path, you want to explore all options 1 step away before any options 2 steps away. FIFO naturally gives this breadth-first behavior.
 
 **The Core Insight**:
+
 ```
 When all waiting items have equal priority, the oldest
 waiting item should be processed first. This is fairness.
 ```
 
 **Stack vs Queue Mental Model**:
+
 ```
 Stack (LIFO): Like a vertical tube—add and remove from the same end
              Most recent item is always accessible
@@ -54,6 +56,7 @@ Queues are the wrong choice when:
 5. **Need to Find or Search**: If you need to check if an item exists or find its position, queues don't support efficient search—use a set or map.
 
 **Red Flags in Interviews**:
+
 - "Process most recent first" → Use stack
 - "Higher priority items should be processed first" → Use heap
 - "Find if element exists in the structure" → Use set/map
@@ -100,13 +103,13 @@ returns 1   returns 2
 
 ## Queue vs Stack Comparison
 
-| Aspect | Stack (LIFO) | Queue (FIFO) |
-|--------|--------------|--------------|
-| Order | Last-In-First-Out | First-In-First-Out |
-| Add | push (to top) | enqueue (to rear) |
-| Remove | pop (from top) | dequeue (from front) |
+| Aspect   | Stack (LIFO)       | Queue (FIFO)               |
+| -------- | ------------------ | -------------------------- |
+| Order    | Last-In-First-Out  | First-In-First-Out         |
+| Add      | push (to top)      | enqueue (to rear)          |
+| Remove   | pop (from top)     | dequeue (from front)       |
 | Use case | DFS, undo, parsing | BFS, scheduling, buffering |
-| Analogy | Stack of plates | Line of people |
+| Analogy  | Stack of plates    | Line of people             |
 
 ---
 
@@ -114,15 +117,15 @@ returns 1   returns 2
 
 ### Core Operations
 
-| Operation | Description | Time Complexity |
-|-----------|-------------|-----------------|
-| `enqueue(x)` | Add element to rear | O(1) |
-| `dequeue()` | Remove and return front element | O(1)* |
-| `front()` / `peek()` | Return front element without removing | O(1) |
-| `isEmpty()` | Check if queue is empty | O(1) |
-| `size()` | Return number of elements | O(1) |
+| Operation            | Description                           | Time Complexity |
+| -------------------- | ------------------------------------- | --------------- |
+| `enqueue(x)`         | Add element to rear                   | O(1)            |
+| `dequeue()`          | Remove and return front element       | O(1)\*          |
+| `front()` / `peek()` | Return front element without removing | O(1)            |
+| `isEmpty()`          | Check if queue is empty               | O(1)            |
+| `size()`             | Return number of elements             | O(1)            |
 
-*O(1) with deque, O(n) with list
+\*O(1) with deque, O(n) with list
 
 ---
 
@@ -501,13 +504,13 @@ if dq:
 ## Complexity Summary
 
 | Implementation | enqueue | dequeue | front | Space |
-|---------------|---------|---------|-------|-------|
-| List (bad) | O(1) | O(n) ⚠️ | O(1) | O(n) |
-| deque | O(1) | O(1) | O(1) | O(n) |
-| Circular array | O(1) | O(1) | O(1) | O(k) |
-| Linked list | O(1)* | O(1) | O(1) | O(n) |
+| -------------- | ------- | ------- | ----- | ----- |
+| List (bad)     | O(1)    | O(n) ⚠️ | O(1)  | O(n)  |
+| deque          | O(1)    | O(1)    | O(1)  | O(n)  |
+| Circular array | O(1)    | O(1)    | O(1)  | O(k)  |
+| Linked list    | O(1)\*  | O(1)    | O(1)  | O(n)  |
 
-*With tail pointer
+\*With tail pointer
 
 ---
 
@@ -596,15 +599,15 @@ if queue:  # Always check first
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Design Circular Queue | Medium | Circular array |
-| 2 | Number of Recent Calls | Easy | Sliding window |
-| 3 | Moving Average from Data Stream | Easy | Queue + running sum |
-| 4 | Implement Queue using Stacks | Easy | Two stacks |
-| 5 | Design Circular Deque | Medium | Double-ended |
-| 6 | Binary Tree Level Order Traversal | Medium | BFS |
-| 7 | Rotting Oranges | Medium | Multi-source BFS |
+| #   | Problem                           | Difficulty | Key Concept         |
+| --- | --------------------------------- | ---------- | ------------------- |
+| 1   | Design Circular Queue             | Medium     | Circular array      |
+| 2   | Number of Recent Calls            | Easy       | Sliding window      |
+| 3   | Moving Average from Data Stream   | Easy       | Queue + running sum |
+| 4   | Implement Queue using Stacks      | Easy       | Two stacks          |
+| 5   | Design Circular Deque             | Medium     | Double-ended        |
+| 6   | Binary Tree Level Order Traversal | Medium     | BFS                 |
+| 7   | Rotting Oranges                   | Medium     | Multi-source BFS    |
 
 ---
 

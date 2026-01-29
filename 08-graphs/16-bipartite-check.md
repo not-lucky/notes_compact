@@ -357,11 +357,11 @@ color = [-1] * n  # -1 = unvisited, 0 or 1 = group
 
 ## Complexity Analysis
 
-| Approach | Time | Space |
-|----------|------|-------|
-| BFS | O(V + E) | O(V) |
-| DFS | O(V + E) | O(V) |
-| Union-Find | O((V + E) × α(V)) | O(V) |
+| Approach   | Time              | Space |
+| ---------- | ----------------- | ----- |
+| BFS        | O(V + E)          | O(V)  |
+| DFS        | O(V + E)          | O(V)  |
+| Union-Find | O((V + E) × α(V)) | O(V)  |
 
 ---
 
@@ -377,11 +377,11 @@ color = [-1] * n  # -1 = unvisited, 0 or 1 = group
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Is Graph Bipartite? | Medium | Core problem |
-| 2 | Possible Bipartition | Medium | People/dislikes framing |
-| 3 | Graph Coloring (k colors) | Hard | Generalization |
+| #   | Problem                   | Difficulty | Key Variation           |
+| --- | ------------------------- | ---------- | ----------------------- |
+| 1   | Is Graph Bipartite?       | Medium     | Core problem            |
+| 2   | Possible Bipartition      | Medium     | People/dislikes framing |
+| 3   | Graph Coloring (k colors) | Hard       | Generalization          |
 
 ---
 

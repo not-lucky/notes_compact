@@ -1,15 +1,18 @@
 # Symmetric Tree and Same Tree Solutions
 
 ## 1. Same Tree
+
 **Problem Statement**: Given the roots of two binary trees `p` and `q`, check if they are the same. Two binary trees are the same if they are structurally identical and the nodes have the same value.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `p = [1,2,3], q = [1,2,3]` → Output: `true`
 - **Example 2**: `p = [1,2], q = [1,None,2]` → Output: `false`
 - **Edge Case - Both Empty**: `true`
 - **Edge Case - One Empty**: `false`
 
 ### Optimal Python Solution
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -31,25 +34,30 @@ def isSameTree(p: TreeNode, q: TreeNode) -> bool:
 ```
 
 ### Explanation
+
 1.  **Identity Base Case**: If we reach the end of both trees simultaneously (`None`), that path is identical.
 2.  **Structural/Value Mismatch**: If one tree has a node where the other has `None`, or if the values differ, the trees are not the same.
 3.  **Recursive Conjunction**: Both the left branch AND the right branch must be identical for the whole tree to be identical.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(min(n, m))**. We visit each node in the smaller tree once.
 - **Space Complexity**: **O(min(h1, h2))**. The recursion stack depth.
 
 ---
 
 ## 2. Symmetric Tree
+
 **Problem Statement**: Given the `root` of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [1,2,2,3,4,4,3]` → Output: `true`
 - **Example 2**: `root = [1,2,2,None,3,None,3]` → Output: `false`
 - **Edge Case - Single Node**: `true`
 
 ### Optimal Python Solution
+
 ```python
 def isSymmetric(root: TreeNode) -> bool:
     if not root:
@@ -71,6 +79,7 @@ def isSymmetric(root: TreeNode) -> bool:
 ```
 
 ### Explanation
+
 1.  **Mirror Definition**: Two trees are mirrors if:
     - Their roots have the same value.
     - The left child of the first tree is a mirror of the right child of the second tree.
@@ -78,15 +87,18 @@ def isSymmetric(root: TreeNode) -> bool:
 2.  **Implementation**: We create a helper function that takes two nodes and checks the mirror properties recursively.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. We visit every node in the tree once.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 3. Subtree of Another Tree
+
 **Problem Statement**: Check if `subRoot` is a subtree of `root`.
 
 ### Optimal Python Solution
+
 ```python
 def isSubtree(root: TreeNode, subRoot: TreeNode) -> bool:
     if not subRoot: return True
@@ -106,15 +118,18 @@ def isSameTree(p, q):
 ```
 
 ### Complexity Analysis
-- **Time Complexity**: **O(n * m)**. In the worst case, we check `isSameTree` ($O(m)$) for every node in `root` ($n$ nodes).
+
+- **Time Complexity**: **O(n \* m)**. In the worst case, we check `isSameTree` ($O(m)$) for every node in `root` ($n$ nodes).
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 4. Invert Binary Tree
+
 **Problem Statement**: Invert a binary tree (swap all left and right children).
 
 ### Optimal Python Solution
+
 ```python
 def invertTree(root: TreeNode) -> TreeNode:
     if not root:
@@ -131,15 +146,18 @@ def invertTree(root: TreeNode) -> TreeNode:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 5. Flip Equivalent Binary Trees
+
 **Problem Statement**: Two binary trees are flip equivalent if we can make them identical by flipping some nodes (swapping left and right children).
 
 ### Optimal Python Solution
+
 ```python
 def flipEquiv(root1: TreeNode, root2: TreeNode) -> bool:
     if not root1 and not root2:
@@ -155,19 +173,23 @@ def flipEquiv(root1: TreeNode, root2: TreeNode) -> bool:
 ```
 
 ### Explanation
+
 - This is a variation of the `isSameTree` problem.
 - Instead of just checking `left==left` and `right==right`, we also check `left==right` and `right==left` as a valid "flip" possibility.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(min(n1, n2))**.
 - **Space Complexity**: **O(min(h1, h2))**.
 
 ---
 
 ## 6. Merge Two Binary Trees
+
 **Problem Statement**: Merge two trees. If two nodes overlap, sum their values. Otherwise, use the non-null node.
 
 ### Optimal Python Solution
+
 ```python
 def mergeTrees(root1: TreeNode, root2: TreeNode) -> TreeNode:
     if not root1:
@@ -186,15 +208,18 @@ def mergeTrees(root1: TreeNode, root2: TreeNode) -> TreeNode:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(min(n1, n2))**. We only traverse the overlap.
 - **Space Complexity**: **O(min(h1, h2))**.
 
 ---
 
 ## 7. Leaf-Similar Trees
+
 **Problem Statement**: Two binary trees are leaf-similar if their leaf value sequence is the same.
 
 ### Optimal Python Solution
+
 ```python
 def leafSimilar(root1: TreeNode, root2: TreeNode) -> bool:
     def getLeaves(node):
@@ -208,5 +233,6 @@ def leafSimilar(root1: TreeNode, root2: TreeNode) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n1 + n2)**.
 - **Space Complexity**: **O(leaves1 + leaves2)**.

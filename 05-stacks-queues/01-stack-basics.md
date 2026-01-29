@@ -19,12 +19,14 @@ Think about how you naturally handle nested activities in real life:
 3. **Navigating web pages**: You click through pages A → B → C. The back button returns to C's predecessor (B), not the original page (A). Your browser history is a stack.
 
 **The Core Insight**:
+
 ```
 When processing nested or reversible structures, the most recent
 incomplete item must be resolved before returning to earlier items.
 ```
 
 **Why this matters for algorithms**: Many problems have this "most recent first" property:
+
 - **Matching brackets**: The most recently opened bracket must close first
 - **Function calls**: The most recently called function must return first
 - **Undo systems**: The most recent action is undone first
@@ -47,6 +49,7 @@ Stacks are the wrong choice when:
 5. **Size Matters More Than Order**: If you just need to track min/max/size without ordering, use simpler counters or heaps.
 
 **Red Flags in Interviews**:
+
 - "Process elements in arrival order" → Use queue
 - "Access the kth element" → Use array/list
 - "Find median of elements" → Use heaps
@@ -96,15 +99,15 @@ Stack operations:
 
 ### Core Operations
 
-| Operation | Description | Time Complexity |
-|-----------|-------------|-----------------|
-| `push(x)` | Add element to top | O(1)* |
-| `pop()` | Remove and return top element | O(1) |
-| `peek()` / `top()` | Return top element without removing | O(1) |
-| `isEmpty()` | Check if stack is empty | O(1) |
-| `size()` | Return number of elements | O(1) |
+| Operation          | Description                         | Time Complexity |
+| ------------------ | ----------------------------------- | --------------- |
+| `push(x)`          | Add element to top                  | O(1)\*          |
+| `pop()`            | Remove and return top element       | O(1)            |
+| `peek()` / `top()` | Return top element without removing | O(1)            |
+| `isEmpty()`        | Check if stack is empty             | O(1)            |
+| `size()`           | Return number of elements           | O(1)            |
 
-*Amortized for dynamic arrays
+\*Amortized for dynamic arrays
 
 ---
 
@@ -308,14 +311,14 @@ def dfs_iterative(graph: dict, start: str) -> list:
 ## Complexity Analysis
 
 | Operation | List-based | Linked List-based |
-|-----------|-----------|-------------------|
-| push | O(1)* | O(1) |
-| pop | O(1) | O(1) |
-| peek | O(1) | O(1) |
-| isEmpty | O(1) | O(1) |
-| Space | O(n) | O(n) |
+| --------- | ---------- | ----------------- |
+| push      | O(1)\*     | O(1)              |
+| pop       | O(1)       | O(1)              |
+| peek      | O(1)       | O(1)              |
+| isEmpty   | O(1)       | O(1)              |
+| Space     | O(n)       | O(n)              |
 
-*Amortized - occasional O(n) when resizing
+\*Amortized - occasional O(n) when resizing
 
 ### Why Python List Works Well
 
@@ -448,15 +451,15 @@ top = stack[-1] if stack else None  # Safe peek
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Valid Parentheses | Easy | Stack matching |
-| 2 | Baseball Game | Easy | Stack operations |
-| 3 | Backspace String Compare | Easy | Stack for processing |
-| 4 | Remove All Adjacent Duplicates | Easy | Stack cleanup |
-| 5 | Daily Temperatures | Medium | Monotonic stack |
-| 6 | Min Stack | Medium | Auxiliary stack |
-| 7 | Evaluate Reverse Polish Notation | Medium | Operator stack |
+| #   | Problem                          | Difficulty | Key Concept          |
+| --- | -------------------------------- | ---------- | -------------------- |
+| 1   | Valid Parentheses                | Easy       | Stack matching       |
+| 2   | Baseball Game                    | Easy       | Stack operations     |
+| 3   | Backspace String Compare         | Easy       | Stack for processing |
+| 4   | Remove All Adjacent Duplicates   | Easy       | Stack cleanup        |
+| 5   | Daily Temperatures               | Medium     | Monotonic stack      |
+| 6   | Min Stack                        | Medium     | Auxiliary stack      |
+| 7   | Evaluate Reverse Polish Notation | Medium     | Operator stack       |
 
 ---
 

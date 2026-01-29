@@ -34,6 +34,7 @@ Value:     8 + 0 + 2 + 1 = 13
 ```
 
 Once you see numbers as bit arrays, operations become intuitive:
+
 - AND = element-wise minimum
 - OR = element-wise maximum
 - XOR = element-wise difference detector
@@ -42,6 +43,7 @@ Once you see numbers as bit arrays, operations become intuitive:
 **Why XOR is the Star of Bit Manipulation**
 
 XOR has properties no other operator has:
+
 - `a ^ a = 0` (self-cancellation)
 - `a ^ 0 = a` (identity)
 - It's its own inverse: `a ^ b ^ b = a`
@@ -51,6 +53,7 @@ These properties enable finding unique elements, swapping without temp variables
 **The "Bit Trick" Pattern**
 
 Most bit tricks follow a pattern:
+
 1. Identify a property that's visible in binary representation
 2. Find an operation that isolates or transforms that property
 3. Use masking (AND/OR) to extract the result
@@ -79,6 +82,7 @@ Not every "find unique element" problem needs XOR. If the constraints allow O(n)
 **4. Python's Arbitrary Precision**
 
 Python integers have no fixed bit width. Some C/Java tricks need explicit masking:
+
 ```python
 # In Python, ~5 has conceptually infinite leading 1s
 # Use: (~5) & 0xFFFFFFFF for 32-bit behavior
@@ -97,14 +101,14 @@ Python integers have no fixed bit width. Some C/Java tricks need explicit maskin
 
 ## Bitwise Operators Overview
 
-| Operator | Symbol | Description | Example (a=5, b=3) |
-|----------|--------|-------------|--------------------|
-| AND | `&` | 1 if both bits are 1 | `5 & 3 = 1` (101 & 011 = 001) |
-| OR | `\|` | 1 if either bit is 1 | `5 \| 3 = 7` (101 \| 011 = 111) |
-| XOR | `^` | 1 if bits differ | `5 ^ 3 = 6` (101 ^ 011 = 110) |
-| NOT | `~` | Flip all bits | `~5 = -6` (inverts all bits) |
-| Left Shift | `<<` | Shift bits left | `5 << 1 = 10` (101 → 1010) |
-| Right Shift | `>>` | Shift bits right | `5 >> 1 = 2` (101 → 10) |
+| Operator    | Symbol | Description          | Example (a=5, b=3)              |
+| ----------- | ------ | -------------------- | ------------------------------- |
+| AND         | `&`    | 1 if both bits are 1 | `5 & 3 = 1` (101 & 011 = 001)   |
+| OR          | `\|`   | 1 if either bit is 1 | `5 \| 3 = 7` (101 \| 011 = 111) |
+| XOR         | `^`    | 1 if bits differ     | `5 ^ 3 = 6` (101 ^ 011 = 110)   |
+| NOT         | `~`    | Flip all bits        | `~5 = -6` (inverts all bits)    |
+| Left Shift  | `<<`   | Shift bits left      | `5 << 1 = 10` (101 → 1010)      |
+| Right Shift | `>>`   | Shift bits right     | `5 >> 1 = 2` (101 → 10)         |
 
 ---
 
@@ -153,29 +157,29 @@ Common values:
 
 ## Core Bit Manipulation Patterns
 
-| Pattern | Technique | Example Use Case |
-|---------|-----------|------------------|
-| XOR Pairing | `a ^ a = 0` | Find single number |
-| Bit Check | `n & (1 << i)` | Check if bit i is set |
-| Bit Set | `n \| (1 << i)` | Set bit i to 1 |
-| Bit Clear | `n & ~(1 << i)` | Clear bit i to 0 |
-| Bit Toggle | `n ^ (1 << i)` | Flip bit i |
-| Power of Two | `n & (n-1) == 0` | Check power of 2 |
-| Lowest Set Bit | `n & (-n)` | Isolate rightmost 1 |
-| Clear Lowest Bit | `n & (n-1)` | Remove rightmost 1 |
+| Pattern          | Technique        | Example Use Case      |
+| ---------------- | ---------------- | --------------------- |
+| XOR Pairing      | `a ^ a = 0`      | Find single number    |
+| Bit Check        | `n & (1 << i)`   | Check if bit i is set |
+| Bit Set          | `n \| (1 << i)`  | Set bit i to 1        |
+| Bit Clear        | `n & ~(1 << i)`  | Clear bit i to 0      |
+| Bit Toggle       | `n ^ (1 << i)`   | Flip bit i            |
+| Power of Two     | `n & (n-1) == 0` | Check power of 2      |
+| Lowest Set Bit   | `n & (-n)`       | Isolate rightmost 1   |
+| Clear Lowest Bit | `n & (n-1)`      | Remove rightmost 1    |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Binary Basics](./01-binary-basics.md) | Binary representation, bitwise operators |
-| 02 | [Single Number](./02-single-number.md) | Single number I, II, III variants |
-| 03 | [Counting Bits](./03-counting-bits.md) | Count set bits, Hamming distance |
-| 04 | [Power of Two](./04-power-of-two.md) | Power of two/four checks |
-| 05 | [XOR Tricks](./05-xor-tricks.md) | XOR properties, missing number |
-| 06 | [Bit Manipulation Tricks](./06-bit-manipulation-tricks.md) | Common tricks compendium |
+| #   | Topic                                                      | Key Concepts                             |
+| --- | ---------------------------------------------------------- | ---------------------------------------- |
+| 01  | [Binary Basics](./01-binary-basics.md)                     | Binary representation, bitwise operators |
+| 02  | [Single Number](./02-single-number.md)                     | Single number I, II, III variants        |
+| 03  | [Counting Bits](./03-counting-bits.md)                     | Count set bits, Hamming distance         |
+| 04  | [Power of Two](./04-power-of-two.md)                       | Power of two/four checks                 |
+| 05  | [XOR Tricks](./05-xor-tricks.md)                           | XOR properties, missing number           |
+| 06  | [Bit Manipulation Tricks](./06-bit-manipulation-tricks.md) | Common tricks compendium                 |
 
 ---
 
@@ -251,11 +255,11 @@ print(BitOperations.is_power_of_two(8)) # True
 
 ## Time Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Single bitwise op | O(1) | O(1) | AND, OR, XOR, NOT, shifts |
-| Count set bits | O(k) | O(1) | k = number of set bits |
-| Iterate all bits | O(log n) | O(1) | Or O(32) for 32-bit int |
+| Operation         | Time     | Space | Notes                     |
+| ----------------- | -------- | ----- | ------------------------- |
+| Single bitwise op | O(1)     | O(1)  | AND, OR, XOR, NOT, shifts |
+| Count set bits    | O(k)     | O(1)  | k = number of set bits    |
+| Iterate all bits  | O(log n) | O(1)  | Or O(32) for 32-bit int   |
 
 ---
 
@@ -275,13 +279,13 @@ when "O(1) space" is required.
 
 ## Classic Interview Problems by Company
 
-| Company | Favorite Bit Manipulation Problems |
-|---------|-----------------------------------|
-| Google | Single Number III, Hamming Distance, Reverse Bits |
-| Meta | Missing Number, Sum of Two Integers, Subsets |
-| Amazon | Power of Two, Number of 1 Bits, Counting Bits |
-| Microsoft | Single Number, Bitwise AND of Range, Complement |
-| Apple | UTF-8 Validation, Maximum XOR, Gray Code |
+| Company   | Favorite Bit Manipulation Problems                |
+| --------- | ------------------------------------------------- |
+| Google    | Single Number III, Hamming Distance, Reverse Bits |
+| Meta      | Missing Number, Sum of Two Integers, Subsets      |
+| Amazon    | Power of Two, Number of 1 Bits, Counting Bits     |
+| Microsoft | Single Number, Bitwise AND of Range, Complement   |
+| Apple     | UTF-8 Validation, Maximum XOR, Gray Code          |
 
 ---
 
@@ -304,30 +308,30 @@ Look for these keywords/patterns:
 
 ## Comparison: When Bit Manipulation vs Other Approaches
 
-| Scenario | Use Bit Manipulation | Use Alternative |
-|----------|---------------------|-----------------|
-| Find unique among pairs | XOR all elements | Hash table (if pairs not guaranteed) |
-| Check power of 2 | `n & (n-1) == 0` | Loop (slower) |
-| Count 1s in binary | Brian Kernighan | `bin(n).count('1')` (Pythonic) |
-| Store boolean flags | Bitmask | Array/set (if clarity needed) |
-| Generate subsets | Bitmask `0` to `2^n-1` | Backtracking (if order matters) |
+| Scenario                | Use Bit Manipulation   | Use Alternative                      |
+| ----------------------- | ---------------------- | ------------------------------------ |
+| Find unique among pairs | XOR all elements       | Hash table (if pairs not guaranteed) |
+| Check power of 2        | `n & (n-1) == 0`       | Loop (slower)                        |
+| Count 1s in binary      | Brian Kernighan        | `bin(n).count('1')` (Pythonic)       |
+| Store boolean flags     | Bitmask                | Array/set (if clarity needed)        |
+| Generate subsets        | Bitmask `0` to `2^n-1` | Backtracking (if order matters)      |
 
 ---
 
 ## Quick Reference: Essential Formulas
 
-| Goal | Formula | Example |
-|------|---------|---------|
-| Check bit i | `(n >> i) & 1` | `(5 >> 2) & 1 = 1` |
-| Set bit i | `n \| (1 << i)` | `5 \| 2 = 7` |
-| Clear bit i | `n & ~(1 << i)` | `7 & ~2 = 5` |
-| Toggle bit i | `n ^ (1 << i)` | `5 ^ 2 = 7` |
-| Clear lowest set bit | `n & (n - 1)` | `6 & 5 = 4` |
-| Isolate lowest set bit | `n & -n` | `6 & -6 = 2` |
-| Check power of 2 | `n > 0 and n & (n-1) == 0` | `8 & 7 = 0` → True |
-| Multiply by 2 | `n << 1` | `5 << 1 = 10` |
-| Divide by 2 | `n >> 1` | `5 >> 1 = 2` |
-| Swap without temp | `a ^= b; b ^= a; a ^= b` | Swaps a and b |
+| Goal                   | Formula                    | Example            |
+| ---------------------- | -------------------------- | ------------------ |
+| Check bit i            | `(n >> i) & 1`             | `(5 >> 2) & 1 = 1` |
+| Set bit i              | `n \| (1 << i)`            | `5 \| 2 = 7`       |
+| Clear bit i            | `n & ~(1 << i)`            | `7 & ~2 = 5`       |
+| Toggle bit i           | `n ^ (1 << i)`             | `5 ^ 2 = 7`        |
+| Clear lowest set bit   | `n & (n - 1)`              | `6 & 5 = 4`        |
+| Isolate lowest set bit | `n & -n`                   | `6 & -6 = 2`       |
+| Check power of 2       | `n > 0 and n & (n-1) == 0` | `8 & 7 = 0` → True |
+| Multiply by 2          | `n << 1`                   | `5 << 1 = 10`      |
+| Divide by 2            | `n >> 1`                   | `5 >> 1 = 2`       |
+| Swap without temp      | `a ^= b; b ^= a; a ^= b`   | Swaps a and b      |
 
 ---
 

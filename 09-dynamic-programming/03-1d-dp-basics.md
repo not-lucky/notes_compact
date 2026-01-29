@@ -48,6 +48,7 @@
 5. **Graph Structure**: Grid/tree problems with branching paths often require 2D or tree DP, not linear 1D.
 
 **Signs 1D DP is Appropriate:**
+
 - Input is a single array/string processed linearly
 - Decision at position i only depends on a constant number of previous positions
 - No "knapsack-like" capacity constraint
@@ -430,16 +431,16 @@ dp[i] = max(dp[i-1], dp[i-2] + nums[i])
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Climbing Stairs | Easy | Fibonacci |
-| 2 | Min Cost Climbing | Easy | Fibonacci + min |
-| 3 | House Robber | Medium | Take/skip |
-| 4 | House Robber II | Medium | Circular array |
-| 5 | Maximum Subarray | Medium | Kadane's |
-| 6 | Decode Ways | Medium | Counting |
-| 7 | Perfect Squares | Medium | Unbounded |
-| 8 | Jump Game | Medium | Optimization |
+| #   | Problem           | Difficulty | Pattern         |
+| --- | ----------------- | ---------- | --------------- |
+| 1   | Climbing Stairs   | Easy       | Fibonacci       |
+| 2   | Min Cost Climbing | Easy       | Fibonacci + min |
+| 3   | House Robber      | Medium     | Take/skip       |
+| 4   | House Robber II   | Medium     | Circular array  |
+| 5   | Maximum Subarray  | Medium     | Kadane's        |
+| 6   | Decode Ways       | Medium     | Counting        |
+| 7   | Perfect Squares   | Medium     | Unbounded       |
+| 8   | Jump Game         | Medium     | Optimization    |
 
 ---
 

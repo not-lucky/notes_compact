@@ -44,12 +44,13 @@ If we had 6 here instead: 6 > 7? No! ✗ Invalid
 
 **Two equivalent approaches**:
 
-| Approach | How It Works | Space |
-|----------|--------------|-------|
-| **Range-based** | Pass (min, max) bounds down, narrow at each step | O(h) stack |
-| **Inorder traversal** | BST inorder should be strictly increasing | O(h) or O(1) with Morris |
+| Approach              | How It Works                                     | Space                    |
+| --------------------- | ------------------------------------------------ | ------------------------ |
+| **Range-based**       | Pass (min, max) bounds down, narrow at each step | O(h) stack               |
+| **Inorder traversal** | BST inorder should be strictly increasing        | O(h) or O(1) with Morris |
 
 **The inorder insight**:
+
 ```
 Valid BST:        Inorder: [1, 3, 4, 5, 7, 9] → strictly increasing ✓
       5
@@ -71,20 +72,24 @@ Invalid BST:      Inorder: [1, 6, 4, 5, 7, 9] → 6 > 4 ✗ not increasing!
 ## When NOT to Use
 
 **Range-based validation fails when:**
+
 - Tree has duplicate values → Need to decide if duplicates allowed and where
 - Range is unclear → With duplicates, is it `<` or `<=`?
 
 **Inorder validation is simpler when:**
+
 - You're already comfortable with inorder traversal
 - Problem asks for sorted order verification anyway
 - You want O(1) space (Morris traversal variant)
 
 **Common mistake scenarios:**
+
 - Only checking immediate children → Misses ancestor constraints
 - Using `<=` instead of `<` → Depends on problem definition
 - Integer overflow with min/max → Use `float('-inf')` and `float('inf')` in Python
 
 **The duplicate value trap**:
+
 ```
 Standard BST: left < root < right (no duplicates)
 Some BSTs: left <= root < right (duplicates go left)
@@ -345,13 +350,13 @@ def is_valid_bst_morris(root: TreeNode) -> bool:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Range-based (recursive) | O(n) | O(h) | Clean, intuitive |
-| Range-based (iterative) | O(n) | O(h) | Avoids recursion |
-| Inorder (recursive) | O(n) | O(h) | Uses BST property |
-| Inorder (iterative) | O(n) | O(h) | Most common approach |
-| Morris | O(n) | O(1) | Optimal space |
+| Approach                | Time | Space | Notes                |
+| ----------------------- | ---- | ----- | -------------------- |
+| Range-based (recursive) | O(n) | O(h)  | Clean, intuitive     |
+| Range-based (iterative) | O(n) | O(h)  | Avoids recursion     |
+| Inorder (recursive)     | O(n) | O(h)  | Uses BST property    |
+| Inorder (iterative)     | O(n) | O(h)  | Most common approach |
+| Morris                  | O(n) | O(1)  | Optimal space        |
 
 ---
 
@@ -490,13 +495,13 @@ root = TreeNode(2**31 - 1)  # Max int
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Validate Binary Search Tree | Medium | Core validation |
-| 2 | Recover Binary Search Tree | Medium | Find and fix swapped nodes |
-| 3 | Largest BST Subtree | Medium | Validate subtrees |
-| 4 | Minimum Distance Between BST Nodes | Easy | Inorder with gaps |
-| 5 | Two Sum IV - Input is a BST | Easy | BST traversal + two sum |
+| #   | Problem                            | Difficulty | Key Concept                |
+| --- | ---------------------------------- | ---------- | -------------------------- |
+| 1   | Validate Binary Search Tree        | Medium     | Core validation            |
+| 2   | Recover Binary Search Tree         | Medium     | Find and fix swapped nodes |
+| 3   | Largest BST Subtree                | Medium     | Validate subtrees          |
+| 4   | Minimum Distance Between BST Nodes | Easy       | Inorder with gaps          |
+| 5   | Two Sum IV - Input is a BST        | Easy       | BST traversal + two sum    |
 
 ---
 

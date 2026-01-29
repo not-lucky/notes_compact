@@ -5,6 +5,7 @@
 ## Interview Context
 
 This is a classic hard problem and FANG+ favorite because:
+
 1. **Non-obvious binary search**: Requires creative application
 2. **Edge case heavy**: Many boundary conditions
 3. **Optimal solution is tricky**: O(log(min(m,n))) is not intuitive
@@ -85,6 +86,7 @@ Imagine two ropes (sorted arrays) that you want to combine into one sorted rope.
 **Why Search on the Smaller Array?**
 
 If we search on the larger array, the partition j might go negative:
+
 ```
 nums1: [1,2,3,4,5,6,7,8,9,10]  (m=10)
 nums2: [5]                      (n=1)
@@ -132,34 +134,40 @@ Step 2:
 **1. Arrays Aren't Sorted**
 
 This entire approach relies on sorted order. Unsorted arrays need:
+
 - Sort first: O(n log n + m log m)
 - Or use quickselect: O(n + m) average
 
 **2. Finding Other Quantiles**
 
 This partition approach is specific to median. For:
+
 - 25th percentile → Modify partition sizes
 - kth element → Use the kth element approach (also provided below)
 
 **3. More Than Two Arrays**
 
 For k sorted arrays, use:
+
 - Heap-based merge: O(total × log k)
 - Not a simple generalization of this approach
 
 **4. Very Small Arrays**
 
 If m + n ≤ 10:
+
 - Just merge and find middle: O(m + n)
 - Simpler to implement, same practical speed
 
 **5. Streaming Data**
 
 If arrays are being appended to:
+
 - Two-heap approach is better
 - This approach needs complete arrays
 
 **Red Flags:**
+
 - "Arrays may be unsorted" → Sort first or different approach
 - "Multiple arrays" → Heap-based merge
 - "Running median as elements arrive" → Two-heap approach
@@ -345,11 +353,11 @@ def find_median_via_kth(nums1: list[int], nums2: list[int]) -> float:
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Complexity |
-|----------|------|-------|------------|
-| Partition | O(log min(m,n)) | O(1) | Medium-High |
-| Kth Element | O(log(m+n)) | O(1) | Medium |
-| Merge First k | O(k) = O(m+n) | O(1) | Low |
+| Approach      | Time            | Space | Complexity  |
+| ------------- | --------------- | ----- | ----------- |
+| Partition     | O(log min(m,n)) | O(1)  | Medium-High |
+| Kth Element   | O(log(m+n))     | O(1)  | Medium      |
+| Merge First k | O(k) = O(m+n)   | O(1)  | Low         |
 
 The partition approach is slightly faster but harder to implement correctly.
 
@@ -507,11 +515,11 @@ if total % 2 == 0:
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Partition approach | O(log min(m,n)) | O(1) |
-| Kth element approach | O(log k) where k = (m+n)/2 | O(1) |
-| Naive merge | O(m + n) | O(m + n) |
+| Operation            | Time                       | Space    |
+| -------------------- | -------------------------- | -------- |
+| Partition approach   | O(log min(m,n))            | O(1)     |
+| Kth element approach | O(log k) where k = (m+n)/2 | O(1)     |
+| Naive merge          | O(m + n)                   | O(m + n) |
 
 ---
 
@@ -528,13 +536,13 @@ if total % 2 == 0:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Median of Two Sorted Arrays | Hard | Partition binary search |
-| 2 | Kth Smallest Element in Sorted Matrix | Medium | Related technique |
-| 3 | Find K Pairs with Smallest Sums | Medium | Heap + binary search |
-| 4 | Merge K Sorted Lists | Hard | Heap approach |
-| 5 | Find Median from Data Stream | Hard | Two heaps |
+| #   | Problem                               | Difficulty | Key Insight             |
+| --- | ------------------------------------- | ---------- | ----------------------- |
+| 1   | Median of Two Sorted Arrays           | Hard       | Partition binary search |
+| 2   | Kth Smallest Element in Sorted Matrix | Medium     | Related technique       |
+| 3   | Find K Pairs with Smallest Sums       | Medium     | Heap + binary search    |
+| 4   | Merge K Sorted Lists                  | Hard       | Heap approach           |
+| 5   | Find Median from Data Stream          | Hard       | Two heaps               |
 
 ---
 
@@ -562,15 +570,15 @@ if total % 2 == 0:
 
 This concludes Chapter 10 on Binary Search. The key patterns covered:
 
-| Pattern | Key Insight |
-|---------|-------------|
-| Standard Template | Find exact match or boundary |
+| Pattern               | Key Insight                    |
+| --------------------- | ------------------------------ |
+| Standard Template     | Find exact match or boundary   |
 | First/Last Occurrence | Continue searching after match |
-| Rotated Array | Identify sorted half |
-| Find Minimum | Compare with right boundary |
-| Peak Element | Follow uphill direction |
-| Search Space | Binary search on answer range |
-| Matrix Search | 1D conversion or staircase |
-| Median Two Arrays | Partition both arrays |
+| Rotated Array         | Identify sorted half           |
+| Find Minimum          | Compare with right boundary    |
+| Peak Element          | Follow uphill direction        |
+| Search Space          | Binary search on answer range  |
+| Matrix Search         | 1D conversion or staircase     |
+| Median Two Arrays     | Partition both arrays          |
 
 Mastering these patterns will prepare you for most binary search problems in FANG+ interviews.

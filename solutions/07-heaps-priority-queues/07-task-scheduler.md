@@ -1,14 +1,17 @@
 # Task Scheduler Solutions
 
 ## 1. Task Scheduler
+
 Minimum time to complete tasks with a cooldown `n`.
 
 ### Examples & Edge Cases
+
 - **Example**: `tasks = ["A","A","A","B","B","B"], n = 2` -> `8`
 - **Edge Case: n = 0**: Returns `len(tasks)`.
 - **Edge Case: Single task type**: `["A","A"], n = 2` -> `A _ _ A` (4 slots).
 
 ### Optimal Python Solution (Max-Heap + Queue)
+
 ```python
 import heapq
 from collections import Counter, deque
@@ -49,25 +52,30 @@ def leastInterval(tasks: list[str], n: int) -> int:
 ```
 
 ### Explanation
+
 1.  **Greedy Strategy**: High-frequency tasks create the most constraints. By doing them as soon as they are available, we minimize the total number of idle slots.
 2.  **Heap**: Keeps available tasks ordered by their remaining counts.
 3.  **Queue**: Acts as the cooldown buffer. Tasks wait in the queue until `time` reaches their `available_time`.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(T \log U)$ where $T$ is the total number of tasks and $U$ is the number of unique tasks (max 26).
 - **Space Complexity**: $O(U)$ to store the frequencies and the heap.
 
 ---
 
 ## 2. Reorganize String
+
 Rearrange characters so that no two adjacent characters are the same.
 
 ### Examples & Edge Cases
+
 - **Example**: `s = "aab"` -> `"aba"`
 - **Example**: `s = "aaab"` -> `""` (impossible)
 - **Edge Case: Single character**: `"a"` -> `"a"`.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 from collections import Counter
@@ -110,19 +118,23 @@ def reorganizeString(s: str) -> str:
 ```
 
 ### Explanation
+
 1.  **Greedy Choice**: We always use the most frequent character available that isn't the same as the last one used.
 2.  **State Management**: We use a `prev` variable to temporarily hold a character so it's not picked twice in a row.
 
 ---
 
 ## 3. Task Scheduler II
+
 Each task type needs `space` gap between executions. Tasks must be executed in the given order.
 
 ### Examples & Edge Cases
+
 - **Example**: `tasks = [1,2,1,2,3,1], space = 3` -> `9`
 - **Edge Case: space = 0**: Returns `len(tasks)`.
 
 ### Optimal Python Solution
+
 ```python
 def taskSchedulerII(tasks: list[int], space: int) -> int:
     """
@@ -149,14 +161,17 @@ def taskSchedulerII(tasks: list[int], space: int) -> int:
 ```
 
 ### Explanation
+
 - Unlike the first Task Scheduler, the **order is fixed**. We don't use a heap because we can't choose which task to do next. We simply simulate the timeline and jump forward when a cooldown requirement isn't met.
 
 ---
 
 ## 4. Distant Barcodes
+
 Rearrange barcodes so that no two adjacent barcodes are equal.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 from collections import Counter
@@ -194,13 +209,16 @@ def rearrangeBarcodes(barcodes: list[int]) -> list[int]:
 ---
 
 ## 5. Course Schedule III
+
 Maximize the number of courses taken, given durations and deadlines.
 
 ### Examples & Edge Cases
+
 - **Example**: `courses = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]` -> `3`
 - **Edge Case: Course duration > deadline**: Impossible to take, should be ignored.
 
 ### Optimal Python Solution (Greedy + Heap)
+
 ```python
 import heapq
 
@@ -235,9 +253,11 @@ def scheduleCourse(courses: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 1.  **Greedy by Deadline**: We process courses by their deadlines because finishing a course early never hurts our chances for later courses.
 2.  **Greedy Replacement**: If we find ourselves past a deadline, the most efficient way to get back "on track" is to remove the course that took the longest time. This gives us the maximum "budget" for all remaining courses.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log n)$ due to sorting. The heap operations are $O(n \log n)$ in total.
 - **Space Complexity**: $O(n)$ for the heap.

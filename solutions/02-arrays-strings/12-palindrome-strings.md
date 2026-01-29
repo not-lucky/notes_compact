@@ -3,9 +3,11 @@
 ## Practice Problems
 
 ### 1. Valid Palindrome
+
 **Problem Statement**: Given a string `s`, return `true` if it is a palindrome, or `false` otherwise, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters.
 
 **Optimal Python Solution**:
+
 ```python
 def isPalindrome(s: str) -> bool:
     left, right = 0, len(s) - 1
@@ -27,15 +29,18 @@ def isPalindrome(s: str) -> bool:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 2. Valid Palindrome II
+
 **Problem Statement**: Given a string `s`, return `true` if the `s` can be palindrome after deleting at most one character from it.
 
 **Optimal Python Solution**:
+
 ```python
 def validPalindrome(s: str) -> bool:
     def check(l, r):
@@ -61,15 +66,18 @@ def validPalindrome(s: str) -> bool:
 When we find a mismatch, we have two choices: delete the character at `left` or delete the character at `right`. If either of the remaining substrings is a palindrome, then the original string satisfies the condition.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 3. Longest Palindromic Substring
+
 **Problem Statement**: Given a string `s`, return the longest palindromic substring in `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def longestPalindrome(s: str) -> str:
     if not s: return ""
@@ -98,15 +106,18 @@ def longestPalindrome(s: str) -> str:
 We treat each character (and each gap between characters) as a potential center of a palindrome and expand outwards as far as possible while the symmetry holds.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(1) extra space (excluding result).
 
 ---
 
 ### 4. Palindromic Substrings
+
 **Problem Statement**: Given a string `s`, return the number of palindromic substrings in it.
 
 **Optimal Python Solution**:
+
 ```python
 def countSubstrings(s: str) -> int:
     def count_from_center(l, r):
@@ -125,15 +136,18 @@ def countSubstrings(s: str) -> int:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 5. Longest Palindromic Subsequence
+
 **Problem Statement**: Given a string `s`, find the length of the longest palindromic subsequence in `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def longestPalindromeSubseq(s: str) -> int:
     n = len(s)
@@ -156,15 +170,18 @@ def longestPalindromeSubseq(s: str) -> int:
 We use DP. If the outer characters match, they contribute 2 to the length of the LPS of the inner string. If they don't match, the LPS is the maximum of the LPS found by ignoring either the left or the right character.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(n²).
 
 ---
 
 ### 6. Palindrome Partitioning
+
 **Problem Statement**: Given a string `s`, partition `s` such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def partition(s: str) -> list[list[str]]:
     res = []
@@ -192,15 +209,18 @@ def partition(s: str) -> list[list[str]]:
 This is a backtracking problem. At each step, we find a prefix that is a palindrome, add it to our current partition, and recursively solve for the remaining string.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(N * 2^N) in the worst case (e.g., "aaaa").
+
+- **Time Complexity**: O(N \* 2^N) in the worst case (e.g., "aaaa").
 - **Space Complexity**: O(N).
 
 ---
 
 ### 7. Palindrome Partitioning II
+
 **Problem Statement**: Given a string `s`, partition `s` such that every substring of the partition is a palindrome. Return the minimum cuts needed for a palindrome partitioning of `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def minCut(s: str) -> int:
     n = len(s)
@@ -227,15 +247,18 @@ def minCut(s: str) -> int:
 We use DP to solve this in O(n²). We first precalculate palindrome status for all substrings. Then we find the minimum cuts for each suffix of the string.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(n²).
 
 ---
 
 ### 8. Shortest Palindrome
+
 **Problem Statement**: Add characters in front of `s` to make it a palindrome. Return the shortest such palindrome.
 
 **Optimal Python Solution**:
+
 ```python
 def shortestPalindrome(s: str) -> str:
     # Use KMP LPS technique
@@ -255,5 +278,6 @@ def shortestPalindrome(s: str) -> str:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n).

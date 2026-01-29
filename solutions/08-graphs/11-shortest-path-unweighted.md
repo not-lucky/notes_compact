@@ -2,20 +2,21 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Shortest Path in Binary Matrix | Medium | 8-directional |
-| 2 | Word Ladder | Hard | Implicit graph |
-| 3 | Minimum Knight Moves | Medium | Chess moves |
-| 4 | Open the Lock | Medium | State graph |
-| 5 | Jump Game III | Medium | Can reach index |
-| 6 | Nearest Exit from Entrance | Medium | Grid BFS |
+| #   | Problem                        | Difficulty | Key Variation   |
+| --- | ------------------------------ | ---------- | --------------- |
+| 1   | Shortest Path in Binary Matrix | Medium     | 8-directional   |
+| 2   | Word Ladder                    | Hard       | Implicit graph  |
+| 3   | Minimum Knight Moves           | Medium     | Chess moves     |
+| 4   | Open the Lock                  | Medium     | State graph     |
+| 5   | Jump Game III                  | Medium     | Can reach index |
+| 6   | Nearest Exit from Entrance     | Medium     | Grid BFS        |
 
 ---
 
 ## 1. Shortest Path in Binary Matrix
 
 ### Problem Statement
+
 Find the shortest path from top-left to bottom-right in an `n x n` binary matrix with 8-directional movement.
 
 ### Optimal Python Solution
@@ -45,6 +46,7 @@ def shortestPathBinaryMatrix(grid: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: BFS is optimal for unweighted graphs.
 - **Variation**: Includes diagonals (8 directions).
 - **Complexity**: Time O(N²), Space O(N²).
@@ -54,6 +56,7 @@ def shortestPathBinaryMatrix(grid: list[list[int]]) -> int:
 ## 2. Word Ladder
 
 ### Problem Statement
+
 Shortest transformation sequence from `beginWord` to `endWord`.
 
 ### Optimal Python Solution
@@ -89,6 +92,7 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
 ```
 
 ### Explanation
+
 - **Implicit Graph**: Nodes are words, edges exist if words differ by one char.
 - **Complexity**: Time O(M²N), Space O(M²N).
 
@@ -97,6 +101,7 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
 ## 3. Minimum Knight Moves
 
 ### Problem Statement
+
 Minimum moves for a knight to reach `(x, y)` from `(0, 0)`.
 
 ### Optimal Python Solution
@@ -126,6 +131,7 @@ def minKnightMoves(x: int, y: int) -> int:
 ## 4. Open the Lock
 
 ### Problem Statement
+
 Minimum turns to unlock from "0000" to `target` avoiding `deadends`.
 
 ### Optimal Python Solution
@@ -158,6 +164,7 @@ def openLock(deadends: list[str], target: str) -> int:
 ## 5. Jump Game III
 
 ### Problem Statement
+
 Check if you can reach any index with value 0 starting from `start`.
 
 ### Optimal Python Solution
@@ -185,6 +192,7 @@ def canReach(arr: list[int], start: int) -> bool:
 ## 6. Nearest Exit from Entrance
 
 ### Problem Statement
+
 Find the shortest path from `entrance` to any exit at the border of a maze.
 
 ### Optimal Python Solution

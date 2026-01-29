@@ -19,6 +19,7 @@ Floor 2:   🧑‍🚒🧑‍🚒🧑‍🚒 [4, 5, 6]     Then third floor...
 ```
 
 **Why we use a queue (FIFO)**:
+
 - Enqueue all children of current level
 - When we dequeue, we get them in order by level
 - Stack (LIFO) would give DFS, not BFS
@@ -45,29 +46,32 @@ while queue:
 
 **DFS vs BFS for trees**:
 
-| Property | DFS | BFS |
-|----------|-----|-----|
-| Data structure | Stack / Recursion | Queue |
-| Order | Depth-first (down before across) | Breadth-first (across before down) |
-| Space | O(h) height | O(w) max width |
-| Good for | Path problems, tree shape | Level problems, shortest path |
+| Property       | DFS                              | BFS                                |
+| -------------- | -------------------------------- | ---------------------------------- |
+| Data structure | Stack / Recursion                | Queue                              |
+| Order          | Depth-first (down before across) | Breadth-first (across before down) |
+| Space          | O(h) height                      | O(w) max width                     |
+| Good for       | Path problems, tree shape        | Level problems, shortest path      |
 
 ---
 
 ## When NOT to Use
 
 **Level-order traversal is overkill when:**
+
 - Just need to visit all nodes in any order → DFS is simpler
 - Processing subtrees independently → DFS maps to recursion naturally
 - Tree is very wide → Queue can be huge (O(n/2) at widest level)
 
 **Level-order is essential when:**
+
 - Need level-by-level output
 - Finding shortest path (in unweighted tree)
 - Right-side view, left-side view, max per level
 - Connecting nodes at same level
 
 **Common mistake scenarios:**
+
 - Using list instead of deque → O(n) pop from front!
 - Forgetting to track level boundaries → Wrong level grouping
 - Processing children before siblings → That's DFS, not BFS
@@ -82,6 +86,7 @@ while queue:
 | "Find min depth" | BFS (early termination) |
 
 **The space complexity insight**:
+
 ```
 Wide tree (worst for BFS):     Skinny tree (worst for DFS):
          1                              1
@@ -492,12 +497,13 @@ def level_order_dfs(root: TreeNode) -> list[list[int]]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Level-order | O(n) | O(w) | w = max width |
-| All variations | O(n) | O(w) | Same complexity |
+| Operation      | Time | Space | Notes           |
+| -------------- | ---- | ----- | --------------- |
+| Level-order    | O(n) | O(w)  | w = max width   |
+| All variations | O(n) | O(w)  | Same complexity |
 
 Width considerations:
+
 - Perfect tree: width = n/2 at bottom level
 - Skewed tree: width = 1
 - Balanced tree: width ≈ n/2
@@ -546,16 +552,16 @@ root = TreeNode(1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Binary Tree Level Order Traversal | Medium | Basic level-order |
-| 2 | Binary Tree Level Order Traversal II | Medium | Bottom-up |
-| 3 | Binary Tree Zigzag Level Order Traversal | Medium | Alternating direction |
-| 4 | Binary Tree Right Side View | Medium | Last node per level |
-| 5 | Average of Levels in Binary Tree | Easy | Level statistics |
-| 6 | Maximum Width of Binary Tree | Medium | Position tracking |
-| 7 | Find Largest Value in Each Tree Row | Medium | Level max |
-| 8 | Populating Next Right Pointers | Medium | Connect level nodes |
+| #   | Problem                                  | Difficulty | Key Concept           |
+| --- | ---------------------------------------- | ---------- | --------------------- |
+| 1   | Binary Tree Level Order Traversal        | Medium     | Basic level-order     |
+| 2   | Binary Tree Level Order Traversal II     | Medium     | Bottom-up             |
+| 3   | Binary Tree Zigzag Level Order Traversal | Medium     | Alternating direction |
+| 4   | Binary Tree Right Side View              | Medium     | Last node per level   |
+| 5   | Average of Levels in Binary Tree         | Easy       | Level statistics      |
+| 6   | Maximum Width of Binary Tree             | Medium     | Position tracking     |
+| 7   | Find Largest Value in Each Tree Row      | Medium     | Level max             |
+| 8   | Populating Next Right Pointers           | Medium     | Connect level nodes   |
 
 ---
 

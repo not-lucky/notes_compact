@@ -5,6 +5,7 @@
 ## Interview Context
 
 Merge intervals tests:
+
 1. **Interval manipulation**: Core skill for many problems
 2. **Sorting intuition**: Why sort by start time here
 3. **Edge case handling**: Adjacent intervals, single intervals
@@ -34,6 +35,7 @@ Clusters: [1,6], [8,10], [15,18]
 **Why Sort by START Time (Not End)?**
 
 When we sort by start time and scan left-to-right:
+
 - Each new interval either extends the current cluster OR starts a new one
 - The decision depends only on: "Does this interval START before the current cluster ENDS?"
 
@@ -88,6 +90,7 @@ else:
 **1. When Intervals Have Weights/Priorities**
 
 If some intervals are "more important" and can override others:
+
 ```
 Intervals: [(0, 10, priority=1), (2, 5, priority=2)]
 Standard merge: [0, 10]
@@ -107,6 +110,7 @@ If intervals are for different resources (different meeting rooms, different peo
 **4. Non-overlapping Check vs Merge**
 
 Sometimes you just need to check IF any overlap exists (Meeting Rooms I). Full merging is overkill:
+
 ```python
 # Just detect any overlap:
 def has_overlap(intervals):
@@ -137,6 +141,7 @@ Explanation: [1,3] and [2,6] overlap, merge to [1,6]
 **Sort by start time, then merge overlapping intervals linearly.**
 
 After sorting by start time:
+
 - If current interval overlaps with previous, extend the previous
 - If no overlap, start a new merged interval
 
@@ -429,13 +434,13 @@ def employee_free_time(schedules: list[list[list[int]]]) -> list[list[int]]:
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Merge intervals | O(n log n) | O(n) | Sorting dominates |
-| Insert interval | O(n) | O(n) | Already sorted |
-| Interval intersection | O(n + m) | O(1) | Two pointers |
-| Remove covered | O(n log n) | O(1) | Special sort |
-| Employee free time | O(n log n) | O(n) | Flatten + merge |
+| Operation             | Time       | Space | Notes             |
+| --------------------- | ---------- | ----- | ----------------- |
+| Merge intervals       | O(n log n) | O(n)  | Sorting dominates |
+| Insert interval       | O(n)       | O(n)  | Already sorted    |
+| Interval intersection | O(n + m)   | O(1)  | Two pointers      |
+| Remove covered        | O(n log n) | O(1)  | Special sort      |
+| Employee free time    | O(n log n) | O(n)  | Flatten + merge   |
 
 ---
 
@@ -470,24 +475,24 @@ Always clarify with interviewer!
 
 ## Sorting Comparison
 
-| Problem | Sort By | Why |
-|---------|---------|-----|
-| Merge intervals | Start | Process left to right, extend end |
-| Activity selection | End | Pick earliest finish |
-| Meeting rooms II | Start (or both) | Process in order |
-| Remove covered | (Start, -End) | Longer first at same start |
+| Problem            | Sort By         | Why                               |
+| ------------------ | --------------- | --------------------------------- |
+| Merge intervals    | Start           | Process left to right, extend end |
+| Activity selection | End             | Pick earliest finish              |
+| Meeting rooms II   | Start (or both) | Process in order                  |
+| Remove covered     | (Start, -End)   | Longer first at same start        |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Merge Intervals | Medium | Sort by start, extend end |
-| 2 | Insert Interval | Medium | Three phases: before, merge, after |
-| 3 | Interval List Intersections | Medium | Two pointers |
-| 4 | Remove Covered Intervals | Medium | Sort by (start, -end) |
-| 5 | Employee Free Time | Hard | Merge all, find gaps |
+| #   | Problem                     | Difficulty | Key Insight                        |
+| --- | --------------------------- | ---------- | ---------------------------------- |
+| 1   | Merge Intervals             | Medium     | Sort by start, extend end          |
+| 2   | Insert Interval             | Medium     | Three phases: before, merge, after |
+| 3   | Interval List Intersections | Medium     | Two pointers                       |
+| 4   | Remove Covered Intervals    | Medium     | Sort by (start, -end)              |
+| 5   | Employee Free Time          | Hard       | Merge all, find gaps               |
 
 ---
 

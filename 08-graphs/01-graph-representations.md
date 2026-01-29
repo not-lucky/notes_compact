@@ -5,16 +5,19 @@
 ## Building Intuition
 
 **Why do we need different representations?** Think of a social network:
+
 - **Sparse network**: Most people have 100-500 friends out of billions of users
 - **Dense network**: A small club where everyone knows everyone
 
 For sparse networks (most real-world graphs), storing "who knows whom" as a list is efficient. For dense networks, a matrix makes lookups instant.
 
 **The key insight**: Graph representation is about trade-offs between:
+
 1. **Space**: How much memory do we use?
 2. **Access patterns**: What operations do we do most?
 
 **Mental model - The Phone Book Analogy**:
+
 - **Adjacency List** = Phone book with each person's contacts listed under their name
   - Finding all of Alice's friends: O(1) - just look up Alice's entry
   - Checking if Alice knows Bob: O(degree) - scan Alice's contact list
@@ -23,6 +26,7 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
   - Checking if Alice knows Bob: O(1) - instant lookup at [Alice][Bob]
 
 **When the representation matters most**:
+
 - BFS/DFS traverse neighbors → Adjacency List wins (O(degree) per node)
 - Floyd-Warshall checks all pairs → Adjacency Matrix wins (O(1) per check)
 - Most interview problems → Default to Adjacency List
@@ -32,16 +36,19 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
 ## When NOT to Use
 
 **Don't use Adjacency Matrix when:**
+
 - Graph is sparse (E << V²) - wastes O(V²) space
 - You need to iterate all edges - O(V²) vs O(E) for list
 - Memory is constrained - matrix scales quadratically
 
 **Don't use Adjacency List when:**
+
 - Frequent "does edge exist?" queries - O(degree) vs O(1) for matrix
 - Graph is dense (E ≈ V²) - list overhead exceeds matrix
 - Using Floyd-Warshall algorithm - needs matrix structure
 
 **Don't over-engineer representation when:**
+
 - Problem gives adjacency list directly - use it as-is
 - Grid problem - use implicit neighbors, don't build explicit graph
 - Tree problem - parent/children pointers often cleaner
@@ -64,6 +71,7 @@ Interviewers expect you to quickly build a graph from edge lists and choose the 
 ## Core Concept: What is a Graph?
 
 A **graph** G = (V, E) consists of:
+
 - **Vertices (V)**: Nodes/points
 - **Edges (E)**: Connections between vertices
 
@@ -77,17 +85,17 @@ Undirected Graph:           Directed Graph:
 
 ### Graph Types
 
-| Type | Description |
-|------|-------------|
-| **Undirected** | Edges go both ways |
-| **Directed** | Edges have direction |
-| **Weighted** | Edges have costs/distances |
+| Type           | Description                        |
+| -------------- | ---------------------------------- |
+| **Undirected** | Edges go both ways                 |
+| **Directed**   | Edges have direction               |
+| **Weighted**   | Edges have costs/distances         |
 | **Unweighted** | All edges equal cost (or cost = 1) |
-| **Cyclic** | Contains at least one cycle |
-| **Acyclic** | No cycles (DAG for directed) |
-| **Connected** | Path exists between all vertices |
-| **Sparse** | Few edges (E << V²) |
-| **Dense** | Many edges (E ≈ V²) |
+| **Cyclic**     | Contains at least one cycle        |
+| **Acyclic**    | No cycles (DAG for directed)       |
+| **Connected**  | Path exists between all vertices   |
+| **Sparse**     | Few edges (E << V²)                |
+| **Dense**      | Many edges (E ≈ V²)                |
 
 ---
 
@@ -240,21 +248,23 @@ for u, v, w in weighted_edges:
 
 ## Comparison of Representations
 
-| Operation | Adjacency List | Adjacency Matrix |
-|-----------|----------------|------------------|
-| Space | O(V + E) | O(V²) |
-| Add edge | O(1) | O(1) |
-| Remove edge | O(E) | O(1) |
-| Check edge exists | O(degree) | O(1) |
-| Get all neighbors | O(1) | O(V) |
-| Iterate all edges | O(V + E) | O(V²) |
+| Operation         | Adjacency List | Adjacency Matrix |
+| ----------------- | -------------- | ---------------- |
+| Space             | O(V + E)       | O(V²)            |
+| Add edge          | O(1)           | O(1)             |
+| Remove edge       | O(E)           | O(1)             |
+| Check edge exists | O(degree)      | O(1)             |
+| Get all neighbors | O(1)           | O(V)             |
+| Iterate all edges | O(V + E)       | O(V²)            |
 
 **Use Adjacency List when:**
+
 - Graph is sparse (E << V²)
 - Most interview problems
 - Need to iterate neighbors frequently
 
 **Use Adjacency Matrix when:**
+
 - Graph is dense (E ≈ V²)
 - Need frequent edge existence checks
 - Floyd-Warshall algorithm
@@ -319,6 +329,7 @@ def solve(grid: list[list[int]]) -> ...:
 ## Grid as Implicit Graph
 
 Grids are graphs where:
+
 - Each cell is a vertex
 - Adjacent cells are connected by edges
 
@@ -390,12 +401,12 @@ n = 3, edges = [[0, 1]]  # Node 2 is isolated
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Find if Path Exists in Graph | Easy | Basic graph traversal |
-| 2 | Clone Graph | Medium | Graph construction |
-| 3 | Number of Islands | Medium | Grid as graph |
-| 4 | Graph Valid Tree | Medium | Connected + acyclic |
+| #   | Problem                      | Difficulty | Key Concept           |
+| --- | ---------------------------- | ---------- | --------------------- |
+| 1   | Find if Path Exists in Graph | Easy       | Basic graph traversal |
+| 2   | Clone Graph                  | Medium     | Graph construction    |
+| 3   | Number of Islands            | Medium     | Grid as graph         |
+| 4   | Graph Valid Tree             | Medium     | Connected + acyclic   |
 
 ---
 

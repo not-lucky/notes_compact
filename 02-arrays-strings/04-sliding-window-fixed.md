@@ -21,6 +21,7 @@ The key insight is **incremental update**. Consecutive windows share almost all 
 **Mental Model**: Think of a train with k cars. As the train moves forward, the rear car detaches and a new car attaches at the front. You don't need to count all passengers again—just subtract those who left and add those who joined.
 
 **Brute Force vs Sliding Window**:
+
 ```
 Brute Force:                    Sliding Window:
 Window 1: sum([0:k])            Window 1: sum([0:k])
@@ -46,6 +47,7 @@ Fixed windows have specific requirements:
 5. **Order Matters Differently**: If you need the k smallest elements (not a contiguous subarray of size k), use a heap instead.
 
 **Red Flags:**
+
 - "Minimum window size that satisfies..." → Variable window
 - "k smallest/largest elements" → Heap, not window
 - "Median of window" → Need ordered structure (heap pair or sorted list)
@@ -463,15 +465,15 @@ for i in range(k, n):
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Technique |
-|---|---------|------------|---------------|
-| 1 | Maximum Sum Subarray of Size K | Easy | Basic sliding sum |
-| 2 | Maximum Average Subarray I | Easy | Sum → average |
-| 3 | Find All Anagrams in a String | Medium | Frequency matching |
-| 4 | Permutation in String | Medium | Same as anagrams |
-| 5 | Sliding Window Maximum | Hard | Monotonic deque |
-| 6 | Contains Duplicate II | Easy | HashSet window |
-| 7 | Repeated DNA Sequences | Medium | Hash of window |
+| #   | Problem                        | Difficulty | Key Technique      |
+| --- | ------------------------------ | ---------- | ------------------ |
+| 1   | Maximum Sum Subarray of Size K | Easy       | Basic sliding sum  |
+| 2   | Maximum Average Subarray I     | Easy       | Sum → average      |
+| 3   | Find All Anagrams in a String  | Medium     | Frequency matching |
+| 4   | Permutation in String          | Medium     | Same as anagrams   |
+| 5   | Sliding Window Maximum         | Hard       | Monotonic deque    |
+| 6   | Contains Duplicate II          | Easy       | HashSet window     |
+| 7   | Repeated DNA Sequences         | Medium     | Hash of window     |
 
 ---
 

@@ -2,18 +2,19 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Clone Graph | Medium | Core problem |
-| 2 | Copy List with Random Pointer | Medium | Linked list variant |
-| 3 | Clone Binary Tree with Random Pointer | Medium | Tree variant |
-| 4 | Clone N-ary Tree | Easy | Simpler structure |
+| #   | Problem                               | Difficulty | Key Variation       |
+| --- | ------------------------------------- | ---------- | ------------------- |
+| 1   | Clone Graph                           | Medium     | Core problem        |
+| 2   | Copy List with Random Pointer         | Medium     | Linked list variant |
+| 3   | Clone Binary Tree with Random Pointer | Medium     | Tree variant        |
+| 4   | Clone N-ary Tree                      | Easy       | Simpler structure   |
 
 ---
 
 ## 1. Clone Graph
 
 ### Problem Statement
+
 Deep copy a connected undirected graph.
 
 ### Optimal Python Solution
@@ -40,6 +41,7 @@ def cloneGraph(node: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 - **Algorithm**: BFS with a hash map.
 - **Mapping**: `clones` maps original nodes to their new copies.
 - **Complexity**: Time O(V + E), Space O(V).
@@ -49,6 +51,7 @@ def cloneGraph(node: 'Node') -> 'Node':
 ## 2. Copy List with Random Pointer
 
 ### Problem Statement
+
 Clone a linked list where each node has a `next` and a `random` pointer.
 
 ### Optimal Python Solution (O(1) Space)
@@ -90,6 +93,7 @@ def copyRandomList(head: 'Node') -> 'Node':
 ```
 
 ### Explanation
+
 - **Strategy**: Instead of a hash map, we interleave the original and copied nodes.
 - **Complexity**: Time O(N), Space O(1) (excluding the output).
 
@@ -98,6 +102,7 @@ def copyRandomList(head: 'Node') -> 'Node':
 ## 3. Clone Binary Tree with Random Pointer
 
 ### Problem Statement
+
 Deep copy a binary tree where each node has a `random` pointer.
 
 ### Optimal Python Solution
@@ -124,6 +129,7 @@ def copyRandomBinaryTree(root):
 ## 4. Clone N-ary Tree
 
 ### Problem Statement
+
 Deep copy an N-ary tree.
 
 ### Optimal Python Solution

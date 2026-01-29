@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Valid Anagram
+
 **Problem Statement**: Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
 
 **Examples & Edge Cases**:
+
 - Example: `s = "anagram", t = "nagaram"` -> `true`
 - Edge Case: Strings of different lengths.
 - Edge Case: Case sensitivity (usually assume lowercase in interviews).
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -35,15 +38,18 @@ def isAnagram(s: str, t: str) -> bool:
 An anagram must have the same characters with the same frequencies. We use an array of size 26 to store counts of 'a'-'z'. We increment for `s` and decrement for `t`. If all counts return to zero (and lengths were equal), they are anagrams.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), where n is the length of the strings.
 - **Space Complexity**: O(1), since the array size is constant (26).
 
 ---
 
 ### 2. Group Anagrams
+
 **Problem Statement**: Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import defaultdict
 
@@ -70,15 +76,18 @@ def groupAnagrams(strs: list[str]) -> list[list[str]]:
 We need a way to map different anagrams to the same bucket. Two strings are anagrams if their sorted versions are identical or if their character frequency counts are identical. Using the frequency count tuple as a dictionary key allows us to group them in linear time relative to the total number of characters.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(N * K), where N is the number of strings and K is the maximum length of a string.
-- **Space Complexity**: O(N * K).
+
+- **Time Complexity**: O(N \* K), where N is the number of strings and K is the maximum length of a string.
+- **Space Complexity**: O(N \* K).
 
 ---
 
 ### 3. Find All Anagrams in a String
+
 **Problem Statement**: Find all start indices of `p`'s anagrams in `s`.
 
 **Optimal Python Solution**:
+
 ```python
 def findAnagrams(s: str, p: str) -> list[int]:
     ns, np = len(s), len(p)
@@ -109,15 +118,18 @@ def findAnagrams(s: str, p: str) -> list[int]:
 We use a fixed-size sliding window of length `len(p)`. We maintain the character counts of the current window and compare it to the character counts of `p`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N), where N is length of `s`. Array comparison `s_count == p_count` takes O(26) = O(1).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 4. Permutation in String
+
 **Problem Statement**: Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`.
 
 **Optimal Python Solution**:
+
 ```python
 def checkInclusion(s1: str, s2: str) -> bool:
     n1, n2 = len(s1), len(s2)
@@ -144,15 +156,18 @@ def checkInclusion(s1: str, s2: str) -> bool:
 This is identical to "Find All Anagrams", but we return `True` as soon as one match is found.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 5. Minimum Number of Steps to Make Two Strings Anagrams
+
 **Problem Statement**: You are given two strings of the same length `s` and `t`. In one step, you can choose any character of `t` and replace it with another character. Return the minimum number of steps to make `t` an anagram of `s`.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -174,15 +189,18 @@ def minSteps(s: str, t: str) -> int:
 Since the strings have the same length, we just need to see how many characters in `s` are missing or under-represented in `t`. For every character in `s` that appears more times than it does in `t`, we must perform that many replacements in `t`.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N).
 - **Space Complexity**: O(1) (alphabet size).
 
 ---
 
 ### 6. Smallest Range Covering Elements from K Lists
+
 **Problem Statement**: You have `k` lists of sorted integers in non-decreasing order. Find the smallest range that includes at least one number from each of the `k` lists.
 
 **Optimal Python Solution**:
+
 ```python
 import heapq
 
@@ -218,15 +236,18 @@ def smallestRange(nums: list[list[int]]) -> list[int]:
 We want to keep one element from each list and minimize the difference between the max and min of those elements. We use a min-heap to always track the smallest element currently in our set of `k` elements. When we remove the minimum, we must replace it with the next element from the same list to maintain the "one from each list" property.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N log k), where N is the total number of elements.
 - **Space Complexity**: O(k).
 
 ---
 
 ### 7. Scramble String
+
 **Problem Statement**: Determine if `s2` is a scrambled version of `s1`.
 
 **Optimal Python Solution**:
+
 ```python
 from functools import lru_cache
 
@@ -254,5 +275,6 @@ class Solution:
 This is a recursive problem with memoization. A string `s1` can be scrambled into `s2` if there exists a split point such that the two parts of `s1` match the two parts of `s2` (either directly or swapped). The anagram check `sorted(s1) != sorted(s2)` is a crucial pruning step.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(N^4) roughly, due to memoization and the loop.
 - **Space Complexity**: O(N^3).

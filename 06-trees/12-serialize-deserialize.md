@@ -381,25 +381,25 @@ class CodecNary:
 
 ## Complexity Analysis
 
-| Approach | Time (Serialize) | Time (Deserialize) | Space |
-|----------|-----------------|-------------------|-------|
-| Preorder DFS | O(n) | O(n) | O(n) |
-| Level-order BFS | O(n) | O(n) | O(n) |
-| BST (no nulls) | O(n) | O(n) | O(n) |
-| Parentheses | O(n) | O(n²)* | O(n) |
+| Approach        | Time (Serialize) | Time (Deserialize) | Space |
+| --------------- | ---------------- | ------------------ | ----- |
+| Preorder DFS    | O(n)             | O(n)               | O(n)  |
+| Level-order BFS | O(n)             | O(n)               | O(n)  |
+| BST (no nulls)  | O(n)             | O(n)               | O(n)  |
+| Parentheses     | O(n)             | O(n²)\*            | O(n)  |
 
-*Parentheses parsing can be O(n²) due to string operations; can be optimized.
+\*Parentheses parsing can be O(n²) due to string operations; can be optimized.
 
 ---
 
 ## Trade-offs Between Approaches
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| Preorder | Simple, intuitive | Lots of null markers |
-| Level-order | Natural representation | Same null markers issue |
-| Parentheses | Clear structure | Complex parsing |
-| BST preorder | No null markers | Only works for BST |
+| Approach     | Pros                   | Cons                    |
+| ------------ | ---------------------- | ----------------------- |
+| Preorder     | Simple, intuitive      | Lots of null markers    |
+| Level-order  | Natural representation | Same null markers issue |
+| Parentheses  | Clear structure        | Complex parsing         |
+| BST preorder | No null markers        | Only works for BST      |
 
 ---
 
@@ -446,13 +446,13 @@ root = TreeNode(2147483647)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Serialize and Deserialize Binary Tree | Hard | General binary tree |
-| 2 | Serialize and Deserialize BST | Medium | BST - no null markers |
-| 3 | Serialize and Deserialize N-ary Tree | Hard | N-ary with child count |
-| 4 | Construct Binary Tree from String | Medium | Parentheses format |
-| 5 | Verify Preorder Serialization | Medium | Validate without building |
+| #   | Problem                               | Difficulty | Key Concept               |
+| --- | ------------------------------------- | ---------- | ------------------------- |
+| 1   | Serialize and Deserialize Binary Tree | Hard       | General binary tree       |
+| 2   | Serialize and Deserialize BST         | Medium     | BST - no null markers     |
+| 3   | Serialize and Deserialize N-ary Tree  | Hard       | N-ary with child count    |
+| 4   | Construct Binary Tree from String     | Medium     | Parentheses format        |
+| 5   | Verify Preorder Serialization         | Medium     | Validate without building |
 
 ---
 

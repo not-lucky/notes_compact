@@ -23,6 +23,7 @@ For 35 and 15:
 **Why the Euclidean Algorithm Works**
 
 The key insight is that GCD doesn't change when you subtract:
+
 - gcd(48, 18) = gcd(48 - 18, 18) = gcd(30, 18)
 - Keep going: gcd(12, 18) = gcd(12, 6) = gcd(6, 0) = 6
 
@@ -31,6 +32,7 @@ Modulo is just fast subtraction: `48 % 18 = 12` is 48 - 18 - 18 = 12.
 **LCM: The Flip Side**
 
 LCM is "how often do these cycles sync up?"
+
 - Bus A comes every 4 minutes, Bus B every 6 minutes
 - When do they arrive together? Every LCM(4,6) = 12 minutes
 
@@ -41,6 +43,7 @@ Formula: `LCM(a,b) = a × b / GCD(a,b)`
 ## Interview Context
 
 GCD (Greatest Common Divisor) and LCM (Least Common Multiple) appear frequently in interviews involving:
+
 - String problems (GCD of strings)
 - Fraction simplification
 - Array operations (finding common periods)
@@ -310,12 +313,12 @@ print(simplify_fraction(17, 5))    # (17, 5) - already simplified
 
 ## Complexity Analysis
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| GCD (iterative) | O(log(min(a,b))) | O(1) | Best choice |
-| GCD (recursive) | O(log(min(a,b))) | O(log n) | Stack space |
-| LCM | O(log(min(a,b))) | O(1) | Uses GCD |
-| LCM of n numbers | O(n log max) | O(1) | Reduce over list |
+| Operation        | Time             | Space    | Notes            |
+| ---------------- | ---------------- | -------- | ---------------- |
+| GCD (iterative)  | O(log(min(a,b))) | O(1)     | Best choice      |
+| GCD (recursive)  | O(log(min(a,b))) | O(log n) | Stack space      |
+| LCM              | O(log(min(a,b))) | O(1)     | Uses GCD         |
+| LCM of n numbers | O(n log max)     | O(1)     | Reduce over list |
 
 ---
 
@@ -447,13 +450,13 @@ print(lcm(2, 3, 4))       # 12
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Greatest Common Divisor of Strings | Easy | GCD + string pattern |
-| 2 | Water and Jug Problem | Medium | Bézout's identity |
-| 3 | Ugly Number II | Medium | LCM with DP |
-| 4 | Fraction to Recurring Decimal | Medium | GCD for simplification |
-| 5 | X of a Kind in a Deck of Cards | Easy | GCD of all counts ≥ 2 |
+| #   | Problem                            | Difficulty | Key Concept            |
+| --- | ---------------------------------- | ---------- | ---------------------- |
+| 1   | Greatest Common Divisor of Strings | Easy       | GCD + string pattern   |
+| 2   | Water and Jug Problem              | Medium     | Bézout's identity      |
+| 3   | Ugly Number II                     | Medium     | LCM with DP            |
+| 4   | Fraction to Recurring Decimal      | Medium     | GCD for simplification |
+| 5   | X of a Kind in a Deck of Cards     | Easy       | GCD of all counts ≥ 2  |
 
 ---
 

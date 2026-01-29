@@ -134,6 +134,7 @@ If you just need, say, the first 10 elements from the merged result:
 ```
 
 **Red Flags:**
+
 - "K is always 2" → Use simple two-pointer merge
 - "Files don't fit in memory" → Need external merge sort
 - "Only need first m elements" → Stop early (heap still works)
@@ -350,12 +351,12 @@ def merge_k_lists_divide_conquer(lists: list[Optional[ListNode]]) -> Optional[Li
 
 ## Comparison of Approaches
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Heap | O(n log k) | O(k) | Best for streaming |
-| Divide & Conquer | O(n log k) | O(log k) | No extra data structure |
-| Merge one by one | O(nk) | O(1) | Too slow |
-| Collect all + sort | O(n log n) | O(n) | Ignores sorted property |
+| Approach           | Time       | Space    | Notes                   |
+| ------------------ | ---------- | -------- | ----------------------- |
+| Heap               | O(n log k) | O(k)     | Best for streaming      |
+| Divide & Conquer   | O(n log k) | O(log k) | No extra data structure |
+| Merge one by one   | O(nk)      | O(1)     | Too slow                |
+| Collect all + sort | O(n log n) | O(n)     | Ignores sorted property |
 
 **n** = total number of elements across all lists
 **k** = number of lists
@@ -498,13 +499,13 @@ while heap:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Merge k Sorted Lists | Hard | Core problem |
-| 2 | Merge Two Sorted Lists | Easy | Building block |
-| 3 | Smallest Range Covering Elements from K Lists | Hard | Range tracking |
-| 4 | Find K Pairs with Smallest Sums | Medium | Two arrays |
-| 5 | Kth Smallest Element in a Sorted Matrix | Medium | Matrix as k lists |
+| #   | Problem                                       | Difficulty | Key Variation     |
+| --- | --------------------------------------------- | ---------- | ----------------- |
+| 1   | Merge k Sorted Lists                          | Hard       | Core problem      |
+| 2   | Merge Two Sorted Lists                        | Easy       | Building block    |
+| 3   | Smallest Range Covering Elements from K Lists | Hard       | Range tracking    |
+| 4   | Find K Pairs with Smallest Sums               | Medium     | Two arrays        |
+| 5   | Kth Smallest Element in a Sorted Matrix       | Medium     | Matrix as k lists |
 
 ---
 

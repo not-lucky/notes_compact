@@ -1,13 +1,16 @@
 # Merge K Sorted Solutions
 
 ## 1. Merge k Sorted Lists
+
 Merge `k` sorted linked lists and return it as one sorted list.
 
 ### Examples & Edge Cases
+
 - **Example**: `[[1,4,5], [1,3,4], [2,6]] -> [1,1,2,3,4,4,5,6]`
 - **Edge Case: Empty lists**: Should return `None`.
 
 ### Optimal Python Solution (Min-Heap)
+
 ```python
 import heapq
 
@@ -47,9 +50,11 @@ def mergeKLists(lists: list[ListNode]) -> ListNode:
 ---
 
 ## 2. Merge Two Sorted Lists
+
 Merge two sorted linked lists and return it as a sorted list.
 
 ### Optimal Python Solution
+
 ```python
 def mergeTwoLists(l1: ListNode, l2: ListNode) -> ListNode:
     """
@@ -77,9 +82,11 @@ def mergeTwoLists(l1: ListNode, l2: ListNode) -> ListNode:
 ---
 
 ## 3. Smallest Range Covering Elements from K Lists
+
 You have `k` lists of sorted integers in non-decreasing order. Find the smallest range that includes at least one number from each of the `k` lists.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -121,13 +128,16 @@ def smallestRange(nums: list[list[int]]) -> list[int]:
 ---
 
 ## 4. Find K Pairs with Smallest Sums
+
 Given two sorted arrays and an integer `k`, find the `k` pairs `(u, v)` with the smallest sums.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums1 = [1,7,11], nums2 = [2,4,6], k = 3` -> `[[1,2],[1,4],[1,6]]`
 - **Edge Case: k > total possible pairs**: Return all pairs.
 
 ### Optimal Python Solution (Min-Heap)
+
 ```python
 import heapq
 
@@ -163,24 +173,29 @@ def kSmallestPairs(nums1: list[int], nums2: list[int], k: int) -> list[list[int]
 ```
 
 ### Explanation
+
 1.  **Heap of Potential Pairs**: We maintain a min-heap of candidate pairs.
 2.  **Initialization**: We start by pairing each of the first $k$ elements of `nums1` with the first element of `nums2`.
 3.  **Progression**: Every time we pop a pair $(nums1[i], nums2[j])$, the next potential smallest pair involving $nums1[i]$ must be $(nums1[i], nums2[j+1])$.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(k \log k)$. We perform $k$ pop and push operations.
 - **Space Complexity**: $O(k)$ for the heap.
 
 ---
 
 ## 5. Kth Smallest Element in a Sorted Matrix
+
 Given an `n x n` matrix where each row and column is sorted, find the `k`-th smallest element.
 
 ### Examples & Edge Cases
+
 - **Example**: `matrix = [[1,5,9],[10,11,13],[12,13,15]], k = 8` -> `13`
 - **Edge Case: k = 1**: Returns `matrix[0][0]`.
 
 ### Optimal Python Solution (Min-Heap)
+
 ```python
 import heapq
 
@@ -209,8 +224,10 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
 ```
 
 ### Explanation
+
 1.  **Merge-K Strategy**: Since each row is sorted, this is exactly like merging $n$ sorted lists. We pop the smallest element across all lists and push the next element from that same list (row) into the heap.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(k \log (\min(n, k)))$.
 - **Space Complexity**: $O(\min(n, k))$.

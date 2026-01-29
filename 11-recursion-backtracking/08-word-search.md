@@ -19,6 +19,7 @@ Think of it as exploring a maze where you need to find a specific sequence of ch
 3. **Why Mark and Unmark?**: The visited marker prevents cycles in the current path. But after exploring one path, you unmark so other paths can use that cell. This is the essence of backtracking in grids.
 
 4. **Visual Intuition—Path Exploration**:
+
 ```
 Grid:           Word: "ABCCED"
 A B C E
@@ -51,7 +52,7 @@ Path: A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)
 
 This pattern isn't always optimal:
 
-1. **When Finding Shortest Path**: DFS finds *any* path, not the *shortest*. For shortest path, use BFS. DFS may explore long winding paths before finding short ones.
+1. **When Finding Shortest Path**: DFS finds _any_ path, not the _shortest_. For shortest path, use BFS. DFS may explore long winding paths before finding short ones.
 
 2. **When Searching for Multiple Words**: For Word Search II (find all words from a dictionary), naive DFS per word is slow. Use a Trie to search all words simultaneously.
 
@@ -62,6 +63,7 @@ This pattern isn't always optimal:
 5. **When Movement Rules Are Different**: Some grids allow diagonal movement (8 directions) or have blocked cells. Adapt the directions array accordingly.
 
 **Red Flags for DFS Word Search:**
+
 - Need shortest path → use BFS
 - Multiple words to find → use Trie
 - Grid is very large → watch stack depth
@@ -81,6 +83,7 @@ This pattern isn't always optimal:
 ## Interview Context
 
 Word search problems test:
+
 1. **Grid-based backtracking**: Navigate 2D arrays with constraints
 2. **Path marking**: Avoid revisiting cells in current path
 3. **4-directional movement**: Up, down, left, right
@@ -443,11 +446,11 @@ def find_all_paths(board: list[list[str]], word: str) -> list[list[tuple[int, in
 
 ## Complexity Analysis
 
-| Problem | Time | Space | Notes |
-|---------|------|-------|-------|
-| Word Search | O(m × n × 4^L) | O(L) | L = word length |
-| Word Search II (naive) | O(m × n × 4^L × W) | O(L) | W = number of words |
-| Word Search II (Trie) | O(m × n × 4^L) | O(total chars) | Trie optimization |
+| Problem                | Time               | Space          | Notes               |
+| ---------------------- | ------------------ | -------------- | ------------------- |
+| Word Search            | O(m × n × 4^L)     | O(L)           | L = word length     |
+| Word Search II (naive) | O(m × n × 4^L × W) | O(L)           | W = number of words |
+| Word Search II (Trie)  | O(m × n × 4^L)     | O(total chars) | Trie optimization   |
 
 ---
 
@@ -504,12 +507,12 @@ board[row][col] = temp
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Word Search | Medium | Basic grid backtracking |
-| 2 | Word Search II | Hard | Trie + backtracking |
-| 3 | Longest Word in Dictionary | Medium | Trie variant |
-| 4 | Search Word in Matrix (8 directions) | Medium | 8 directions |
+| #   | Problem                              | Difficulty | Key Insight             |
+| --- | ------------------------------------ | ---------- | ----------------------- |
+| 1   | Word Search                          | Medium     | Basic grid backtracking |
+| 2   | Word Search II                       | Hard       | Trie + backtracking     |
+| 3   | Longest Word in Dictionary           | Medium     | Trie variant            |
+| 4   | Search Word in Matrix (8 directions) | Medium     | 8 directions            |
 
 ---
 

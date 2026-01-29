@@ -1,15 +1,18 @@
 # Lowest Common Ancestor (LCA) Solutions
 
 ## 1. Lowest Common Ancestor of a BST
+
 **Problem Statement**: Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes `p` and `q`.
 
 ### Examples & Edge Cases
+
 - **Example 1**: `root = [6,2,8,0,4,7,9,None,None,3,5], p = 2, q = 8` → Output: `6`
 - **Example 2**: `p = 2, q = 4` → Output: `2` (since a node can be a descendant of itself)
 - **Edge Case - p or q is root**: Root is the LCA.
 - **Edge Case - p and q are the same node**: The node itself is the LCA.
 
 ### Optimal Python Solution
+
 ```python
 class TreeNode:
     def __init__(self, x):
@@ -34,6 +37,7 @@ def lowestCommonAncestorBST(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> '
 ```
 
 ### Explanation
+
 1.  **BST Advantage**: We can use the property that `left < root < right` to determine which subtree to search.
 2.  **Logic**:
     - If both nodes are smaller than the current node, we must go left to find their common ancestor.
@@ -41,15 +45,18 @@ def lowestCommonAncestorBST(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> '
     - If one is smaller and one is larger (or if one equals the current node), the current node is the lowest node from which both can be reached. This is the "split point".
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(h)**. We follow a single path from root to the LCA node. $h = \log n$ for balanced trees.
 - **Space Complexity**: **O(1)**. The iterative approach uses no extra memory.
 
 ---
 
 ## 2. Lowest Common Ancestor of a Binary Tree
+
 **Problem Statement**: Given a binary tree, find the lowest common ancestor (LCA) of two given nodes `p` and `q`.
 
 ### Optimal Python Solution
+
 ```python
 def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
     # Base Case: if we reach None or find either p or q, return the current node
@@ -72,22 +79,26 @@ def lowestCommonAncestor(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'Tre
 ```
 
 ### Explanation
+
 1.  **Search Strategy**: This is a post-order traversal logic. We ask "Did you find p or q in your subtree?" to both children.
 2.  **Bubble Up**:
     - If a child found one of the targets, it returns that target node.
-    - If a node receives non-null values from *both* children, it knows it is the LCA and returns itself.
+    - If a node receives non-null values from _both_ children, it knows it is the LCA and returns itself.
     - If a node receives only one non-null value, it passes that value up to its parent.
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**. In the worst case, we must visit every node to find p and q.
 - **Space Complexity**: **O(h)**. The recursion stack can go as deep as the height of the tree.
 
 ---
 
 ## 3. Lowest Common Ancestor of a Binary Tree II
+
 **Problem Statement**: Similar to LCA of a Binary Tree, but **p and q may not exist** in the tree. Return `null` if either does not exist.
 
 ### Optimal Python Solution
+
 ```python
 def lowestCommonAncestorII(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
     found_p = False
@@ -125,15 +136,18 @@ def lowestCommonAncestorII(root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'T
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 4. Lowest Common Ancestor of a Binary Tree III
+
 **Problem Statement**: Each node has a `parent` pointer. Find the LCA of `p` and `q`.
 
 ### Optimal Python Solution
+
 ```python
 def lowestCommonAncestorIII(p: 'Node', q: 'Node') -> 'Node':
     # This is equivalent to finding the intersection of two linked lists
@@ -149,15 +163,18 @@ def lowestCommonAncestorIII(p: 'Node', q: 'Node') -> 'Node':
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(h)**.
 - **Space Complexity**: **O(1)**.
 
 ---
 
 ## 5. Lowest Common Ancestor of Deepest Leaves
+
 **Problem Statement**: Return the lowest common ancestor of its deepest leaves.
 
 ### Optimal Python Solution
+
 ```python
 def lcaDeepestLeaves(root: TreeNode) -> TreeNode:
     def get_lca(node):
@@ -179,15 +196,18 @@ def lcaDeepestLeaves(root: TreeNode) -> TreeNode:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(h)**.
 
 ---
 
 ## 6. Step-By-Step Directions From a Binary Tree Node to Another
+
 **Problem Statement**: Find the shortest path from node `startValue` to `destValue`. Return as a string of 'U' (up), 'L' (left), and 'R' (right).
 
 ### Optimal Python Solution
+
 ```python
 def getDirections(root: TreeNode, startValue: int, destValue: int) -> str:
     # 1. Find the LCA to get the common branch point
@@ -225,5 +245,6 @@ def getDirections(root: TreeNode, startValue: int, destValue: int) -> str:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(n)**.
 - **Space Complexity**: **O(n)**.

@@ -1,14 +1,17 @@
 # Top-K Pattern Solutions
 
 ## 1. Kth Largest Element in an Array
+
 Given an integer array `nums` and an integer `k`, return the kth largest element.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums = [3,2,1,5,6,4], k = 2` -> Output: 5
 - **Edge Case: k = 1**: Returns the maximum.
 - **Edge Case: Duplicates**: `[3,3,3], k=2` -> 3.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -33,23 +36,28 @@ def findKthLargest(nums: list[int], k: int) -> int:
 ```
 
 ### Explanation
-1.  **Min-Heap for K-Largest**: We want the $k$ largest elements. A min-heap allows us to efficiently find and remove the *smallest* of these $k$ elements if we find a larger one.
+
+1.  **Min-Heap for K-Largest**: We want the $k$ largest elements. A min-heap allows us to efficiently find and remove the _smallest_ of these $k$ elements if we find a larger one.
 2.  **Logic**: After processing all elements, the min-heap contains the $k$ largest values. The root is the minimum of these $k$, which is the $k$-th largest.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k)$.
 - **Space Complexity**: $O(k)$.
 
 ---
 
 ## 2. Top K Frequent Elements
+
 Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.
 
 ### Examples & Edge Cases
+
 - **Example**: `nums = [1,1,1,2,2,3], k = 2` -> `[1,2]`
 - **Edge Case: Single element**: `[1], k=1` -> `[1]`.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 from collections import Counter
@@ -70,23 +78,28 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
 ```
 
 ### Explanation
+
 1.  **Frequency Map**: First, get the frequency of each number.
 2.  **Selection**: We use `heapq.nlargest` to extract keys based on their frequency values. This is more efficient than sorting the map.
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k)$.
 - **Space Complexity**: $O(n)$.
 
 ---
 
 ## 3. K Closest Points to Origin
+
 Given an array of `points` and an integer `k`, return the `k` closest points to `(0,0)`.
 
 ### Examples & Edge Cases
+
 - **Example**: `points = [[1,3],[-2,2]], k = 1` -> `[[-2,2]]`
 - **Edge Case: Ties**: If points are equidistant, return any.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -115,15 +128,18 @@ def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
 ```
 
 ### Explanation
-1.  **Max-Heap for Closest**: We want the $k$ points with *smallest* distances. We use a max-heap to keep track of the current $k$ candidates. The root is the *furthest* point in our set. If a new point is closer than the root, we swap.
+
+1.  **Max-Heap for Closest**: We want the $k$ points with _smallest_ distances. We use a max-heap to keep track of the current $k$ candidates. The root is the _furthest_ point in our set. If a new point is closer than the root, we swap.
 2.  **Optimization**: $x^2 + y^2$ is used instead of $\sqrt{x^2 + y^2}$ to save computation time.
 
 ---
 
 ## 4. Kth Largest Element in a Stream
+
 Maintain the kth largest in a dynamic stream.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -141,14 +157,17 @@ class KthLargest:
             heapq.heappop(self.heap)
         return self.heap[0]
 ```
-*(Detailed explanation omitted as it's a repeat of previous patterns)*
+
+_(Detailed explanation omitted as it's a repeat of previous patterns)_
 
 ---
 
 ## 5. Top K Frequent Words
+
 Return the `k` most frequent strings, sorted by frequency (high to low) and then lexicographically.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 from collections import Counter
@@ -184,15 +203,18 @@ def topKFrequentWords(words: list[str], k: int) -> list[str]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k)$.
 - **Space Complexity**: $O(n)$.
 
 ---
 
 ## 6. Sort Characters By Frequency
+
 Given a string, sort it in decreasing order based on the frequency of characters.
 
 ### Optimal Python Solution
+
 ```python
 from collections import Counter
 import heapq
@@ -218,15 +240,18 @@ def frequencySort(s: str) -> str:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n + u \log u)$.
 - **Space Complexity**: $O(n)$.
 
 ---
 
 ## 7. K Closest Elements
+
 Given a sorted integer array `arr`, two integers `k` and `x`, return the `k` closest integers to `x`.
 
 ### Optimal Python Solution
+
 ```python
 import heapq
 
@@ -255,5 +280,6 @@ def findClosestElements(arr: list[int], k: int, x: int) -> list[int]:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: $O(n \log k + k \log k)$.
 - **Space Complexity**: $O(k)$.

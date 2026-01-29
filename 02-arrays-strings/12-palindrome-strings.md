@@ -23,6 +23,7 @@ The key insight is **symmetry enables comparison reduction**:
 **Mental Model - Valid Palindrome II**: You're checking a nearly-perfect mirror. If you find one mismatch, you get one chance to remove either the left or right smudge. Try both and see if either makes a perfect mirror.
 
 **Why Expand From Center Works**:
+
 ```
 For each center position, expand outward while s[left] == s[right]
 
@@ -57,6 +58,7 @@ These techniques have specific scopes:
 5. **Palindrome Partitioning**: "Partition into minimum palindromes" or "all palindrome partitions" needs DP or backtracking, not just checking.
 
 **Red Flags:**
+
 - "Subsequence" (not substring) → 2D DP
 - "Minimum insertions/deletions" → LCS-related DP
 - "Partition into palindromes" → Backtracking or interval DP
@@ -566,16 +568,16 @@ def min_insertions(s: str) -> int:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Technique |
-|---|---------|------------|-----------|
-| 1 | Valid Palindrome | Easy | Two pointers |
-| 2 | Valid Palindrome II | Easy | Two pointers + try both |
-| 3 | Longest Palindromic Substring | Medium | Expand from center |
-| 4 | Palindromic Substrings | Medium | Count with expansion |
-| 5 | Longest Palindromic Subsequence | Medium | DP |
-| 6 | Palindrome Partitioning | Medium | Backtracking |
-| 7 | Palindrome Partitioning II | Hard | DP min cuts |
-| 8 | Shortest Palindrome | Hard | KMP/hashing |
+| #   | Problem                         | Difficulty | Technique               |
+| --- | ------------------------------- | ---------- | ----------------------- |
+| 1   | Valid Palindrome                | Easy       | Two pointers            |
+| 2   | Valid Palindrome II             | Easy       | Two pointers + try both |
+| 3   | Longest Palindromic Substring   | Medium     | Expand from center      |
+| 4   | Palindromic Substrings          | Medium     | Count with expansion    |
+| 5   | Longest Palindromic Subsequence | Medium     | DP                      |
+| 6   | Palindrome Partitioning         | Medium     | Backtracking            |
+| 7   | Palindrome Partitioning II      | Hard       | DP min cuts             |
+| 8   | Shortest Palindrome             | Hard       | KMP/hashing             |
 
 ---
 

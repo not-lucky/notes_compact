@@ -5,6 +5,7 @@
 ## Interview Context
 
 Finding the minimum in a rotated array tests:
+
 1. **Binary search adaptation**: Different comparison logic
 2. **Edge case handling**: Non-rotated arrays, duplicates
 3. **Boundary conditions**: When to include/exclude mid
@@ -78,23 +79,28 @@ We're not looking for an exact target—we're looking for a POSITION (the minimu
 ## When NOT to Use This Approach
 
 **1. Non-Rotated Array (Or Don't Know If Rotated)**
+
 - If `nums[0] <= nums[n-1]`, the array is sorted → minimum is `nums[0]`
 - Check this first to avoid unnecessary work
 
 **2. Array Has Many Duplicates**
+
 - When `nums[mid] == nums[right]`, you can't determine which half has the minimum
 - Worst case becomes O(n)
 - Use the duplicate-handling variant
 
 **3. You Actually Need the Target, Not Minimum**
+
 - Finding minimum is a SUBPROBLEM for "search in rotated array"
 - But if you just need to find a target, use the direct approach from file 03
 
 **4. Array Is Very Small (n <= 3)**
+
 - Linear scan is simpler and just as fast
 - Constant factor overhead of binary search not worth it
 
 **Red Flags:**
+
 - "Array contains duplicates" → Use O(n) fallback
 - "Find target in rotated array" → Don't find minimum first (use direct search)
 - "Array might not be rotated" → Check `nums[0] <= nums[n-1]` first
@@ -239,6 +245,7 @@ def find_min_duplicates(nums: list[int]) -> int:
 ```
 
 **Why shrink right, not left?**
+
 - If `nums[right]` is the minimum, `nums[mid]` has the same value
 - We don't lose the minimum by removing `nums[right]`
 - Shrinking left could skip the minimum
@@ -339,11 +346,11 @@ def check_rotated_sorted(nums: list[int]) -> bool:
 
 ## Complexity Analysis
 
-| Variant | Time | Space |
-|---------|------|-------|
-| No duplicates | O(log n) | O(1) |
-| With duplicates | O(n) worst case | O(1) |
-| Find rotation count | O(log n) | O(1) |
+| Variant             | Time            | Space |
+| ------------------- | --------------- | ----- |
+| No duplicates       | O(log n)        | O(1)  |
+| With duplicates     | O(n) worst case | O(1)  |
+| Find rotation count | O(log n)        | O(1)  |
 
 ---
 
@@ -396,13 +403,13 @@ if nums[mid] > nums[right]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Find Minimum in Rotated Sorted Array | Medium | Compare with right |
-| 2 | Find Minimum in Rotated Sorted Array II | Hard | Handle duplicates |
-| 3 | Search in Rotated Sorted Array | Medium | Use minimum to partition |
-| 4 | Rotation Count | Medium | Index of minimum |
-| 5 | Check if Array is Sorted and Rotated | Easy | Count break points |
+| #   | Problem                                 | Difficulty | Key Insight              |
+| --- | --------------------------------------- | ---------- | ------------------------ |
+| 1   | Find Minimum in Rotated Sorted Array    | Medium     | Compare with right       |
+| 2   | Find Minimum in Rotated Sorted Array II | Hard       | Handle duplicates        |
+| 3   | Search in Rotated Sorted Array          | Medium     | Use minimum to partition |
+| 4   | Rotation Count                          | Medium     | Index of minimum         |
+| 5   | Check if Array is Sorted and Rotated    | Easy       | Count break points       |
 
 ---
 

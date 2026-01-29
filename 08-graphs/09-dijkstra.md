@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The Greedy Expansion Mental Model**: Imagine you're at the center of a city and roads have different lengths. To find the shortest path to everywhere:
+
 1. First, explore roads directly connected to you (shortest first)
 2. From each new intersection, discover new roads
 3. Always expand from the closest unexplored point
@@ -29,17 +30,20 @@ Step 4: B unreachable (directed graph)
 ```
 
 **Why the greedy choice works**:
+
 - We always process the node with smallest known distance
 - All edge weights are non-negative
 - Therefore, no later path through unprocessed nodes can be shorter
 - This is the **optimal substructure** that makes Dijkstra correct
 
 **The priority queue insight**:
+
 - BFS uses a queue → processes by discovery order
 - Dijkstra uses a min-heap → processes by distance order
 - Same algorithm structure, different ordering!
 
 **Complexity derivation**:
+
 ```
 Each vertex: extracted from heap once → O(V log V)
 Each edge: may add entry to heap once → O(E log V)
@@ -53,22 +57,26 @@ Why log V? Heap operations on V elements.
 ## When NOT to Use
 
 **Don't use Dijkstra when:**
+
 - **Negative edge weights exist** → Dijkstra fails! Use Bellman-Ford
 - **All edges have same weight** → BFS is simpler and faster O(V+E)
 - **Need to count stops/hops** → Modified Dijkstra or BFS needed
 - **Finding longest path** → NP-hard problem, different approach needed
 
 **Dijkstra is overkill when:**
+
 - Unweighted graph → BFS is O(V+E) vs O((V+E)log V)
 - Very small graph → Simple O(V²) approach may be clearer
 - Single target → Can terminate early (optimization)
 
 **Common mistake scenarios:**
+
 - Applying to graphs with negative weights → Wrong answers
 - Not skipping outdated heap entries → Correctness issue or TLE
 - Using visited set incorrectly → May skip better paths for variants
 
 **The negative weight trap - why Dijkstra fails:**
+
 ```
     0 ──1──→ 1
     │        │
@@ -385,11 +393,11 @@ Use Bellman-Ford for negative edges.
 
 ## Complexity Analysis
 
-| Implementation | Time | Space |
-|---------------|------|-------|
-| Binary heap | O((V + E) log V) | O(V) |
-| Fibonacci heap | O(E + V log V) | O(V) |
-| Adjacency matrix | O(V²) | O(V) |
+| Implementation   | Time             | Space |
+| ---------------- | ---------------- | ----- |
+| Binary heap      | O((V + E) log V) | O(V)  |
+| Fibonacci heap   | O(E + V log V)   | O(V)  |
+| Adjacency matrix | O(V²)            | O(V)  |
 
 Binary heap is standard for interviews.
 
@@ -437,6 +445,7 @@ return max_dist if max_dist < float('inf') else -1
 ## Step-by-Step Dijkstra Trace with ASCII Visualization
 
 **Weighted graph for demonstration:**
+
 ```
         (0)
        / | \
@@ -612,13 +621,13 @@ edges = [[0, 1, 5], [0, 1, 3]]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Network Delay Time | Medium | Basic Dijkstra |
-| 2 | Path with Minimum Effort | Medium | Binary search + Dijkstra |
-| 3 | Cheapest Flights Within K Stops | Medium | With stop constraint |
-| 4 | Swim in Rising Water | Hard | Binary search + BFS |
-| 5 | Path with Maximum Probability | Medium | Product instead of sum |
+| #   | Problem                         | Difficulty | Key Variation            |
+| --- | ------------------------------- | ---------- | ------------------------ |
+| 1   | Network Delay Time              | Medium     | Basic Dijkstra           |
+| 2   | Path with Minimum Effort        | Medium     | Binary search + Dijkstra |
+| 3   | Cheapest Flights Within K Stops | Medium     | With stop constraint     |
+| 4   | Swim in Rising Water            | Hard       | Binary search + BFS      |
+| 5   | Path with Maximum Probability   | Medium     | Product instead of sum   |
 
 ---
 

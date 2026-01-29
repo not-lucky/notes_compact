@@ -18,40 +18,40 @@ At FANG+ companies, expect at least one graph problem, often disguised as a grid
 
 ## Core Patterns to Master
 
-| Pattern | Frequency | Key Problems |
-|---------|-----------|--------------|
-| BFS (Level-order) | Very High | Shortest path unweighted, multi-source BFS |
-| DFS (Traversal) | Very High | Connected components, cycle detection |
-| Topological Sort | High | Course schedule, build order, alien dictionary |
-| Dijkstra | High | Shortest path weighted, network delay |
-| Grid BFS/DFS | Very High | Number of islands, rotting oranges |
-| Cycle Detection | High | Directed and undirected graphs |
-| Bipartite Check | Medium | Graph coloring, two-coloring |
+| Pattern           | Frequency | Key Problems                                   |
+| ----------------- | --------- | ---------------------------------------------- |
+| BFS (Level-order) | Very High | Shortest path unweighted, multi-source BFS     |
+| DFS (Traversal)   | Very High | Connected components, cycle detection          |
+| Topological Sort  | High      | Course schedule, build order, alien dictionary |
+| Dijkstra          | High      | Shortest path weighted, network delay          |
+| Grid BFS/DFS      | Very High | Number of islands, rotting oranges             |
+| Cycle Detection   | High      | Directed and undirected graphs                 |
+| Bipartite Check   | Medium    | Graph coloring, two-coloring                   |
 
 ---
 
 ## Chapter Sections
 
-| Section | Topic | Key Takeaway |
-|---------|-------|--------------|
-| [01-graph-representations](./01-graph-representations.md) | Graph Basics | Adjacency list vs matrix |
-| [02-bfs-basics](./02-bfs-basics.md) | BFS Traversal | Level-order, shortest path unweighted |
-| [03-dfs-basics](./03-dfs-basics.md) | DFS Traversal | Recursive and iterative |
-| [04-connected-components](./04-connected-components.md) | Components | Count and find connected components |
-| [05-cycle-detection-directed](./05-cycle-detection-directed.md) | Directed Cycle | Three-color DFS for directed graphs |
-| [06-cycle-detection-undirected](./06-cycle-detection-undirected.md) | Undirected Cycle | Parent tracking for undirected graphs |
-| [07-topological-sort](./07-topological-sort.md) | Topological Sort | Kahn's algorithm, DFS-based |
-| [08-course-schedule](./08-course-schedule.md) | Course Schedule | Classic topological sort application |
-| [09-dijkstra](./09-dijkstra.md) | Dijkstra's Algorithm | Shortest path weighted (positive) |
-| [10-bellman-ford](./10-bellman-ford.md) | Bellman-Ford | Shortest path with negative edges |
-| [11-shortest-path-unweighted](./11-shortest-path-unweighted.md) | Unweighted Shortest Path | BFS for shortest path |
-| [12-clone-graph](./12-clone-graph.md) | Clone Graph | Deep copy with visited map |
-| [13-grid-problems](./13-grid-problems.md) | Grid as Graph | Islands, flood fill |
-| [14-rotting-oranges](./14-rotting-oranges.md) | Multi-source BFS | Simultaneous expansion |
-| [15-word-ladder](./15-word-ladder.md) | Implicit Graphs | Word transformation |
-| [16-bipartite-check](./16-bipartite-check.md) | Bipartite Check | Two-coloring |
-| [17-alien-dictionary](./17-alien-dictionary.md) | Alien Dictionary | Topological sort from constraints |
-| [18-network-delay](./18-network-delay.md) | Network Delay | Dijkstra application |
+| Section                                                             | Topic                    | Key Takeaway                          |
+| ------------------------------------------------------------------- | ------------------------ | ------------------------------------- |
+| [01-graph-representations](./01-graph-representations.md)           | Graph Basics             | Adjacency list vs matrix              |
+| [02-bfs-basics](./02-bfs-basics.md)                                 | BFS Traversal            | Level-order, shortest path unweighted |
+| [03-dfs-basics](./03-dfs-basics.md)                                 | DFS Traversal            | Recursive and iterative               |
+| [04-connected-components](./04-connected-components.md)             | Components               | Count and find connected components   |
+| [05-cycle-detection-directed](./05-cycle-detection-directed.md)     | Directed Cycle           | Three-color DFS for directed graphs   |
+| [06-cycle-detection-undirected](./06-cycle-detection-undirected.md) | Undirected Cycle         | Parent tracking for undirected graphs |
+| [07-topological-sort](./07-topological-sort.md)                     | Topological Sort         | Kahn's algorithm, DFS-based           |
+| [08-course-schedule](./08-course-schedule.md)                       | Course Schedule          | Classic topological sort application  |
+| [09-dijkstra](./09-dijkstra.md)                                     | Dijkstra's Algorithm     | Shortest path weighted (positive)     |
+| [10-bellman-ford](./10-bellman-ford.md)                             | Bellman-Ford             | Shortest path with negative edges     |
+| [11-shortest-path-unweighted](./11-shortest-path-unweighted.md)     | Unweighted Shortest Path | BFS for shortest path                 |
+| [12-clone-graph](./12-clone-graph.md)                               | Clone Graph              | Deep copy with visited map            |
+| [13-grid-problems](./13-grid-problems.md)                           | Grid as Graph            | Islands, flood fill                   |
+| [14-rotting-oranges](./14-rotting-oranges.md)                       | Multi-source BFS         | Simultaneous expansion                |
+| [15-word-ladder](./15-word-ladder.md)                               | Implicit Graphs          | Word transformation                   |
+| [16-bipartite-check](./16-bipartite-check.md)                       | Bipartite Check          | Two-coloring                          |
+| [17-alien-dictionary](./17-alien-dictionary.md)                     | Alien Dictionary         | Topological sort from constraints     |
+| [18-network-delay](./18-network-delay.md)                           | Network Delay            | Dijkstra application                  |
 
 ---
 
@@ -69,11 +69,11 @@ At FANG+ companies, expect at least one graph problem, often disguised as a grid
 
 ## Time Targets
 
-| Difficulty | Target Time | Examples |
-|------------|-------------|----------|
-| Easy | 10-15 min | Flood Fill, Number of Islands |
-| Medium | 15-25 min | Course Schedule, Clone Graph, Rotting Oranges |
-| Hard | 25-40 min | Alien Dictionary, Word Ladder, Network Delay |
+| Difficulty | Target Time | Examples                                      |
+| ---------- | ----------- | --------------------------------------------- |
+| Easy       | 10-15 min   | Flood Fill, Number of Islands                 |
+| Medium     | 15-25 min   | Course Schedule, Clone Graph, Rotting Oranges |
+| Hard       | 25-40 min   | Alien Dictionary, Word Ladder, Network Delay  |
 
 ---
 
@@ -120,14 +120,14 @@ edges = [(0, 1), (0, 2), (1, 3)]
 
 ## Key Complexity Facts
 
-| Algorithm | Time | Space | Notes |
-|-----------|------|-------|-------|
-| BFS | O(V + E) | O(V) | Queue + visited |
-| DFS | O(V + E) | O(V) | Stack/recursion + visited |
-| Dijkstra (heap) | O((V + E) log V) | O(V) | Priority queue |
-| Bellman-Ford | O(V × E) | O(V) | Edge relaxation |
-| Topological Sort | O(V + E) | O(V) | Kahn's or DFS |
-| Union-Find | O(α(n)) per op | O(V) | Nearly constant |
+| Algorithm        | Time             | Space | Notes                     |
+| ---------------- | ---------------- | ----- | ------------------------- |
+| BFS              | O(V + E)         | O(V)  | Queue + visited           |
+| DFS              | O(V + E)         | O(V)  | Stack/recursion + visited |
+| Dijkstra (heap)  | O((V + E) log V) | O(V)  | Priority queue            |
+| Bellman-Ford     | O(V × E)         | O(V)  | Edge relaxation           |
+| Topological Sort | O(V + E)         | O(V)  | Kahn's or DFS             |
+| Union-Find       | O(α(n)) per op   | O(V)  | Nearly constant           |
 
 V = vertices, E = edges
 
@@ -135,13 +135,13 @@ V = vertices, E = edges
 
 ## BFS vs DFS Quick Reference
 
-| Aspect | BFS | DFS |
-|--------|-----|-----|
-| Data structure | Queue | Stack/Recursion |
-| Explores | Level by level | Depth first |
-| Shortest path | Yes (unweighted) | No |
-| Space | O(width) | O(height) |
-| Use when | Shortest path, level-order | Exhaustive search, cycle detection |
+| Aspect         | BFS                        | DFS                                |
+| -------------- | -------------------------- | ---------------------------------- |
+| Data structure | Queue                      | Stack/Recursion                    |
+| Explores       | Level by level             | Depth first                        |
+| Shortest path  | Yes (unweighted)           | No                                 |
+| Space          | O(width)                   | O(height)                          |
+| Use when       | Shortest path, level-order | Exhaustive search, cycle detection |
 
 ---
 

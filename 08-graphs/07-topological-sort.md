@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The Dependency Resolution Mental Model**: Think of getting dressed in the morning:
+
 - Underwear before pants
 - Socks before shoes
 - Shirt before jacket
@@ -35,6 +36,7 @@ The ordering respects the "topology" (structure) of dependencies. If A must come
    - Like: "Go all the way, then on your way back, record the order."
 
 **Visual proof - Why DFS post-order works**:
+
 ```
 If A → B (A must come before B):
 - DFS from A will visit B (directly or indirectly)
@@ -50,17 +52,20 @@ A → B       [B, A]             [A, B] ✓
 ## When NOT to Use
 
 **Don't use topological sort when:**
+
 - **Graph has cycles** → No valid ordering exists; detect cycle first
 - **Graph is undirected** → Concept doesn't apply (no "direction" of dependency)
 - **You need shortest path** → Topological sort is about ordering, not distance
 - **Order doesn't matter** → Simple traversal is simpler
 
 **Topological sort is overkill when:**
+
 - Graph is a simple chain → Just follow the links
 - Only need to detect if ordering exists → Cycle detection is sufficient
 - Problem asks for ANY traversal → BFS/DFS is simpler
 
 **Common mistake scenarios:**
+
 - Applying to undirected graphs → Meaningless result
 - Forgetting to reverse DFS result → Order is backwards
 - Not handling disconnected components → Must process all nodes
@@ -303,13 +308,13 @@ def all_topological_sorts(n: int, edges: list[list[int]]) -> list[list[int]]:
 
 ## Comparison: Kahn's vs DFS
 
-| Aspect | Kahn's (BFS) | DFS |
-|--------|--------------|-----|
-| Approach | In-degree counting | Reverse post-order |
-| Cycle detection | Check if all nodes processed | Use three colors |
-| Implementation | More intuitive | Slightly shorter |
-| Lexicographic order | Use min-heap instead of queue | Harder to achieve |
-| All orderings | Natural with backtracking | Possible but tricky |
+| Aspect              | Kahn's (BFS)                  | DFS                 |
+| ------------------- | ----------------------------- | ------------------- |
+| Approach            | In-degree counting            | Reverse post-order  |
+| Cycle detection     | Check if all nodes processed  | Use three colors    |
+| Implementation      | More intuitive                | Slightly shorter    |
+| Lexicographic order | Use min-heap instead of queue | Harder to achieve   |
+| All orderings       | Natural with backtracking     | Possible but tricky |
 
 ---
 
@@ -428,6 +433,7 @@ def parallel_courses(n: int, relations: list[list[int]]) -> int:
 ## Step-by-Step Topological Sort Traces
 
 **DAG for demonstration:**
+
 ```
     0 → 1 → 3
     ↓   ↓
@@ -609,13 +615,13 @@ edges = [[0, 1], [2, 3]]
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Cycle detection |
-| 2 | Course Schedule II | Medium | Return order |
-| 3 | Alien Dictionary | Hard | Build graph from constraints |
-| 4 | Parallel Courses | Medium | Minimum levels |
-| 5 | Sequence Reconstruction | Medium | Unique order check |
+| #   | Problem                 | Difficulty | Key Variation                |
+| --- | ----------------------- | ---------- | ---------------------------- |
+| 1   | Course Schedule         | Medium     | Cycle detection              |
+| 2   | Course Schedule II      | Medium     | Return order                 |
+| 3   | Alien Dictionary        | Hard       | Build graph from constraints |
+| 4   | Parallel Courses        | Medium     | Minimum levels               |
+| 5   | Sequence Reconstruction | Medium     | Unique order check           |
 
 ---
 

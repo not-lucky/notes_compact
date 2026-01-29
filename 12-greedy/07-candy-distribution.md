@@ -5,6 +5,7 @@
 ## Interview Context
 
 Candy distribution tests:
+
 1. **Two-pass greedy**: Forward and backward passes
 2. **Constraint satisfaction**: Meeting neighbor requirements
 3. **Optimization**: Minimizing total candies
@@ -105,6 +106,7 @@ The two-pass approach naturally builds hills from both sides.
 **1. When There Are More Complex Constraints**
 
 If constraints involve more than immediate neighbors:
+
 ```
 "Child i must have more candy than ALL children within distance 2 if higher rated"
 
@@ -114,6 +116,7 @@ Two-pass won't work—need to track a window or use different approach.
 **2. When Candy Values Are Constrained**
 
 If candy must be between 1 and k, or must be specific values:
+
 ```
 This becomes a constraint satisfaction problem,
 potentially needing backtracking or linear programming.
@@ -122,6 +125,7 @@ potentially needing backtracking or linear programming.
 **3. When You Need Optimal Assignment (Not Just Total)**
 
 If there are multiple valid distributions and you need a specific one:
+
 ```
 ratings = [1, 1, 1]
 Valid:    [1, 1, 1], [2, 1, 1], [1, 1, 2], etc.
@@ -132,6 +136,7 @@ Two-pass gives ONE valid answer; finding "all" needs different approach.
 **4. When Ratings Can Be Modified**
 
 If you can change ratings to minimize total candy:
+
 ```
 This is an optimization problem over the input, not the output.
 ```
@@ -141,6 +146,7 @@ This is an optimization problem over the input, not the output.
 ## Problem Statement
 
 `n` children stand in a line with ratings. Distribute candies such that:
+
 1. Each child gets at least 1 candy
 2. Children with higher rating than neighbors get more candies
 
@@ -162,6 +168,7 @@ Total: 2 + 1 + 2 = 5
 ## The Core Insight
 
 **Two passes handle both neighbor constraints**:
+
 1. **Left-to-right**: If `ratings[i] > ratings[i-1]`, give more than left neighbor
 2. **Right-to-left**: If `ratings[i] > ratings[i+1]`, give more than right neighbor
 
@@ -308,6 +315,7 @@ def candy_one_pass(ratings: list[int]) -> int:
 ### Greedy Choice Property
 
 Each pass makes locally optimal decisions:
+
 - Left pass: give minimum extra to satisfy left constraint
 - Right pass: adjust to satisfy right constraint without violating left
 
@@ -321,6 +329,7 @@ Each position's candy count depends only on neighbors.
 **Claim**: Two-pass gives minimum candies.
 
 **By construction**:
+
 1. Start with 1 candy per child (minimum possible)
 2. Left pass adds exactly what's needed for left constraints
 3. Right pass adds exactly what's needed for right constraints
@@ -397,22 +406,22 @@ def product_except_self(nums: list[int]) -> list[int]:
 
 ## Two-Pass Pattern Summary
 
-| Problem | Left Pass | Right Pass | Combine |
-|---------|-----------|------------|---------|
-| Candy | Left neighbor constraint | Right neighbor constraint | Max |
-| Trapping Rain Water | Left max height | Right max height | Min - height |
-| Product Except Self | Left product | Right product | Multiply |
-| Stock Span | Days since higher | (variant) | - |
+| Problem             | Left Pass                | Right Pass                | Combine      |
+| ------------------- | ------------------------ | ------------------------- | ------------ |
+| Candy               | Left neighbor constraint | Right neighbor constraint | Max          |
+| Trapping Rain Water | Left max height          | Right max height          | Min - height |
+| Product Except Self | Left product             | Right product             | Multiply     |
+| Stock Span          | Days since higher        | (variant)                 | -            |
 
 ---
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Two-pass | O(n) | O(n) | Simple, clear |
-| One-pass (slope) | O(n) | O(1) | Tricky logic |
-| Brute force | O(n²) | O(n) | Simulate |
+| Approach         | Time  | Space | Notes         |
+| ---------------- | ----- | ----- | ------------- |
+| Two-pass         | O(n)  | O(n)  | Simple, clear |
+| One-pass (slope) | O(n)  | O(1)  | Tricky logic  |
+| Brute force      | O(n²) | O(n)  | Simulate      |
 
 ---
 
@@ -429,13 +438,13 @@ def product_except_self(nums: list[int]) -> list[int]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Candy | Hard | Two-pass greedy |
-| 2 | Trapping Rain Water | Hard | Two-pass or two-pointer |
-| 3 | Product of Array Except Self | Medium | Prefix and suffix products |
-| 4 | Container With Most Water | Medium | Two pointers |
-| 5 | Increasing Triplet Subsequence | Medium | Track first and second smallest |
+| #   | Problem                        | Difficulty | Key Insight                     |
+| --- | ------------------------------ | ---------- | ------------------------------- |
+| 1   | Candy                          | Hard       | Two-pass greedy                 |
+| 2   | Trapping Rain Water            | Hard       | Two-pass or two-pointer         |
+| 3   | Product of Array Except Self   | Medium     | Prefix and suffix products      |
+| 4   | Container With Most Water      | Medium     | Two pointers                    |
+| 5   | Increasing Triplet Subsequence | Medium     | Track first and second smallest |
 
 ---
 

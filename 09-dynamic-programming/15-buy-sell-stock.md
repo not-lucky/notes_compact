@@ -55,6 +55,7 @@ Stock problems are popular because:
 5. **Complex Fee Structures**: If fees depend on transaction size or are non-linear, the standard recurrence doesn't apply.
 
 **Choose the Right Approach:**
+
 - 1 transaction → min tracking
 - Unlimited, no constraints → greedy
 - Limited transactions (k) → state machine DP
@@ -64,14 +65,14 @@ Stock problems are popular because:
 
 ## Problem Family Overview
 
-| Problem | Transactions | Cooldown | Fee |
-|---------|--------------|----------|-----|
-| I | 1 | No | No |
-| II | Unlimited | No | No |
-| III | 2 | No | No |
-| IV | k | No | No |
-| With Cooldown | Unlimited | Yes | No |
-| With Fee | Unlimited | No | Yes |
+| Problem       | Transactions | Cooldown | Fee |
+| ------------- | ------------ | -------- | --- |
+| I             | 1            | No       | No  |
+| II            | Unlimited    | No       | No  |
+| III           | 2            | No       | No  |
+| IV            | k            | No       | No  |
+| With Cooldown | Unlimited    | Yes      | No  |
+| With Fee      | Unlimited    | No       | Yes |
 
 ---
 
@@ -384,14 +385,14 @@ rest = max(rest, sold)  # Wrong! sold is current, need prev
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| I (1 transaction) | O(n) | O(1) |
-| II (unlimited) | O(n) | O(1) |
-| III (2 transactions) | O(n) | O(1) |
-| IV (k transactions) | O(nk) | O(k) |
-| With Cooldown | O(n) | O(1) |
-| With Fee | O(n) | O(1) |
+| Problem              | Time  | Space |
+| -------------------- | ----- | ----- |
+| I (1 transaction)    | O(n)  | O(1)  |
+| II (unlimited)       | O(n)  | O(1)  |
+| III (2 transactions) | O(n)  | O(1)  |
+| IV (k transactions)  | O(nk) | O(k)  |
+| With Cooldown        | O(n)  | O(1)  |
+| With Fee             | O(n)  | O(1)  |
 
 ---
 
@@ -407,14 +408,14 @@ rest = max(rest, sold)  # Wrong! sold is current, need prev
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Constraint |
-|---|---------|------------|------------|
-| 1 | Best Time I | Easy | 1 transaction |
-| 2 | Best Time II | Medium | Unlimited |
-| 3 | Best Time III | Hard | 2 transactions |
-| 4 | Best Time IV | Hard | k transactions |
-| 5 | With Cooldown | Medium | 1-day wait |
-| 6 | With Fee | Medium | Transaction fee |
+| #   | Problem       | Difficulty | Constraint      |
+| --- | ------------- | ---------- | --------------- |
+| 1   | Best Time I   | Easy       | 1 transaction   |
+| 2   | Best Time II  | Medium     | Unlimited       |
+| 3   | Best Time III | Hard       | 2 transactions  |
+| 4   | Best Time IV  | Hard       | k transactions  |
+| 5   | With Cooldown | Medium     | 1-day wait      |
+| 6   | With Fee      | Medium     | Transaction fee |
 
 ---
 

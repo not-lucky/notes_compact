@@ -2,19 +2,20 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Course Schedule | Medium | Cycle detection |
-| 2 | Course Schedule II | Medium | Return order |
-| 3 | Parallel Courses | Medium | Minimum semesters |
-| 4 | Course Schedule III | Hard | Deadline constraints |
-| 5 | Course Schedule IV | Medium | Reachability queries |
+| #   | Problem             | Difficulty | Key Variation        |
+| --- | ------------------- | ---------- | -------------------- |
+| 1   | Course Schedule     | Medium     | Cycle detection      |
+| 2   | Course Schedule II  | Medium     | Return order         |
+| 3   | Parallel Courses    | Medium     | Minimum semesters    |
+| 4   | Course Schedule III | Hard       | Deadline constraints |
+| 5   | Course Schedule IV  | Medium     | Reachability queries |
 
 ---
 
 ## 1. Course Schedule
 
 ### Problem Statement
+
 Determine if you can finish all courses given the prerequisites.
 
 ### Optimal Python Solution
@@ -47,6 +48,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ```
 
 ### Explanation
+
 - **Algorithm**: DFS with 3-state coloring.
 - **Cycle Detection**: If we hit a node that is currently in the recursion stack (state 1), a cycle exists.
 - **Complexity**: Time O(V + E), Space O(V + E).
@@ -56,6 +58,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
 ## 2. Course Schedule II
 
 ### Problem Statement
+
 Return a valid course ordering.
 
 ### Optimal Python Solution
@@ -85,6 +88,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ```
 
 ### Explanation
+
 - **Algorithm**: Kahn's Algorithm (BFS-based Topological Sort).
 - **Complexity**: Time O(V + E), Space O(V + E).
 
@@ -93,6 +97,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 ## 3. Parallel Courses
 
 ### Problem Statement
+
 Find the minimum semesters needed to finish all courses (unlimited courses per semester).
 
 ### Optimal Python Solution
@@ -125,6 +130,7 @@ def minimumSemesters(n: int, relations: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: BFS level-order traversal on a dependency graph.
 - **Complexity**: Time O(V + E), Space O(V + E).
 
@@ -133,6 +139,7 @@ def minimumSemesters(n: int, relations: list[list[int]]) -> int:
 ## 4. Course Schedule III
 
 ### Problem Statement
+
 Given courses with durations and deadlines, find the maximum number of courses you can take.
 
 ### Optimal Python Solution
@@ -159,6 +166,7 @@ def scheduleCourse(courses: list[list[int]]) -> int:
 ```
 
 ### Explanation
+
 - **Algorithm**: Greedy with a Max-Heap.
 - **Logic**: Sort by deadlines. Always take the current course if it fits. If it doesn't fit, check if it's shorter than the longest course we've already taken. Replacing a longer course with a shorter one gives us more "buffer" for future courses.
 - **Complexity**: Time O(N log N), Space O(N).
@@ -168,6 +176,7 @@ def scheduleCourse(courses: list[list[int]]) -> int:
 ## 5. Course Schedule IV
 
 ### Problem Statement
+
 Determine if course `u` is a prerequisite of course `v` for multiple queries.
 
 ### Optimal Python Solution
@@ -190,6 +199,7 @@ def checkIfPrerequisite(numCourses: int, prerequisites: list[list[int]], queries
 ```
 
 ### Explanation
+
 - **Algorithm**: Floyd-Warshall algorithm for transitive closure.
 - **Logic**: If `i` is a prereq of `k` and `k` is a prereq of `j`, then `i` is a prereq of `j`.
 - **Complexity**: Time O(N³), Space O(N²). For smaller N (up to 100), this is optimal. For larger N, use multiple BFS/DFS.

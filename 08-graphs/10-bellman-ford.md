@@ -5,6 +5,7 @@
 ## Building Intuition
 
 **The "Repeated Announcements" Mental Model**: Imagine a town where everyone shouts their house number to neighbors. Initially, only you know your distance from home (0). Each round:
+
 1. Everyone shouts their current best known distance
 2. Neighbors update if they hear a better path
 3. After enough rounds, everyone knows the true shortest distance
@@ -56,21 +57,25 @@ we're using more than V-1 edges → must be cycling!
 ## When NOT to Use
 
 **Don't use Bellman-Ford when:**
+
 - **All weights are non-negative** → Dijkstra is O((V+E)logV) vs O(VE)
 - **Graph is unweighted** → BFS is O(V+E), much faster
 - **Need to process dynamically** → Not designed for updates
 
 **Bellman-Ford is the only choice when:**
+
 - Negative edge weights exist (Dijkstra fails)
 - Need to detect negative cycles
 - Graph structure doesn't allow Dijkstra optimization
 
 **Common mistake scenarios:**
+
 - Using Bellman-Ford when Dijkstra works → Much slower
 - Relaxing from unreachable nodes → dist[u] + w with dist[u]=inf is problematic
 - Forgetting to copy array in limited-edges variant → Wrong answers
 
 **The "limited stops" variant trap:**
+
 ```
 Problem: Cheapest flights with at most K stops
 
@@ -319,13 +324,13 @@ def spfa(n: int, edges: list[list[int]], source: int) -> list[float]:
 
 ## Comparison: Dijkstra vs Bellman-Ford
 
-| Aspect | Dijkstra | Bellman-Ford |
-|--------|----------|--------------|
-| Time | O((V+E) log V) | O(V × E) |
-| Negative edges | No | Yes |
-| Negative cycle detection | No | Yes |
-| Implementation | Heap-based | Simple iteration |
-| When to use | Non-negative weights | Negative weights possible |
+| Aspect                   | Dijkstra             | Bellman-Ford              |
+| ------------------------ | -------------------- | ------------------------- |
+| Time                     | O((V+E) log V)       | O(V × E)                  |
+| Negative edges           | No                   | Yes                       |
+| Negative cycle detection | No                   | Yes                       |
+| Implementation           | Heap-based           | Simple iteration          |
+| When to use              | Non-negative weights | Negative weights possible |
 
 ---
 
@@ -359,14 +364,14 @@ def find_cheapest_price_bf(n: int, flights: list[list[int]],
 
 ## When to Use Each Algorithm
 
-| Scenario | Algorithm |
-|----------|-----------|
-| Non-negative weights | Dijkstra (faster) |
-| Negative weights, no negative cycle | Bellman-Ford |
-| Need to detect negative cycle | Bellman-Ford |
-| Limited hops/stops | Bellman-Ford with limited iterations |
-| Dense graph, non-negative | Dijkstra |
-| Sparse graph, any weights | Bellman-Ford |
+| Scenario                            | Algorithm                            |
+| ----------------------------------- | ------------------------------------ |
+| Non-negative weights                | Dijkstra (faster)                    |
+| Negative weights, no negative cycle | Bellman-Ford                         |
+| Need to detect negative cycle       | Bellman-Ford                         |
+| Limited hops/stops                  | Bellman-Ford with limited iterations |
+| Dense graph, non-negative           | Dijkstra                             |
+| Sparse graph, any weights           | Bellman-Ford                         |
 
 ---
 
@@ -436,12 +441,12 @@ if dist[u] != float('inf') and dist[u] + w < dist[v]:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Cheapest Flights Within K Stops | Medium | Limited iterations |
-| 2 | Network Delay Time | Medium | Can use either |
-| 3 | Negative Cycle Detection | Medium | Extra iteration |
-| 4 | Path with Minimum Effort | Medium | Binary search variant |
+| #   | Problem                         | Difficulty | Key Variation         |
+| --- | ------------------------------- | ---------- | --------------------- |
+| 1   | Cheapest Flights Within K Stops | Medium     | Limited iterations    |
+| 2   | Network Delay Time              | Medium     | Can use either        |
+| 3   | Negative Cycle Detection        | Medium     | Extra iteration       |
+| 4   | Path with Minimum Effort        | Medium     | Binary search variant |
 
 ---
 

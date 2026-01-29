@@ -1,10 +1,12 @@
 # Solutions: Longest Increasing Subsequence
 
 ## 1. Longest Increasing Subsequence (LIS)
+
 **Problem:** Find the length of the longest strictly increasing subsequence.
 
 ### Optimal Python Solution ($O(n \log n)$)
-```python
+
+````python
 import bisect
 
 def length_of_lis(nums: list[int]) -> int:
@@ -18,6 +20,7 @@ def length_of_lis(nums: list[int]) -> int:
         else:
             tails[idx] = num
     return len(tails)
+```
 
 ---
 
@@ -44,18 +47,21 @@ def longest_increasing_path(matrix: list[list[int]]) -> int:
         return res
 
     return max(dfs(r, c) for r in range(m) for c in range(n))
-```
+````
 
 ### Explanation
+
 1.  **State**: `memo[r][c]` stores the length of the longest increasing path starting from cell `(r, c)`.
 2.  **Transitions**: From each cell, we explore all 4 neighbors. If a neighbor has a strictly greater value, we recursively find the longest path from that neighbor and add 1.
 3.  **Memoization**: Since we only move to strictly larger values, there are no cycles. Each cell's result is computed once and reused.
 4.  **Result**: The answer is the maximum value found across all possible starting cells in the matrix.
 
 ### Complexity Analysis
+
 - **Time:** $O(m \times n)$ - Each cell is visited and computed exactly once.
 - **Space:** $O(m \times n)$ - For the memoization table and the recursion stack.
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(n \log n)$ - $n$ iterations, each with a $\log n$ binary search.
@@ -85,18 +91,21 @@ def find_number_of_lis(nums: list[int]) -> int:
 
     max_len = max(lengths)
     return sum(c for l, c in zip(lengths, counts) if l == max_len)
-```
+````
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$
 
 ---
 
 ## 3. Increasing Triplet Subsequence
+
 **Problem:** Return if there exists an increasing triplet (length 3).
 
 ### Optimal Python Solution
+
 ```python
 def increasing_triplet(nums: list[int]) -> bool:
     first = second = float('inf')
@@ -111,16 +120,19 @@ def increasing_triplet(nums: list[int]) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n)$
 - **Space:** $O(1)$
 
 ---
 
 ## 4. Russian Doll Envelopes
+
 **Problem:** Maximize envelopes that fit inside each other (both width and height must be strictly larger).
 
 ### Optimal Python Solution
-```python
+
+````python
 import bisect
 
 def max_envelopes(envelopes: list[list[int]]) -> int:
@@ -137,6 +149,7 @@ def max_envelopes(envelopes: list[list[int]]) -> int:
         else:
             tails[idx] = h
     return len(tails)
+```
 
 ---
 
@@ -163,19 +176,23 @@ def longest_increasing_path(matrix: list[list[int]]) -> int:
         return res
 
     return max(dfs(r, c) for r in range(m) for c in range(n))
-```
+````
 
 ### Explanation
+
 1.  **State**: `memo[r][c]` stores the length of the longest increasing path starting from cell `(r, c)`.
 2.  **Transitions**: From each cell, we explore all 4 neighbors. If a neighbor has a strictly greater value, we recursively find the longest path from that neighbor and add 1.
 3.  **Memoization**: Since we only move to strictly larger values, there are no cycles. Each cell's result is computed once and reused.
 4.  **Result**: The answer is the maximum value found across all possible starting cells in the matrix.
 
 ### Complexity Analysis
+
 - **Time:** $O(m \times n)$ - Each cell is visited and computed exactly once.
 - **Space:** $O(m \times n)$ - For the memoization table and the recursion stack.
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(n \log n)$
 - **Space:** $O(n)$
+```

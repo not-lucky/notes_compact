@@ -1,9 +1,11 @@
 # Solutions: Unbounded Knapsack Patterns
 
 ## 1. Unbounded Knapsack (Basic)
+
 **Problem:** Maximize value within capacity $W$ using each item unlimited times.
 
 ### Optimal Python Solution
+
 ```python
 def unbounded_knapsack(weights: list[int], values: list[int], capacity: int) -> int:
     # Key: Iterate FORWARD through capacity to allow reuse of items
@@ -15,15 +17,18 @@ def unbounded_knapsack(weights: list[int], values: list[int], capacity: int) -> 
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(n \times W)$
 - **Space:** $O(W)$
 
 ---
 
 ## 2. Coin Change (Min Coins)
+
 **Problem:** Minimum coins to make total amount.
 
 ### Optimal Python Solution
+
 ```python
 def coin_change(coins: list[int], amount: int) -> int:
     dp = [float('inf')] * (amount + 1)
@@ -35,15 +40,18 @@ def coin_change(coins: list[int], amount: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{amount} \times |coins|)$
 - **Space:** $O(\text{amount})$
 
 ---
 
 ## 3. Cutting a Rod
+
 **Problem:** Maximize revenue from cutting rod of length $n$.
 
 ### Optimal Python Solution
+
 ```python
 def rod_cutting(prices: list[int], n: int) -> int:
     # prices[i] is price of rod of length i+1
@@ -56,9 +64,11 @@ def rod_cutting(prices: list[int], n: int) -> int:
 ```
 
 ## 5. Coin Change II (Count Combinations)
+
 **Problem:** Number of ways to make up an amount using given coins (unlimited supply).
 
 ### Optimal Python Solution
+
 ```python
 def change(amount: int, coins: list[int]) -> int:
     # State: dp[i] = ways to make amount i
@@ -73,23 +83,26 @@ def change(amount: int, coins: list[int]) -> int:
 ```
 
 ### Explanation
+
 1.  **Combination Logic**: By placing the coin loop on the outside, we ensure that we finish all ways to use one coin before moving to the next. This prevents counting different orderings of the same coins.
 2.  **Unbounded Property**: The inner loop moves forward (`range(coin, amount + 1)`), allowing us to use the same coin multiple times.
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{amount} \times \text{len(coins)})$
 - **Space:** $O(\text{amount})$
 
-
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$
 
-
 ## 4. Integer Break
+
 **Problem:** Maximize product of integers that sum to $n$.
 
 ### Optimal Python Solution
+
 ```python
 def integer_break(n: int) -> int:
     if n <= 3: return n - 1
@@ -103,9 +116,11 @@ def integer_break(n: int) -> int:
 ```
 
 ## 5. Coin Change II (Count Combinations)
+
 **Problem:** Number of ways to make up an amount using given coins (unlimited supply).
 
 ### Optimal Python Solution
+
 ```python
 def change(amount: int, coins: list[int]) -> int:
     # State: dp[i] = ways to make amount i
@@ -120,13 +135,16 @@ def change(amount: int, coins: list[int]) -> int:
 ```
 
 ### Explanation
+
 1.  **Combination Logic**: By placing the coin loop on the outside, we ensure that we finish all ways to use one coin before moving to the next. This prevents counting different orderings of the same coins.
 2.  **Unbounded Property**: The inner loop moves forward (`range(coin, amount + 1)`), allowing us to use the same coin multiple times.
 
 ### Complexity Analysis
+
 - **Time:** $O(\text{amount} \times \text{len(coins)})$
 - **Space:** $O(\text{amount})$
 
 ### Complexity Analysis
+
 - **Time:** $O(n^2)$
 - **Space:** $O(n)$

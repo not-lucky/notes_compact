@@ -21,6 +21,7 @@ The key insight is **order-independent equality**:
 **Mental Model**: Think of each string as a bag of lettered tiles (like Scrabble). Two bags are anagrams if they contain exactly the same tiles. You don't care about the order—just count each tile type.
 
 **Why Counting Beats Sorting**:
+
 ```
 Approach 1: Sort both strings, compare
   Time: O(n log n + m log m)
@@ -35,6 +36,7 @@ For finding anagrams in text: counting + sliding window is O(n)
 ```
 
 **The Count Array Trick**:
+
 ```python
 # Instead of two hash maps, use one and increment/decrement
 count = [0] * 26
@@ -60,6 +62,7 @@ Anagram patterns have limitations:
 5. **Counting Isn't Enough**: Some problems look like anagrams but have additional constraints (e.g., "rearrange into palindrome"—need to check odd-count characters).
 
 **Red Flags:**
+
 - "Rearrange to form X" → May need to check feasibility beyond simple anagram check
 - "Approximately equal" → Different technique (edit distance or similar)
 - "Subsequence" (not substring/rearrangement) → DP, not anagram counting
@@ -462,12 +465,12 @@ def is_scramble(s1: str, s2: str) -> bool:
 
 ## Common Patterns Summary
 
-| Problem Type | Technique | Key |
-|--------------|-----------|-----|
-| Check if anagram | Counter/Array | Compare counts |
-| Group anagrams | HashMap | Sorted string or count tuple as key |
-| Find anagram in string | Sliding window | Fixed size window |
-| Multiple anagram search | Sliding window | Track matches |
+| Problem Type            | Technique      | Key                                 |
+| ----------------------- | -------------- | ----------------------------------- |
+| Check if anagram        | Counter/Array  | Compare counts                      |
+| Group anagrams          | HashMap        | Sorted string or count tuple as key |
+| Find anagram in string  | Sliding window | Fixed size window                   |
+| Multiple anagram search | Sliding window | Track matches                       |
 
 ---
 
@@ -497,15 +500,15 @@ Usually limited to lowercase a-z in interviews
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Technique |
-|---|---------|------------|---------------|
-| 1 | Valid Anagram | Easy | Character count |
-| 2 | Group Anagrams | Medium | HashMap with key |
-| 3 | Find All Anagrams in a String | Medium | Sliding window |
-| 4 | Permutation in String | Medium | Sliding window |
-| 5 | Minimum Number of Steps to Make Anagram | Medium | Count difference |
-| 6 | Smallest Range Covering K Lists | Hard | Uses anagram concepts |
-| 7 | Scramble String | Hard | DP with memoization |
+| #   | Problem                                 | Difficulty | Key Technique         |
+| --- | --------------------------------------- | ---------- | --------------------- |
+| 1   | Valid Anagram                           | Easy       | Character count       |
+| 2   | Group Anagrams                          | Medium     | HashMap with key      |
+| 3   | Find All Anagrams in a String           | Medium     | Sliding window        |
+| 4   | Permutation in String                   | Medium     | Sliding window        |
+| 5   | Minimum Number of Steps to Make Anagram | Medium     | Count difference      |
+| 6   | Smallest Range Covering K Lists         | Hard       | Uses anagram concepts |
+| 7   | Scramble String                         | Hard       | DP with memoization   |
 
 ---
 

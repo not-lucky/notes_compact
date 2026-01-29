@@ -46,6 +46,7 @@ LIS is a FANG+ essential because:
 5. **Counting All LIS**: If you need to count how many LIS exist (not just find one), you need additional DP arrays for counting.
 
 **Recognize LIS Pattern When:**
+
 - Find longest subsequence (not contiguous) with ordering property
 - Elements must be strictly/non-strictly increasing/decreasing
 - Can reduce multi-dimensional problems to LIS after sorting
@@ -391,11 +392,11 @@ return tails  # tails is NOT the actual LIS!
 
 ## Complexity Comparison
 
-| Approach | Time | Space |
-|----------|------|-------|
-| O(n²) DP | O(n²) | O(n) |
-| Binary Search | O(n log n) | O(n) |
-| Patience Sorting | O(n log n) | O(n) |
+| Approach         | Time       | Space |
+| ---------------- | ---------- | ----- |
+| O(n²) DP         | O(n²)      | O(n)  |
+| Binary Search    | O(n log n) | O(n)  |
+| Patience Sorting | O(n log n) | O(n)  |
 
 ---
 
@@ -411,13 +412,13 @@ return tails  # tails is NOT the actual LIS!
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | LIS | Medium | Classic |
-| 2 | Number of LIS | Medium | Count |
-| 3 | Increasing Triplet | Medium | k=3 special case |
-| 4 | Russian Doll Envelopes | Hard | 2D LIS |
-| 5 | Longest Increasing Path | Hard | Grid version |
+| #   | Problem                 | Difficulty | Variant          |
+| --- | ----------------------- | ---------- | ---------------- |
+| 1   | LIS                     | Medium     | Classic          |
+| 2   | Number of LIS           | Medium     | Count            |
+| 3   | Increasing Triplet      | Medium     | k=3 special case |
+| 4   | Russian Doll Envelopes  | Hard       | 2D LIS           |
+| 5   | Longest Increasing Path | Hard       | Grid version     |
 
 ---
 

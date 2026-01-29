@@ -61,6 +61,7 @@ Page AP: "After 'ap', what's next?" → Turn to page APP, APT, ...
 ```
 
 At any page (node), you can ask:
+
 - "Have I finished a valid word?" (check is_end flag)
 - "What continuations exist?" (check children)
 - "How many words start here?" (count descendants)
@@ -86,6 +87,7 @@ Trie shines when you need prefix operations.
 **2. Memory-Constrained Environments**
 
 Each trie node carries overhead:
+
 - HashMap-based: ~200+ bytes per node (Python dict overhead)
 - Array-based: 26 × 8 = 208 bytes per node
 
@@ -101,11 +103,13 @@ For numeric data, segment trees or other structures often work better.
 **4. Substring Search (Not Prefix)**
 
 "Find words CONTAINING 'cat'" is not a prefix problem. You'd need:
+
 - Inverted index
 - Suffix tree/array
 - Full-text search (like Lucene)
 
 **Red Flags That Suggest NOT Using Trie:**
+
 - "Find exact matches only"
 - "Memory limit is tight"
 - "Search for substring" (not prefix)
@@ -115,13 +119,13 @@ For numeric data, segment trees or other structures often work better.
 
 ## Trie vs Other Data Structures
 
-| Operation | Trie | HashMap | BST | Sorted Array |
-|-----------|------|---------|-----|--------------|
-| Insert | O(L) | O(L) | O(L log n) | O(n) |
-| Search | O(L) | O(L) | O(L log n) | O(L log n) |
-| Prefix search | O(L) | O(n × L) | O(n) | O(n) |
-| Space | O(alphabet × total chars) | O(total chars) | O(total chars) | O(total chars) |
-| **Prefix operations** | **Excellent** | Poor | Poor | Poor |
+| Operation             | Trie                      | HashMap        | BST            | Sorted Array   |
+| --------------------- | ------------------------- | -------------- | -------------- | -------------- |
+| Insert                | O(L)                      | O(L)           | O(L log n)     | O(n)           |
+| Search                | O(L)                      | O(L)           | O(L log n)     | O(L log n)     |
+| Prefix search         | O(L)                      | O(n × L)       | O(n)           | O(n)           |
+| Space                 | O(alphabet × total chars) | O(total chars) | O(total chars) | O(total chars) |
+| **Prefix operations** | **Excellent**             | Poor           | Poor           | Poor           |
 
 L = word length, n = number of words
 
@@ -172,37 +176,37 @@ Words: ["apple", "app", "apt", "bat"]
 
 ## Core Trie Operations
 
-| Operation | Time | Space | Description |
-|-----------|------|-------|-------------|
-| Insert | O(L) | O(L) | Add word to trie |
-| Search | O(L) | O(1) | Check if exact word exists |
-| StartsWith | O(L) | O(1) | Check if prefix exists |
-| Delete | O(L) | O(1) | Remove word from trie |
-| Prefix Words | O(L + k) | O(k) | Find all words with prefix (k = results) |
+| Operation    | Time     | Space | Description                              |
+| ------------ | -------- | ----- | ---------------------------------------- |
+| Insert       | O(L)     | O(L)  | Add word to trie                         |
+| Search       | O(L)     | O(1)  | Check if exact word exists               |
+| StartsWith   | O(L)     | O(1)  | Check if prefix exists                   |
+| Delete       | O(L)     | O(1)  | Remove word from trie                    |
+| Prefix Words | O(L + k) | O(k)  | Find all words with prefix (k = results) |
 
 ---
 
 ## Trie Patterns Overview
 
-| Pattern | Problems | Key Strategy |
-|---------|----------|--------------|
-| Basic Trie | Implement trie, word dictionary | Standard implementation |
-| Trie + DFS | Word Search II, word break | Combine trie with backtracking |
-| Trie + Wildcard | Add and search word | DFS at wildcard positions |
-| Bitwise Trie | Maximum XOR | Store binary representations |
-| Trie + Count | Top K frequent words | Store frequency in nodes |
+| Pattern         | Problems                        | Key Strategy                   |
+| --------------- | ------------------------------- | ------------------------------ |
+| Basic Trie      | Implement trie, word dictionary | Standard implementation        |
+| Trie + DFS      | Word Search II, word break      | Combine trie with backtracking |
+| Trie + Wildcard | Add and search word             | DFS at wildcard positions      |
+| Bitwise Trie    | Maximum XOR                     | Store binary representations   |
+| Trie + Count    | Top K frequent words            | Store frequency in nodes       |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
-|---|-------|--------------|
-| 01 | [Trie Implementation](./01-trie-implementation.md) | Insert, search, startsWith, delete |
-| 02 | [Word Search II](./02-word-search-trie.md) | Trie + DFS optimization |
-| 03 | [Autocomplete System](./03-autocomplete.md) | Design search autocomplete |
-| 04 | [Word Dictionary](./04-word-dictionary.md) | Search with wildcards |
-| 05 | [Maximum XOR](./05-maximum-xor.md) | Bitwise trie for XOR |
+| #   | Topic                                              | Key Concepts                       |
+| --- | -------------------------------------------------- | ---------------------------------- |
+| 01  | [Trie Implementation](./01-trie-implementation.md) | Insert, search, startsWith, delete |
+| 02  | [Word Search II](./02-word-search-trie.md)         | Trie + DFS optimization            |
+| 03  | [Autocomplete System](./03-autocomplete.md)        | Design search autocomplete         |
+| 04  | [Word Dictionary](./04-word-dictionary.md)         | Search with wildcards              |
+| 05  | [Maximum XOR](./05-maximum-xor.md)                 | Bitwise trie for XOR               |
 
 ---
 
@@ -224,12 +228,12 @@ class TrieNode:
         self.is_end = False
 ```
 
-| Aspect | Array-based | HashMap-based |
-|--------|-------------|---------------|
-| Access time | O(1) | O(1) amortized |
-| Memory | 26 pointers per node | Only used letters |
-| Best for | Dense tries, lowercase only | Sparse tries, any characters |
-| Interview | More common | More flexible |
+| Aspect      | Array-based                 | HashMap-based                |
+| ----------- | --------------------------- | ---------------------------- |
+| Access time | O(1)                        | O(1) amortized               |
+| Memory      | 26 pointers per node        | Only used letters            |
+| Best for    | Dense tries, lowercase only | Sparse tries, any characters |
+| Interview   | More common                 | More flexible                |
 
 ---
 
@@ -245,12 +249,12 @@ class TrieNode:
 
 ## Time Complexity Patterns
 
-| Problem Type | Time | Why |
-|--------------|------|-----|
-| Insert n words | O(n × L_avg) | Each word takes O(L) |
-| Search with prefix | O(L + k) | L for prefix, k for results |
-| Word search in grid | O(m × n × 4^L) | DFS from each cell |
-| Autocomplete top-k | O(L + k log k) | Traverse + heap for top-k |
+| Problem Type        | Time           | Why                         |
+| ------------------- | -------------- | --------------------------- |
+| Insert n words      | O(n × L_avg)   | Each word takes O(L)        |
+| Search with prefix  | O(L + k)       | L for prefix, k for results |
+| Word search in grid | O(m × n × 4^L) | DFS from each cell          |
+| Autocomplete top-k  | O(L + k log k) | Traverse + heap for top-k   |
 
 ---
 
@@ -273,13 +277,13 @@ Typical:    O(total_chars × A) - some sharing
 
 ## Classic Interview Problems by Company
 
-| Company | Favorite Trie Problems |
-|---------|------------------------|
-| Google | Word Search II, Autocomplete, Concatenated Words |
-| Meta | Add and Search Word, Implement Trie, Stream of Characters |
-| Amazon | Search Suggestions System, Replace Words |
-| Microsoft | Longest Word in Dictionary, Prefix and Suffix Search |
-| Apple | Word Squares, Palindrome Pairs |
+| Company   | Favorite Trie Problems                                    |
+| --------- | --------------------------------------------------------- |
+| Google    | Word Search II, Autocomplete, Concatenated Words          |
+| Meta      | Add and Search Word, Implement Trie, Stream of Characters |
+| Amazon    | Search Suggestions System, Replace Words                  |
+| Microsoft | Longest Word in Dictionary, Prefix and Suffix Search      |
+| Apple     | Word Squares, Palindrome Pairs                            |
 
 ---
 
@@ -300,36 +304,43 @@ Look for these keywords/patterns:
 
 ## Comparison: When Trie vs HashMap
 
-| Scenario | Use Trie | Use HashMap |
-|----------|----------|-------------|
-| Prefix operations needed | ✓ | |
-| Only exact match | | ✓ |
-| Autocomplete feature | ✓ | |
-| Fixed small dictionary | | ✓ |
-| Memory is critical | | ✓ |
-| Wildcard search | ✓ | |
+| Scenario                 | Use Trie | Use HashMap |
+| ------------------------ | -------- | ----------- |
+| Prefix operations needed | ✓        |             |
+| Only exact match         |          | ✓           |
+| Autocomplete feature     | ✓        |             |
+| Fixed small dictionary   |          | ✓           |
+| Memory is critical       |          | ✓           |
+| Wildcard search          | ✓        |             |
 
 ---
 
 ## Common Trie Variations
 
 ### 1. Compressed Trie (Radix Tree)
+
 Merge chains of single-child nodes:
+
 ```
 Standard:  a → p → p → l → e
 Compressed: "app" → "le"
 ```
+
 Used in: IP routing, suffix trees
 
 ### 2. Ternary Search Tree
+
 Three children: less, equal, greater
+
 ```
 Balanced like BST, prefix search like trie
 Lower memory than standard trie
 ```
 
 ### 3. Suffix Trie
+
 Insert all suffixes of a string:
+
 ```
 "banana": banana, anana, nana, ana, na, a
 Used for substring search

@@ -17,6 +17,7 @@ Interview problems aren't random—they're designed to test specific techniques.
 ### How to Think About Pattern Selection
 
 Think of it like a doctor's diagnostic flowchart:
+
 1. **Symptoms** (input type, constraints) narrow down possibilities
 2. **Ruling out** (what patterns definitely won't work) is as important as identifying what will
 3. **The first pattern you think of isn't always right**—verify with complexity analysis
@@ -422,22 +423,22 @@ Math/Number problem?
 
 ## Quick Reference Table
 
-| Problem Characteristic | Primary Pattern | Alternative |
-|------------------------|-----------------|-------------|
-| Sorted array + find pair | Two Pointers | Binary Search |
-| Contiguous subarray with constraint | Sliding Window | Prefix Sum |
-| Maximum contiguous sum | Kadane's | DP |
-| K largest/smallest | Heap | QuickSelect |
-| Shortest path (unweighted) | BFS | - |
-| Shortest path (weighted) | Dijkstra | Bellman-Ford |
-| All paths/combinations | DFS/Backtracking | - |
-| Cycle in linked list | Fast/Slow Pointers | - |
-| Next greater element | Monotonic Stack | - |
-| Connected components | Union-Find | DFS/BFS |
-| Optimization with choices | DP | Greedy |
-| Values 1 to n, find missing | Cyclic Sort | XOR |
-| Prefix matching | Trie | - |
-| Overlapping intervals | Sort + Merge | - |
+| Problem Characteristic              | Primary Pattern    | Alternative   |
+| ----------------------------------- | ------------------ | ------------- |
+| Sorted array + find pair            | Two Pointers       | Binary Search |
+| Contiguous subarray with constraint | Sliding Window     | Prefix Sum    |
+| Maximum contiguous sum              | Kadane's           | DP            |
+| K largest/smallest                  | Heap               | QuickSelect   |
+| Shortest path (unweighted)          | BFS                | -             |
+| Shortest path (weighted)            | Dijkstra           | Bellman-Ford  |
+| All paths/combinations              | DFS/Backtracking   | -             |
+| Cycle in linked list                | Fast/Slow Pointers | -             |
+| Next greater element                | Monotonic Stack    | -             |
+| Connected components                | Union-Find         | DFS/BFS       |
+| Optimization with choices           | DP                 | Greedy        |
+| Values 1 to n, find missing         | Cyclic Sort        | XOR           |
+| Prefix matching                     | Trie               | -             |
+| Overlapping intervals               | Sort + Merge       | -             |
 
 ---
 

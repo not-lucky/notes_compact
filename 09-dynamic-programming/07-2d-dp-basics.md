@@ -48,6 +48,7 @@
 5. **Dependencies Aren't Local**: If dp[i][j] depends on all dp[k][l] for k < i and l < j (not just neighbors), you may still get O(n²) per cell, giving O(n⁴) total. Consider optimization techniques.
 
 **Signs 2D DP is Appropriate:**
+
 - Two input sequences/arrays being compared
 - Grid with row and column indices
 - Knapsack-like problems with items and capacity
@@ -370,13 +371,13 @@ Minimum Path Sum:
 
 ## Complexity Summary
 
-| Problem | Time | Space | Optimized Space |
-|---------|------|-------|-----------------|
-| Unique Paths | O(mn) | O(mn) | O(n) |
-| Min Path Sum | O(mn) | O(mn) | O(n) |
-| Maximum Square | O(mn) | O(mn) | O(n) |
-| Triangle | O(n²) | O(n²) | O(n) |
-| Cherry Pickup | O(mn²) | O(mn²) | O(n²) |
+| Problem        | Time   | Space  | Optimized Space |
+| -------------- | ------ | ------ | --------------- |
+| Unique Paths   | O(mn)  | O(mn)  | O(n)            |
+| Min Path Sum   | O(mn)  | O(mn)  | O(n)            |
+| Maximum Square | O(mn)  | O(mn)  | O(n)            |
+| Triangle       | O(n²)  | O(n²)  | O(n)            |
+| Cherry Pickup  | O(mn²) | O(mn²) | O(n²)           |
 
 ---
 
@@ -392,15 +393,15 @@ Minimum Path Sum:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Unique Paths | Medium | Path counting |
-| 2 | Unique Paths II | Medium | With obstacles |
-| 3 | Minimum Path Sum | Medium | Path optimization |
-| 4 | Triangle | Medium | Variable width |
-| 5 | Maximal Square | Medium | Square detection |
-| 6 | Dungeon Game | Hard | Backwards DP |
-| 7 | Cherry Pickup | Hard | Two agents |
+| #   | Problem          | Difficulty | Pattern           |
+| --- | ---------------- | ---------- | ----------------- |
+| 1   | Unique Paths     | Medium     | Path counting     |
+| 2   | Unique Paths II  | Medium     | With obstacles    |
+| 3   | Minimum Path Sum | Medium     | Path optimization |
+| 4   | Triangle         | Medium     | Variable width    |
+| 5   | Maximal Square   | Medium     | Square detection  |
+| 6   | Dungeon Game     | Hard       | Backwards DP      |
+| 7   | Cherry Pickup    | Hard       | Two agents        |
 
 ---
 

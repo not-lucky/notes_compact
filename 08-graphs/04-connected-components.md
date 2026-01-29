@@ -18,6 +18,7 @@ Archipelago (Graph):        Components:
 **The key insight**: A connected component is a "maximal" connected subgraph - you can't add more nodes without breaking connectivity.
 
 **Why DFS/BFS finds components**:
+
 1. Start at any unvisited node
 2. Traverse visits ALL reachable nodes (entire component)
 3. When traversal ends, that's one complete component
@@ -26,6 +27,7 @@ Archipelago (Graph):        Components:
 
 **Union-Find perspective**:
 Think of each edge as a "merge" operation:
+
 - Initially: every node is its own component
 - Each edge unions two components into one
 - Final number of components = n - (successful unions)
@@ -44,21 +46,25 @@ Edge 3-4: union(3,4) → 2 components {0,1,2}, {3,4}
 ## When NOT to Use
 
 **DFS/BFS component counting is wrong when:**
+
 - **Graph is directed** → "Connected" means different things (weak vs strong connectivity)
 - **Dynamic graph** → Edges added/removed frequently; use Union-Find instead
 - **Only need count, not actual components** → Union-Find is simpler
 
 **Union-Find is overkill when:**
+
 - Graph is static (won't change) → DFS is simpler to implement
 - Need to output actual components → DFS naturally collects members
 - Graph is small → Difference doesn't matter
 
 **Common mistake scenarios:**
+
 - Forgetting isolated nodes → They're components too!
 - Only running DFS from node 0 → Misses other components
 - Treating directed graph as undirected → Different semantics
 
 **Grid-specific traps:**
+
 - Not checking all 4/8 directions → Missed connections
 - Stack overflow on large grids → Use BFS instead of recursive DFS
 
@@ -474,12 +480,12 @@ def count_components_uf(n: int, edges: list[list[int]]) -> int:
 
 ## Complexity Analysis
 
-| Approach | Time | Space |
-|----------|------|-------|
-| DFS | O(V + E) | O(V) |
-| BFS | O(V + E) | O(V) |
-| Union-Find | O(E × α(V)) | O(V) |
-| Grid DFS | O(rows × cols) | O(rows × cols) |
+| Approach   | Time           | Space          |
+| ---------- | -------------- | -------------- |
+| DFS        | O(V + E)       | O(V)           |
+| BFS        | O(V + E)       | O(V)           |
+| Union-Find | O(E × α(V))    | O(V)           |
+| Grid DFS   | O(rows × cols) | O(rows × cols) |
 
 α(n) is inverse Ackermann, effectively constant.
 
@@ -521,14 +527,14 @@ grid = [['1', '1'], ['1', '1']]  # 1 island
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Number of Islands | Medium | Grid components |
-| 2 | Max Area of Island | Medium | Component size |
-| 3 | Number of Connected Components | Medium | Graph components |
-| 4 | Friend Circles | Medium | Adjacency matrix |
-| 5 | Surrounded Regions | Medium | Border-connected |
-| 6 | Number of Provinces | Medium | Same as friend circles |
+| #   | Problem                        | Difficulty | Key Variation          |
+| --- | ------------------------------ | ---------- | ---------------------- |
+| 1   | Number of Islands              | Medium     | Grid components        |
+| 2   | Max Area of Island             | Medium     | Component size         |
+| 3   | Number of Connected Components | Medium     | Graph components       |
+| 4   | Friend Circles                 | Medium     | Adjacency matrix       |
+| 5   | Surrounded Regions             | Medium     | Border-connected       |
+| 6   | Number of Provinces            | Medium     | Same as friend circles |
 
 ---
 

@@ -141,6 +141,7 @@ max(nums)  # O(n), simpler than heap
 ```
 
 **Red Flags:**
+
 - "Array is read-only" → Can't use QuickSelect without copy
 - "Need guaranteed O(n)" → QuickSelect is O(n) average, not worst
 - "Data arrives as stream" → Heap is the answer
@@ -211,6 +212,7 @@ def find_kth_largest_heap(nums: list[int], k: int) -> int:
 ```
 
 **Why min heap?**
+
 - We keep k largest elements
 - Root is the smallest of these k
 - Smallest of k largest = kth largest
@@ -274,6 +276,7 @@ def find_kth_largest_quickselect(nums: list[int], k: int) -> int:
 ## QuickSelect Visual Example
 
 Finding 2nd largest in `[3, 2, 1, 5, 6, 4]`:
+
 - 2nd largest = element at index 4 (0-indexed) when sorted ascending
 
 ```
@@ -320,16 +323,17 @@ Less efficient than min heap approach when k << n.
 
 ## Comparison of Approaches
 
-| Approach | Time (Average) | Time (Worst) | Space | Best When |
-|----------|----------------|--------------|-------|-----------|
-| Sort | O(n log n) | O(n log n) | O(n) | k ≈ n |
-| Min Heap K | O(n log k) | O(n log k) | O(k) | k << n, streaming |
-| Max Heap N | O(n + k log n) | O(n + k log n) | O(n) | k is very small |
-| QuickSelect | O(n) | O(n²) | O(1)* | Single query |
+| Approach    | Time (Average) | Time (Worst)   | Space  | Best When         |
+| ----------- | -------------- | -------------- | ------ | ----------------- |
+| Sort        | O(n log n)     | O(n log n)     | O(n)   | k ≈ n             |
+| Min Heap K  | O(n log k)     | O(n log k)     | O(k)   | k << n, streaming |
+| Max Heap N  | O(n + k log n) | O(n + k log n) | O(n)   | k is very small   |
+| QuickSelect | O(n)           | O(n²)          | O(1)\* | Single query      |
 
-*O(log n) for recursion stack in practice
+\*O(log n) for recursion stack in practice
 
 **Recommendation:**
+
 - Interview: Start with heap O(n log k), mention QuickSelect O(n)
 - Production: QuickSelect for single query, heap for streaming
 
@@ -470,13 +474,13 @@ A: Consider segment tree or wavelet tree (advanced).
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Kth Largest Element in an Array | Medium | Core problem |
-| 2 | Kth Smallest Element in a Sorted Matrix | Medium | Matrix variation |
-| 3 | Find K Pairs with Smallest Sums | Medium | Two arrays |
-| 4 | Kth Smallest Element in a BST | Medium | Tree variation |
-| 5 | Third Maximum Number | Easy | Handle duplicates |
+| #   | Problem                                 | Difficulty | Key Variation     |
+| --- | --------------------------------------- | ---------- | ----------------- |
+| 1   | Kth Largest Element in an Array         | Medium     | Core problem      |
+| 2   | Kth Smallest Element in a Sorted Matrix | Medium     | Matrix variation  |
+| 3   | Find K Pairs with Smallest Sums         | Medium     | Two arrays        |
+| 4   | Kth Smallest Element in a BST           | Medium     | Tree variation    |
+| 5   | Third Maximum Number                    | Easy       | Handle duplicates |
 
 ---
 

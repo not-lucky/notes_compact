@@ -1,9 +1,11 @@
 # Solutions: 2D DP Basics (Grid Problems)
 
 ## 1. Unique Paths
+
 **Problem:** Count paths from top-left to bottom-right in $m \times n$ grid.
 
 ### Optimal Python Solution
+
 ```python
 def unique_paths(m: int, n: int) -> int:
     # State: dp[i][j] = paths to reach cell (i, j)
@@ -16,15 +18,18 @@ def unique_paths(m: int, n: int) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 2. Unique Paths II (With Obstacles)
+
 **Problem:** Count paths, avoiding obstacles (1 = obstacle).
 
 ### Optimal Python Solution
+
 ```python
 def unique_paths_with_obstacles(grid: list[list[int]]) -> int:
     m, n = len(grid), len(grid[0])
@@ -41,15 +46,18 @@ def unique_paths_with_obstacles(grid: list[list[int]]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 3. Minimum Path Sum
+
 **Problem:** Find path with minimum sum from top-left to bottom-right.
 
 ### Optimal Python Solution
+
 ```python
 def min_path_sum(grid: list[list[int]]) -> int:
     m, n = len(grid), len(grid[0])
@@ -66,16 +74,19 @@ def min_path_sum(grid: list[list[int]]) -> int:
 ```
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 4. Triangle
+
 **Problem:** Minimum path sum from top to bottom of a triangle.
 
 ### Optimal Python Solution
-```python
+
+````python
 def minimum_total(triangle: list[list[int]]) -> int:
     # Process bottom-up to avoid edge cases
     dp = triangle[-1][:]
@@ -84,6 +95,7 @@ def minimum_total(triangle: list[list[int]]) -> int:
             dp[j] = triangle[i][j] + min(dp[j], dp[j+1])
     return dp[0]
 
+```
 ---
 
 ## 7. Cherry Pickup
@@ -131,18 +143,21 @@ def cherry_pickup(grid: list[list[int]]) -> int:
 
     result = dp(0, 0, 0)
     return max(0, result)
-```
+````
 
 ### Explanation
+
 1.  **Dual Traversal**: Instead of one round trip (start to end, then end to start), we simulate two agents moving from `(0,0)` to `(n-1, n-1)` simultaneously.
 2.  **State Reduction**: Normally we need 4 coordinates `(r1, c1, r2, c2)`. However, since both move one step at a time, `r1 + c1` must equal `r2 + c2`. We can derive `c2` as `r1 + c1 - r2`, reducing the state to 3 variables.
 3.  **Cherry Collection**: If both agents are on the same cell, they only collect the cherry once.
 4.  **Transitions**: Each agent can move Right or Down, leading to 4 possible combined movements.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$ - There are $n \times n \times n$ possible states.
 - **Space:** $O(n^3)$ - For the memoization table.
-```
+
+````
 
 ### Complexity Analysis
 - **Time:** $O(n^2)$ - Number of elements in triangle.
@@ -175,19 +190,22 @@ def maximal_square(matrix: list[list[str]]) -> int:
             prev_diag = temp
 
     return max_side * max_side
-```
+````
 
 ### Complexity Analysis
+
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
 
 ---
 
 ## 6. Dungeon Game
+
 **Problem:** Minimum initial HP to reach bottom-right.
 
 ### Optimal Python Solution
-```python
+
+````python
 def calculate_minimum_hp(dungeon: list[list[int]]) -> int:
     # Process backwards from destination to start
     m, n = len(dungeon), len(dungeon[0])
@@ -202,6 +220,7 @@ def calculate_minimum_hp(dungeon: list[list[int]]) -> int:
 
     return dp[0]
 
+```
 ---
 
 ## 7. Cherry Pickup
@@ -249,19 +268,23 @@ def cherry_pickup(grid: list[list[int]]) -> int:
 
     result = dp(0, 0, 0)
     return max(0, result)
-```
+````
 
 ### Explanation
+
 1.  **Dual Traversal**: Instead of one round trip (start to end, then end to start), we simulate two agents moving from `(0,0)` to `(n-1, n-1)` simultaneously.
 2.  **State Reduction**: Normally we need 4 coordinates `(r1, c1, r2, c2)`. However, since both move one step at a time, `r1 + c1` must equal `r2 + c2`. We can derive `c2` as `r1 + c1 - r2`, reducing the state to 3 variables.
 3.  **Cherry Collection**: If both agents are on the same cell, they only collect the cherry once.
 4.  **Transitions**: Each agent can move Right or Down, leading to 4 possible combined movements.
 
 ### Complexity Analysis
+
 - **Time:** $O(n^3)$ - There are $n \times n \times n$ possible states.
 - **Space:** $O(n^3)$ - For the memoization table.
+
 ```
 
 ### Complexity Analysis
 - **Time:** $O(mn)$
 - **Space:** $O(n)$
+```

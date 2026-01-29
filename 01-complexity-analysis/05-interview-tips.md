@@ -7,6 +7,7 @@
 **The "Teach Back" Mental Model**
 
 Think of explaining complexity like teaching a colleague:
+
 - **Bad**: "It's O(n²)." (What? Why?)
 - **Good**: "We have nested loops, each running n times, so O(n²)."
 - **Great**: "The outer loop runs n times. For each iteration, the inner loop also runs n times, giving us n × n = O(n²)."
@@ -14,6 +15,7 @@ Think of explaining complexity like teaching a colleague:
 **The "Trade-off Story" Framework**
 
 Every solution has trade-offs. Frame them as choices:
+
 - "We can solve this in O(n²) time with O(1) space, OR O(n) time with O(n) space. The hash table version uses more memory but is much faster."
 
 This shows you understand there's no free lunch—every optimization costs something.
@@ -21,6 +23,7 @@ This shows you understand there's no free lunch—every optimization costs somet
 **The "Bottleneck Identification" Skill**
 
 When asked "Can you do better?", identify what's slow:
+
 1. Find the highest-complexity operation
 2. Ask: "Can this operation be done faster with a different data structure?"
 3. Propose the trade-off
@@ -54,6 +57,7 @@ State your approach's complexity **before you write code**:
 > "My approach will use a hash map to track seen elements. This gives us O(n) time and O(n) space. Should I proceed with this approach?"
 
 This shows:
+
 - You think before coding
 - You know the trade-offs
 - You're collaborative
@@ -67,6 +71,7 @@ If you didn't mention it upfront:
 ### When Asked
 
 Be ready for:
+
 - "What's the time complexity?"
 - "What's the space complexity?"
 - "Can you do better?"
@@ -91,9 +96,11 @@ or
 ### Explain Why (When Non-Obvious)
 
 For simple cases:
+
 > "Time is O(n) since we loop through the array once."
 
 For complex cases:
+
 > "The outer loop runs n times. The inner binary search is O(log n). So total time is O(n log n). Space is O(1) since we only use a few pointers."
 
 ---
@@ -125,9 +132,11 @@ This is a common follow-up. Here's how to handle it:
 ### "What's the time complexity of your solution?"
 
 **Good response:**
+
 > "The time complexity is O(n) where n is the length of the input array. We iterate through the array once, and each operation inside the loop is O(1)."
 
 **Better response (for complex cases):**
+
 > "Let me walk through it: The while loop runs at most n times because left and right converge. Each iteration does O(1) work. So the total time is O(n). For space, we use only three pointers, so it's O(1)."
 
 ### "Why did you choose this data structure?"
@@ -137,9 +146,11 @@ This is a common follow-up. Here's how to handle it:
 ### "Is there a better approach?"
 
 If you know one:
+
 > "Yes, if the array is sorted, we could use two pointers instead of a hash map. This would give us O(n) time with O(1) space."
 
 If you're not sure:
+
 > "This is O(n log n) time. I'm not immediately seeing how to do better. For comparison-based approaches, O(n log n) is typically optimal. Is there a property of the input I should consider?"
 
 ### "What if the input is very large?"
@@ -156,11 +167,11 @@ Interviewers love trade-off questions. Here's how to structure your response:
 
 > "We have two approaches:
 >
-> Approach A: O(___) time, O(___) space. Advantage: ___. Disadvantage: ___.
+> Approach A: O(**_) time, O(_**) space. Advantage: **_. Disadvantage: _**.
 >
-> Approach B: O(___) time, O(___) space. Advantage: ___. Disadvantage: ___.
+> Approach B: O(**_) time, O(_**) space. Advantage: **_. Disadvantage: _**.
 >
-> I'd choose Approach ___ because ___. Does that align with your constraints?"
+> I'd choose Approach **_ because _**. Does that align with your constraints?"
 
 ### Example: Two Sum
 
@@ -205,12 +216,14 @@ If relevant:
 ## Red Flags to Avoid
 
 ### Don't Say:
+
 - "The complexity is O(n)" (Missing space!)
 - "It's just a for loop, so it's fast" (Be precise)
 - "I think it's O(n)" (Sound confident)
 - "The complexity is O(2n)" (Simplify: O(n))
 
 ### Don't Do:
+
 - Forget to analyze space complexity
 - Forget recursion stack space
 - Miss hidden O(n) operations (like `in` on a list)
@@ -225,6 +238,7 @@ If relevant:
 You wrote a single-pass solution.
 
 **You say:**
+
 > "Time is O(n) since we visit each element exactly once. Space is O(1) since we only use a few variables."
 
 ### Scenario 2: Nested Loops That Aren't O(n²)
@@ -232,6 +246,7 @@ You wrote a single-pass solution.
 You wrote a two-pointer solution.
 
 **You say:**
+
 > "While this has two pointers in a while loop, it's actually O(n) time. Both left and right can only move n total times combined—left increases, right decreases, and they meet in the middle. So it's 2n operations maximum, which is O(n)."
 
 ### Scenario 3: Recursive Solution
@@ -239,6 +254,7 @@ You wrote a two-pointer solution.
 You wrote a recursive DFS.
 
 **You say:**
+
 > "Time is O(n) where n is the number of nodes—we visit each node once. Space is O(h) where h is the height of the tree, due to the recursion stack. In the worst case of a skewed tree, that's O(n). For a balanced tree, it's O(log n)."
 
 ### Scenario 4: Asked to Optimize
@@ -246,6 +262,7 @@ You wrote a recursive DFS.
 Current solution is O(n²).
 
 **You say:**
+
 > "The bottleneck is the inner loop searching for the complement in O(n). If I use a hash set, I can reduce that to O(1) lookup, making the overall algorithm O(n). The trade-off is O(n) space for the set."
 
 ---
@@ -265,26 +282,26 @@ Before stating your complexity, verify:
 
 ## Quick Phrases for Interviews
 
-| Situation | What to Say |
-|-----------|-------------|
-| Stating complexity | "Time is O(n), space is O(1)." |
-| Explaining why | "...because the loop runs n times with O(1) work each." |
-| Trade-off exists | "We can trade space for time here..." |
-| Asked to optimize | "The bottleneck is ___. We could reduce it by..." |
-| Can't optimize | "I believe this is optimal because..." |
-| Unsure | "Let me trace through this with an example to verify..." |
+| Situation          | What to Say                                              |
+| ------------------ | -------------------------------------------------------- |
+| Stating complexity | "Time is O(n), space is O(1)."                           |
+| Explaining why     | "...because the loop runs n times with O(1) work each."  |
+| Trade-off exists   | "We can trade space for time here..."                    |
+| Asked to optimize  | "The bottleneck is \_\_\_. We could reduce it by..."     |
+| Can't optimize     | "I believe this is optimal because..."                   |
+| Unsure             | "Let me trace through this with an example to verify..." |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Focus |
-|---|---------|------------|-------|
-| 1 | Explain complexity of your own code | Easy | Communication |
-| 2 | Identify bottleneck and optimize | Medium | Optimization |
-| 3 | Compare two approaches with trade-offs | Medium | Trade-off discussion |
-| 4 | Prove why complexity can't be improved | Hard | Lower bounds |
-| 5 | Mock interview with complexity questions | Medium | Full practice |
+| #   | Problem                                  | Difficulty | Focus                |
+| --- | ---------------------------------------- | ---------- | -------------------- |
+| 1   | Explain complexity of your own code      | Easy       | Communication        |
+| 2   | Identify bottleneck and optimize         | Medium     | Optimization         |
+| 3   | Compare two approaches with trade-offs   | Medium     | Trade-off discussion |
+| 4   | Prove why complexity can't be improved   | Hard       | Lower bounds         |
+| 5   | Mock interview with complexity questions | Medium     | Full practice        |
 
 ---
 
@@ -311,12 +328,12 @@ Before stating your complexity, verify:
 
 ### Common Communication Mistakes
 
-| Mistake | Better Approach |
-|---------|-----------------|
-| "The complexity is O(n)" (forgot space) | "Time is O(n), space is O(1)" |
-| Long-winded mathematical proofs | Brief justification: "one loop, n iterations" |
-| Uncertain: "I think it's O(n)?" | Confident: "This is O(n) because..." |
-| Defensive when wrong | "Good catch, let me reconsider..." |
+| Mistake                                 | Better Approach                               |
+| --------------------------------------- | --------------------------------------------- |
+| "The complexity is O(n)" (forgot space) | "Time is O(n), space is O(1)"                 |
+| Long-winded mathematical proofs         | Brief justification: "one loop, n iterations" |
+| Uncertain: "I think it's O(n)?"         | Confident: "This is O(n) because..."          |
+| Defensive when wrong                    | "Good catch, let me reconsider..."            |
 
 ---
 

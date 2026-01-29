@@ -1,12 +1,15 @@
 # BST Iterator Solutions
 
 ## 1. Binary Search Tree Iterator
+
 **Problem Statement**: Implement the `BSTIterator` class that represents an iterator over the in-order traversal of a binary search tree (BST).
+
 - `BSTIterator(TreeNode root)` Initializes an object of the `BSTIterator` class.
 - `boolean hasNext()` Returns `true` if there exists a number in the traversal to the right of the pointer, otherwise returns `false`.
 - `int next()` Moves the pointer to the right, then returns the number at the pointer.
 
 ### Examples & Edge Cases
+
 - **Example 1**:
   ```python
   iterator = BSTIterator(root)
@@ -18,7 +21,8 @@
 - **Edge Case - Skewed Tree**: Should handle correctly with $O(h)$ space.
 
 ### Optimal Python Solution (O(h) Space)
-```python
+
+````python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -51,6 +55,7 @@ class BSTIterator:
     def hasNext(self) -> bool:
         """Returns True if there are more nodes to process."""
         return len(self.stack) > 0
+```
 
 ---
 
@@ -87,19 +92,22 @@ class StringIterator:
 
     def hasNext(self) -> bool:
         return self.index < len(self.tokens)
-```
+````
 
 ### Explanation
+
 1.  **Tokenization**: We use a regular expression to split the string into pairs of (character, count).
 2.  **State**: We track the `index` of the current token and the `current_count` of the character at that index.
 3.  **Consumption**: Each call to `next()` decrements the count. When the count hits zero, we move to the next token.
 
 ### Complexity Analysis
+
 - **Time Complexity**:
-    - `__init__`: **O(n)** to parse the string.
-    - `next()`/`hasNext()`: **O(1)**.
+  - `__init__`: **O(n)** to parse the string.
+  - `next()`/`hasNext()`: **O(1)**.
 - **Space Complexity**: **O(n)** to store the tokens.
-```
+
+````
 
 ### Explanation
 1.  **Controlled Recursion**: Instead of flattening the entire tree into an array ($O(n)$ space), we simulate an inorder traversal using a stack.
@@ -139,9 +147,10 @@ class PeekingIterator:
 
     def hasNext(self):
         return self._next is not None
-```
+````
 
 ### Explanation
+
 - We "look ahead" by one element and store it in `self._next`.
 - `peek()` simply returns this cached value.
 - `next()` returns the cached value and then refills it from the source iterator.
@@ -149,9 +158,11 @@ class PeekingIterator:
 ---
 
 ## 3. Flatten Nested List Iterator
+
 **Problem Statement**: Given a nested list of integers, implement an iterator to flatten it.
 
 ### Optimal Python Solution
+
 ```python
 class NestedIterator:
     def __init__(self, nestedList):
@@ -174,15 +185,18 @@ class NestedIterator:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: `next()` is $O(1)$, `hasNext()` is amortized $O(1)$.
 - **Space Complexity**: $O(N)$ where $N$ is total number of integers + lists.
 
 ---
 
 ## 4. Zigzag Iterator
+
 **Problem Statement**: Given two 1d vectors, implement an iterator to return their elements alternately.
 
 ### Optimal Python Solution
+
 ```python
 class ZigzagIterator:
     def __init__(self, v1: list[int], v2: list[int]):
@@ -205,5 +219,6 @@ class ZigzagIterator:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity**: **O(1)** per call.
 - **Space Complexity**: **O(k)** where $k$ is number of vectors.

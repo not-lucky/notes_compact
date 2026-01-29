@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Spiral Matrix
+
 **Problem Statement**: Given an `m x n` matrix, return all elements of the matrix in spiral order.
 
 **Examples & Edge Cases**:
+
 - Example: `[[1,2,3],[4,5,6],[7,8,9]]` -> `[1,2,3,6,9,8,7,4,5]`
 - Edge Case: Single row or single column matrix.
 - Edge Case: Empty matrix.
 
 **Optimal Python Solution**:
+
 ```python
 def spiralOrder(matrix: list[list[int]]) -> list[int]:
     if not matrix: return []
@@ -48,15 +51,18 @@ def spiralOrder(matrix: list[list[int]]) -> list[int]:
 We maintain four boundaries: `top`, `bottom`, `left`, and `right`. We traverse the outer perimeter, then shrink the boundaries and repeat until all elements are visited. We must check `top <= bottom` and `left <= right` before the backward passes (left and up) to avoid duplicate visits in single-row/column scenarios.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(M * N), where M is rows and N is columns.
+
+- **Time Complexity**: O(M \* N), where M is rows and N is columns.
 - **Space Complexity**: O(1) extra space (excluding output).
 
 ---
 
 ### 2. Spiral Matrix II
+
 **Problem Statement**: Given a positive integer `n`, generate an `n x n` matrix filled with elements from 1 to `n^2` in spiral order.
 
 **Optimal Python Solution**:
+
 ```python
 def generateMatrix(n: int) -> list[list[int]]:
     matrix = [[0] * n for _ in range(n)]
@@ -89,15 +95,18 @@ def generateMatrix(n: int) -> list[list[int]]:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(1) extra space (excluding result).
 
 ---
 
 ### 3. Rotate Image
+
 **Problem Statement**: You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise). You have to rotate the image in-place.
 
 **Optimal Python Solution**:
+
 ```python
 def rotate(matrix: list[list[int]]) -> None:
     n = len(matrix)
@@ -116,15 +125,18 @@ def rotate(matrix: list[list[int]]) -> None:
 A 90-degree clockwise rotation is mathematically equivalent to transposing the matrix (swapping elements across the diagonal) followed by reversing each row horizontally.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n²).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 4. Set Matrix Zeroes
+
 **Problem Statement**: Given an `m x n` integer matrix `matrix`, if an element is 0, set its entire row and column to 0's. Do it in-place.
 
 **Optimal Python Solution**:
+
 ```python
 def setZeroes(matrix: list[list[int]]) -> None:
     R, C = len(matrix), len(matrix[0])
@@ -152,15 +164,18 @@ def setZeroes(matrix: list[list[int]]) -> None:
 ```
 
 **Complexity Analysis**:
-- **Time Complexity**: O(M * N).
+
+- **Time Complexity**: O(M \* N).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 5. Search a 2D Matrix
+
 **Problem Statement**: Write an efficient algorithm that searches for a value in an `m x n` matrix. Each row is sorted in non-decreasing order and the first integer of each row is greater than the last integer of the previous row.
 
 **Optimal Python Solution**:
+
 ```python
 def searchMatrix(matrix: list[list[int]], target: int) -> bool:
     if not matrix: return False
@@ -184,15 +199,18 @@ def searchMatrix(matrix: list[list[int]], target: int) -> bool:
 Since the entire matrix is essentially one long sorted list, we can perform binary search on it. We treat it as a virtual 1D array of size `M * N`.
 
 **Complexity Analysis**:
-- **Time Complexity**: O(log(M * N)).
+
+- **Time Complexity**: O(log(M \* N)).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 6. Search a 2D Matrix II
+
 **Problem Statement**: Search for a value in an `m x n` matrix where each row is sorted in ascending order and each column is sorted in ascending order.
 
 **Optimal Python Solution**:
+
 ```python
 def searchMatrix(matrix: list[list[int]], target: int) -> bool:
     if not matrix: return False
@@ -213,15 +231,18 @@ def searchMatrix(matrix: list[list[int]], target: int) -> bool:
 ```
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(M + N).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 7. Diagonal Traverse
+
 **Problem Statement**: Given an `m x n` matrix, return all elements of the matrix in a diagonal zigzag order.
 
 **Optimal Python Solution**:
+
 ```python
 def findDiagonalOrder(matrix: list[list[int]]) -> list[int]:
     if not matrix: return []
@@ -257,15 +278,18 @@ def findDiagonalOrder(matrix: list[list[int]]) -> list[int]:
 ```
 
 **Complexity Analysis**:
-- **Time Complexity**: O(M * N).
+
+- **Time Complexity**: O(M \* N).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 8. Transpose Matrix
+
 **Problem Statement**: Given a 2D integer array `matrix`, return the transpose of `matrix`.
 
 **Optimal Python Solution**:
+
 ```python
 def transpose(matrix: list[list[int]]) -> list[list[int]]:
     R, C = len(matrix), len(matrix[0])
@@ -278,15 +302,18 @@ def transpose(matrix: list[list[int]]) -> list[list[int]]:
 ```
 
 **Complexity Analysis**:
-- **Time Complexity**: O(M * N).
-- **Space Complexity**: O(M * N) for the result.
+
+- **Time Complexity**: O(M \* N).
+- **Space Complexity**: O(M \* N) for the result.
 
 ---
 
 ### 9. Reshape the Matrix
+
 **Problem Statement**: In MATLAB, there is a handy function called `reshape` which can reshape an `m x n` matrix into a new one with a different size `r x c` keeping its original data.
 
 **Optimal Python Solution**:
+
 ```python
 def matrixReshape(mat: list[list[int]], r: int, c: int) -> list[list[int]]:
     R, C = len(mat), len(mat[0])
@@ -301,5 +328,6 @@ def matrixReshape(mat: list[list[int]], r: int, c: int) -> list[list[int]]:
 ```
 
 **Complexity Analysis**:
-- **Time Complexity**: O(r * c).
-- **Space Complexity**: O(r * c).
+
+- **Time Complexity**: O(r \* c).
+- **Space Complexity**: O(r \* c).

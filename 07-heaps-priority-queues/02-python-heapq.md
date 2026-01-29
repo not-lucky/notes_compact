@@ -68,6 +68,7 @@ So `(priority, data)` naturally sorts by priority first. But there's a trap:
 **Mental Model: The Hospital Waiting Room**
 
 Think of heapq as a hospital triage system:
+
 - Lower number = higher priority (more urgent)
 - When you call `heappop()`, the most urgent patient (lowest number) leaves
 - Ties are broken by arrival order (that's why we use counter)
@@ -164,6 +165,7 @@ print(heap)  # [1, 3, 2, 7, 4] - NOT [1, 2, 3, 4, 7]!
 ```
 
 **Red Flags:**
+
 - "Need to look up or modify specific elements" → Use dict + sorted structure
 - "Multiple threads accessing heap" → Use queue.PriorityQueue
 - "Need sorted order at all times" → Use sortedcontainers.SortedList
@@ -491,27 +493,27 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
 
 ## Complexity Summary
 
-| Function | Time | Space | Notes |
-|----------|------|-------|-------|
-| heappush | O(log n) | O(1) | Add element |
-| heappop | O(log n) | O(1) | Remove minimum |
-| heapify | O(n) | O(1) | Convert list to heap |
-| heappushpop | O(log n) | O(1) | Push then pop |
-| heapreplace | O(log n) | O(1) | Pop then push |
-| nlargest(k) | O(n log k) | O(k) | K largest elements |
-| nsmallest(k) | O(n log k) | O(k) | K smallest elements |
-| heap[0] | O(1) | O(1) | Peek minimum |
+| Function     | Time       | Space | Notes                |
+| ------------ | ---------- | ----- | -------------------- |
+| heappush     | O(log n)   | O(1)  | Add element          |
+| heappop      | O(log n)   | O(1)  | Remove minimum       |
+| heapify      | O(n)       | O(1)  | Convert list to heap |
+| heappushpop  | O(log n)   | O(1)  | Push then pop        |
+| heapreplace  | O(log n)   | O(1)  | Pop then push        |
+| nlargest(k)  | O(n log k) | O(k)  | K largest elements   |
+| nsmallest(k) | O(n log k) | O(k)  | K smallest elements  |
+| heap[0]      | O(1)       | O(1)  | Peek minimum         |
 
 ---
 
 ## When to Use nlargest/nsmallest
 
-| Scenario | Best Approach | Time |
-|----------|---------------|------|
-| K = 1 | min()/max() | O(n) |
-| K small (< log n) | nlargest/nsmallest | O(n log k) |
-| K ≈ n | sorted()[:k] | O(n log n) |
-| K large (> n/2) | sorted() then slice | O(n log n) |
+| Scenario          | Best Approach       | Time       |
+| ----------------- | ------------------- | ---------- |
+| K = 1             | min()/max()         | O(n)       |
+| K small (< log n) | nlargest/nsmallest  | O(n log k) |
+| K ≈ n             | sorted()[:k]        | O(n log n) |
+| K large (> n/2)   | sorted() then slice | O(n log n) |
 
 ---
 
@@ -557,13 +559,13 @@ heapq.heapify(heap)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Kth Largest Element in a Stream | Easy | heappush, len check |
-| 2 | Last Stone Weight | Easy | Max heap with negation |
-| 3 | Top K Frequent Elements | Medium | Counter + nlargest |
-| 4 | Merge k Sorted Lists | Medium | Tuple comparison |
-| 5 | Find Median from Data Stream | Hard | Two heaps |
+| #   | Problem                         | Difficulty | Key Concept            |
+| --- | ------------------------------- | ---------- | ---------------------- |
+| 1   | Kth Largest Element in a Stream | Easy       | heappush, len check    |
+| 2   | Last Stone Weight               | Easy       | Max heap with negation |
+| 3   | Top K Frequent Elements         | Medium     | Counter + nlargest     |
+| 4   | Merge k Sorted Lists            | Medium     | Tuple comparison       |
+| 5   | Find Median from Data Stream    | Hard       | Two heaps              |
 
 ---
 

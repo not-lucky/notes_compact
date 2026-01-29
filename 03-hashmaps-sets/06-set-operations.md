@@ -22,12 +22,14 @@ The key insight: when you only care about existence (not count or order), use a 
 **Why Sets Over Lists for Membership?**
 
 Lists check membership by scanning every element:
+
 ```python
 # List: "Is 5 in here?" → Check index 0, 1, 2, ... → O(n)
 5 in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # Scans all elements
 ```
 
 Sets use hashing:
+
 ```python
 # Set: "Is 5 in here?" → hash(5) → check bucket → O(1)
 5 in {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}  # Direct lookup
@@ -46,6 +48,7 @@ Filing Cabinet (Set):
 **The XOR Trick Explained**
 
 XOR has magical properties for "find the unique element":
+
 ```
 a ^ a = 0      (anything XORed with itself is 0)
 a ^ 0 = a      (anything XORed with 0 is itself)
@@ -61,6 +64,7 @@ No extra space needed.
 **Why "Check Sequence Start" for Longest Consecutive**
 
 Naive approach:
+
 ```python
 for num in nums:
     count = 1
@@ -68,11 +72,13 @@ for num in nums:
 ```
 
 Problem: If sequence is [1,2,3,4,5], we count:
+
 - Starting at 1: length 5
 - Starting at 2: length 4 (wasteful!)
 - Starting at 3: length 3 (wasteful!)
 
 Optimization: Only start counting from sequence START:
+
 ```python
 if num - 1 not in set:  # This is the start!
     count from here
@@ -83,10 +89,12 @@ Now we count each element exactly once → O(n).
 **Bidirectional Mapping for Isomorphism**
 
 "egg" → "add": Is this a valid character replacement?
+
 - e→a, g→d
 - Both directions must be consistent
 
 One-way mapping isn't enough:
+
 ```
 "ab" → "cc": a→c, b→c
 One-way: looks fine (each letter maps somewhere)
@@ -94,6 +102,7 @@ But: two different letters map to same letter → NOT isomorphic
 ```
 
 Need BOTH:
+
 - s_to_t: each s-char maps to exactly one t-char
 - t_to_s: each t-char maps to exactly one s-char
 
@@ -104,6 +113,7 @@ Need BOTH:
 **1. Order Matters**
 
 Sets are unordered:
+
 ```python
 s = {3, 1, 2}
 list(s)  # Could be [1, 2, 3] or [2, 1, 3] or...
@@ -114,6 +124,7 @@ If you need insertion order: use dict (Python 3.7+) or list.
 **2. Need to Count Occurrences**
 
 Sets only store existence, not frequency:
+
 ```python
 {1, 1, 1, 2, 2, 3}  # Becomes {1, 2, 3}
 ```
@@ -123,6 +134,7 @@ For counts, use Counter or dict.
 **3. Need to Preserve Duplicates**
 
 Intersection with counts (how many times does element appear in both?):
+
 ```python
 # Set intersection: [1,1,2] ∩ [1,1,1] = {1, 2}... loses count info
 # Need Counter for: [1,1,2] ∩ [1,1,1] = [1,1]
@@ -131,6 +143,7 @@ Intersection with counts (how many times does element appear in both?):
 **4. Elements Aren't Hashable**
 
 Can't put lists or dicts in a set:
+
 ```python
 {[1, 2], [3, 4]}  # TypeError!
 # Convert to tuples: {(1, 2), (3, 4)}
@@ -139,6 +152,7 @@ Can't put lists or dicts in a set:
 **5. Need Sorted Operations**
 
 Finding "closest element" or "range of elements":
+
 ```python
 # Set: O(n) to find element closest to x
 # Sorted structure (BST, sorted list): O(log n)
@@ -147,6 +161,7 @@ Finding "closest element" or "range of elements":
 Use `sortedcontainers.SortedSet` for ordered set operations.
 
 **Red Flags:**
+
 - "Maintain insertion order" → dict or list
 - "Count occurrences in intersection" → Counter
 - "Find closest element" → Sorted structure
@@ -200,16 +215,16 @@ a >= {1, 2}      # True (superset)
 
 ### Complexity Table
 
-| Operation | Method | Time Complexity |
-|-----------|--------|-----------------|
-| Add | `s.add(x)` | O(1) average |
-| Remove | `s.remove(x)` | O(1) average |
-| Discard | `s.discard(x)` | O(1) average |
-| Membership | `x in s` | O(1) average |
-| Union | `a \| b` | O(len(a) + len(b)) |
-| Intersection | `a & b` | O(min(len(a), len(b))) |
-| Difference | `a - b` | O(len(a)) |
-| Symmetric Diff | `a ^ b` | O(len(a) + len(b)) |
+| Operation      | Method         | Time Complexity        |
+| -------------- | -------------- | ---------------------- |
+| Add            | `s.add(x)`     | O(1) average           |
+| Remove         | `s.remove(x)`  | O(1) average           |
+| Discard        | `s.discard(x)` | O(1) average           |
+| Membership     | `x in s`       | O(1) average           |
+| Union          | `a \| b`       | O(len(a) + len(b))     |
+| Intersection   | `a & b`        | O(min(len(a), len(b))) |
+| Difference     | `a - b`        | O(len(a))              |
+| Symmetric Diff | `a ^ b`        | O(len(a) + len(b))     |
 
 ---
 
@@ -720,13 +735,13 @@ def num_unique_emails(emails: list[str]) -> int:
 
 ## Set vs List vs Dict Comparison
 
-| Need | Use | Why |
-|------|-----|-----|
-| Check existence | Set | O(1) lookup |
-| Count occurrences | Dict/Counter | Need frequency |
-| Preserve order | List or dict (3.7+) | Sets are unordered |
-| Remove duplicates | Set | Automatic dedup |
-| Find intersection | Set | Built-in & operator |
+| Need              | Use                 | Why                 |
+| ----------------- | ------------------- | ------------------- |
+| Check existence   | Set                 | O(1) lookup         |
+| Count occurrences | Dict/Counter        | Need frequency      |
+| Preserve order    | List or dict (3.7+) | Sets are unordered  |
+| Remove duplicates | Set                 | Automatic dedup     |
+| Find intersection | Set                 | Built-in & operator |
 
 ---
 
@@ -755,18 +770,18 @@ set() <= {1}      # True (empty is subset of everything)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Intersection of Two Arrays | Easy | Set intersection |
-| 2 | Intersection of Two Arrays II | Easy | Counter |
-| 3 | Contains Duplicate | Easy | Set size |
-| 4 | Single Number | Easy | XOR trick |
-| 5 | Happy Number | Easy | Cycle detection |
-| 6 | Longest Consecutive Sequence | Medium | Set + sequence start |
-| 7 | Missing Number | Easy | Sum or XOR |
-| 8 | Find All Numbers Disappeared | Easy | Index marking |
-| 9 | Isomorphic Strings | Easy | Bidirectional mapping |
-| 10 | Word Pattern | Easy | Pattern matching |
+| #   | Problem                       | Difficulty | Pattern               |
+| --- | ----------------------------- | ---------- | --------------------- |
+| 1   | Intersection of Two Arrays    | Easy       | Set intersection      |
+| 2   | Intersection of Two Arrays II | Easy       | Counter               |
+| 3   | Contains Duplicate            | Easy       | Set size              |
+| 4   | Single Number                 | Easy       | XOR trick             |
+| 5   | Happy Number                  | Easy       | Cycle detection       |
+| 6   | Longest Consecutive Sequence  | Medium     | Set + sequence start  |
+| 7   | Missing Number                | Easy       | Sum or XOR            |
+| 8   | Find All Numbers Disappeared  | Easy       | Index marking         |
+| 9   | Isomorphic Strings            | Easy       | Bidirectional mapping |
+| 10  | Word Pattern                  | Easy       | Pattern matching      |
 
 ---
 

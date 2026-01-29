@@ -3,14 +3,17 @@
 ## Practice Problems
 
 ### 1. Longest Substring Without Repeating Characters
+
 **Problem Statement**: Given a string `s`, find the length of the longest substring without repeating characters.
 
 **Examples & Edge Cases**:
+
 - Example: `"abcabcbb"` -> `3` (`"abc"`)
 - Edge Case: Empty string.
 - Edge Case: String with all same characters.
 
 **Optimal Python Solution**:
+
 ```python
 def lengthOfLongestSubstring(s: str) -> int:
     # char_map stores the last seen index of each character
@@ -35,15 +38,18 @@ def lengthOfLongestSubstring(s: str) -> int:
 We use a sliding window defined by `left` and `right`. As we move `right`, we keep track of the last seen index of each character in a hash map. If we encounter a character that is already in our current window, we move the `left` pointer to the position after its last occurrence.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n), where n is the length of the string. We iterate through the string once.
 - **Space Complexity**: O(min(n, m)), where m is the size of the character set (e.g., 26 for letters, or 128/256 for ASCII).
 
 ---
 
 ### 2. Minimum Window Substring
+
 **Problem Statement**: Given two strings `s` and `t`, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -93,15 +99,18 @@ def minWindow(s: str, t: str) -> str:
 We expand the window using the `r` pointer until all characters of `t` are present. Then we shrink the window from the `l` pointer as much as possible while maintaining the property that all characters of `t` are still in the window. We track the smallest window seen so far.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n + m), where n is length of `s` and m is length of `t`.
 - **Space Complexity**: O(n + m).
 
 ---
 
 ### 3. Longest Substring with At Most K Distinct Characters
+
 **Problem Statement**: Given a string `s` and an integer `k`, return the length of the longest substring of `s` that contains at most `k` distinct characters.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -132,15 +141,18 @@ def lengthOfLongestSubstringKDistinct(s: str, k: int) -> int:
 We use a frequency map to keep track of distinct characters and their counts in the current window. If the number of distinct characters exceeds `k`, we move the `left` pointer until we remove a character completely from the map.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(k) for the frequency map.
 
 ---
 
 ### 4. Longest Repeating Character Replacement
+
 **Problem Statement**: You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times. Return the length of the longest substring containing the same letter you can get after performing the above operations.
 
 **Optimal Python Solution**:
+
 ```python
 def characterReplacement(s: str, k: int) -> int:
     count = {}
@@ -165,15 +177,18 @@ def characterReplacement(s: str, k: int) -> int:
 A window is valid if we can turn all characters into the most frequent character using at most `k` operations. The number of operations needed is `window_length - max_frequency`. We maintain this property by shrinking `left` whenever it's violated.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(26) = O(1).
 
 ---
 
 ### 5. Fruit Into Baskets
+
 **Problem Statement**: You are visiting a farm that has a single row of fruit trees from left to right. You have two baskets, and each basket can only hold a single type of fruit. There is no limit on the amount of fruit each basket can hold. You want to collect as much fruit as possible. Starting from any tree of your choice, you must pick exactly one fruit from every tree while moving to the right. The process stops when you reach a tree with fruit that cannot fit in your baskets.
 
 **Optimal Python Solution**:
+
 ```python
 from collections import Counter
 
@@ -201,15 +216,18 @@ def totalFruit(fruits: list[int]) -> int:
 The problem translates to finding the longest contiguous subarray containing at most two unique numbers. We use a sliding window and a frequency map to enforce this constraint.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1) (maximum 3 keys in Counter).
 
 ---
 
 ### 6. Subarray Product Less Than K
+
 **Problem Statement**: Given an array of integers `nums` and an integer `k`, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than `k`.
 
 **Optimal Python Solution**:
+
 ```python
 def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
     if k <= 1:
@@ -236,15 +254,18 @@ def numSubarrayProductLessThanK(nums: list[int], k: int) -> int:
 As we expand the `right` pointer, we update the product. If the product becomes too large, we shrink the `left` pointer. For every valid window `[left, right]`, all subarrays starting from any index between `left` and `right` and ending at `right` are also valid. There are `right - left + 1` such subarrays.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 7. Minimum Size Subarray Sum
+
 **Problem Statement**: Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0 instead.
 
 **Optimal Python Solution**:
+
 ```python
 def minSubArrayLen(target: int, nums: list[int]) -> int:
     left = 0
@@ -266,15 +287,18 @@ def minSubArrayLen(target: int, nums: list[int]) -> int:
 We expand the window until the sum reaches the target. Then, we try to shrink the window from the left as much as possible while still maintaining a sum $\ge$ target, tracking the minimum length found.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(1).
 
 ---
 
 ### 8. Maximum Erasure Value
+
 **Problem Statement**: You are given an array of positive integers `nums` and want to erase a subarray containing unique elements. The score you get by erasing the subarray is equal to the sum of its elements. Return the maximum score you can get by erasing exactly one subarray.
 
 **Optimal Python Solution**:
+
 ```python
 def maximumUniqueSubarray(nums: list[int]) -> int:
     seen = set()
@@ -300,5 +324,6 @@ def maximumUniqueSubarray(nums: list[int]) -> int:
 We use a sliding window to find subarrays with all unique elements. We use a set to track elements in the current window and a running sum to compute the score. If we hit a duplicate, we shrink from the left until the duplicate is removed.
 
 **Complexity Analysis**:
+
 - **Time Complexity**: O(n).
 - **Space Complexity**: O(n) in worst case for the set.

@@ -7,12 +7,15 @@ This document provides optimal solutions and detailed explanations for the pract
 ## 1. Valid Sudoku
 
 ### Problem Statement
+
 Determine if a `9 x 9` Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
+
 1. Each row must contain the digits `1-9` without repetition.
 2. Each column must contain the digits `1-9` without repetition.
 3. Each of the nine `3 x 3` sub-boxes of the grid must contain the digits `1-9` without repetition.
 
 ### Optimal Python Solution (Single Pass)
+
 ```python
 def isValidSudoku(board: list[list[str]]) -> bool:
     rows = [set() for _ in range(9)]
@@ -39,6 +42,7 @@ def isValidSudoku(board: list[list[str]]) -> bool:
 ```
 
 ### Complexity Analysis
+
 - **Time Complexity:** $O(1)$ - Fixed board size ($9 \times 9 = 81$ cells).
 - **Space Complexity:** $O(1)$ - Fixed number of sets and elements.
 
@@ -47,12 +51,15 @@ def isValidSudoku(board: list[list[str]]) -> bool:
 ## 2. Sudoku Solver
 
 ### Problem Statement
+
 Write a program to solve a Sudoku puzzle by filling the empty cells. A sudoku solution must satisfy all of the following rules:
+
 1. Each of the digits `1-9` must occur exactly once in each row.
 2. Each of the digits `1-9` must occur exactly once in each column.
 3. Each of the digits `1-9` must occur exactly once in each of the 9 `3x3` sub-boxes of the grid.
 
 ### Optimal Python Solution (Backtracking with Bitmasks)
+
 Bitmasking significantly improves the constant factor for validity checks.
 
 ```python
@@ -109,11 +116,13 @@ def solveSudoku(board: list[list[str]]) -> None:
 ```
 
 ### Detailed Explanation
+
 1. **Bitmasking**: Instead of using sets, we use a 9-bit integer for each row, column, and box. If the $i$-th bit is 1, the digit $i+1$ is already used.
 2. **Empty Cell List**: Pre-identifying the cells that need filling avoids redundant nested loops inside the recursive calls.
 3. **Success Propagation**: The `backtrack` function returns a boolean. If a branch returns `True`, we immediately stop and propagate that `True` up the call stack to preserve the solved board.
 
 ### Complexity Analysis
+
 - **Time Complexity:** $O(9^k)$ where $k$ is the number of empty cells. In practice, constraints prune the search space massively.
 - **Space Complexity:** $O(k)$ for the recursion stack and the list of empty cells.
 
@@ -122,9 +131,11 @@ def solveSudoku(board: list[list[str]]) -> None:
 ## 3. Design Sudoku (Puzzle Generator)
 
 ### Problem Statement
+
 Design an algorithm to generate a valid Sudoku puzzle with a unique solution.
 
 ### Optimal Python Solution (Backtracking + Randomization)
+
 ```python
 import random
 
@@ -172,5 +183,6 @@ def generateSudoku(difficulty=40):
 ```
 
 ### Detailed Explanation
+
 1. **Randomized Filling**: We use the same backtracking logic as a solver but shuffle the digits 1-9 before trying them. This ensures we generate a different valid full board every time.
 2. **Cell Removal**: To create a puzzle, we remove digits from the full board. A professional generator would check that removing a specific cell doesn't result in multiple possible solutions by running a modified solver that counts all possibilities.

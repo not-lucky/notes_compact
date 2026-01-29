@@ -23,6 +23,7 @@ The key insight is **avoiding redundant comparisons**:
 **Mental Model - KMP (Failure Function)**: The LPS array (Longest Proper Prefix which is also Suffix) tells us: "If we fail at position j, where can we resume without rechecking earlier characters?" It's like having bookmarks in the pattern that tell us where to jump back.
 
 **Why We Skip Ahead Safely**:
+
 ```
 Text:    A B A B A B C ...
 Pattern: A B A B A C
@@ -54,6 +55,7 @@ Sometimes simpler approaches work better:
 5. **Approximate Matching**: For fuzzy matching (edit distance ≤ k), use DP-based approaches, not exact match algorithms.
 
 **Red Flags:**
+
 - "Find multiple patterns" → Aho-Corasick or suffix structures
 - "Approximate match" or "at most k differences" → Edit distance DP
 - "Replace all occurrences" → Python's `str.replace()` is fine for interviews
@@ -69,6 +71,7 @@ String matching (finding a pattern in text) appears in interviews as:
 - Testing algorithmic thinking (brute force → optimization)
 
 For interviews, focus on:
+
 1. Brute force (know the complexity)
 2. Rabin-Karp (rolling hash concept)
 3. Understanding when to use built-in functions
@@ -80,6 +83,7 @@ KMP is rarely expected but good to mention.
 ## Problem Definition
 
 Given:
+
 - Text `T` of length `n`
 - Pattern `P` of length `m`
 
@@ -320,14 +324,14 @@ When mismatch at position j, jump to lps[j-1] instead of 0.
 
 ## When to Use Which
 
-| Algorithm | Time | Space | Use When |
-|-----------|------|-------|----------|
-| Brute Force | O(nm) | O(1) | Short strings, simple cases |
-| Built-in | O(nm)* | O(1) | Production code, interview shortcuts |
-| Rabin-Karp | O(n+m) avg | O(1) | Multiple pattern search, plagiarism detection |
-| KMP | O(n+m) | O(m) | Guaranteed linear, streaming text |
+| Algorithm   | Time       | Space | Use When                                      |
+| ----------- | ---------- | ----- | --------------------------------------------- |
+| Brute Force | O(nm)      | O(1)  | Short strings, simple cases                   |
+| Built-in    | O(nm)\*    | O(1)  | Production code, interview shortcuts          |
+| Rabin-Karp  | O(n+m) avg | O(1)  | Multiple pattern search, plagiarism detection |
+| KMP         | O(n+m)     | O(m)  | Guaranteed linear, streaming text             |
 
-*Python's `find()` uses optimized algorithms internally.
+\*Python's `find()` uses optimized algorithms internally.
 
 ---
 
@@ -480,15 +484,15 @@ One comparison
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Pattern |
-|---|---------|------------|---------|
-| 1 | Implement strStr() | Easy | Brute force or KMP |
-| 2 | Repeated Substring Pattern | Easy | Pattern matching |
-| 3 | Wildcard Matching | Hard | DP |
-| 4 | Regular Expression Matching | Hard | DP |
-| 5 | Shortest Palindrome | Hard | KMP prefix function |
-| 6 | Longest Happy Prefix | Hard | KMP LPS |
-| 7 | Find All Anagrams | Medium | Sliding window + hash |
+| #   | Problem                     | Difficulty | Pattern               |
+| --- | --------------------------- | ---------- | --------------------- |
+| 1   | Implement strStr()          | Easy       | Brute force or KMP    |
+| 2   | Repeated Substring Pattern  | Easy       | Pattern matching      |
+| 3   | Wildcard Matching           | Hard       | DP                    |
+| 4   | Regular Expression Matching | Hard       | DP                    |
+| 5   | Shortest Palindrome         | Hard       | KMP prefix function   |
+| 6   | Longest Happy Prefix        | Hard       | KMP LPS               |
+| 7   | Find All Anagrams           | Medium     | Sliding window + hash |
 
 ---
 

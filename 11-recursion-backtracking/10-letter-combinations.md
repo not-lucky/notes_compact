@@ -17,12 +17,15 @@ Think of it as filling slots where each slot has its own independent set of choi
 2. **The Key Mental Model**: Unlike most backtracking problems, there are **no constraints** between choices. Picking 'a' for digit 2 doesn't restrict what you can pick for digit 3. This makes the problem simpler—just enumerate all combinations.
 
 3. **Why It's a Cartesian Product**: If digit 2 has {a,b,c} and digit 3 has {d,e,f}, the result is:
+
    ```
    {a,b,c} × {d,e,f} = {ad, ae, af, bd, be, bf, cd, ce, cf}
    ```
+
    For n digits with ~3-4 letters each, total combinations ≈ 3^n to 4^n.
 
 4. **Visual Intuition—The Letter Tree**:
+
 ```
 digits = "23"
 Digit 2: {a, b, c}
@@ -38,10 +41,12 @@ Results: ad, ae, af, bd, be, bf, cd, ce, cf
 ```
 
 5. **The Mapping Is Fixed**: Memorize or define the phone keypad:
+
    ```
    2→abc  3→def  4→ghi  5→jkl
    6→mno  7→pqrs 8→tuv  9→wxyz
    ```
+
    Note: 7 and 9 have **4 letters** (pqrs, wxyz), not 3!
 
 6. **Why Backtracking Here Is Simple**: No pruning needed. Every path is valid. You're just enumerating a fixed tree with no dead ends.
@@ -61,6 +66,7 @@ This specific pattern is quite narrow:
 5. **When Case Matters**: Phone letters are typically uppercase or lowercase consistently. If you need both cases, the problem changes.
 
 **Red Flags Against Full Enumeration:**
+
 - Need dictionary matching → Trie-based pruning
 - Input very long (>12 digits) → too many combinations
 - Only need count → 3^n or 4^n formula
@@ -78,6 +84,7 @@ This specific pattern is quite narrow:
 ## Interview Context
 
 This classic problem tests:
+
 1. **Mapping understanding**: Digit to letters mapping
 2. **Cartesian product**: Generate all combinations across groups
 3. **Clean backtracking**: Simple state management
@@ -301,6 +308,7 @@ if not digits:
 ### Digits with 0 or 1
 
 Traditional phone keypads:
+
 - 0 → usually space or nothing
 - 1 → usually nothing
 
@@ -361,11 +369,11 @@ def find_words_t9_trie(digits: str, trie_root) -> list[str]:
 
 ## Complexity Analysis
 
-| Approach | Time | Space | Notes |
-|----------|------|-------|-------|
-| Backtracking | O(4^n × n) | O(n) | n = number of digits |
-| Iterative | O(4^n × n) | O(4^n) | Stores all in memory |
-| itertools | O(4^n × n) | O(4^n) | Same as iterative |
+| Approach     | Time       | Space  | Notes                |
+| ------------ | ---------- | ------ | -------------------- |
+| Backtracking | O(4^n × n) | O(n)   | n = number of digits |
+| Iterative    | O(4^n × n) | O(4^n) | Stores all in memory |
+| itertools    | O(4^n × n) | O(4^n) | Same as iterative    |
 
 Why 4^n? Worst case is all 7s or 9s (4 letters each).
 
@@ -412,12 +420,12 @@ backtrack(index + 1, current + letter)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Insight |
-|---|---------|------------|-------------|
-| 1 | Letter Combinations of Phone Number | Medium | Basic backtracking |
-| 2 | Letter Case Permutation | Medium | Similar structure |
-| 3 | Generate All Binary Strings | Easy | Same pattern |
-| 4 | All Paths from Source to Target | Medium | Graph variant |
+| #   | Problem                             | Difficulty | Key Insight        |
+| --- | ----------------------------------- | ---------- | ------------------ |
+| 1   | Letter Combinations of Phone Number | Medium     | Basic backtracking |
+| 2   | Letter Case Permutation             | Medium     | Similar structure  |
+| 3   | Generate All Binary Strings         | Easy       | Same pattern       |
+| 4   | All Paths from Source to Target     | Medium     | Graph variant      |
 
 ---
 
@@ -445,13 +453,13 @@ backtrack(index + 1, current + letter)
 
 This chapter covered the main backtracking patterns:
 
-| Pattern | Example Problems | Key Technique |
-|---------|------------------|---------------|
-| Subsets | Power set, Subsets II | Include/exclude each element |
-| Permutations | All orderings | Track used elements |
-| Combinations | Choose k from n | Start index to avoid duplicates |
-| Constraint Satisfaction | N-Queens, Sudoku | Validate before placing |
-| Grid Search | Word Search | Mark visited, backtrack |
-| Sequence Generation | Parentheses, Phone | Build valid sequences |
+| Pattern                 | Example Problems      | Key Technique                   |
+| ----------------------- | --------------------- | ------------------------------- |
+| Subsets                 | Power set, Subsets II | Include/exclude each element    |
+| Permutations            | All orderings         | Track used elements             |
+| Combinations            | Choose k from n       | Start index to avoid duplicates |
+| Constraint Satisfaction | N-Queens, Sudoku      | Validate before placing         |
+| Grid Search             | Word Search           | Mark visited, backtrack         |
+| Sequence Generation     | Parentheses, Phone    | Build valid sequences           |
 
 Master these patterns and you'll handle most backtracking problems in interviews!

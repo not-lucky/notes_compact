@@ -48,6 +48,7 @@ LCS is a classic because:
 5. **Need All LCS, Not Just One**: Finding all longest common subsequences is exponential. Only the length or one example is polynomial.
 
 **Recognize LCS Pattern When:**
+
 - Two sequences being compared
 - Order must be preserved, gaps allowed
 - Looking for similarity/commonality measure
@@ -396,12 +397,12 @@ for i in range(m):  # Should be range(1, m+1)
 
 ## Complexity
 
-| Problem | Time | Space |
-|---------|------|-------|
-| LCS (2 strings) | O(mn) | O(n) |
-| LCS (3 strings) | O(lmn) | O(mn) |
-| Longest Common Substring | O(mn) | O(n) |
-| Shortest Common Supersequence | O(mn) | O(mn) |
+| Problem                       | Time   | Space |
+| ----------------------------- | ------ | ----- |
+| LCS (2 strings)               | O(mn)  | O(n)  |
+| LCS (3 strings)               | O(lmn) | O(mn) |
+| Longest Common Substring      | O(mn)  | O(n)  |
+| Shortest Common Supersequence | O(mn)  | O(mn) |
 
 ---
 
@@ -417,13 +418,13 @@ for i in range(m):  # Should be range(1, m+1)
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Variant |
-|---|---------|------------|---------|
-| 1 | LCS | Medium | Classic |
-| 2 | Longest Common Substring | Medium | Contiguous |
-| 3 | Delete Operations | Medium | LCS application |
-| 4 | Shortest Common Supersequence | Hard | Construct string |
-| 5 | Uncrossed Lines | Medium | LCS disguised |
+| #   | Problem                       | Difficulty | Variant          |
+| --- | ----------------------------- | ---------- | ---------------- |
+| 1   | LCS                           | Medium     | Classic          |
+| 2   | Longest Common Substring      | Medium     | Contiguous       |
+| 3   | Delete Operations             | Medium     | LCS application  |
+| 4   | Shortest Common Supersequence | Hard       | Construct string |
+| 5   | Uncrossed Lines               | Medium     | LCS disguised    |
 
 ---
 

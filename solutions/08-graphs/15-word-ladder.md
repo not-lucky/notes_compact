@@ -2,19 +2,20 @@
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Word Ladder | Hard | Basic implicit graph |
-| 2 | Word Ladder II | Hard | All shortest paths |
-| 3 | Open the Lock | Medium | Digit state graph |
-| 4 | Minimum Genetic Mutation | Medium | 4-character alphabet |
-| 5 | Sliding Puzzle | Hard | Board state graph |
+| #   | Problem                  | Difficulty | Key Variation        |
+| --- | ------------------------ | ---------- | -------------------- |
+| 1   | Word Ladder              | Hard       | Basic implicit graph |
+| 2   | Word Ladder II           | Hard       | All shortest paths   |
+| 3   | Open the Lock            | Medium     | Digit state graph    |
+| 4   | Minimum Genetic Mutation | Medium     | 4-character alphabet |
+| 5   | Sliding Puzzle           | Hard       | Board state graph    |
 
 ---
 
 ## 1. Word Ladder
 
 ### Problem Statement
+
 Find the shortest transformation sequence from `beginWord` to `endWord`.
 
 ### Optimal Python Solution
@@ -53,6 +54,7 @@ def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:
 ## 2. Word Ladder II
 
 ### Problem Statement
+
 Find all shortest transformation sequences.
 
 ### Optimal Python Solution
@@ -99,6 +101,7 @@ def findLadders(beginWord: str, endWord: str, wordList: list[str]) -> list[list[
 ## 3. Open the Lock
 
 ### Problem Statement
+
 Minimum turns to open the lock.
 
 ### Optimal Python Solution
@@ -129,6 +132,7 @@ def openLock(deadends: list[str], target: str) -> int:
 ## 4. Minimum Genetic Mutation
 
 ### Problem Statement
+
 Minimum mutations to transform the gene string.
 
 ### Optimal Python Solution
@@ -159,6 +163,7 @@ def minMutation(startGene: str, endGene: str, bank: list[str]) -> int:
 ## 5. Sliding Puzzle
 
 ### Problem Statement
+
 Minimum moves to solve the sliding puzzle.
 
 ### Optimal Python Solution

@@ -13,6 +13,7 @@ This file contains copy-paste-ready templates for the most common interview patt
 Templates aren't about memorizing code—they're about internalizing patterns. When you've written the sliding window template 20 times, you don't think about the mechanics anymore. Your brain focuses on the problem-specific logic, not the boilerplate.
 
 **The key insight**: Every pattern has a skeleton that stays the same across problems. The variable parts are:
+
 1. **Initialization** (what state you track)
 2. **Expansion logic** (when to grow the window/move forward)
 3. **Contraction logic** (when to shrink/backtrack)

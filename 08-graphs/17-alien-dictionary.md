@@ -351,11 +351,11 @@ def alien_order_lex(words: list[str]) -> str:
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build graph | O(sum of word lengths) | O(unique chars) |
-| Topological sort | O(V + E) | O(V) |
-| Total | O(total chars) | O(unique chars) |
+| Operation        | Time                   | Space           |
+| ---------------- | ---------------------- | --------------- |
+| Build graph      | O(sum of word lengths) | O(unique chars) |
+| Topological sort | O(V + E)               | O(V)            |
+| Total            | O(total chars)         | O(unique chars) |
 
 V = unique characters, E = ordering constraints
 
@@ -373,11 +373,11 @@ V = unique characters, E = ordering constraints
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Variation |
-|---|---------|------------|---------------|
-| 1 | Alien Dictionary | Hard | Core problem |
-| 2 | Course Schedule II | Medium | Similar topological sort |
-| 3 | Sequence Reconstruction | Medium | Verify unique order |
+| #   | Problem                 | Difficulty | Key Variation            |
+| --- | ----------------------- | ---------- | ------------------------ |
+| 1   | Alien Dictionary        | Hard       | Core problem             |
+| 2   | Course Schedule II      | Medium     | Similar topological sort |
+| 3   | Sequence Reconstruction | Medium     | Verify unique order      |
 
 ---
 

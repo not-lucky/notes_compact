@@ -11,6 +11,7 @@ LRU assumes recency predicts future access. But what about content that's popula
 > **If something has been accessed many times, it's probably important and will be accessed again.**
 
 This is **frequency-based locality**:
+
 - The homepage of a website is accessed constantly
 - Popular API endpoints are called more than obscure ones
 - Commonly used functions are invoked repeatedly
@@ -302,12 +303,12 @@ This is why we use a DoublyLinkedList within each frequency:
 
 ## Complexity Analysis
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| get() | O(1) | - |
-| put() (update) | O(1) | - |
-| put() (insert) | O(1) | - |
-| put() (evict) | O(1) | - |
+| Operation      | Time | Space |
+| -------------- | ---- | ----- |
+| get()          | O(1) | -     |
+| put() (update) | O(1) | -     |
+| put() (insert) | O(1) | -     |
+| put() (evict)  | O(1) | -     |
 
 **Space: O(capacity)** for the cache entries
 
@@ -360,6 +361,7 @@ Why it's bad:
 ```
 
 **Solutions:**
+
 1. **Frequency Decay**: Periodically halve all frequencies
 2. **Window-Based LFU**: Only count accesses in recent time window
 3. **Hybrid Policies**: TinyLFU combines recency + frequency
@@ -404,11 +406,13 @@ Choose LRU when:                     Choose LFU when:
 ### Real-World Usage
 
 **Where LFU is used:**
+
 - CDN caching for stable popular content
 - Database query plan caching (same queries repeat)
 - DNS caching (popular domains queried constantly)
 
 **Where LFU is NOT used:**
+
 - Web browser cache (pages/interests change)
 - Session storage (recency matters more)
 - Real-time systems (complexity adds latency)
@@ -529,13 +533,13 @@ class LRFUCache:
 
 ## LRU vs LFU: When to Use Each
 
-| Scenario | Best Choice | Why |
-|----------|-------------|-----|
-| General caching | LRU | Simpler, works well for most access patterns |
-| Hot/cold data | LFU | Frequently accessed items stay cached |
-| Streaming data | LRU | Recent items more likely to be accessed |
-| Static popular content | LFU | Popular items don't get evicted |
-| Mixed workload | LRU | More predictable behavior |
+| Scenario               | Best Choice | Why                                          |
+| ---------------------- | ----------- | -------------------------------------------- |
+| General caching        | LRU         | Simpler, works well for most access patterns |
+| Hot/cold data          | LFU         | Frequently accessed items stay cached        |
+| Streaming data         | LRU         | Recent items more likely to be accessed      |
+| Static popular content | LFU         | Popular items don't get evicted              |
+| Mixed workload         | LRU         | More predictable behavior                    |
 
 ---
 
@@ -577,13 +581,13 @@ A: Use fine-grained locks per frequency bucket, or
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | LFU Cache | Hard | Core implementation |
-| 2 | LRU Cache | Medium | Prerequisite |
-| 3 | All O(1) Data Structure | Hard | Similar multi-map design |
-| 4 | Design Hit Counter | Medium | Frequency counting |
-| 5 | First Unique Character in Stream | Medium | Frequency + order tracking |
+| #   | Problem                          | Difficulty | Key Concept                |
+| --- | -------------------------------- | ---------- | -------------------------- |
+| 1   | LFU Cache                        | Hard       | Core implementation        |
+| 2   | LRU Cache                        | Medium     | Prerequisite               |
+| 3   | All O(1) Data Structure          | Hard       | Similar multi-map design   |
+| 4   | Design Hit Counter               | Medium     | Frequency counting         |
+| 5   | First Unique Character in Stream | Medium     | Frequency + order tracking |
 
 ---
 

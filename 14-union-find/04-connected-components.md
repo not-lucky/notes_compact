@@ -13,6 +13,7 @@ Counting and managing connected components is the most common application of Uni
 **The "Island Formation" Mental Model**
 
 Imagine islands appearing in an ocean one by one:
+
 - Each new island starts as its own landmass (count++)
 - When a new island appears next to existing land, they merge (count--)
 
@@ -36,6 +37,7 @@ Add land at (2,2): 2 islands (isolated)
 **The Key Insight: Start High, Decrement on Merge**
 
 Union-Find makes component counting trivial:
+
 1. Start with `count = n` (each element is its own component)
 2. Each successful union decrements `count` by 1
 3. Failed unions (already connected) don't change count
@@ -124,6 +126,7 @@ If you eventually need shortest paths or distances (not just connectivity), use 
 **4. For Directed Graphs (Strongly Connected Components)**
 
 Union-Find doesn't handle direction. For strongly connected components in directed graphs, use:
+
 - Kosaraju's algorithm
 - Tarjan's algorithm
 
@@ -510,13 +513,14 @@ class UnionFind:
 
 ## Complexity Comparison
 
-| Approach | Build | Count | Dynamic Add |
-|----------|-------|-------|-------------|
-| DFS on adj list | O(V + E) | O(V + E) | O(V + E) per add |
-| BFS on adj list | O(V + E) | O(V + E) | O(V + E) per add |
-| Union-Find | O(E × α(V)) | O(1) | O(α(V)) per add |
+| Approach        | Build       | Count    | Dynamic Add      |
+| --------------- | ----------- | -------- | ---------------- |
+| DFS on adj list | O(V + E)    | O(V + E) | O(V + E) per add |
+| BFS on adj list | O(V + E)    | O(V + E) | O(V + E) per add |
+| Union-Find      | O(E × α(V)) | O(1)     | O(α(V)) per add  |
 
 Union-Find wins when:
+
 - Multiple queries for component count
 - Dynamic edge additions
 - Need to track component sizes
@@ -544,13 +548,13 @@ Union-Find wins when:
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Number of Islands II | Hard | Dynamic land addition |
-| 2 | Number of Operations to Make Network Connected | Medium | Spare cable counting |
-| 3 | Smallest String With Swaps | Medium | Group and sort |
-| 4 | Lexicographically Smallest Equivalent String | Medium | Character groups |
-| 5 | Checking Existence of Edge Length Limited Paths | Hard | Sort queries and edges |
+| #   | Problem                                         | Difficulty | Key Concept            |
+| --- | ----------------------------------------------- | ---------- | ---------------------- |
+| 1   | Number of Islands II                            | Hard       | Dynamic land addition  |
+| 2   | Number of Operations to Make Network Connected  | Medium     | Spare cable counting   |
+| 3   | Smallest String With Swaps                      | Medium     | Group and sort         |
+| 4   | Lexicographically Smallest Equivalent String    | Medium     | Character groups       |
+| 5   | Checking Existence of Edge Length Limited Paths | Hard       | Sort queries and edges |
 
 ---
 

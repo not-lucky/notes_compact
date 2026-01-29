@@ -21,6 +21,7 @@ Found M!
 
 **Why BST gives O(log n) - the binary search insight**:
 Each comparison eliminates half the remaining nodes. With n nodes in a balanced tree:
+
 - After 1 comparison: n/2 candidates
 - After 2 comparisons: n/4 candidates
 - After log₂(n) comparisons: 1 candidate
@@ -51,6 +52,7 @@ Case 1: Leaf node        Case 2: One child       Case 3: Two children
 ```
 
 **The successor/predecessor insight**:
+
 - **Inorder successor** = smallest value greater than current = leftmost node in right subtree
 - **Inorder predecessor** = largest value smaller than current = rightmost node in left subtree
 
@@ -61,22 +63,26 @@ These are used in deletion (case 3) because they maintain BST property when subs
 ## When NOT to Use
 
 **Don't use a plain BST when:**
+
 - **Data arrives in sorted order** → Tree becomes a linked list (O(n) operations)
 - **Need O(1) lookups** → Use hash map instead
 - **Data rarely changes** → Sorted array with binary search may be simpler
 - **Need ordered iteration without tree overhead** → Use sorted array
 
 **BST is overkill when:**
+
 - Only need insertion order → Use array/list
 - Data set is small → Linear search is fine
 - No ordering requirements → Hash map is faster
 
 **When to use self-balancing trees instead:**
+
 - Production systems → Use AVL or Red-Black tree
 - Insertions in sorted/reverse order → Plain BST degrades to O(n)
 - Guaranteed O(log n) is critical → Balanced tree variants
 
 **Common mistake scenarios:**
+
 - Not considering tree balance in complexity analysis
 - Using BST when hash map would be simpler
 - Forgetting that duplicate handling varies by implementation
@@ -107,6 +113,7 @@ Interviewers use BST problems to test your understanding of the BST property and
 ## Core Concept: BST Property
 
 A Binary Search Tree maintains this invariant for every node:
+
 - All values in **left subtree < node value**
 - All values in **right subtree > node value**
 
@@ -476,13 +483,13 @@ def inorder_predecessor(root: TreeNode, p: TreeNode) -> TreeNode:
 
 ## Complexity Analysis
 
-| Operation | Average | Worst (Skewed) | Space |
-|-----------|---------|----------------|-------|
-| Search | O(log n) | O(n) | O(1) iter / O(h) rec |
-| Insert | O(log n) | O(n) | O(1) iter / O(h) rec |
-| Delete | O(log n) | O(n) | O(h) |
-| Min/Max | O(log n) | O(n) | O(1) |
-| Successor | O(log n) | O(n) | O(1) |
+| Operation | Average  | Worst (Skewed) | Space                |
+| --------- | -------- | -------------- | -------------------- |
+| Search    | O(log n) | O(n)           | O(1) iter / O(h) rec |
+| Insert    | O(log n) | O(n)           | O(1) iter / O(h) rec |
+| Delete    | O(log n) | O(n)           | O(h)                 |
+| Min/Max   | O(log n) | O(n)           | O(1)                 |
+| Successor | O(log n) | O(n)           | O(1)                 |
 
 Key insight: Performance degrades to O(n) if tree becomes skewed. Self-balancing trees (AVL, Red-Black) maintain O(log n).
 
@@ -574,15 +581,15 @@ search_bst(root, 100)  # Returns None
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-|---|---------|------------|-------------|
-| 1 | Search in a Binary Search Tree | Easy | Basic search |
-| 2 | Insert into a Binary Search Tree | Medium | Basic insert |
-| 3 | Delete Node in a BST | Medium | Delete with cases |
-| 4 | Inorder Successor in BST | Medium | Successor finding |
-| 5 | Range Sum of BST | Easy | Range query |
-| 6 | Closest Binary Search Tree Value | Easy | Floor/ceiling |
-| 7 | Trim a Binary Search Tree | Medium | Range pruning |
+| #   | Problem                          | Difficulty | Key Concept       |
+| --- | -------------------------------- | ---------- | ----------------- |
+| 1   | Search in a Binary Search Tree   | Easy       | Basic search      |
+| 2   | Insert into a Binary Search Tree | Medium     | Basic insert      |
+| 3   | Delete Node in a BST             | Medium     | Delete with cases |
+| 4   | Inorder Successor in BST         | Medium     | Successor finding |
+| 5   | Range Sum of BST                 | Easy       | Range query       |
+| 6   | Closest Binary Search Tree Value | Easy       | Floor/ceiling     |
+| 7   | Trim a Binary Search Tree        | Medium     | Range pruning     |
 
 ---
 
