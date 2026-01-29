@@ -184,6 +184,10 @@ Total: 2 subarrays
 
 ## Template: Subarray Sum Equals K
 
+**Problem**: Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
+
+**Explanation**: We use the prefix sum pattern. A subarray `nums[i...j]` has sum `k` if `prefix_sum[j] - prefix_sum[i-1] = k`, which is equivalent to `prefix_sum[i-1] = prefix_sum[j] - k`. As we iterate and compute the running `prefix_sum`, we use a hashmap to track how many times each prefix sum has occurred. This allows us to count how many previous indices `i-1` satisfy the condition in O(1) time.
+
 ```python
 def subarray_sum(nums: list[int], k: int) -> int:
     """
@@ -243,6 +247,10 @@ The dummy 0 represents "empty prefix" for subarrays starting at index 0.
 
 ## Template: Subarray Sum Divisible by K
 
+**Problem**: Given an integer array `nums` and an integer `k`, return the number of non-empty subarrays that have a sum divisible by `k`.
+
+**Explanation**: A subarray sum `prefix_sum[j] - prefix_sum[i-1]` is divisible by `k` if `prefix_sum[j] % k == prefix_sum[i-1] % k`. We store the frequencies of the remainders (modulos) of prefix sums in a hashmap. When we encounter a remainder we've seen before, it means the subarray between the previous occurrence and the current one is divisible by `k`.
+
 ```python
 def subarrays_div_by_k(nums: list[int], k: int) -> int:
     """
@@ -296,6 +304,10 @@ Total: 7
 
 ## Template: Maximum Size Subarray Sum Equals K
 
+**Problem**: Given an array `nums` and a target value `k`, find the maximum length of a subarray that sums to `k`. If there isn't one, return 0 instead.
+
+**Explanation**: Similar to "Subarray Sum Equals K", but instead of counting occurrences, we store the *earliest* index where each prefix sum was first seen. This allows us to calculate the maximum distance between two prefix sums that differ by `k`.
+
 ```python
 def max_subarray_len(nums: list[int], k: int) -> int:
     """
@@ -347,6 +359,10 @@ First occurrence → maximum length
 
 ## Template: Minimum Size Subarray Sum (Positive Numbers)
 
+**Problem**: Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0 instead.
+
+**Explanation**: For arrays with only positive numbers, we don't need a hashmap. We can use a sliding window (two pointers) to find the minimum length. We expand the window until the sum is `≥ target`, then contract it from the left to find the smallest possible valid window. This is O(n) time and O(1) space.
+
 ```python
 def min_subarray_len(target: int, nums: list[int]) -> int:
     """
@@ -378,6 +394,10 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
 ---
 
 ## Template: Contiguous Array (Equal 0s and 1s)
+
+**Problem**: Given a binary array `nums`, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
+
+**Explanation**: We transform the problem by treating `0` as `-1`. Now, the problem is to find the longest subarray with a sum of `0`. We use a hashmap to store the first occurrence of each prefix sum and calculate the maximum distance whenever a prefix sum repeats.
 
 ```python
 def find_max_length(nums: list[int]) -> int:
@@ -429,6 +449,10 @@ Max length: 6
 
 ## Template: Continuous Subarray Sum (Multiple of K)
 
+**Problem**: Given an integer array `nums` and an integer `k`, return `true` if `nums` has a contiguous subarray of size at least two whose elements sum up to a multiple of `k`.
+
+**Explanation**: We use the prefix sum modulo `k`. If we see the same remainder twice, the elements between those two points sum to a multiple of `k`. We use a hashmap to store the first occurrence of each remainder and ensure the distance between indices is at least 2.
+
 ```python
 def check_subarray_sum(nums: list[int], k: int) -> bool:
     """
@@ -460,6 +484,10 @@ def check_subarray_sum(nums: list[int], k: int) -> bool:
 
 ## Template: Binary Subarrays With Sum
 
+**Problem**: Given a binary array `nums` and an integer `goal`, return the number of non-empty subarrays with a sum equal to `goal`.
+
+**Explanation**: Since the values are only 0 and 1, the prefix sum is non-decreasing. We can use the standard "Subarray Sum Equals K" hashmap approach to count subarrays that sum to the `goal`.
+
 ```python
 def num_subarrays_with_sum(nums: list[int], goal: int) -> int:
     """
@@ -490,6 +518,10 @@ def num_subarrays_with_sum(nums: list[int], goal: int) -> int:
 
 ## Template: Count Nice Subarrays (Odd Numbers)
 
+**Problem**: Given an array of integers `nums` and an integer `k`. A contiguous subarray is called nice if there are `k` odd numbers in it. Return the number of nice subarrays.
+
+**Explanation**: We transform the problem by treating odd numbers as `1` and even numbers as `0`. Now we just need to find the number of subarrays with sum equal to `k`, which we solve using the prefix sum and hashmap count pattern.
+
 ```python
 def number_of_subarrays(nums: list[int], k: int) -> int:
     """
@@ -518,6 +550,10 @@ def number_of_subarrays(nums: list[int], k: int) -> int:
 ---
 
 ## Template: Subarray with 0 Sum
+
+**Problem**: Given an array of integers, check if there is a subarray with sum equal to 0.
+
+**Explanation**: A subarray sums to 0 if any prefix sum repeats. We use a set to store prefix sums as we calculate them. If the current `prefix_sum` is already in the set, we've found a subarray with sum 0.
 
 ```python
 def has_zero_sum_subarray(nums: list[int]) -> bool:

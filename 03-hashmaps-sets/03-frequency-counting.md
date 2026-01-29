@@ -171,6 +171,10 @@ Frequency Map:
 
 ## Template: Basic Frequency Counting
 
+**Problem**: Given an array of elements, count the number of occurrences for each unique element.
+
+**Explanation**: We iterate through the array once and use a hashmap to store each element as a key and its frequency as the value. This allows us to retrieve the count of any element in O(1) time after an O(n) preprocessing step. Python's `collections.Counter` is a highly optimized tool for this specific task.
+
 ```python
 def frequency_count(nums: list) -> dict:
     """
@@ -208,6 +212,10 @@ def frequency_count_counter(nums: list) -> Counter:
 
 ## Template: Top K Frequent Elements
 
+**Problem**: Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.
+
+**Explanation**: After counting frequencies, we can use a min-heap to keep track of the top `k` elements. By maintaining a heap of size `k`, we can process all elements in O(n log k) time. Alternatively, we can use bucket sort for O(n) time if the frequencies are bounded by the input size.
+
 ```python
 def top_k_frequent(nums: list[int], k: int) -> list[int]:
     """
@@ -232,6 +240,10 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
 ```
 
 ### Bucket Sort Approach (O(n))
+
+**Problem**: Find the `k` most frequent elements in linear time.
+
+**Explanation**: Since the frequency of any element cannot exceed the total number of elements `n`, we can create an array of "buckets" where the index represents the frequency. We place elements into the bucket corresponding to their frequency. Then, we traverse the buckets from highest index to lowest to collect the `k` most frequent elements.
 
 ```python
 def top_k_frequent_bucket(nums: list[int], k: int) -> list[int]:
@@ -287,6 +299,10 @@ Traverse from right: [1, 2]
 ---
 
 ## Template: Top K Frequent Words
+
+**Problem**: Given an array of strings `words` and an integer `k`, return the `k` most frequent strings. The result should be sorted by frequency from highest to lowest, and words with the same frequency should be sorted by their lexicographical order.
+
+**Explanation**: We use a frequency map and then a heap to find the top `k` elements. To handle the secondary sorting requirement (lexicographical order for ties), we use a custom comparator or negate frequencies in a min-heap.
 
 ```python
 def top_k_frequent_words(words: list[str], k: int) -> list[str]:
@@ -355,6 +371,10 @@ def top_k_words_optimized(words: list[str], k: int) -> list[str]:
 
 ## Template: Majority Element (> n/2)
 
+**Problem**: Given an array `nums` of size `n`, return the majority element. The majority element is the element that appears more than `⌊n / 2⌋` times.
+
+**Explanation**: While a hashmap can solve this in O(n) space, the Boyer-Moore Voting Algorithm achieves O(n) time and O(1) space. It works by maintaining a candidate and a counter. If the current number matches the candidate, we increment the counter; otherwise, we decrement it. If the counter reaches zero, we pick the current number as the new candidate. The majority element is guaranteed to survive this "cancellation" process.
+
 ```python
 def majority_element(nums: list[int]) -> int:
     """
@@ -411,6 +431,10 @@ Result: 2 (verify by counting if not guaranteed)
 
 ## Template: Majority Element II (> n/3)
 
+**Problem**: Given an integer array of size `n`, find all elements that appear more than `⌊n / 3⌋` times.
+
+**Explanation**: This is an extension of Boyer-Moore. Since at most two elements can appear more than `n/3` times, we maintain two candidates and two counters. After one pass, we must perform a second pass to verify that the candidates actually meet the frequency requirement.
+
 ```python
 def majority_element_ii(nums: list[int]) -> list[int]:
     """
@@ -457,6 +481,10 @@ def majority_element_ii(nums: list[int]) -> list[int]:
 
 ## Template: First Unique Character
 
+**Problem**: Given a string `s`, find the first non-repeating character in it and return its index. If it does not exist, return -1.
+
+**Explanation**: We perform two passes. In the first pass, we build a frequency map of all characters in the string. In the second pass, we iterate through the string again and return the index of the first character whose frequency is 1.
+
 ```python
 def first_uniq_char(s: str) -> int:
     """
@@ -483,6 +511,10 @@ def first_uniq_char(s: str) -> int:
 ---
 
 ## Template: Find All Duplicates
+
+**Problem**: Given an integer array `nums` of length `n` where all the integers of `nums` are in the range `[1, n]` and each integer appears once or twice, return an array of all the integers that appears twice.
+
+**Explanation**: Since the numbers are within the range `[1, n]`, we can use the array itself as a hashmap to save space. We iterate through the array and for each number `x`, we treat `abs(x)-1` as an index and negate the value at that index. If we encounter a value that is already negative, it means we've seen `abs(x)` before, identifying it as a duplicate.
 
 ```python
 def find_duplicates(nums: list[int]) -> list[int]:
@@ -527,6 +559,10 @@ Result: [2, 3]
 
 ## Template: Single Number (XOR Trick)
 
+**Problem**: Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one.
+
+**Explanation**: The XOR operation has the property that `a ^ a = 0` and `a ^ 0 = a`. By XORing all elements in the array, all pairs of duplicates will cancel each other out, leaving only the single number that appears once. This provides an O(n) time and O(1) space solution without needing a hashmap.
+
 ```python
 def single_number(nums: list[int]) -> int:
     """
@@ -551,6 +587,10 @@ def single_number(nums: list[int]) -> int:
 
 ## Template: Contains Duplicate
 
+**Problem**: Given an integer array `nums`, return `true` if any value appears at least twice in the array, and return `false` if every element is distinct.
+
+**Explanation**: We use a `set` to store elements as we see them. If an element is already in the set, we found a duplicate. Alternatively, comparing the length of the array to the length of its set version provides a concise one-line solution.
+
 ```python
 def contains_duplicate(nums: list[int]) -> bool:
     """
@@ -563,6 +603,9 @@ def contains_duplicate(nums: list[int]) -> bool:
 
 # Or with early exit
 def contains_duplicate_early_exit(nums: list[int]) -> bool:
+    """
+    Early exit version - stops as soon as a duplicate is found.
+    """
     seen = set()
 
     for num in nums:
@@ -576,6 +619,10 @@ def contains_duplicate_early_exit(nums: list[int]) -> bool:
 ---
 
 ## Template: Contains Duplicate II (Within K Distance)
+
+**Problem**: Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
+
+**Explanation**: We use a hashmap to store the most recent index of each value. As we iterate, if we see a value that is already in the map, we check if the difference between the current index and the stored index is `≤ k`. If so, we return `true`. Otherwise, we update the map with the new index.
 
 ```python
 def contains_nearby_duplicate(nums: list[int], k: int) -> bool:
@@ -613,6 +660,10 @@ def contains_nearby_duplicate_window(nums: list[int], k: int) -> bool:
 ---
 
 ## Template: Contains Duplicate III (Within K Distance and Value Diff)
+
+**Problem**: Given an integer array `nums` and two integers `k` and `t`, return `true` if there are two distinct indices `i` and `j` such that `abs(nums[i] - nums[j]) <= t` and `abs(i - j) <= k`.
+
+**Explanation**: We use a bucket sort-like approach to group numbers by their values. Each bucket has a width of `t + 1`. If two numbers fall into the same bucket, their difference is at most `t`. We also check adjacent buckets for potential matches. We maintain a sliding window of size `k` by removing old buckets as we move forward.
 
 ```python
 def contains_nearby_almost_duplicate(nums: list[int], k: int, t: int) -> bool:

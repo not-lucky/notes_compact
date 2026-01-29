@@ -152,6 +152,10 @@ Iteration 2: num = 7
 
 ## Template: Classic Two Sum
 
+**Problem**: Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`. Each input has exactly one solution, and you may not use the same element twice.
+
+**Explanation**: We use a hashmap to store the values we've seen so far as keys and their indices as values. For each number, we calculate its `complement` (target - num). If the complement is in the map, we've found our pair and return their indices. Otherwise, we store the current number in the map and continue. This works because it reduces the search for a complement from O(n) to O(1).
+
 ```python
 def two_sum(nums: list[int], target: int) -> list[int]:
     """
@@ -189,6 +193,10 @@ i=1, num=7: complement=2, seen={2:0} → FOUND! return [0,1]
 
 ## Template: Two Sum - Return Values (Not Indices)
 
+**Problem**: Given an array of integers `nums` and an integer `target`, return the two numbers that add up to `target`. If no such pair exists, return `None`.
+
+**Explanation**: Similar to the classic version, but we use a `set` since we only need to track the existence of values, not their indices. This is slightly more memory-efficient when indices aren't required.
+
 ```python
 def two_sum_values(nums: list[int], target: int) -> list[int] | None:
     """
@@ -216,6 +224,10 @@ def two_sum_values(nums: list[int], target: int) -> list[int] | None:
 ---
 
 ## Template: Two Sum - Count Pairs
+
+**Problem**: Given an array of integers `nums` and an integer `target`, return the total number of pairs that sum up to `target`.
+
+**Explanation**: We use a `Counter` to get the frequency of each number. For each unique number, we check if its complement (`target - num`) exists. If `num == complement`, we choose 2 instances from the available count (nC2). If `num != complement`, we multiply their respective frequencies. We only process each pair once by checking `complement > num`.
 
 ```python
 def two_sum_count(nums: list[int], target: int) -> int:
@@ -250,6 +262,10 @@ def two_sum_count(nums: list[int], target: int) -> int:
 ---
 
 ## Template: Two Sum - All Pairs (Handle Duplicates)
+
+**Problem**: Given an array of integers `nums` and an integer `target`, find all unique pairs that sum up to `target`.
+
+**Explanation**: To ensure uniqueness of pairs, we use a frequency map and a `used` set. For each number, if its complement exists and hasn't been used in a pair yet, we add the pair to our result. If the number is its own complement, we ensure there are at least two occurrences.
 
 ```python
 def two_sum_all_pairs(nums: list[int], target: int) -> list[list[int]]:
@@ -289,6 +305,10 @@ def two_sum_all_pairs(nums: list[int], target: int) -> list[list[int]]:
 
 ## Template: Two Sum II - Sorted Array
 
+**Problem**: Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.
+
+**Explanation**: Since the array is sorted, we can use two pointers (left and right). If the `current_sum` is too small, we increment the left pointer to increase the sum. If it's too large, we decrement the right pointer. This achieves O(1) space complexity, which is better than the O(n) hashmap approach.
+
 ```python
 def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
     """
@@ -321,6 +341,10 @@ def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
 ---
 
 ## Template: 3Sum (Extension of Two Sum)
+
+**Problem**: Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`. The solution set must not contain duplicate triplets.
+
+**Explanation**: We sort the array first. Then, we iterate through the array, fixing one element `nums[i]` and treating the rest of the problem as a "Two Sum II" (sorted) problem for the remaining target `-nums[i]`. We skip duplicate values for both the fixed element and the two pointers to ensure the result contains only unique triplets.
 
 ```python
 def three_sum(nums: list[int]) -> list[list[int]]:
@@ -371,6 +395,10 @@ def three_sum(nums: list[int]) -> list[list[int]]:
 ---
 
 ## Template: 4Sum (Generalized K-Sum)
+
+**Problem**: Given an array `nums` of `n` integers, return an array of all the unique quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that their sum equals `target`.
+
+**Explanation**: This is an extension of 3Sum. We fix two elements using nested loops and then use the two-pointer approach for the remaining two. Sorting and duplicate skipping are essential to maintain the uniqueness of the quadruplets.
 
 ```python
 def four_sum(nums: list[int], target: int) -> list[list[int]]:
@@ -425,6 +453,10 @@ def four_sum(nums: list[int], target: int) -> list[list[int]]:
 
 ## Template: Two Sum Less Than K
 
+**Problem**: Given an array `nums` of integers and integer `k`, return the maximum `sum` such that there exists `i < j` with `nums[i] + nums[j] = sum` and `sum < k`. If no such `i, j` exists, return -1.
+
+**Explanation**: We sort the array and use two pointers. If `nums[left] + nums[right]` is less than `k`, it's a potential candidate. We record the sum and move the left pointer to try and find an even larger sum that is still less than `k`. If the sum is already `>= k`, we must decrease it by moving the right pointer left.
+
 ```python
 def two_sum_less_than_k(nums: list[int], k: int) -> int:
     """
@@ -455,6 +487,10 @@ def two_sum_less_than_k(nums: list[int], k: int) -> int:
 ---
 
 ## Template: Pair with Closest Sum
+
+**Problem**: Given an array `nums` and a `target`, find the pair of elements whose sum is closest to the `target`.
+
+**Explanation**: After sorting, we use two pointers to explore possible sums. We maintain a `closest_diff` and update our result whenever we find a pair with a smaller absolute difference from the target. We move pointers based on whether the `current_sum` is smaller or larger than the target to converge on the closest possible value.
 
 ```python
 def two_sum_closest(nums: list[int], target: int) -> list[int]:

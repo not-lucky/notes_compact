@@ -166,6 +166,10 @@ Interviewers want to see you CAN implement a hashmap. But always mention that in
 
 ## Template: Design HashMap (Chaining)
 
+**Problem**: Design a HashMap without using any built-in hash table libraries. It should support `put(key, value)`, `get(key)`, and `remove(key)` operations.
+
+**Explanation**: We use an array of "buckets," where each bucket is a list. This approach is called separate chaining. To map a key to a bucket, we use the modulo operator (`key % size`). If multiple keys map to the same bucket, we store them in the list and perform a linear search within that bucket.
+
 ```python
 class MyHashMap:
     """
@@ -245,6 +249,10 @@ get(6):
 
 ## Template: Design HashSet
 
+**Problem**: Design a HashSet without using any built-in hash table libraries. It should support `add(key)`, `remove(key)`, and `contains(key)` operations.
+
+**Explanation**: Similar to the HashMap, but we only store the keys themselves in the buckets. We use separate chaining to handle collisions and provide O(1) average time for all operations.
+
 ```python
 class MyHashSet:
     """
@@ -289,6 +297,10 @@ class MyHashSet:
 ---
 
 ## Template: HashMap with Linked List Buckets
+
+**Problem**: Implement a HashMap where each bucket is a proper Singly Linked List.
+
+**Explanation**: Instead of using Python's list as a bucket, we use a custom `ListNode` class. This is often closer to how hashmaps are implemented in lower-level languages. We use a dummy head node for each bucket to simplify the logic for adding and removing nodes.
 
 ```python
 class ListNode:
@@ -349,6 +361,10 @@ class MyHashMapLinked:
 ---
 
 ## Template: HashMap with Open Addressing
+
+**Problem**: Implement a HashMap using linear probing for collision handling.
+
+**Explanation**: In open addressing, all elements are stored directly in the bucket array. If a collision occurs at `hash(key)`, we check the next slot (`hash(key) + 1`), then the next, until we find an empty one or the key itself. We use a special "DELETED" sentinel (tombstone) to mark slots where elements were removed, ensuring that our search doesn't stop prematurely.
 
 ```python
 class MyHashMapOpenAddressing:
@@ -464,6 +480,10 @@ class MyHashMapBetterHash:
 ---
 
 ## Template: HashMap Supporting String Keys
+
+**Problem**: Implement a HashMap that can handle string keys effectively.
+
+**Explanation**: For string keys, we need a hash function that considers all characters in the string. A polynomial rolling hash (`h = s[0]*p^(n-1) + s[1]*p^(n-2) + ...`) is a common choice as it spreads string keys uniformly and minimizes collisions.
 
 ```python
 class StringHashMap:

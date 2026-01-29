@@ -163,6 +163,10 @@ Single-node caches don't scale:
 
 ## Template: LRU Cache
 
+**Problem**: Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. It should support `get(key)` and `put(key, value)` in O(1) time. When the cache reaches its capacity, it should invalidate the least recently used item before inserting a new item.
+
+**Explanation**: We combine a hashmap with a doubly linked list. The hashmap provides O(1) access to any node in the list. The doubly linked list maintains the order of access, where the head is the most recently used and the tail is the least recently used. When an item is accessed or added, we move it to the head of the list.
+
 ```python
 class LRUCache:
     """
@@ -299,6 +303,10 @@ class LRUCacheSimple:
 
 ## Template: LFU Cache
 
+**Problem**: Design and implement a data structure for a Least Frequently Used (LFU) cache. It should support `get` and `put` operations in O(1) time. When the cache is full, it should remove the item with the lowest frequency. If there is a tie in frequency, the least recently used item among them should be removed.
+
+**Explanation**: We use two hashmaps. One maps keys to their (value, frequency) pair. The second maps each frequency to an `OrderedDict` of keys that have that frequency. The `OrderedDict` acts as an LRU list for that specific frequency. We also maintain a `min_freq` variable to quickly find which frequency bucket to evict from when the cache is full.
+
 ```python
 from collections import defaultdict
 
@@ -374,6 +382,10 @@ class LFUCache:
 
 ## Template: Insert Delete GetRandom O(1)
 
+**Problem**: Implement the `RandomizedSet` class which supports `insert`, `remove`, and `getRandom` operations, all in O(1) average time complexity.
+
+**Explanation**: To achieve O(1) for all operations, we combine a hashmap and a dynamic array (list). The hashmap stores the value as a key and its index in the array as the value. For `getRandom`, we pick a random index from the array. For `remove`, we swap the element to be deleted with the last element in the array to avoid O(n) shifting, then update the hashmap and pop from the array.
+
 ```python
 import random
 
@@ -442,6 +454,10 @@ remove(7):
 
 ## Template: Insert Delete GetRandom O(1) - Duplicates Allowed
 
+**Problem**: Similar to `RandomizedSet`, but the data structure should allow duplicate elements.
+
+**Explanation**: Instead of storing a single index in the hashmap, we store a `set` of indices for each value. When removing an element, we pick any one of its indices and swap it with the last element in the array, updating the index sets for both values accordingly.
+
 ```python
 import random
 from collections import defaultdict
@@ -490,6 +506,10 @@ class RandomizedCollection:
 
 ## Template: Time-Based Key-Value Store
 
+**Problem**: Design a time-based key-value data structure that can store multiple values for the same key at different timestamps and retrieve the key's value at a certain timestamp.
+
+**Explanation**: We use a hashmap where each key maps to a list of `(timestamp, value)` pairs. Since timestamps are added in increasing order, the lists remain sorted. To retrieve a value at or before a specific timestamp, we use binary search (`bisect_right`) on the list for that key.
+
 ```python
 import bisect
 from collections import defaultdict
@@ -531,6 +551,10 @@ class TimeMap:
 
 ## Template: Snapshot Array
 
+**Problem**: Implement a `SnapshotArray` that supports `set(index, val)`, `snap()`, and `get(index, snap_id)`. `get` returns the value at the given index at the time the snapshot with `snap_id` was taken.
+
+**Explanation**: Instead of copying the entire array during a snapshot (which is inefficient), we store the history of changes for each index. Each index maps to a list of `(snap_id, value)` pairs. When `get` is called, we perform binary search on the history list of that index to find the largest `snap_id` that is less than or equal to the requested `snap_id`.
+
 ```python
 import bisect
 
@@ -567,6 +591,10 @@ class SnapshotArray:
 ---
 
 ## Template: All O'one Data Structure
+
+**Problem**: Design a data structure that supports `inc(key)`, `dec(key)`, `getMaxKey()`, and `getMinKey()` in O(1) time.
+
+**Explanation**: This requires a hashmap combined with a doubly linked list of "buckets." Each bucket represents a specific frequency (count) and contains a set of keys with that count. When a key's frequency changes, it moves to an adjacent bucket in the list. This ensures that the buckets with minimum and maximum counts are always at the ends of the linked list.
 
 ```python
 class AllOne:
@@ -663,6 +691,10 @@ class AllOne:
 ---
 
 ## Template: Logger Rate Limiter
+
+**Problem**: Design a logger system that receives a stream of messages with their timestamps. Each unique message should only be printed at most every 10 seconds.
+
+**Explanation**: We use a hashmap to store each message and the timestamp of its last successful print. When a new message arrives, we check if it has been printed in the last 10 seconds. If not, we update the timestamp and return `true`; otherwise, we return `false`.
 
 ```python
 class Logger:

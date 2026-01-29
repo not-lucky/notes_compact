@@ -157,6 +157,10 @@ The "signature" (sorted string or frequency tuple) becomes the **hashmap key** f
 
 ## Template: Valid Anagram
 
+**Problem**: Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
+
+**Explanation**: An anagram means the two strings have the exact same characters with the same frequencies. We can compare the two strings by building frequency maps for each using `Counter` and checking if they are equal.
+
 ```python
 def is_anagram(s: str, t: str) -> bool:
     """
@@ -191,6 +195,10 @@ def is_anagram_array(s: str, t: str) -> bool:
 ---
 
 ## Template: Group Anagrams
+
+**Problem**: Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
+
+**Explanation**: We iterate through each string and create a "signature" that is identical for all anagrams. This signature can be the sorted version of the string or a tuple representing character counts. We use a hashmap with these signatures as keys to group the original strings together.
 
 ```python
 def group_anagrams(strs: list[str]) -> list[list[str]]:
@@ -256,6 +264,10 @@ Result: [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
 ---
 
 ## Template: Find All Anagrams in a String
+
+**Problem**: Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`.
+
+**Explanation**: We use a sliding window of size `len(p)` on string `s`. At each step, we maintain the character frequencies of the current window. If the window's frequency map matches `p`'s frequency map, the current starting index is added to our results.
 
 ```python
 def find_anagrams(s: str, p: str) -> list[int]:
@@ -349,6 +361,10 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
 
 ## Template: Permutation in String
 
+**Problem**: Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.
+
+**Explanation**: This is essentially checking if any substring of `s2` is an anagram of `s1`. We use a sliding window of size `len(s1)` on `s2` and compare character counts. If we find a match, we return `true`.
+
 ```python
 def check_inclusion(s1: str, s2: str) -> bool:
     """
@@ -388,6 +404,10 @@ def check_inclusion(s1: str, s2: str) -> bool:
 ---
 
 ## Template: Minimum Window Substring
+
+**Problem**: Given two strings `s` and `t` of lengths `m` and `n`, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window.
+
+**Explanation**: We use a variable-size sliding window. We expand the `right` pointer until the window contains all required characters from `t`. Then, we contract the `left` pointer as much as possible while keeping the window valid to find the minimum length. A frequency map tracks the character requirements.
 
 ```python
 def min_window(s: str, t: str) -> str:
@@ -445,6 +465,10 @@ def min_window(s: str, t: str) -> str:
 
 ## Template: Longest Substring Without Repeating Characters
 
+**Problem**: Given a string `s`, find the length of the longest substring without repeating characters.
+
+**Explanation**: We use a sliding window and a hashmap to store the most recent index of each character. When we encounter a repeating character that is already in our current window, we move the `left` pointer to the position immediately after the last occurrence of that character to maintain the "no repeats" invariant.
+
 ```python
 def length_of_longest_substring(s: str) -> int:
     """
@@ -474,6 +498,10 @@ def length_of_longest_substring(s: str) -> int:
 ---
 
 ## Template: Longest Repeating Character Replacement
+
+**Problem**: Given a string `s` and an integer `k`, you can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times. Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+**Explanation**: We use a sliding window and track the frequency of characters within it. The number of characters to replace is `window_size - max_frequency`. As long as this is `≤ k`, the window is valid. We expand the window and only shrink it when it becomes invalid.
 
 ```python
 def character_replacement(s: str, k: int) -> int:
@@ -514,6 +542,10 @@ def character_replacement(s: str, k: int) -> int:
 ---
 
 ## Template: Anagram Substring Count
+
+**Problem**: Given a text string and a pattern string, count how many substrings of the text are anagrams of the pattern.
+
+**Explanation**: Using a fixed-size sliding window equal to the pattern's length, we maintain a frequency count of the current window and compare it with the pattern's frequency count. Each match increments our total count.
 
 ```python
 def count_anagram_substrings(text: str, pattern: str) -> int:
