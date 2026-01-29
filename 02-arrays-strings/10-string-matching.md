@@ -96,6 +96,15 @@ P = "ABABC"
 
 ## Approach 1: Brute Force
 
+### Problem: Implement strStr()
+**Problem Statement:** Given two strings `needle` and `haystack`, return the index of the first occurrence of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.
+
+**Why it works:**
+The brute force approach checks every possible starting position in the `haystack`.
+1. For each index `i`, we compare the substring `haystack[i:i+len(needle)]` with `needle`.
+2. While simple, its worst-case complexity is O(N*M) where N is haystack length and M is needle length.
+Modern built-in functions often use more advanced variants, but brute force is the foundational logic.
+
 ```python
 def brute_force_search(text: str, pattern: str) -> list[int]:
     """
@@ -153,6 +162,16 @@ def find_all(text: str, pattern: str) -> list[int]:
 ---
 
 ## Approach 2: Rabin-Karp (Rolling Hash)
+
+### Problem: Substring Search using Hashing
+**Problem Statement:** Find all occurrences of a pattern in a text efficiently by comparing hashes instead of characters.
+
+**Why it works:**
+Comparing two strings of length `M` takes O(M). Comparing two numbers takes O(1).
+1. We compute a hash for the pattern and for the first window of the text.
+2. As we slide the window, we update the hash in O(1) by removing the old character and adding the new one (rolling hash).
+3. If hashes match, we perform a character-by-character comparison to confirm (to handle collisions).
+This results in an average time complexity of O(N+M).
 
 Use hashing to quickly compare pattern with text windows.
 
@@ -216,6 +235,15 @@ This is O(1) instead of O(m) to compute!
 ---
 
 ## Approach 3: KMP (Knuth-Morris-Pratt)
+
+### Problem: Efficient Substring Search
+**Problem Statement:** Find all occurrences of a pattern in a text in guaranteed O(N+M) time.
+
+**Why it works:**
+KMP avoids backtracking in the text by using a "failure function" (LPS array) precalculated from the pattern.
+1. The LPS array tells us the length of the longest proper prefix of `P[0...i]` that is also a suffix of `P[0...i]`.
+2. When a mismatch occurs, we know some portion of the pattern already matches the text.
+3. We "jump" the pattern forward to the next possible match based on the LPS, ensuring we never re-compare characters in the text that we've already matched.
 
 Uses a prefix function to avoid redundant comparisons.
 
@@ -337,6 +365,15 @@ def find_replace_manual(text: str, pattern: str, replacement: str) -> str:
 
 ## Template: Wildcard Matching
 
+### Problem: Wildcard Matching
+**Problem Statement:** Implement wildcard pattern matching with support for `'?'` and `'*'`. `'?'` matches any single character. `'*'` matches any sequence of characters (including the empty sequence).
+
+**Why it works:**
+We use 2D Dynamic Programming where `dp[i][j]` is true if the first `i` characters of the string match the first `j` characters of the pattern.
+1. If `p[j-1] == '?'` or characters match, `dp[i][j] = dp[i-1][j-1]`.
+2. If `p[j-1] == '*'`, it can either match empty (`dp[i][j-1]`) or one or more characters (`dp[i-1][j]`).
+The DP table systematically builds up the solution by combining these sub-problems.
+
 ```python
 def is_match(s: str, p: str) -> bool:
     """
@@ -370,6 +407,16 @@ def is_match(s: str, p: str) -> bool:
 ---
 
 ## Template: Regex Matching (Simplified)
+
+### Problem: Regular Expression Matching
+**Problem Statement:** Implement regular expression matching with support for `'.'` and `'*'`. `'.'` matches any single character. `'*'` matches zero or more of the preceding element.
+
+**Why it works:**
+This is more complex than wildcard matching because `'*'` depends on the *preceding* character.
+1. If `p[j-1] == '*'`, we check:
+   a. Zero occurrences of the preceding char: `dp[i][j-2]`.
+   b. One or more occurrences: if the preceding char matches `s[i-1]`, we can stay in the same state `dp[i-1][j]`.
+The state transition for `'*'` is the "killer feature" of this DP approach.
 
 ```python
 def is_match_regex(s: str, p: str) -> bool:

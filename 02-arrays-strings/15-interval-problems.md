@@ -130,6 +130,17 @@ No Overlap:
 
 ## Template: Merge Intervals
 
+### Problem: Merge Intervals
+**Problem Statement:** Given an array of `intervals` where `intervals[i] = [start_i, end_i]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+
+**Why it works:**
+Sorting by start time ensures that any potential overlapping intervals are adjacent in the list.
+1. We sort the intervals.
+2. We initialize our result with the first interval.
+3. For each subsequent interval, if its start is less than or equal to the end of our last merged interval, they overlap. We update the end of the last merged interval.
+4. If they don't overlap, we add the current interval as a new entry.
+Sorting is the key that simplifies the complex pairwise comparison into a single O(n) pass.
+
 ```python
 def merge(intervals: list[list[int]]) -> list[list[int]]:
     """
@@ -165,6 +176,16 @@ def merge(intervals: list[list[int]]) -> list[list[int]]:
 ---
 
 ## Template: Insert Interval
+
+### Problem: Insert Interval
+**Problem Statement:** You are given an array of non-overlapping intervals `intervals` where `intervals[i] = [start_i, end_i]` sorted in ascending order by `start_i`. You are also given an interval `new_interval = [start, end]` that represents the start and end of another interval. Insert `new_interval` into `intervals` such that `intervals` is still sorted in ascending order by `start_i` and `intervals` still does not have any overlapping intervals (merge overlapping intervals if necessary).
+
+**Why it works:**
+Since the input is already sorted, we can process it in three linear phases:
+1. **Before**: Add all intervals that end before the new interval starts.
+2. **Merge**: While intervals overlap with the new interval, update the new interval's boundaries (`min` of starts, `max` of ends).
+3. **After**: Add the merged new interval and then all remaining original intervals.
+This O(n) approach preserves the sorted property without needing to re-sort.
 
 ```python
 def insert(intervals: list[list[int]], new_interval: list[int]) -> list[list[int]]:
@@ -232,6 +253,16 @@ def can_attend_meetings(intervals: list[list[int]]) -> bool:
 
 ## Template: Meeting Rooms II (Minimum Rooms)
 
+### Problem: Meeting Rooms II
+**Problem Statement:** Given an array of meeting time intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of conference rooms required.
+
+**Why it works:**
+The number of rooms needed is the maximum number of meetings occurring at the same time.
+1. We treat starts and ends as separate "events" on a timeline.
+2. A start event adds a room (`+1`), and an end event releases a room (`-1`).
+3. By sorting all events chronologically and processing them, the maximum value reached by our running sum is our answer.
+This effectively counts the number of overlapping intervals at every point in time.
+
 ```python
 def min_meeting_rooms(intervals: list[list[int]]) -> int:
     """
@@ -297,6 +328,15 @@ def min_meeting_rooms_heap(intervals: list[list[int]]) -> int:
 ---
 
 ## Template: Interval Intersection
+
+### Problem: Interval List Intersections
+**Problem Statement:** You are given two lists of closed intervals, `firstList` and `secondList`, where `firstList[i] = [start_i, end_i]` and `secondList[j] = [start_j, end_j]`. Each list of intervals is pairwise disjoint and in sorted order. Return the intersection of these two interval lists.
+
+**Why it works:**
+We use a two-pointer approach to compare intervals from both lists.
+1. An intersection exists if `max(start1, start2) <= min(end1, end2)`.
+2. After finding an intersection (or lack thereof), we move the pointer pointing to the interval that ends earlier, because that interval cannot possibly overlap with any future intervals from the other list.
+The linear scan is efficient because both lists are already sorted.
 
 ```python
 def interval_intersection(A: list[list[int]], B: list[list[int]]) -> list[list[int]]:
@@ -368,6 +408,17 @@ def remove_covered_intervals(intervals: list[list[int]]) -> int:
 ---
 
 ## Template: Non-Overlapping Intervals (Min Removals)
+
+### Problem: Non-overlapping Intervals
+**Problem Statement:** Given an array of intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+
+**Why it works:**
+To keep the maximum number of intervals, we should always pick the interval that ends the earliest among all available non-overlapping ones.
+1. We sort by end time.
+2. We keep the first interval.
+3. For each subsequent interval, if it starts before our last kept interval ends, it overlaps. We must remove it.
+4. If it doesn't overlap, we keep it and update our `prev_end`.
+This greedy strategy ensures we leave as much room as possible for future intervals.
 
 ```python
 def erase_overlap_intervals(intervals: list[list[int]]) -> int:

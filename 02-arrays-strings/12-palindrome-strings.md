@@ -93,6 +93,14 @@ A string that reads the same forwards and backwards.
 
 ## Template: Check Palindrome (Two Pointers)
 
+### Problem: Palindrome Check
+**Problem Statement:** Determine if a string is a palindrome.
+
+**Why it works:**
+A palindrome is symmetric around its center. 
+1. By comparing the character at the `left` index with the character at the `right` index and moving them inward, we verify the symmetry.
+2. If all pairs match until the pointers meet, the string is a palindrome.
+
 ```python
 def is_palindrome(s: str) -> bool:
     """
@@ -126,6 +134,15 @@ def is_palindrome_slice(s: str) -> bool:
 ---
 
 ## Template: Valid Palindrome (Alphanumeric Only)
+
+### Problem: Valid Palindrome
+**Problem Statement:** Check if a string is a palindrome, ignoring non-alphanumeric characters and case.
+
+**Why it works:**
+This is the same logic as the basic check but with a "filtering" step.
+1. We move pointers as usual but skip any character that isn't `isalnum()`.
+2. We use `lower()` to ensure case-insensitive comparison.
+This avoids the need for a separate pre-processing step that would require O(n) extra space.
 
 ```python
 def is_palindrome_alphanum(s: str) -> bool:
@@ -162,6 +179,15 @@ def is_palindrome_alphanum(s: str) -> bool:
 ---
 
 ## Template: Valid Palindrome II (Remove at Most One)
+
+### Problem: Valid Palindrome II
+**Problem Statement:** Given a string `s`, return `true` if the `s` can be a palindrome after deleting at most one character from it.
+
+**Why it works:**
+1. We start a normal palindrome check from both ends.
+2. When we encounter a mismatch `s[left] != s[right]`, we have two options to fix it: remove the `left` character or remove the `right` character.
+3. We check if the remaining substring `s[left+1 : right+1]` OR `s[left : right]` is a palindrome.
+Since we only get one "skip", this remains an O(n) solution.
 
 ```python
 def valid_palindrome_ii(s: str) -> bool:
@@ -200,6 +226,16 @@ def valid_palindrome_ii(s: str) -> bool:
 ---
 
 ## Template: Longest Palindromic Substring (Expand from Center)
+
+### Problem: Longest Palindromic Substring
+**Problem Statement:** Given a string `s`, return the longest palindromic substring in `s`.
+
+**Why it works:**
+A palindrome can be centered at a single character (odd length) or between two characters (even length).
+1. There are `2n-1` such centers. 
+2. For each center, we expand outward as long as the characters match.
+3. We keep track of the maximum length palindrome found.
+This approach is O(n²) but uses O(1) extra space, making it better than a O(n²) DP solution that uses O(n²) space.
 
 ```python
 def longest_palindrome(s: str) -> str:
@@ -305,6 +341,14 @@ def longest_palindrome_dp(s: str) -> str:
 
 ## Template: Count Palindromic Substrings
 
+### Problem: Palindromic Substrings
+**Problem Statement:** Given a string `s`, return the number of palindromic substrings in it.
+
+**Why it works:**
+This uses the same "Expand from Center" technique.
+1. Each time we successfully expand from a center, we've found one more palindromic substring.
+2. By summing the number of successful expansions from all `2n-1` centers, we get the total count.
+
 ```python
 def count_substrings(s: str) -> int:
     """
@@ -338,6 +382,16 @@ def count_substrings(s: str) -> int:
 ---
 
 ## Template: Longest Palindromic Subsequence (DP)
+
+### Problem: Longest Palindromic Subsequence
+**Problem Statement:** Given a string `s`, find the longest palindromic subsequence's length in `s`.
+
+**Why it works:**
+A subsequence doesn't have to be contiguous.
+1. We use DP where `dp[i][j]` is the longest palindromic subsequence in `s[i:j+1]`.
+2. If `s[i] == s[j]`, the `LPS` is `2 + LPS of the inner part s[i+1 : j]`.
+3. If they don't match, the `LPS` is the maximum of `LPS` excluding the left char OR the right char.
+The state transitions systematically explore the best palindromic structure within the string.
 
 ```python
 def longest_palindrome_subseq(s: str) -> int:
@@ -376,6 +430,16 @@ def longest_palindrome_subseq(s: str) -> int:
 ---
 
 ## Template: Palindrome Partitioning
+
+### Problem: Palindrome Partitioning
+**Problem Statement:** Given a string `s`, partition `s` such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of `s`.
+
+**Why it works:**
+This is a backtracking problem.
+1. At each step, we try all possible prefixes of the current string.
+2. If a prefix is a palindrome, we add it to our path and recursively partition the remaining string.
+3. If we reach the end of the string, the current path is a valid partitioning.
+This finds all ways to split the string into palindromes.
 
 ```python
 def partition(s: str) -> list[list[str]]:

@@ -102,6 +102,16 @@ Common in phone screens where interviewers want to see clean, efficient code.
 
 ## Template: Move Zeroes
 
+### Problem: Move Zeroes
+**Problem Statement:** Given an integer array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements.
+
+**Why it works:**
+We use a "reader" and "writer" approach.
+1. The `write_idx` keeps track of where the next non-zero element should be placed.
+2. The `read_idx` scans every element in the array.
+3. If the `read_idx` finds a non-zero element, we place it at the `write_idx` and increment it.
+After we've found all non-zero elements, the remaining space from `write_idx` to the end of the array is filled with zeros.
+
 ```python
 def move_zeroes(arr: list[int]) -> None:
     """
@@ -225,6 +235,17 @@ def remove_duplicates(arr: list[int]) -> int:
 
 ## Template: Sort Colors (Dutch National Flag)
 
+### Problem: Sort Colors
+**Problem Statement:** Given an array `nums` with `n` objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue (0, 1, 2).
+
+**Why it works:**
+This algorithm partitions the array into four regions: 0s, 1s, unknown, and 2s.
+1. `low` points to the end of the 0s region, `high` points to the start of the 2s region, and `mid` is the scanning pointer.
+2. If `arr[mid]` is 0, we swap it to the `low` position and increment both.
+3. If `arr[mid]` is 2, we swap it to the `high` position and decrement `high`.
+4. If `arr[mid]` is 1, it belongs in the middle, so we just move `mid`.
+The key is not to increment `mid` when swapping with `high`, because the new element at `mid` hasn't been checked yet.
+
 ```python
 def sort_colors(arr: list[int]) -> None:
     """
@@ -293,6 +314,15 @@ def reverse(arr: list[int]) -> None:
 
 ## Template: Rotate Array
 
+### Problem: Rotate Array
+**Problem Statement:** Given an array, rotate the array to the right by `k` steps, where `k` is non-negative.
+
+**Why it works:**
+The "Reversal Trick" allows us to rotate an array in-place without any extra storage.
+1. Rotating right by `k` means the last `k` elements move to the front.
+2. If we reverse the whole array, the elements are at the front but in reverse order.
+3. If we then reverse the first `k` elements and the remaining `n-k` elements separately, they return to their original relative order but in their new positions.
+
 ```python
 def rotate(arr: list[int], k: int) -> None:
     """
@@ -323,6 +353,16 @@ def rotate(arr: list[int], k: int) -> None:
 ---
 
 ## Template: Next Permutation
+
+### Problem: Next Permutation
+**Problem Statement:** Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+
+**Why it works:**
+To find the next greater permutation, we need to swap a number at some index `i` with a larger number from its right, while keeping the increase as small as possible.
+1. We find the first "decreasing" element from the right (`arr[i] < arr[i+1]`).
+2. We find the smallest number to its right that is still larger than `arr[i]` and swap them.
+3. After the swap, the sequence to the right of `i` is still in descending order. We reverse it to make it the smallest possible ascending sequence.
+This ensures we get the *immediately* next permutation.
 
 ```python
 def next_permutation(arr: list[int]) -> None:
@@ -479,7 +519,15 @@ def segregate_negatives_unordered(arr: list[int]) -> None:
 
 ## Index Encoding Technique
 
-When array contains values 1 to n, use indices as extra storage:
+### Problem: Find All Duplicates in an Array
+**Problem Statement:** Given an integer array `nums` of length `n` where all the integers of `nums` are in the range `[1, n]` and each integer appears once or twice, return an array of all the integers that appears twice.
+
+**Why it works:**
+Since the numbers are between 1 and `n`, we can use the array itself as a hash table.
+1. When we see a number `x`, we go to the index `abs(x) - 1`.
+2. We "mark" that index by negating the value there.
+3. If we encounter a number `x` and the value at `abs(x) - 1` is *already* negative, it means we've seen `x` before.
+This allows us to track visited numbers with O(1) extra space.
 
 ```python
 def find_duplicates(arr: list[int]) -> list[int]:

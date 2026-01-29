@@ -148,6 +148,15 @@ Range sum [1, 3] (arr[1] + arr[2] + arr[3])
 
 ## Template: Range Sum Query (Immutable)
 
+### Problem: Range Sum Query - Immutable
+**Problem Statement:** Given an integer array `nums`, handle multiple queries where each query asks for the sum of the elements of `nums` between indices `left` and `right` inclusive.
+
+**Why it works:**
+By precalculating a prefix sum array where `prefix[i]` is the sum of `nums[0...i-1]`, we can compute any range sum `nums[L...R]` in O(1).
+1. `Sum(L, R) = Sum(0, R) - Sum(0, L-1)`.
+2. Using the prefix array, this is `prefix[R+1] - prefix[L]`.
+This shifts the cost from query time (O(n)) to initialization time (O(n)), making it ideal for many sum queries on a static array.
+
 ```python
 class NumArray:
     """
@@ -168,6 +177,16 @@ class NumArray:
 ---
 
 ## Template: Subarray Sum Equals K
+
+### Problem: Subarray Sum Equals K
+**Problem Statement:** Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
+
+**Why it works:**
+We use a hash map to store the frequency of all prefix sums seen so far.
+1. As we iterate, we calculate the current `prefix_sum`.
+2. A subarray ending at the current index has sum `k` if there exists a previous prefix sum `P` such that `prefix_sum - P = k`.
+3. This is equivalent to checking if `prefix_sum - k` is in our hash map.
+This converts an O(n²) subarray search into an O(n) hash map lookup.
 
 ```python
 def subarray_sum(nums: list[int], k: int) -> int:
@@ -218,6 +237,15 @@ HashMap stores how many times each prefix sum has appeared.
 
 ## Template: Subarray Sum Divisible by K
 
+### Problem: Subarray Sums Divisible by K
+**Problem Statement:** Given an integer array `nums` and an integer `k`, return the number of non-empty subarrays that have a sum divisible by `k`.
+
+**Why it works:**
+If the remainders of two prefix sums divided by `k` are the same, their difference must be divisible by `k`.
+1. `(P_j - P_i) % k == 0` if `P_j % k == P_i % k`.
+2. We store the frequency of prefix sum remainders in a hash map.
+3. For each new prefix sum, its remainder `r` tells us how many previous subarrays can be subtracted to form a sum divisible by `k`.
+
 ```python
 def subarrays_div_by_k(nums: list[int], k: int) -> int:
     """
@@ -255,6 +283,16 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
 ---
 
 ## Template: 2D Prefix Sum (Range Sum Query 2D)
+
+### Problem: Range Sum Query 2D - Immutable
+**Problem Statement:** Given a 2D matrix `matrix`, handle multiple queries where each query asks for the sum of the elements of the rectangle defined by its upper left corner `(row1, col1)` and lower right corner `(row2, col2)`.
+
+**Why it works:**
+We precalculate `prefix[i][j]` as the sum of all elements in the rectangle from `(0,0)` to `(i-1, j-1)`.
+1. To calculate the sum of any region `(r1, c1)` to `(r2, c2)`, we use the principle of inclusion-exclusion.
+2. `Sum = TotalRectangle - TopRectangle - LeftRectangle + OverlapCorner`.
+3. In terms of prefix sums: `prefix[r2+1][c2+1] - prefix[r1][c2+1] - prefix[r2+1][c1] + prefix[r1][c1]`.
+This provides O(1) query time for any rectangular region.
 
 ```python
 class NumMatrix:
@@ -321,6 +359,15 @@ Answer = Total - A - B - C + overlap
 
 ## Template: Product of Array Except Self
 
+### Problem: Product of Array Except Self
+**Problem Statement:** Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`, without using the division operator.
+
+**Why it works:**
+The product of all elements except `nums[i]` is the product of everything to its left multiplied by everything to its right.
+1. We make one pass to calculate "prefix products" (cumulative product of elements before `i`).
+2. We make a second pass (backwards) to multiply these by "suffix products" (cumulative product of elements after `i`).
+This effectively computes the result in O(n) time and O(1) extra space (excluding output).
+
 ```python
 def product_except_self(nums: list[int]) -> list[int]:
     """
@@ -372,6 +419,15 @@ result = [24, 12, 8, 6]
 ---
 
 ## Template: Pivot Index
+
+### Problem: Find Pivot Index
+**Problem Statement:** Given an array of integers `nums`, calculate the pivot index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the right of the index.
+
+**Why it works:**
+The total sum `S` of the array is `left_sum + nums[i] + right_sum`.
+1. If `left_sum == right_sum`, then `S = 2 * left_sum + nums[i]`.
+2. This simplifies to `right_sum = total - left_sum - nums[i]`.
+3. We can track `left_sum` as we iterate and check this condition in O(n) time.
 
 ```python
 def pivot_index(nums: list[int]) -> int:

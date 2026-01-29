@@ -83,6 +83,16 @@ The key insight: **slow only advances when we find valid elements to keep**.
 
 ## Template: Remove Duplicates Pattern
 
+### Problem: Remove Duplicates from Sorted Array
+**Problem Statement:** Given a sorted array, remove the duplicates in-place such that each element appears only once and returns the new length.
+
+**Why it works:**
+We use a `fast` pointer to explore the array and a `slow` pointer to keep track of the last unique element found. 
+1. The `fast` pointer scans ahead. 
+2. When `arr[fast]` is different from `arr[slow]`, it means we've found a new unique value. 
+3. We move `slow` forward and copy the new value there.
+This ensures we only keep one copy of each element in the prefix of the array.
+
 ```python
 def remove_duplicates(arr: list[int]) -> int:
     """
@@ -142,6 +152,16 @@ Final: return slow + 1 = 4
 
 ## Template: Partition Pattern
 
+### Problem: Move Zeroes
+**Problem Statement:** Given an array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements.
+
+**Why it works:**
+We maintain a `slow` pointer that represents the next position where a non-zero element should be placed.
+1. The `fast` pointer scans every element.
+2. If `arr[fast]` is non-zero, we place it at `arr[slow]` and increment `slow`.
+3. After the loop, all elements from `slow` to the end are filled with zeros.
+This maintains the relative order because the `fast` pointer visits non-zero elements in their original sequence.
+
 ```python
 def move_zeroes(arr: list[int]) -> None:
     """
@@ -191,6 +211,16 @@ def move_zeroes_swap(arr: list[int]) -> None:
 
 ## Template: Remove Element
 
+### Problem: Remove Element
+**Problem Statement:** Given an array `nums` and a value `val`, remove all instances of that value in-place and return the new length.
+
+**Why it works:**
+This follows the same reader-writer logic.
+1. The `slow` pointer tracks the index of the next element that is NOT `val`.
+2. The `fast` pointer scans the array.
+3. If `arr[fast]` is not the target value, we copy it to `arr[slow]` and advance `slow`.
+Everything before `slow` is guaranteed to be free of `val`.
+
 ```python
 def remove_element(arr: list[int], val: int) -> int:
     """
@@ -217,6 +247,15 @@ def remove_element(arr: list[int], val: int) -> int:
 ---
 
 ## Template: Allow K Duplicates
+
+### Problem: Remove Duplicates from Sorted Array II
+**Problem Statement:** Given a sorted array, remove the duplicates in-place such that each unique element appears at most `k` times and return the new length.
+
+**Why it works:**
+In a sorted array, to check if an element has appeared more than `k` times, we only need to compare it with the element `k` positions before it in our "processed" portion.
+1. We start `slow` and `fast` at `k`.
+2. If `arr[fast]` is different from `arr[slow - k]`, it's safe to include `arr[fast]` because it can't be the $(k+1)$-th occurrence of the same value.
+This generalizes the "remove duplicates" (where `k=1`) pattern.
 
 ```python
 def remove_duplicates_k(arr: list[int], k: int = 2) -> int:
@@ -269,6 +308,16 @@ Different! Copy and advance slow.
 
 ## Template: Squaring Sorted Array
 
+### Problem: Squares of a Sorted Array
+**Problem Statement:** Given an array of integers sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.
+
+**Why it works:**
+Since the input is sorted, the largest squares are either at the very beginning (large negative numbers) or at the very end (large positive numbers).
+1. We use two pointers, `left` and `right`, starting at the ends.
+2. We compare the squares of `arr[left]` and `arr[right]`.
+3. The larger square is placed at the end of the result array, and we move the corresponding pointer inward.
+This allows us to construct the sorted result in O(n) without sorting.
+
 ```python
 def sorted_squares(arr: list[int]) -> list[int]:
     """
@@ -307,6 +356,16 @@ def sorted_squares(arr: list[int]) -> list[int]:
 ## Common Variations
 
 ### Slow Catches Up to Fast
+
+### Problem: Longest Continuous Increasing Subsequence
+**Problem Statement:** Given an unsorted array of integers, find the length of the longest continuous increasing subsequence (subarray).
+
+**Why it works:**
+An increasing subsequence is continuous as long as each element is greater than the one before it.
+1. We use `fast` to scan the array.
+2. If we find an element that is NOT greater than the previous one, it means the current increasing streak has ended.
+3. We "reset" our `slow` pointer to the current `fast` position to start tracking a new potential longest streak.
+4. `max_len` tracks the largest window `[slow, fast]` seen so far.
 
 ```python
 def find_length_of_lcis(arr: list[int]) -> int:

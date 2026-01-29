@@ -93,6 +93,15 @@ Two strings are anagrams if they contain the same characters with the same frequ
 
 ## Template: Valid Anagram
 
+### Problem: Valid Anagram
+**Problem Statement:** Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
+
+**Why it works:**
+Two strings are anagrams if they have the exact same characters with the same frequencies.
+1. We use a frequency map (or a fixed-size array for limited alphabets) to count the occurrences of each character.
+2. If the character counts match exactly, the strings are anagrams.
+3. This approach is O(n) which is better than sorting (O(n log n)).
+
 ```python
 def is_anagram(s: str, t: str) -> bool:
     """
@@ -155,6 +164,15 @@ def is_anagram_sort(s: str, t: str) -> bool:
 
 ## Template: Group Anagrams
 
+### Problem: Group Anagrams
+**Problem Statement:** Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
+
+**Why it works:**
+To group anagrams, we need a "canonical" representation of an anagram class that can be used as a hash map key.
+1. **Sorting**: Sorting the string (e.g., "eat" → "aet") is a common canonical form.
+2. **Frequency Count**: A tuple of character counts (e.g., `(1, 0, ..., 1, ...)` for 'a' and 't') is also a valid key and faster than sorting for long strings.
+3. We store the original strings in a hash map where the keys are these canonical forms.
+
 ```python
 def group_anagrams(strs: list[str]) -> list[list[str]]:
     """
@@ -207,6 +225,16 @@ def group_anagrams_count(strs: list[str]) -> list[list[str]]:
 ---
 
 ## Template: Find All Anagrams in a String
+
+### Problem: Find All Anagrams in a String
+**Problem Statement:** Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`.
+
+**Why it works:**
+Since the length of an anagram is fixed, we use a fixed-size sliding window of length `len(p)`.
+1. We maintain a frequency map for the current window in `s`.
+2. As the window moves, we update the map in O(1).
+3. We compare the window map to `p`'s map to find matches.
+This ensures we find all anagram occurrences in a single O(n) pass.
 
 ```python
 def find_anagrams(s: str, p: str) -> list[int]:
@@ -301,6 +329,15 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
 
 ## Template: Permutation in String
 
+### Problem: Permutation in String
+**Problem Statement:** Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.
+
+**Why it works:**
+A permutation of a string is simply an anagram of it.
+1. The problem is identical to finding if there's *at least one* anagram of `s1` in `s2`.
+2. We use the sliding window frequency count technique.
+3. If any window's character count matches `s1`, we return `true`.
+
 ```python
 def check_inclusion(s1: str, s2: str) -> bool:
     """
@@ -373,6 +410,16 @@ def count_anagram_substrings(s: str, p: str) -> int:
 ---
 
 ## Template: Scramble String Check
+
+### Problem: Scramble String
+**Problem Statement:** Given two strings `s1` and `s2` of the same length, determine if `s2` is a scrambled string of `s1`.
+
+**Why it works:**
+Scrambling involves recursively splitting the string and optionally swapping the two halves.
+1. Two strings can only be scrambles if they are anagrams.
+2. We use recursion with memoization to check all possible split points.
+3. For each split, we check if the halves match (without swap) or match after a swap.
+Anagram checking is used here as an "early exit" optimization for the recursion.
 
 ```python
 def is_scramble(s1: str, s2: str) -> bool:

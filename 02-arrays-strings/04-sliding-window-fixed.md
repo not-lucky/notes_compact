@@ -87,6 +87,15 @@ UPDATE the window state by:
 
 ## Template: Maximum Sum of Subarray of Size K
 
+### Problem: Maximum Sum Subarray of Size K
+**Problem Statement:** Given an array of positive numbers and a positive number `k`, find the maximum sum of any contiguous subarray of size `k`.
+
+**Why it works:**
+The sum of a subarray of size `k` at index `i` is `S_i`. The sum at index `i+1` is `S_{i+1} = S_i - arr[i] + arr[i+k]`.
+1. We calculate the initial sum for the first `k` elements.
+2. We slide the window by subtracting the element that is falling out and adding the element that is coming in.
+This avoids re-summing `k` elements for every possible window, reducing the complexity from O(n*k) to O(n).
+
 ```python
 def max_sum_subarray_k(arr: list[int], k: int) -> int:
     """
@@ -166,6 +175,16 @@ def average_of_subarrays(arr: list[int], k: int) -> list[float]:
 
 ## Template: Maximum of Each Window (with Deque)
 
+### Problem: Sliding Window Maximum
+**Problem Statement:** You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. Return the max sliding window.
+
+**Why it works:**
+We use a monotonic decreasing deque to keep track of the maximum.
+1. The deque stores indices of elements that are potential candidates for the maximum of the current or future windows.
+2. When a new element comes, we remove all elements smaller than it from the back of the deque because they can never be the maximum again (the new element is larger and will stay in the window longer).
+3. The element at the front of the deque is always the maximum for the current window.
+This ensures each element is added and removed at most once, achieving O(n).
+
 ```python
 from collections import deque
 
@@ -229,6 +248,15 @@ Key: dq is always sorted descending by value,
 ---
 
 ## Template: Contains Duplicate Within K Distance
+
+### Problem: Contains Duplicate II
+**Problem Statement:** Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
+
+**Why it works:**
+We maintain a set containing the last `k` elements.
+1. As we iterate, if the current element is in the set, we've found a duplicate within distance `k`.
+2. If not, we add it to the set and remove the element that is now more than `k` distance away (`arr[i-k]`).
+The set acts as a "sliding window" for membership testing.
 
 ```python
 def contains_nearby_duplicate(arr: list[int], k: int) -> bool:
@@ -296,6 +324,16 @@ def distinct_in_windows(arr: list[int], k: int) -> list[int]:
 ---
 
 ## Template: Find All Anagrams
+
+### Problem: Find All Anagrams in a String
+**Problem Statement:** Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`.
+
+**Why it works:**
+An anagram must have the same length and same character frequencies.
+1. The window size is fixed at `len(p)`.
+2. We maintain a frequency count of characters in the current window of `s`.
+3. If the window's count matches `p`'s count, the current window is an anagram.
+By updating the count incrementally (add new char, remove old char), we avoid rebuilding the frequency map for every window.
 
 ```python
 def find_anagrams(s: str, p: str) -> list[int]:

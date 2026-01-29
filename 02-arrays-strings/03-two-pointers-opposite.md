@@ -84,6 +84,15 @@ Move based on condition until left >= right
 
 ## Template: Two Sum (Sorted Array)
 
+### Problem: Two Sum II - Input Array Is Sorted
+**Problem Statement:** Given a 1-indexed array of integers that is already sorted in non-decreasing order, find two numbers such that they add up to a specific target number.
+
+**Why it works:**
+In a sorted array, the sum of elements at `left` and `right` can be adjusted predictably.
+1. If the current sum is too small, the only way to increase it (without using a hash map) is to move the `left` pointer to a larger value.
+2. If the current sum is too large, the only way to decrease it is to move the `right` pointer to a smaller value.
+Because the array is sorted, this "squeezing" approach covers all possible pairs in O(n) without missing any.
+
 ```python
 def two_sum_sorted(arr: list[int], target: int) -> list[int]:
     """
@@ -128,6 +137,16 @@ moving left increases sum. So we can always move toward target.
 ---
 
 ## Template: 3Sum
+
+### Problem: 3Sum
+**Problem Statement:** Given an integer array `nums`, return all unique triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.
+
+**Why it works:**
+This is an extension of Two Sum.
+1. First, we sort the array to enable two-pointers and handle duplicates easily.
+2. We fix one element `nums[i]` and then look for two other elements that sum to `-nums[i]` using the Two Sum (Sorted) technique.
+3. We skip duplicate values for both the fixed element and the two pointers to ensure the result contains only unique triplets.
+Sorting makes the O(n²) approach much more efficient than a brute-force O(n³).
 
 ```python
 def three_sum(nums: list[int]) -> list[list[int]]:
@@ -181,6 +200,16 @@ def three_sum(nums: list[int]) -> list[list[int]]:
 ---
 
 ## Template: Container With Most Water
+
+### Problem: Container With Most Water
+**Problem Statement:** You are given an integer array `height`. Find two lines that together with the x-axis form a container, such that the container contains the most water.
+
+**Why it works:**
+The amount of water is limited by the shorter line: `Area = min(h1, h2) * width`.
+1. We start with the widest possible width (`left=0`, `right=n-1`).
+2. To find a larger area, we must find taller lines, because moving pointers always decreases the width.
+3. Moving the taller line is useless because the area will still be limited by the same (or even shorter) shorter line, but with a smaller width.
+4. Therefore, we move the pointer pointing to the shorter line in hopes of finding a taller one.
 
 ```python
 def max_area(heights: list[int]) -> int:
@@ -237,6 +266,16 @@ So moving shorter line is the only way to potentially improve.
 
 ## Template: Valid Palindrome
 
+### Problem: Valid Palindrome
+**Problem Statement:** Given a string `s`, return `true` if it is a palindrome, or `false` otherwise, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters.
+
+**Why it works:**
+A palindrome is symmetric.
+1. We use `left` and `right` pointers.
+2. We skip non-alphanumeric characters.
+3. We compare the characters. If they don't match, it's not a palindrome.
+By converging from both ends, we check the symmetry in a single pass.
+
 ```python
 def is_palindrome(s: str) -> bool:
     """
@@ -266,6 +305,16 @@ def is_palindrome(s: str) -> bool:
 ---
 
 ## Template: Trapping Rain Water
+
+### Problem: Trapping Rain Water
+**Problem Statement:** Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.
+
+**Why it works:**
+The water trapped at index `i` is `min(max_left_so_far, max_right_so_far) - height[i]`.
+1. We use two pointers from the ends.
+2. We maintain `left_max` and `right_max`.
+3. If `height[left] < height[right]`, we know the water at `left` is determined by `left_max` because `right_max` is guaranteed to be at least `height[right]` (which is greater than `height[left]`).
+4. This allows us to calculate water at the smaller height's pointer without knowing the absolute maximum on the other side.
 
 ```python
 def trap_rain_water(heights: list[int]) -> int:
@@ -345,6 +394,17 @@ def reverse(arr: list[int]) -> None:
 ---
 
 ## Template: Sort Colors (Dutch National Flag)
+
+### Problem: Sort Colors
+**Problem Statement:** Given an array `nums` with `n` objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue (0, 1, 2).
+
+**Why it works:**
+This is a three-way partition problem.
+1. `low` marks the boundary for 0s, `high` for 2s, and `mid` is the current element.
+2. If `arr[mid] == 0`, we swap it to the `low` region.
+3. If `arr[mid] == 2`, we swap it to the `high` region.
+4. If `arr[mid] == 1`, it's already in the middle region, so we just move `mid`.
+This ensures all 0s are pushed to the start, 2s to the end, leaving 1s in the middle.
 
 ```python
 def sort_colors(nums: list[int]) -> None:

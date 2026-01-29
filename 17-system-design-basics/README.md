@@ -261,6 +261,6 @@ class Cache(ABC, Generic[K, V]):
 
 ---
 
-## Start: [01-data-structure-choices.md](./01-data-structure-choices.md)
+## Next Steps
 
-Begin with understanding when to choose different data structures for system design scenarios.
+Now that you understand how data structures apply to system design, move on to **[Chapter 18: Low-Level Design (LLD)](../18-low-level-design/)** to learn about class design and patterns, or **[Chapter 19: High-Level Design (HLD)](../19-high-level-design/)** for large-scale architecture.

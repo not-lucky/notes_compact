@@ -150,7 +150,7 @@ For thorough preparation with more time for practice and reinforcement.
 | **Week 5** | Graphs | [08](#08---graphs) | 3 problems |
 | **Week 6** | Dynamic Programming | [09](#09---dynamic-programming) | 3 problems |
 | **Week 7** | Search + Recursion + Greedy | [10](#10---binary-search), [11](#11---recursion--backtracking), [12](#12---greedy-algorithms) | 3 problems |
-| **Week 8** | Advanced + Review | [13](#13---tries), [14](#14---union-find), [15](#15---bit-manipulation), Mock interviews | 3-4 problems |
+| **Week 8** | Advanced + Review | [13](#13---tries), [14](#14---union-find), [15](#15---bit-manipulation), [18](#18---low-level-design), [19](#19---high-level-design), Mock interviews | 3-4 problems |
 
 **Detailed Weekly Breakdown:**
 
@@ -330,6 +330,16 @@ GCD/LCM, prime numbers, modular arithmetic, random sampling, and sqrt decomposit
 [Go to Chapter](./17-system-design-basics/)
 
 Data structure selection for scale, trade-offs analysis, rate limiting, and LRU/LFU cache implementations.
+
+#### 18 - Low-Level Design
+[Go to Chapter](./18-low-level-design/)
+
+Object-oriented design, SOLID principles, design patterns, and case studies like Parking Lot and ATM.
+
+#### 19 - High-Level Design
+[Go to Chapter](./19-high-level-design/)
+
+Scalability, availability, distributed systems, databases (SQL vs NoSQL), and system design case studies.
 
 ---
 

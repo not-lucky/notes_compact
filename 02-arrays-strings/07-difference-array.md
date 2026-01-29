@@ -102,6 +102,16 @@ After all updates, reconstruct array with prefix sum.
 
 ## Template: Range Addition
 
+### Problem: Range Addition
+**Problem Statement:** You are given an integer `length` and a 2D array `updates` where `updates[i] = [start_i, end_i, inc_i]`. Increment each element of the array in the range `[start_i, end_i]` by `inc_i` and return the final array.
+
+**Why it works:**
+Updating a range `[L, R]` with value `v` in a difference array `D` involves only two operations: `D[L] += v` and `D[R+1] -= v`.
+1. The difference array `D` represents the change between adjacent elements.
+2. Increasing `D[L]` means every element from `L` onwards in the reconstructed array will be increased by `v`.
+3. Decreasing `D[R+1]` cancels out that increase for all elements from `R+1` onwards.
+This turns O(k*n) range updates into O(k) point updates followed by a single O(n) prefix sum pass.
+
 ```python
 def range_addition(length: int, updates: list[list[int]]) -> list[int]:
     """
@@ -165,6 +175,15 @@ Final: [-2, 0, 3, 5, 3]
 
 ## Template: Car Pooling
 
+### Problem: Car Pooling
+**Problem Statement:** There is a vehicle with `capacity` empty seats. Given a list of `trips` where `trips[i] = [num_passengers, start_location, end_location]`, return `true` if it is possible to pick up and drop off all passengers for all the given trips, or `false` otherwise.
+
+**Why it works:**
+The number of passengers in the car at any location `x` is the cumulative sum of all passengers who entered minus those who exited before or at `x`.
+1. We use a difference array where we add `num_passengers` at `start_location` and subtract them at `end_location`.
+2. We then compute the prefix sum to find the passenger count at every point along the route.
+3. If the count exceeds `capacity` at any point, the schedule is impossible.
+
 ```python
 def car_pooling(trips: list[list[int]], capacity: int) -> bool:
     """
@@ -201,6 +220,16 @@ def car_pooling(trips: list[list[int]], capacity: int) -> bool:
 ---
 
 ## Template: Meeting Rooms II (Minimum Rooms)
+
+### Problem: Meeting Rooms II
+**Problem Statement:** Given an array of meeting time intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of conference rooms required.
+
+**Why it works:**
+The number of rooms needed at any time `t` is the number of meetings happening concurrently.
+1. We mark the start of each meeting as `+1` room needed and the end as `-1` room.
+2. Sorting these events by time and calculating the running sum gives us the room occupancy over time.
+3. The peak value of this running sum is the minimum number of rooms needed.
+This "sweep-line" approach (which is effectively using a difference array on a sorted timeline) efficiently finds the maximum concurrency.
 
 ```python
 def min_meeting_rooms(intervals: list[list[int]]) -> int:
@@ -263,6 +292,15 @@ def min_meeting_rooms_events(intervals: list[list[int]]) -> int:
 ---
 
 ## Template: Corporate Flight Bookings
+
+### Problem: Corporate Flight Bookings
+**Problem Statement:** There are `n` flights that are labeled from `1` to `n`. You are given an array of flight bookings `bookings`, where `bookings[i] = [first_i, last_i, seats_i]` represents a booking for flights `first_i` through `last_i` with `seats_i` seats reserved for each flight in the range. Return an array `answer` of length `n` where `answer[i]` is the total number of seats reserved for flight `i`.
+
+**Why it works:**
+This is a direct application of the difference array for range updates.
+1. We apply `D[first] += seats` and `D[last+1] -= seats`.
+2. The final passenger count for each flight is the prefix sum of the difference array.
+This handles multiple overlapping bookings in O(n + k) time.
 
 ```python
 def corp_flight_bookings(bookings: list[list[int]], n: int) -> list[int]:

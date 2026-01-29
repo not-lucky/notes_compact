@@ -90,6 +90,16 @@ Key insight: At each step, either expand OR shrink (never both)
 
 ## Template: Longest Substring Without Repeating
 
+### Problem: Longest Substring Without Repeating Characters
+**Problem Statement:** Given a string `s`, find the length of the longest substring without repeating characters.
+
+**Why it works:**
+We use a `right` pointer to expand our potential substring and a `left` pointer to shrink it whenever a duplicate is found.
+1. We store the last seen index of each character in a hash map.
+2. When the character at `right` is already in our map and its index is within our current window (`>= left`), it's a repeat.
+3. We jump `left` to one position past the last occurrence of that character.
+This ensures the window `[left, right]` always contains unique characters, and we record the maximum size achieved.
+
 ```python
 def length_of_longest_substring(s: str) -> int:
     """
@@ -144,6 +154,16 @@ Return 3
 ---
 
 ## Template: Minimum Window Substring
+
+### Problem: Minimum Window Substring
+**Problem Statement:** Given two strings `s` and `t` of lengths `m` and `n` respectively, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window.
+
+**Why it works:**
+This is a "minimum valid window" problem.
+1. **Expand**: Move the `right` pointer until the window contains all characters in `t`.
+2. **Shrink**: Once the window is valid, move the `left` pointer to find the smallest possible valid window ending at `right`.
+3. We keep track of the minimum size found during these shrinking steps.
+The `have_count` and `need_count` variables allow us to check validity in O(1) time after each expansion/shrinkage.
 
 ```python
 def min_window(s: str, t: str) -> str:
@@ -215,6 +235,16 @@ Then shrink while maintaining validity to find minimum
 
 ## Template: Longest Substring with At Most K Distinct Characters
 
+### Problem: Longest Substring with At Most K Distinct Characters
+**Problem Statement:** Given a string `s` and an integer `k`, return the length of the longest substring of `s` that contains at most `k` distinct characters.
+
+**Why it works:**
+This is a "maximum valid window" problem.
+1. **Expand**: Move `right` and add characters to a frequency map.
+2. **Shrink**: If the number of distinct characters in the map exceeds `k`, move `left` and decrement counts until the number of distinct characters is back to `k`.
+3. The size of each valid window `[left, right]` is compared to the `max_length`.
+The monotonic expansion ensures we don't skip any potential longest substring.
+
 ```python
 def longest_k_distinct(s: str, k: int) -> int:
     """
@@ -251,6 +281,15 @@ def longest_k_distinct(s: str, k: int) -> int:
 ---
 
 ## Template: Longest Repeating Character Replacement
+
+### Problem: Longest Repeating Character Replacement
+**Problem Statement:** You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times. Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+**Why it works:**
+A window is valid if we can replace at most `k` characters to make all characters in the window identical. This is true if `window_size - max_freq_char_count <= k`.
+1. We track the frequency of characters in the window and the highest frequency (`max_count`).
+2. If the current window becomes invalid, we shrink it from the left.
+3. Interestingly, `max_count` only needs to be updated when it increases, because a smaller `max_count` won't allow for a larger valid window than what we've already found.
 
 ```python
 def character_replacement(s: str, k: int) -> int:
@@ -300,6 +339,15 @@ If this exceeds k, window is invalid → shrink.
 
 ## Template: Subarray Sum Equals K (Prefix Sum + HashMap)
 
+### Problem: Subarray Sum Equals K
+**Problem Statement:** Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
+
+**Why it works:**
+This problem uses Prefix Sum because the array can contain negative numbers, which breaks the monotonic property required for sliding window.
+1. If the sum of elements from index `0` to `j` is `P_j` and from `0` to `i-1` is `P_{i-1}`, then the sum from `i` to `j` is `P_j - P_{i-1}`.
+2. We want `P_j - P_{i-1} = k`, which means `P_{i-1} = P_j - k`.
+3. As we compute prefix sums, we store their frequencies in a hash map. At each index `j`, we check how many times `P_j - k` has occurred as a prefix sum before.
+
 ```python
 def subarray_sum(nums: list[int], k: int) -> int:
     """
@@ -333,6 +381,15 @@ def subarray_sum(nums: list[int], k: int) -> int:
 ---
 
 ## Template: Minimum Size Subarray Sum
+
+### Problem: Minimum Size Subarray Sum
+**Problem Statement:** Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0 instead.
+
+**Why it works:**
+Since all numbers are positive, the window sum is monotonic (adding elements increases it, removing decreases it).
+1. **Expand**: Move `right` until the `current_sum >= target`.
+2. **Shrink**: Once the condition is met, move `left` to minimize the window while the condition still holds.
+3. This "greedy" shrinkage finds the smallest subarray ending at `right` that satisfies the target.
 
 ```python
 def min_subarray_len(target: int, nums: list[int]) -> int:

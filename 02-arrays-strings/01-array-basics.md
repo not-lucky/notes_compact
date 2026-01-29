@@ -161,6 +161,15 @@ def every_third_backwards(arr: list[int]) -> list[int]:
 
 ## Array Rotation
 
+### Problem: Rotate Array
+**Problem Statement:** Given an array, rotate the array to the right or left by `k` steps, where `k` is non-negative.
+
+**Why it works (The Reversal Trick):**
+To rotate an array by `k` steps without extra space, we can use the property that reversing parts of the array and then the whole array can reorder elements. 
+1. Reversing the segments that will be "moved" and the segment that "stays" reorders them locally.
+2. Reversing the entire array then places these segments into their final rotated positions.
+This is O(n) time and O(1) space.
+
 ### Left Rotation
 
 Rotate array left by k positions: `[1,2,3,4,5]` rotated left by 2 → `[3,4,5,1,2]`

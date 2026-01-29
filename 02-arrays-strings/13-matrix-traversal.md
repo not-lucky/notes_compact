@@ -122,6 +122,16 @@ def is_valid(r: int, c: int, rows: int, cols: int) -> bool:
 
 ## Template: Spiral Order Traversal
 
+### Problem: Spiral Matrix
+**Problem Statement:** Given an `m x n` matrix, return all elements of the matrix in spiral order.
+
+**Why it works:**
+We process the matrix layer by layer, starting from the outer boundary.
+1. We maintain four boundaries: `top`, `bottom`, `left`, `right`.
+2. We traverse the `top` row, then the `right` column, then the `bottom` row (if it exists), then the `left` column (if it exists).
+3. After each boundary traversal, we shrink that boundary inward.
+The loop continues until the boundaries cross, ensuring every element is visited exactly once in the correct order.
+
 ```python
 def spiral_order(matrix: list[list[int]]) -> list[int]:
     """
@@ -189,6 +199,15 @@ Result: [1, 2, 3, 6, 9, 8, 7, 4, 5]
 
 ## Template: Rotate Matrix 90° Clockwise
 
+### Problem: Rotate Image
+**Problem Statement:** You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise). You have to rotate the image in-place.
+
+**Why it works:**
+A 90-degree clockwise rotation can be achieved through two simpler transformations:
+1. **Transpose**: Reflecting the matrix across its main diagonal (swap `arr[i][j]` with `arr[j][i]`).
+2. **Horizontal Reflection**: Reversing each row.
+Combining these two steps transforms the element at `(i, j)` to its new position `(j, n-1-i)` without needing a separate output matrix.
+
 ```python
 def rotate(matrix: list[list[int]]) -> None:
     """
@@ -228,6 +247,17 @@ def rotate(matrix: list[list[int]]) -> None:
 
 ## Template: Search in Sorted Matrix
 
+### Problem: Search a 2D Matrix
+**Problem Statement:** Design an efficient algorithm that searches for a value `target` in an `m x n` integer matrix `matrix`. This matrix has the following properties:
+- Integers in each row are sorted from left to right.
+- The first integer of each row is greater than the last integer of the previous row.
+
+**Why it works:**
+The properties of the matrix mean that if we were to flatten it row by row, it would be a single sorted 1D array.
+1. We can perform a binary search on the range `[0, m*n - 1]`.
+2. To convert a 1D index `idx` back to 2D coordinates: `row = idx // n` and `col = idx % n`.
+This allows us to search the entire matrix in O(log(m*n)) time.
+
 ### Search a 2D Matrix (Row and Column Sorted)
 
 ```python
@@ -264,6 +294,17 @@ def search_matrix(matrix: list[list[int]], target: int) -> bool:
 ```
 
 ### Search a 2D Matrix II (Each Row/Column Sorted)
+
+### Problem: Search a 2D Matrix II
+**Problem Statement:** Search for a `target` in an `m x n` matrix where:
+- Integers in each row are sorted in ascending from left to right.
+- Integers in each column are sorted in ascending from top to bottom.
+
+**Why it works:**
+Starting from the top-right corner `(0, n-1)` provides a decision point.
+1. If the current value is larger than `target`, we know the entire current column is larger (since columns are sorted), so we can eliminate it and move `left`.
+2. If the current value is smaller than `target`, we know the entire current row is smaller (since rows are sorted), so we can eliminate it and move `down`.
+Every step eliminates either a row or a column, leading to O(m+n) complexity.
 
 ```python
 def search_matrix_ii(matrix: list[list[int]], target: int) -> bool:
@@ -309,6 +350,16 @@ Target: 5
 ---
 
 ## Template: Set Matrix Zeroes
+
+### Problem: Set Matrix Zeroes
+**Problem Statement:** Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`. Do it in-place.
+
+**Why it works:**
+To do it in-place with O(1) space, we use the first row and first column of the matrix itself as markers to record which rows and columns should be zeroed.
+1. We check if the first row and first column need to be zeroed initially.
+2. We scan the rest of the matrix, and if `matrix[r][c]` is 0, we set `matrix[r][0]` and `matrix[0][c]` to 0.
+3. We then iterate through the rest of the matrix again and use the markers to set zeros.
+4. Finally, we handle the first row and first column separately.
 
 ```python
 def set_zeroes(matrix: list[list[int]]) -> None:

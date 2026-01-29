@@ -288,6 +288,13 @@ s = "".join(chr(v) for v in ascii_vals)  # "hello"
 
 ### Reverse a String
 
+### Problem: Reverse String
+**Problem Statement:** Write a function that reverses a string.
+
+**Why it works:**
+1. **Slicing (`s[::-1]`)**: This is the most idiomatic Python way. It creates a new string by stepping backwards through the entire original string.
+2. **Two Pointers**: If given a list of characters, we swap elements from both ends moving inward. This uses O(1) extra space because we modify the input list directly.
+
 ```python
 def reverse_string(s: str) -> str:
     """
@@ -311,6 +318,13 @@ def reverse_string_inplace(chars: list[str]) -> None:
 ```
 
 ### Check if Palindrome
+
+### Problem: Valid Palindrome
+**Problem Statement:** Determine if a string is a palindrome, considering only alphanumeric characters and ignoring cases.
+
+**Why it works:**
+1. **Slicing**: Compare the string with its reverse. If they are identical, it's a palindrome.
+2. **Two Pointers**: Compare characters from both ends. This avoids creating a full copy of the string, making it O(1) space if we ignore the space for pre-processing (like filtering non-alphanumeric chars).
 
 ```python
 def is_palindrome(s: str) -> bool:
@@ -337,6 +351,14 @@ def is_palindrome_two_pointers(s: str) -> bool:
 ```
 
 ### Character Frequency Count
+
+### Problem: First Unique Character in a String
+**Problem Statement:** Given a string `s`, find the first non-repeating character in it and return its index. If it does not exist, return `-1`.
+
+**Why it works:**
+1. **Hash Map / Counter**: We first pass through the string to count the frequency of every character.
+2. **Second Pass**: We then iterate through the string again and check our frequency map. The first character with a count of `1` is our answer.
+The frequency map allows us to check "how many times have I seen this?" in O(1).
 
 ```python
 from collections import Counter

@@ -110,6 +110,16 @@ If current_sum < 0: start fresh (negative sum only hurts)
 
 ## Template: Maximum Subarray Sum
 
+### Problem: Maximum Subarray
+**Problem Statement:** Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
+
+**Why it works:**
+At each index `i`, we decide whether to include the previous subarray or start a new one.
+1. `current_sum_at_i = max(nums[i], current_sum_at_i-1 + nums[i])`.
+2. If `current_sum_at_i-1` is positive, adding it to `nums[i]` will always result in a larger sum than `nums[i]` alone.
+3. If it's negative, it only drags down the potential sum, so we're better off starting fresh with `nums[i]`.
+This greedy approach ensures we find the global maximum in a single pass.
+
 ```python
 def max_subarray(arr: list[int]) -> int:
     """
@@ -194,6 +204,15 @@ def max_subarray_with_indices(arr: list[int]) -> tuple[int, int, int]:
 
 ## Variation: Maximum Product Subarray
 
+### Problem: Maximum Product Subarray
+**Problem Statement:** Given an integer array `nums`, find a contiguous non-empty subarray within the array that has the largest product, and return the product.
+
+**Why it works:**
+Unlike sums, the product can flip sign when multiplying by a negative number.
+1. A very small negative number (large absolute value) can become a very large positive number when multiplied by another negative.
+2. Therefore, we track both the `max_prod` and `min_prod` ending at each position.
+3. When we encounter a negative number, `max_prod` and `min_prod` effectively swap roles before the multiplication.
+
 ```python
 def max_product(arr: list[int]) -> int:
     """
@@ -250,6 +269,16 @@ Tracking min allowed us to find 2 × -3 × -4 = 24
 ---
 
 ## Variation: Maximum Circular Subarray
+
+### Problem: Maximum Sum Circular Subarray
+**Problem Statement:** Given a circular integer array `nums` of length `n`, return the maximum possible sum of a non-empty subarray of `nums`.
+
+**Why it works:**
+A circular subarray can either be "normal" (middle of the array) or "wrapped" (includes both ends).
+1. The "normal" case is solved using standard Kadane's.
+2. The "wrapped" case is the `TotalSum - MinimumSubarraySum` (the part we exclude).
+3. We calculate both and take the maximum.
+Special handling is required if all numbers are negative (where `TotalSum == MinSubarraySum`).
 
 ```python
 def max_circular_subarray(arr: list[int]) -> int:
@@ -324,6 +353,15 @@ total - (middle portion we DON'T take)
 
 ## Variation: Maximum Sum with No Adjacent Elements
 
+### Problem: House Robber
+**Problem Statement:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+**Why it works:**
+At each house `i`, we have two choices:
+1. Rob the current house: `Total = house[i] + max_sum_up_to_house_i-2`.
+2. Don't rob current house: `Total = max_sum_up_to_house_i-1`.
+This is a DP problem where we only need the last two states (`prev1` and `prev2`) to calculate the current maximum, similar to the space-optimized Kadane's.
+
 ```python
 def max_sum_no_adjacent(arr: list[int]) -> int:
     """
@@ -356,6 +394,16 @@ def max_sum_no_adjacent(arr: list[int]) -> int:
 ---
 
 ## Variation: Maximum Sum Rectangle (2D)
+
+### Problem: Max Sum of Rectangle in a 2D Matrix
+**Problem Statement:** Given a 2D matrix, find the maximum sum of a rectangle within it.
+
+**Why it works:**
+We can convert this 2D problem into 1D Kadane's.
+1. We pick a pair of columns `(L, R)`.
+2. We "compress" all columns between `L` and `R` into a single 1D array where each element is the sum of a row between these columns.
+3. We run Kadane's on this 1D array to find the best set of rows for this column pair.
+4. By iterating over all column pairs (O(cols²)), we find the global maximum rectangle.
 
 ```python
 def max_sum_rectangle(matrix: list[list[int]]) -> int:
