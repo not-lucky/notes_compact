@@ -7,7 +7,7 @@ A Trie (prefix tree) is a specialized tree data structure used for efficient ret
 1. **Interview frequency**: Tries appear in ~10-15% of FANG interviews
 2. **Unique niche**: Some problems are nearly impossible without tries
 3. **Design interviews**: Autocomplete is a classic system design component
-4. **Time efficiency**: O(L) operations where L is word length, regardless of dictionary size
+4. **Time efficiency**: $O(L)$ operations where $L$ is word length, regardless of dictionary size
 
 ---
 
@@ -18,7 +18,7 @@ A Trie (prefix tree) is a specialized tree data structure used for efficient ret
 Imagine you're building a phone's keyboard autocomplete. As the user types "app", you need to instantly suggest "apple", "application", "applesauce". With 100,000 words in your dictionary:
 
 - **Hashset**: Can check "does 'apple' exist?" but can't find "all words starting with 'app'" without scanning everything
-- **Sorted list + binary search**: Can find the range of 'app-' words in O(log n), but then must scan the range
+- **Sorted list + binary search**: Can find the range of 'app-' words in $O(\log n)$, but then must scan the range
 - **Trie**: Navigate directly to the 'app' node; everything below is your answer
 
 **The Core Insight: Shared Prefixes**
@@ -33,9 +33,9 @@ Without sharing: 5 + 11 + 5 = 21 characters
 With sharing: 4 + 1 + 7 + 1 = 13 characters (38% savings)
 ```
 
-**Why O(L) for Everything?**
+**Why $O(L)$ for Everything?**
 
-The magic of a trie: your query time depends on word length L, NOT dictionary size n.
+The magic of a trie: your query time depends on word length $L$, NOT dictionary size $n$.
 
 ```
 Dictionary of 1 million words:
@@ -45,7 +45,7 @@ Dictionary of 1 million words:
 They're the same for exact lookup! But for prefixes...
 
 "Find all words starting with 'app'":
-  Hashset: O(n × L) — must check every word
+  Hashset: O(n * L) — must check every word
   Trie: O(L + k) — walk 3 nodes to 'app', then collect k results
 ```
 
@@ -121,13 +121,13 @@ For numeric data, segment trees or other structures often work better.
 
 | Operation             | Trie                      | HashMap        | BST            | Sorted Array   |
 | --------------------- | ------------------------- | -------------- | -------------- | -------------- |
-| Insert                | O(L)                      | O(L)           | O(L log n)     | O(n)           |
-| Search                | O(L)                      | O(L)           | O(L log n)     | O(L log n)     |
-| Prefix search         | O(L)                      | O(n × L)       | O(n)           | O(n)           |
-| Space                 | O(alphabet × total chars) | O(total chars) | O(total chars) | O(total chars) |
+| Insert                | $O(L)$                      | $O(L)$           | $O(L \log n)$     | $O(n)$           |
+| Search                | $O(L)$                      | $O(L)$           | $O(L \log n)$     | $O(L \log n)$     |
+| Prefix search         | $O(L)$                      | $O(n \cdot L)$       | $O(n)$           | $O(n)$           |
+| Space                 | $O(\text{alphabet} \cdot \text{total chars})$ | $O(\text{total chars})$ | $O(\text{total chars})$ | $O(\text{total chars})$ |
 | **Prefix operations** | **Excellent**             | Poor           | Poor           | Poor           |
 
-L = word length, n = number of words
+$L$ = word length, $n$ = number of words
 
 ---
 
@@ -178,11 +178,11 @@ Words: ["apple", "app", "apt", "bat"]
 
 | Operation    | Time     | Space | Description                              |
 | ------------ | -------- | ----- | ---------------------------------------- |
-| Insert       | O(L)     | O(L)  | Add word to trie                         |
-| Search       | O(L)     | O(1)  | Check if exact word exists               |
-| StartsWith   | O(L)     | O(1)  | Check if prefix exists                   |
-| Delete       | O(L)     | O(1)  | Remove word from trie                    |
-| Prefix Words | O(L + k) | O(k)  | Find all words with prefix (k = results) |
+| Insert       | $O(L)$     | $O(L)$  | Add word to trie                         |
+| Search       | $O(L)$     | $O(1)$  | Check if exact word exists               |
+| StartsWith   | $O(L)$     | $O(1)$  | Check if prefix exists                   |
+| Delete       | $O(L)$     | $O(1)$  | Remove word from trie                    |
+| Prefix Words | $O(L + k)$ | $O(k)$  | Find all words with prefix ($k$ = results) |
 
 ---
 
@@ -251,21 +251,21 @@ class TrieNode:
 
 | Problem Type        | Time           | Why                         |
 | ------------------- | -------------- | --------------------------- |
-| Insert n words      | O(n × L_avg)   | Each word takes O(L)        |
-| Search with prefix  | O(L + k)       | L for prefix, k for results |
-| Word search in grid | O(m × n × 4^L) | DFS from each cell          |
-| Autocomplete top-k  | O(L + k log k) | Traverse + heap for top-k   |
+| Insert $n$ words      | $O(n \cdot L_{avg})$   | Each word takes $O(L)$        |
+| Search with prefix  | $O(L + k)$       | $L$ for prefix, $k$ for results |
+| Word search in grid | $O(m \cdot n \cdot 4^L)$ | DFS from each cell          |
+| Autocomplete top-k  | $O(L + k \log k)$ | Traverse + heap for top-$k$   |
 
 ---
 
 ## Space Complexity Analysis
 
-For n words with average length L and alphabet size A:
+For $n$ words with average length $L$ and alphabet size $A$:
 
 ```
-Worst case: O(n × L × A)  - no shared prefixes
-Best case:  O(L × A)      - all words share prefixes
-Typical:    O(total_chars × A) - some sharing
+Worst case: O(n * L * A)  - no shared prefixes
+Best case:  O(L * A)      - all words share prefixes
+Typical:    O(total_chars * A) - some sharing
 
 # Example: ["apple", "app", "application"]
 # Nodes: a-p-p-l-e + l-i-c-a-t-i-o-n = 13 nodes
@@ -375,7 +375,7 @@ class Trie:
     def startsWith(self, prefix: str) -> bool:
         return self._find_node(prefix) is not None
 
-    def _find_node(self, prefix: str) -> TrieNode:
+    def _find_node(self, prefix: str) -> 'TrieNode | None':
         node = self.root
         for char in prefix:
             if char not in node.children:

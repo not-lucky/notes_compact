@@ -130,34 +130,32 @@ for each choice:
 ## The Backtracking Template
 
 ```python
-def backtrack(state, choices, result):
+from typing import Any, List
+
+def backtrack(state: List[Any], options: List[Any], result: List[List[Any]]) -> None:
     """
     Generic backtracking template.
 
     Args:
-        state: Current partial solution
-        choices: Available choices at this point
+        state: Current partial solution (usually a list)
+        options: Available choices at this point
         result: Collection of all valid solutions
     """
     # Base case: found a valid solution
     if is_solution(state):
-        result.append(state.copy())  # Save copy of state
+        result.append(state.copy())  # ALWAYS save a copy of the state
         return
 
     # Try each choice
-    for choice in choices:
-        # Pruning: skip invalid choices early
-        if not is_valid(state, choice):
-            continue
-
+    for option in get_valid_options(state, options):
         # Make choice
-        state.add(choice)
+        state.append(option)
 
         # Explore further
-        backtrack(state, remaining_choices, result)
+        backtrack(state, options, result)
 
         # Undo choice (backtrack)
-        state.remove(choice)
+        state.pop()
 ```
 
 ---
@@ -176,11 +174,11 @@ def backtrack(state, choices, result):
 
 | Problem Type | Time      | Space | Why                           |
 | ------------ | --------- | ----- | ----------------------------- |
-| Subsets      | O(2^n)    | O(n)  | 2 choices per element         |
-| Permutations | O(n!)     | O(n)  | n choices, then n-1, etc.     |
-| Combinations | O(C(n,k)) | O(k)  | Binomial coefficient          |
-| N-Queens     | O(n!)     | O(n)  | Worst case, all placements    |
-| Sudoku       | O(9^81)   | O(1)  | Worst case, but pruning helps |
+| Subsets      | $O(n \cdot 2^n)$| $O(n)$  | 2 choices per element         |
+| Permutations | $O(n \cdot n!)$ | $O(n)$  | n choices, then n-1, etc.     |
+| Combinations | $O(k \cdot \binom{n}{k})$| $O(k)$  | Binomial coefficient          |
+| N-Queens     | $O(n!)$     | $O(n)$  | Worst case, all placements    |
+| Sudoku       | $O(9^{81})$   | $O(81)$ | Worst case, but pruning helps |
 
 ---
 

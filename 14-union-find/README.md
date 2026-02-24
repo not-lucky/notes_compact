@@ -50,7 +50,7 @@ Union-Find is the go-to when you see:
 ## Why Union-Find Matters
 
 1. **Interview frequency**: Appears in ~5-10% of FANG interviews
-2. **Efficiency**: O(α(n)) ≈ O(1) operations with optimizations
+2. **Efficiency**: $O(\alpha(n)) \approx O(1)$ operations with optimizations
 3. **Graph problems**: Essential for connected components and cycle detection
 4. **System design**: Models network connectivity, social graphs
 
@@ -60,12 +60,12 @@ Union-Find is the go-to when you see:
 
 | Problem                        | Union-Find        | DFS/BFS            | Time Comparison |
 | ------------------------------ | ----------------- | ------------------ | --------------- |
-| Connected components (static)  | O(n × α(n))       | O(V + E)           | Similar         |
-| Connected components (dynamic) | O(n × α(n))       | O(n × (V + E))     | UF much faster  |
-| Cycle detection (undirected)   | O(E × α(n))       | O(V + E)           | Similar         |
-| Path connectivity queries      | O(α(n)) per query | O(V + E) per query | UF much faster  |
+| Connected components (static)  | $O(n \cdot \alpha(n))$       | $O(V + E)$           | Similar         |
+| Connected components (dynamic) | $O(n \cdot \alpha(n))$       | $O(n \cdot (V + E))$     | UF much faster  |
+| Cycle detection (undirected)   | $O(E \cdot \alpha(n))$       | $O(V + E)$           | Similar         |
+| Path connectivity queries      | $O(\alpha(n))$ per query | $O(V + E)$ per query | UF much faster  |
 
-α(n) = inverse Ackermann function, effectively constant (≤ 4 for any practical n)
+$\alpha(n)$ = inverse Ackermann function, effectively constant ($\le 4$ for any practical $n$)
 
 ---
 
@@ -126,10 +126,10 @@ Parent: [0, 0, 0, 2, 4]  (2's root now points to 0)
 
 | Operation | Time (naive) | Time (optimized) | Description                               |
 | --------- | ------------ | ---------------- | ----------------------------------------- |
-| MakeSet   | O(1)         | O(1)             | Create new set with single element        |
-| Find      | O(n)         | O(α(n)) ≈ O(1)   | Find root/representative of element's set |
-| Union     | O(n)         | O(α(n)) ≈ O(1)   | Merge two sets                            |
-| Connected | O(n)         | O(α(n)) ≈ O(1)   | Check if two elements in same set         |
+| MakeSet   | $O(1)$         | $O(1)$             | Create new set with single element        |
+| Find      | $O(n)$         | $O(\alpha(n)) \approx O(1)$   | Find root/representative of element's set |
+| Connect/Union | $O(n)$         | $O(\alpha(n)) \approx O(1)$   | Merge two sets                            |
+| Connected | $O(n)$         | $O(\alpha(n)) \approx O(1)$   | Check if two elements in same set         |
 
 ---
 
@@ -188,9 +188,11 @@ class UnionFind:
 
         # Union by rank: attach smaller tree under larger
         if self.rank[px] < self.rank[py]:
-            px, py = py, px
-        self.parent[py] = px
-        if self.rank[px] == self.rank[py]:
+            self.parent[px] = py
+        elif self.rank[px] > self.rank[py]:
+            self.parent[py] = px
+        else:
+            self.parent[py] = px
             self.rank[px] += 1
 
         return True
@@ -204,7 +206,7 @@ class UnionFind:
 
 ## Common Mistakes
 
-1. **Forgetting path compression**: Makes operations O(n) instead of O(α(n))
+1. **Forgetting path compression**: Makes operations $O(n)$ instead of $O(\alpha(n))$
 2. **Wrong union direction**: Not using rank leads to unbalanced trees
 3. **Off-by-one with indices**: Careful with 0-indexed vs 1-indexed
 4. **Not handling self-loops**: find(x) should return x if parent[x] == x
@@ -216,12 +218,12 @@ class UnionFind:
 
 | Operation Sequence | Naive    | Path Compression Only | Union by Rank Only | Both            |
 | ------------------ | -------- | --------------------- | ------------------ | --------------- |
-| n unions + m finds | O(n × m) | O(n + m × log n)      | O(n + m × log n)   | O(n + m × α(n)) |
+| $n$ unions + $m$ finds | $O(n \cdot m)$ | $O(n + m \log n)$      | $O(n + m \log n)$   | $O(n + m \cdot \alpha(n))$ |
 
-The inverse Ackermann function α(n) grows extremely slowly:
+The inverse Ackermann function $\alpha(n)$ grows extremely slowly:
 
-- α(10^80) < 5
-- For all practical purposes, α(n) ≤ 4
+- $\alpha(10^{80}) < 5$
+- For all practical purposes, $\alpha(n) \le 4$
 
 ---
 
@@ -300,9 +302,11 @@ def union(self, x, y):
 
     # Union by size: attach smaller to larger
     if self.size[px] < self.size[py]:
-        px, py = py, px
-    self.parent[py] = px
-    self.size[px] += self.size[py]
+        self.parent[px] = py
+        self.size[py] += self.size[px]
+    else:
+        self.parent[py] = px
+        self.size[px] += self.size[py]
     return True
 ```
 

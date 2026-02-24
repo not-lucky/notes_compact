@@ -18,8 +18,8 @@ The most important skill: knowing when to use each approach.
 | Aspect            | Greedy                             | Dynamic Programming                |
 | ----------------- | ---------------------------------- | ---------------------------------- |
 | **Decision**      | Make best local choice now         | Consider all subproblems           |
-| **Time**          | Usually O(n) or O(n log n)         | Usually O(n²) or O(n × target)     |
-| **Space**         | Usually O(1)                       | Usually O(n) or more               |
+| **Time**          | Usually $O(n)$ or $O(n \log n)$         | Usually $O(n^2)$ or $O(n \cdot \text{target})$     |
+| **Space**         | Usually $O(1)$                       | Usually $O(n)$ or more               |
 | **Correctness**   | Must prove greedy choice works     | Always correct if formulated right |
 | **When it fails** | Locally optimal ≠ globally optimal | Never fails (just slower)          |
 
@@ -159,10 +159,10 @@ For Huffman coding:
 
 | Problem Type       | Time       | Why               |
 | ------------------ | ---------- | ----------------- |
-| Interval problems  | O(n log n) | Sorting dominates |
-| Single pass greedy | O(n)       | One traversal     |
-| Two-pass greedy    | O(n)       | Two traversals    |
-| Heap-based greedy  | O(n log n) | n heap operations |
+| Interval problems  | $O(n \log n)$ | Sorting dominates |
+| Single pass greedy | $O(n)$       | One traversal     |
+| Two-pass greedy    | $O(n)$       | Two traversals    |
+| Heap-based greedy  | $O(n \log n)$ | $n$ heap operations |
 
 ---
 

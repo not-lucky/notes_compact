@@ -5,9 +5,9 @@ Binary Search is a foundational algorithm that appears frequently in FANG+ inter
 ## Why Binary Search Matters
 
 1. **Interview frequency**: Binary search variants appear in ~20% of coding interviews
-2. **Efficiency indicator**: Shows understanding of O(log n) vs O(n) optimization
+2. **Efficiency indicator**: Shows understanding of $O(\log n)$ vs $O(n)$ optimization
 3. **Versatility**: Applies to arrays, answer spaces, and optimization problems
-4. **Edge case handling**: Tests attention to detail with off-by-one errors
+4. **Edge case handling**: Tests attention to detail with off-by-one errors and infinite loops
 
 ---
 
@@ -72,7 +72,9 @@ def binary_search(nums: list[int], target: int) -> int:
 ### Template 2: Boundary (find transition point)
 
 ```python
-def find_boundary(nums: list[int], target: int) -> int:
+from typing import Callable
+
+def find_boundary(nums: list[int], condition: Callable[[int], bool]) -> int:
     left, right = 0, len(nums) - 1
     result = -1
 
@@ -81,7 +83,7 @@ def find_boundary(nums: list[int], target: int) -> int:
 
         if condition(nums[mid]):
             result = mid
-            right = mid - 1  # or left = mid + 1
+            right = mid - 1  # or left = mid + 1 depending on whether we want first or last True
         else:
             left = mid + 1   # or right = mid - 1
 
@@ -92,11 +94,11 @@ def find_boundary(nums: list[int], target: int) -> int:
 
 ## Common Mistakes
 
-1. **Integer overflow**: Use `left + (right - left) // 2` not `(left + right) // 2`
-2. **Infinite loops**: Check that `left` and `right` always converge
-3. **Off-by-one**: Know whether to include `mid` in next search range
-4. **Wrong condition**: Ensure the monotonic property holds
-5. **Edge cases**: Empty array, single element, target not found
+1. **Integer overflow**: Use `left + (right - left) // 2` instead of `(left + right) // 2` (more relevant in C/Java/C++, but good practice in Python).
+2. **Infinite loops**: Check that `left` and `right` always converge.
+3. **Off-by-one**: Know whether to include `mid` in next search range (`mid + 1` / `mid - 1` vs `mid`).
+4. **Wrong condition**: Ensure the monotonic property holds.
+5. **Edge cases**: Empty array, single element, target not found, target out of bounds.
 
 ---
 
@@ -104,10 +106,10 @@ def find_boundary(nums: list[int], target: int) -> int:
 
 | Operation                 | Time                 | Space    |
 | ------------------------- | -------------------- | -------- |
-| Binary Search             | O(log n)             | O(1)     |
-| Binary Search (recursive) | O(log n)             | O(log n) |
-| Search in Matrix          | O(log(m×n))          | O(1)     |
-| Search Space              | O(log(range) × cost) | O(1)     |
+| Binary Search             | $O(\log n)$             | $O(1)$     |
+| Binary Search (recursive) | $O(\log n)$             | $O(\log n)$ |
+| Search in Matrix          | $O(\log(m \cdot n))$        | $O(1)$     |
+| Search Space              | $O(\log(\text{range}) \cdot \text{cost})$ | $O(1)$     |
 
 ---
 
