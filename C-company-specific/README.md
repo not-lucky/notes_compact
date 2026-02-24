@@ -30,11 +30,11 @@ Understanding this mapping lets you predict what they'll emphasize.
 
 Think of the interview as a sample of what working there would be like:
 
-- At Google, you'd spend time discussing algorithmic approaches with colleagues
-- At Meta, you'd ship quickly and iterate based on metrics
-- At Amazon, you'd justify decisions in terms of customer impact
-- At Microsoft, you'd collaborate and learn from teammates
-- At Apple, you'd polish until it's perfect
+- At Google, you would spend time discussing algorithmic approaches with colleagues.
+- At Meta, you would ship quickly and iterate based on metrics.
+- At Amazon, you would justify decisions in terms of customer impact.
+- At Microsoft, you would collaborate and learn from teammates.
+- At Apple, you would polish until it is perfect.
 
 The interview tests whether you'd thrive in that environment.
 
@@ -49,19 +49,16 @@ Generic interview prep teaches you to solve problems. Company-specific prep teac
 ### Don't Over-Optimize for Culture Fit
 
 1. **Don't be inauthentic**: If you hate the culture you're mimicking, you'll be miserable if you get the job. Use these guides to understand expectations, not to fake a personality.
-
 2. **Don't neglect fundamentals**: Company-specific strategies are polish on top of solid DSA skills. If you can't solve the problem, the right communication style won't save you.
-
-3. **Don't be rigid**: Each interviewer is different. If a Google interviewer seems to want you to code quickly, don't stubbornly insist on 10 minutes of clarification because "that's what Google wants."
-
+3. **Don't be rigid**: Each interviewer is different. If a Google interviewer seems to want you to code quickly, don't stubbornly insist on 10 minutes of clarification because "that's what Google usually wants."
 4. **Don't ignore the problem**: Company culture matters, but the primary evaluation is still "can you solve the problem?" Don't spend so much time on LP framing at Amazon that you don't finish the code.
 
 ### Common Mistakes
 
-- **Stereotype interviewers**: Not every Amazon interviewer obsesses over LPs; some care more about code quality
-- **Force cultural signals**: Awkwardly inserting "customer obsession" into every sentence sounds rehearsed
-- **Forget to adapt**: What works for L4 interviews differs from L6; adjust for level
-- **Assume uniformity**: Different teams within the same company have different cultures
+- **Stereotyping interviewers**: Not every Amazon interviewer obsesses over LPs; some care more about code quality.
+- **Forcing cultural signals**: Awkwardly inserting "customer obsession" into every sentence sounds rehearsed.
+- **Forgetting to adapt**: What works for mid-level (L4) interviews differs from senior (L5/L6); adjust for level.
+- **Assuming uniformity**: Different teams within the same company have different micro-cultures.
 
 ---
 
@@ -76,44 +73,39 @@ Generic interview prep teaches you to solve problems. Company-specific prep teac
 
 ## Company Interview Comparison
 
-| Aspect            | Google               | Meta               | Amazon      | Microsoft             | Apple              |
-| ----------------- | -------------------- | ------------------ | ----------- | --------------------- | ------------------ |
-| **Primary Focus** | Algorithmic depth    | Move fast, iterate | LPs + DSA   | Problem decomposition | System integration |
-| **Difficulty**    | Hard                 | Medium-Hard        | Medium      | Medium                | Medium-Hard        |
-| **Communication** | Structured, thorough | Quick, adaptive    | STAR format | Collaborative         | Thoughtful         |
-| **Code Quality**  | Clean, optimal       | Working first      | Functional  | Well-organized        | Production-ready   |
-| **Unique Factor** | Googliness           | Velocity           | Leadership  | Growth mindset        | Secrecy/polish     |
+| Aspect            | Google               | Meta                 | Amazon                 | Microsoft             | Apple              |
+| ----------------- | -------------------- | -------------------- | ---------------------- | --------------------- | ------------------ |
+| **Primary Focus** | Algorithmic depth    | Move fast, iterate   | LPs + DSA              | Problem decomposition | System integration |
+| **Difficulty**    | Hard                 | Medium-Hard          | Medium                 | Medium                | Medium-Hard        |
+| **Communication** | Structured, thorough | Quick, adaptive      | STAR format            | Collaborative         | Thoughtful         |
+| **Code Quality**  | Clean, optimal       | Working first        | Functional             | Well-organized        | Production-ready   |
+| **Unique Factor** | Googliness           | Velocity             | Leadership             | Growth mindset        | Secrecy/polish     |
 
 ---
 
 ## The 4 Interview Philosophies
 
-### Google: Intellectual Rigor
+### 1. Google: Intellectual Rigor
+- Wants to see how you think about hard, ambiguous problems.
+- Values highly optimal solutions with rigorous proof of correctness.
+- Expects precise Big-O analysis and tradeoff discussions.
+- Evaluates "Googliness": thriving in ambiguity, valuing feedback, challenging the status quo, and putting the user first.
 
-- Wants to see how you think about hard problems
-- Values optimal solutions with proof of correctness
-- Expects clear complexity analysis
-- Googliness = humility + curiosity + doing the right thing
+### 2. Meta: Velocity and Execution
+- Ship something that works, then optimize. "Done is better than perfect."
+- Very high expectation for bug-free code written extremely quickly (often 2 problems in 45 minutes).
+- Values practical tradeoffs and scaling considerations over theoretical mathematical perfection.
+- Expects you to quickly find and fix your own bugs with dry-runs.
 
-### Meta: Velocity and Impact
+### 3. Amazon: Leadership in Action
+- Every behavioral and technical answer should demonstrate their 16 Leadership Principles (LPs).
+- You will be asked "Tell me about a time when..." repeatedly. Use the STAR method (Situation, Task, Action, Result).
+- Deeply cares about how you measure success (metrics) and handle scale.
+- The "Bar Raiser" interviewer ensures you are better than 50% of the current employees at that level.
 
-- Ship something that works, then optimize
-- "Move fast" culture reflected in interview pacing
-- Values practical tradeoffs over theoretical perfection
-- Strong emphasis on system design at senior levels
-
-### Amazon: Leadership in Action
-
-- Every answer should demonstrate Leadership Principles
-- Behavioral and technical deeply intertwined
-- "Customer obsession" lens for problem framing
-- Bar raiser ensures consistent hiring bar
-
-### Microsoft/Apple: Depth and Polish
-
-- Microsoft: collaborative problem-solving, growth mindset signals
-- Apple: secretive, expects polished thinking, attention to detail
-- Both value clear communication and structured approach
+### 4. Microsoft & Apple: Depth, Polish, and Domain Knowledge
+- **Microsoft**: Highly values collaboration. Treat the interviewer as a teammate. Growth mindset and willingness to accept hints are huge positive signals.
+- **Apple**: Less standardized than others; heavily dependent on the specific team. Expects extreme polish, deep domain expertise, and rigorous attention to edge cases and production readiness.
 
 ---
 
@@ -131,51 +123,42 @@ Generic interview prep teaches you to solve problems. Company-specific prep teac
 ## Quick Reference: What to Emphasize
 
 ### When at Google
-
-- Verbalize your thought process continuously
-- Always mention time/space complexity
-- Ask clarifying questions before coding
-- Consider edge cases early and thoroughly
+- **Verbalize your thought process continuously**: If you are thinking silently, the interviewer cannot grade you.
+- **Clarify ambiguities aggressively**: Google deliberately asks vague questions ("Sort a million integers") to see if you ask the right questions ("Are they bounded?", "Can they fit in memory?").
+- **Mention time/space complexity upfront**: Before you write a single line of code, confirm the target Big-O.
+- **Consider edge cases early**: Null, empty arrays, extreme bounds.
 
 ### When at Meta
-
-- Get working code fast, optimize after
-- Be comfortable thinking out loud while coding
-- Show you can iterate based on feedback
-- Demonstrate product sense when relevant
+- **Speed is everything**: Do not over-explain the optimal solution if it is standard (e.g., standard BFS). Briefly state it and start coding.
+- **Write bug-free code**: You are heavily penalized for syntactical errors or missing obvious edge cases.
+- **Dry-run thoroughly**: Before saying "I'm done", run through your code line-by-line with a small example to catch bugs yourself.
 
 ### When at Amazon
-
-- Frame problems in terms of customer impact
-- Weave LPs naturally into technical discussion
-- Use STAR format for behavioral deep-dives
-- Show ownership and bias for action
+- **Frame problems in terms of customer impact**: Use LPs naturally (e.g., "To maintain a high bar for our customers...").
+- **Metrics matter**: How do you know your system is working? How do you monitor it?
+- **Use the STAR format rigorously**: For behavioral questions, strictly stick to Situation, Task, Action, Result. Have 4-5 versatile stories prepared.
+- **Show ownership**: Use "I", not "we", when describing your specific contributions.
 
 ### When at Microsoft
-
-- Ask for hints if stuck—collaboration is valued
-- Show you can break problems into smaller pieces
-- Demonstrate learning from past mistakes
-- Be open about areas for growth
+- **Embrace collaboration**: Treat it like a pair programming session. If you get stuck, say, "I'm currently considering X and Y, but neither seems optimal because..."
+- **Demonstrate growth mindset**: Show enthusiasm for learning new approaches. If corrected, adapt quickly without defensiveness.
 
 ### When at Apple
-
-- Think about production edge cases
-- Show attention to detail in code quality
-- Consider user experience even in technical problems
-- Be comfortable with ambiguity
+- **Domain expertise**: Apple hires for specific roles rather than generalists. Be ready to dive deep into your specific language/framework.
+- **Production-readiness**: Write code that handles real-world failures gracefully.
+- **Secrecy and discretion**: Avoid over-sharing confidential details from past employers.
 
 ---
 
 ## Common Mistakes by Company
 
-| Company   | Mistake                              | Better Approach                                   |
+| Company   | Critical Mistake                     | Better Approach                                   |
 | --------- | ------------------------------------ | ------------------------------------------------- |
-| Google    | Jumping to code before understanding | Spend 5+ min on clarification and approach        |
-| Meta      | Over-engineering initial solution    | Get naive solution working, then optimize         |
-| Amazon    | Not connecting tech to LPs           | Naturally weave in "ownership" and "customer"     |
-| Microsoft | Being defensive when given hints     | Embrace feedback as collaborative problem-solving |
-| Apple     | Overlooking edge cases               | Think about what could go wrong in production     |
+| Google    | Jumping to code before understanding | Spend 5-10 minutes clarifying the problem space   |
+| Meta      | Talking too much, coding too slow    | Briefly explain the optimal approach, then code   |
+| Amazon    | Saying "we did X" instead of "I"     | Specify your exact role, actions, and impact      |
+| Microsoft | Being defensive when given a hint    | Treat hints as course-corrections from a teammate |
+| Apple     | Writing "happy path" code only       | Check for nulls, handle exceptions proactively    |
 
 ---
 
