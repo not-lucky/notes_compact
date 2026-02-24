@@ -29,10 +29,10 @@ The difference isn't intelligence—it's pattern vocabulary.
 ~80% of FANG interview problems use these patterns:
 
 1. **Two Pointers / Sliding Window** (25% of problems)
-2. **DFS/BFS** (20% of problems)
+2. **DFS/BFS (Graphs & Trees)** (20% of problems)
 3. **Dynamic Programming** (15% of problems)
-4. **Binary Search** (10% of problems)
-5. **Heap / Priority Queue** (10% of problems)
+4. **Hashing/Lookup** (10% of problems)
+5. **Binary Search & Heap** (10% of problems)
 
 The remaining 20% use specialized patterns (Union-Find, Trie, etc.).
 
@@ -52,11 +52,11 @@ This appendix teaches you that vocabulary.
 
 ### Pattern Matching Has Limits
 
-1. **Novel problems require novel thinking**: Some problems genuinely need creative insight. Don't force a pattern when none fits naturally.
+1. **Novel problems require novel thinking**: Some problems genuinely need creative insight. Don't force a pattern when none naturally fits.
 
-2. **Constraints override patterns**: A problem that looks like O(n²) DP might allow O(n log n) with a greedy approach—if constraints hint at it.
+2. **Constraints override patterns**: A problem that looks like $O(n^2)$ DP might allow $O(n \log n)$ with a greedy approach—if constraints hint at it.
 
-3. **Pattern matching ≠ understanding**: If you apply a pattern without understanding WHY it works, you'll struggle with variations.
+3. **Pattern matching ≠ understanding**: If you apply a pattern without understanding *why* it works, you will struggle with variations.
 
 4. **Interview communication matters**: Even if you recognize the pattern instantly, walk through your reasoning. Interviewers want to see your thought process, not just the answer.
 
@@ -80,23 +80,21 @@ This appendix teaches you that vocabulary.
 
 ## The 15 Core Patterns
 
-| #   | Pattern                | Key Indicator                      | Example Problems                         |
-| --- | ---------------------- | ---------------------------------- | ---------------------------------------- |
-| 1   | Two Pointers           | Sorted array, find pair            | Two Sum II, 3Sum, Container With Water   |
-| 2   | Sliding Window         | Substring/subarray with constraint | Longest Substring, Min Window Substring  |
-| 3   | Fast & Slow Pointers   | Linked list cycle, middle element  | Cycle Detection, Happy Number            |
-| 4   | Merge Intervals        | Overlapping ranges                 | Merge Intervals, Insert Interval         |
-| 5   | Cyclic Sort            | Array with values 1 to n           | Find Missing Number, Find Duplicate      |
-| 6   | In-place Reversal      | Linked list manipulation           | Reverse Linked List, Reverse Sublist     |
-| 7   | BFS                    | Shortest path, level-order         | Binary Tree Level Order, Rotting Oranges |
-| 8   | DFS                    | Exhaustive search, paths           | Path Sum, Number of Islands              |
-| 9   | Two Heaps              | Find median, streaming             | Find Median from Stream                  |
-| 10  | Subsets/Backtracking   | All combinations                   | Subsets, Permutations, N-Queens          |
-| 11  | Modified Binary Search | Sorted array variants              | Search in Rotated Array, Peak Element    |
-| 12  | Top-K Elements         | K largest/smallest                 | Kth Largest, Top K Frequent              |
-| 13  | K-way Merge            | Merge sorted structures            | Merge K Sorted Lists                     |
-| 14  | Dynamic Programming    | Optimization, counting paths       | Climbing Stairs, Coin Change, LCS        |
-| 15  | Monotonic Stack        | Next greater/smaller element       | Daily Temperatures, Largest Rectangle    |
+1. **Two Pointers**: Used mainly for sorted arrays (or linked lists) to find pairs, triplets, or subarrays.
+2. **Sliding Window**: Ideal for finding a contiguous subarray/substring that satisfies a specific condition (e.g., max sum, shortest length).
+3. **Fast & Slow Pointers**: Detect cycles in a linked list or array, find the middle element, or find the start of a cycle.
+4. **Merge Intervals**: Process overlapping ranges. Always involves sorting intervals by start time first.
+5. **Cyclic Sort**: When dealing with numbers in a given range (e.g., $1$ to $n$), place each number at its correct index (i.e., `nums[i] == i + 1`) to find missing/duplicate numbers in $O(n)$ time and $O(1)$ space.
+6. **In-place Reversal**: Reverse a linked list or a sublist within a linked list without using extra space.
+7. **BFS (Breadth-First Search)**: Find the shortest path in an unweighted graph, level-order traversal of a tree, or "minimum steps to reach a state". Use a Queue.
+8. **DFS (Depth-First Search)**: Exhaustive search, find all paths, check connectivity, topological sorting. Use recursion (Call Stack) or an explicit Stack.
+9. **Two Heaps**: Maintain a running median or divide a set of numbers into two halves (a Max Heap for the smaller half, a Min Heap for the larger half).
+10. **Subsets/Backtracking**: Generate all possible combinations, permutations, or subsets. Stop early (prune) when a branch cannot lead to a valid solution.
+11. **Modified Binary Search**: Search in a rotated sorted array, find a peak element, or "Binary Search on Answer" (guessing a value and verifying if it's feasible).
+12. **Top-K Elements**: Find the $K$ largest, smallest, or most frequent elements. Use a Heap (Min-Heap for largest, Max-Heap for smallest) or QuickSelect.
+13. **K-way Merge**: Merge $K$ sorted lists/arrays. Often uses a Min-Heap.
+14. **Dynamic Programming**: Optimize a problem with overlapping subproblems and optimal substructure (e.g., max/min value, number of ways). Can be Top-Down (Memoization) or Bottom-Up (Tabulation).
+15. **Monotonic Stack**: Find the "next greater" or "next smaller" element efficiently. Keep elements in the stack monotonically increasing or decreasing.
 
 ---
 
@@ -122,33 +120,33 @@ This appendix teaches you that vocabulary.
 
 ### Keywords That Signal Patterns
 
-```
+```text
 "Contiguous subarray/substring"      → Sliding Window
 "Pair/triplet that sums to"          → Two Pointers (sort first if needed)
-"Shortest path"                      → BFS
-"All paths/combinations"             → DFS/Backtracking
-"Kth largest/smallest"               → Heap or QuickSelect
+"Shortest path / minimum steps"      → BFS
+"All paths/combinations/islands"     → DFS/Backtracking
+"Kth largest/smallest/top frequency" → Heap or QuickSelect
 "Maximum/minimum with constraint"    → DP or Binary Search on Answer
-"Linked list cycle"                  → Fast & Slow Pointers
-"Next greater/smaller"               → Monotonic Stack
-"Overlapping intervals"              → Sort + Merge
-"Find duplicate/missing (1 to n)"    → Cyclic Sort or XOR
+"Linked list cycle / intersection"   → Fast & Slow Pointers
+"Next greater/smaller element"       → Monotonic Stack
+"Overlapping intervals / meetings"   → Sort + Merge
+"Find duplicate/missing (1 to n)"    → Cyclic Sort or Bit Manipulation (XOR)
 ```
 
 ---
 
 ## Pattern Complexity Summary
 
-| Pattern         | Typical Time      | Typical Space |
-| --------------- | ----------------- | ------------- |
-| Two Pointers    | O(n) or O(n²)     | O(1)          |
-| Sliding Window  | O(n)              | O(k) or O(1)  |
-| Binary Search   | O(log n)          | O(1)          |
-| BFS/DFS         | O(V + E)          | O(V)          |
-| Backtracking    | O(2^n) or O(n!)   | O(n)          |
-| DP              | O(n²) or O(n × m) | O(n) to O(n²) |
-| Heap Operations | O(n log k)        | O(k)          |
-| Monotonic Stack | O(n)              | O(n)          |
+| Pattern         | Typical Time Complexity | Typical Space Complexity |
+| --------------- | ----------------------- | ------------------------ |
+| Two Pointers    | $O(n)$ or $O(n \log n)$ | $O(1)$                   |
+| Sliding Window  | $O(n)$                  | $O(1)$ to $O(k)$         |
+| Binary Search   | $O(\log n)$             | $O(1)$                   |
+| BFS/DFS         | $O(V + E)$              | $O(V)$                   |
+| Backtracking    | $O(2^n)$ or $O(n!)$     | $O(n)$ (recursion stack) |
+| DP              | $O(n)$ to $O(n \times m)$ | $O(n)$ to $O(n \times m)$ |
+| Heap Operations | $O(n \log k)$           | $O(k)$                   |
+| Monotonic Stack | $O(n)$                  | $O(n)$                   |
 
 ---
 
@@ -184,9 +182,9 @@ This appendix teaches you that vocabulary.
 ## Common Mistakes
 
 1. **Jumping to code too fast**: Spend time identifying the pattern
-2. **Forcing a familiar pattern**: Sometimes the obvious pattern isn't optimal
-3. **Ignoring constraints**: n ≤ 1000 vs n ≤ 10^6 changes the approach
-4. **Not considering edge cases**: Empty input, single element, all same values
+2. **Forcing a familiar pattern**: Sometimes the obvious pattern isn't optimal.
+3. **Ignoring constraints**: $n \leq 1000$ vs $n \leq 10^6$ changes the required approach.
+4. **Not considering edge cases**: Empty input, single element, all same values.
 
 ---
 
