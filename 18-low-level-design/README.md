@@ -29,6 +29,14 @@ Don't start coding immediately. Think in terms of a Class Diagram.
 └─────────────────┘          └─────────────────┘
 ```
 
+## Important Trade-offs
+
+When working on Low-Level Design, consider these trade-offs:
+
+1.  **Flexibility vs. Simplicity:** Applying many design patterns makes the code extensible but can also make it harder to read and understand (over-engineering).
+2.  **Inheritance vs. Composition:** Inheritance creates tight coupling, while composition offers more flexibility at runtime. Prefer composition over inheritance.
+3.  **Performance vs. Clean Code:** Sometimes highly optimized code violates clean code principles. In LLD interviews, prioritize clean, modular code unless performance is explicitly a constraint.
+
 ## Why This Matters for Interviews
 
 1.  **Code Quality**: Interviewers want to see if you can write "production-ready" code.
@@ -77,6 +85,41 @@ Don't start coding immediately. Think in terms of a Class Diagram.
 ### 4. Implementation (15-20 mins)
 - Write clean, modular code.
 - Focus on interfaces and abstract classes.
+
+```python
+from abc import ABC, abstractmethod
+from typing import List
+
+# Example: Strategy Pattern for Pricing in a Parking Lot
+class PricingStrategy(ABC):
+    @abstractmethod
+    def calculate_price(self, hours: int) -> float:
+        pass
+
+class HourlyPricing(PricingStrategy):
+    def calculate_price(self, hours: int) -> float:
+        return hours * 10.0
+
+class DailyPricing(PricingStrategy):
+    def calculate_price(self, hours: int) -> float:
+        days = (hours + 23) // 24
+        return days * 100.0
+
+class Ticket:
+    def __init__(self, hours: int, pricing_strategy: PricingStrategy):
+        self.hours = hours
+        self.pricing_strategy = pricing_strategy
+
+    def get_price(self) -> float:
+        return self.pricing_strategy.calculate_price(self.hours)
+
+# Example usage
+ticket1 = Ticket(5, HourlyPricing())
+print(f"Hourly price: ${ticket1.get_price()}") # $50.0
+
+ticket2 = Ticket(26, DailyPricing())
+print(f"Daily price: ${ticket2.get_price()}")   # $200.0
+```
 
 ---
 

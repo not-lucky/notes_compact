@@ -117,7 +117,7 @@ class MathOperations:
         """
         while b:
             a, b = b, a % b
-        return a
+        return abs(a)
 
     @staticmethod
     def lcm(a: int, b: int) -> int:
@@ -126,7 +126,9 @@ class MathOperations:
         Time: O(log(min(a, b)))
         Space: O(1)
         """
-        return a * b // MathOperations.gcd(a, b)
+        if a == 0 or b == 0:
+            return 0
+        return abs(a * b) // MathOperations.gcd(a, b)
 
     @staticmethod
     def is_prime(n: int) -> bool:
@@ -135,9 +137,9 @@ class MathOperations:
         Time: O(sqrt(n))
         Space: O(1)
         """
-        if n < 2:
+        if n <= 1:
             return False
-        if n < 4:
+        if n <= 3:
             return True
         if n % 2 == 0 or n % 3 == 0:
             return False
@@ -155,6 +157,8 @@ class MathOperations:
         Time: O(log exp)
         Space: O(1)
         """
+        if mod == 1:
+            return 0
         result = 1
         base %= mod
         while exp > 0:
@@ -177,7 +181,7 @@ class MathOperations:
             return n
         left, right = 1, n
         while left <= right:
-            mid = (left + right) // 2
+            mid = left + (right - left) // 2
             if mid * mid == n:
                 return mid
             elif mid * mid < n:

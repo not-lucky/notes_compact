@@ -177,11 +177,20 @@ Understanding when NOT to apply system design patterns is just as important as k
 
 ---
 
+## Important Trade-offs
+
+When choosing data structures for system design, consider these common trade-offs:
+
+1.  **Memory vs. Time:** Caching (using more memory) to avoid repeated computations (saving time).
+2.  **Read vs. Write Performance:** Some structures optimize for fast reads (e.g., HashMaps), while others optimize for fast writes (e.g., append-only logs).
+3.  **Consistency vs. Availability:** In distributed systems, choosing whether to return stale data (Availability) or wait for the latest data (Consistency).
+4.  **Complexity vs. Performance:** A simple array might be slower than a balanced tree for lookups, but it's easier to implement and maintain.
+
 ## Implementation Template: Generic Cache
 
 ```python
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Optional
 
 K = TypeVar('K')
 V = TypeVar('V')
@@ -189,7 +198,7 @@ V = TypeVar('V')
 class Cache(ABC, Generic[K, V]):
     """
     Abstract base class for cache implementations.
-    All operations should be O(1).
+    All operations should aim for O(1) time complexity.
     """
 
     def __init__(self, capacity: int):
@@ -198,7 +207,7 @@ class Cache(ABC, Generic[K, V]):
         self.capacity = capacity
 
     @abstractmethod
-    def get(self, key: K) -> V | None:
+    def get(self, key: K) -> Optional[V]:
         """Retrieve value and update access metadata."""
         pass
 

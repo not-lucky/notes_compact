@@ -22,6 +22,15 @@ If LLD is about the internal code structure, HLD is about the **infrastructure a
                 └────────────┘            └────────────┘
 ```
 
+## Important Trade-offs
+
+When working on High-Level Design, consider these fundamental trade-offs:
+
+1.  **CAP Theorem:** You can only guarantee two out of three: Consistency, Availability, and Partition Tolerance. In distributed systems, P is a given, so you trade off C vs. A.
+2.  **Latency vs. Throughput:** You can optimize for fast individual responses (low latency) or processing many requests overall (high throughput).
+3.  **SQL vs. NoSQL:** Relational databases provide ACID guarantees and structured data (SQL) but are harder to scale horizontally. NoSQL databases scale easily but often relax consistency.
+4.  **Consistency vs. Performance:** Strong consistency requires locking and synchronous replication, hurting performance. Eventual consistency improves performance but users might see stale data.
+
 ## Why This Matters for Interviews
 
 1.  **Scalability**: Can your system handle 10x or 100x more traffic?
@@ -72,6 +81,57 @@ If LLD is about the internal code structure, HLD is about the **infrastructure a
 ### 4. Advanced Topics/Refinement (5 mins)
 - Monitoring, Logging, Service Discovery.
 - Security (HTTPS, Auth).
+
+```python
+from enum import Enum
+from typing import Dict, List
+from collections import defaultdict
+
+# A conceptual simulation of a load balancer routing requests
+class Server:
+    def __init__(self, id: str):
+        self.id = id
+        self.load = 0
+
+    def handle_request(self) -> str:
+        self.load += 1
+        return f"Server {self.id} handled request. Current load: {self.load}"
+
+class LoadBalancerStrategy(Enum):
+    ROUND_ROBIN = 1
+    LEAST_CONNECTIONS = 2
+
+class LoadBalancer:
+    def __init__(self, strategy: LoadBalancerStrategy):
+        self.servers: List[Server] = []
+        self.strategy = strategy
+        self._current_index = 0
+
+    def add_server(self, server: Server) -> None:
+        self.servers.append(server)
+
+    def get_server(self) -> Server:
+        if not self.servers:
+            raise Exception("No available servers")
+
+        if self.strategy == LoadBalancerStrategy.ROUND_ROBIN:
+            server = self.servers[self._current_index]
+            self._current_index = (self._current_index + 1) % len(self.servers)
+            return server
+        elif self.strategy == LoadBalancerStrategy.LEAST_CONNECTIONS:
+            return min(self.servers, key=lambda s: s.load)
+
+# Example Usage:
+lb = LoadBalancer(LoadBalancerStrategy.ROUND_ROBIN)
+lb.add_server(Server("A"))
+lb.add_server(Server("B"))
+lb.add_server(Server("C"))
+
+print(lb.get_server().handle_request()) # Server A
+print(lb.get_server().handle_request()) # Server B
+print(lb.get_server().handle_request()) # Server C
+print(lb.get_server().handle_request()) # Server A
+```
 
 ---
 

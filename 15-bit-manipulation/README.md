@@ -215,8 +215,15 @@ class BitOperations:
 
     @staticmethod
     def count_set_bits(n: int) -> int:
-        """Count number of 1 bits (Brian Kernighan's algorithm)."""
+        """Count number of 1 bits (Brian Kernighan's algorithm).
+        Time: O(k) where k is the number of set bits.
+        """
         count = 0
+        # In Python, negative numbers have conceptually infinite leading 1s.
+        # Ensure n is treated as a 32-bit integer if it's negative to avoid infinite loops.
+        if n < 0:
+            n &= 0xFFFFFFFF
+
         while n:
             n &= n - 1  # Clear rightmost set bit
             count += 1
