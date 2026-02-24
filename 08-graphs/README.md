@@ -27,6 +27,7 @@ At FANG+ companies, expect at least one graph problem, often disguised as a grid
 | Grid BFS/DFS      | Very High | Number of islands, rotting oranges             |
 | Cycle Detection   | High      | Directed and undirected graphs                 |
 | Bipartite Check   | Medium    | Graph coloring, two-coloring                   |
+| Union-Find        | High      | Connected components, redundant connection     |
 
 ---
 

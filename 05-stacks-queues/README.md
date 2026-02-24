@@ -1,18 +1,19 @@
 # Chapter 05: Stacks & Queues
 
-## Why This Matters for Interviews
+## Chapter 05: Stacks & Queues
 
-Stacks and queues are **essential interview topics** at FANG+ companies because:
+Stacks and queues are fundamental data structures that serve as the building blocks for many essential algorithms. Mastering them is critical for technical interviews.
 
-1. **Fundamental data structures**: Building blocks for many algorithms (DFS uses stack, BFS uses queue)
-2. **LIFO/FIFO reasoning**: Tests your understanding of order-dependent processing
-3. **Pattern versatility**: Monotonic stacks, expression parsing, sliding window max
-4. **Design problems**: Min stack, implement queue using stacks, etc.
-5. **Real-world relevance**: Browser history, undo/redo, task scheduling, rate limiting
+### Why This Matters for Interviews
+Stacks and queues frequently appear in FANG+ interviews because they test your ability to reason about order-dependent processing and your familiarity with standard algorithmic patterns.
 
-At FANG+ companies, stack/queue problems range from easy warm-ups to tricky design questions.
+1. **Fundamental Data Structures:** They are the foundation for many algorithms (e.g., Depth-First Search uses a stack, Breadth-First Search uses a queue).
+2. **LIFO/FIFO Reasoning:** They test your understanding of Last-In-First-Out (LIFO) and First-In-First-Out (FIFO) processing.
+3. **Pattern Versatility:** They are used in powerful patterns like monotonic stacks, expression parsing, and sliding window maximums.
+4. **Design Problems:** They are often the subject of design questions, such as implementing a Min Stack or a queue using stacks.
+5. **Real-World Relevance:** They model many real-world systems, including browser history, undo/redo mechanisms, task scheduling, and rate limiting.
 
-**Interview frequency**: High. Expect stack or queue patterns in most interview loops.
+At FANG+ companies, stack and queue problems range from easy warm-ups to tricky design questions. Expect to encounter them frequently in your interview loops.
 
 ---
 
@@ -112,14 +113,14 @@ is_empty = len(queue) == 0
 
 | Operation    | Stack (list) | Queue (deque) | Queue (list) |
 | ------------ | ------------ | ------------- | ------------ |
-| Push/Enqueue | O(1)\*       | O(1)          | O(1)\*       |
+| Push/Enqueue | O(1)*       | O(1)          | O(1)*       |
 | Pop/Dequeue  | O(1)         | O(1)          | O(n) ⚠️      |
 | Peek         | O(1)         | O(1)          | O(1)         |
 | isEmpty      | O(1)         | O(1)          | O(1)         |
 
-\*Amortized, occasional O(n) for dynamic resizing
+*Amortized, occasional O(n) for dynamic resizing when using lists.
 
-⚠️ **Never use `list.pop(0)` for queue operations** - it's O(n). Use `deque.popleft()`.
+⚠️ **Performance Warning**: Never use `list.pop(0)` for queue operations in Python, as it takes O(n) time. Always use `collections.deque` and `popleft()` for O(1) dequeue operations.
 
 ---
 

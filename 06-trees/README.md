@@ -109,14 +109,13 @@ class TreeNode:
 | Operation         | Binary Tree | BST (balanced) | BST (skewed) |
 | ----------------- | ----------- | -------------- | ------------ |
 | Search            | O(n)        | O(log n)       | O(n)         |
-| Insert            | O(n)\*      | O(log n)       | O(n)         |
-| Delete            | O(n)\*      | O(log n)       | O(n)         |
+| Insert            | O(n)        | O(log n)       | O(n)         |
+| Delete            | O(n)        | O(log n)       | O(n)         |
 | Traversal         | O(n)        | O(n)           | O(n)         |
-| Height            | O(n)        | O(log n)\*\*   | O(n)         |
+| Height            | O(n)        | O(log n)       | O(n)         |
 | Space (recursive) | O(h)        | O(log n)       | O(n)         |
 
-\*Finding position is O(n), insertion itself is O(1)
-\*\*For balanced BST only
+*Note: For a general Binary Tree, finding the correct position for insertion/deletion takes O(n) time. The actual pointer manipulation takes O(1) time. The overall time complexity is O(n).*
 
 ---
 

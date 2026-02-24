@@ -1,13 +1,13 @@
 # Chapter 09: Dynamic Programming
 
-Dynamic Programming is the most heavily tested topic in FANG+ interviews. Mastering DP patterns is essential for success.
+Dynamic Programming (DP) is often considered one of the most challenging topics in technical interviews. Mastering DP patterns is essential for success at FANG+ companies.
 
-## Why DP Matters
+## Why This Matters for Interviews
 
-1. **Interview frequency**: 30-40% of coding questions involve DP
-2. **Problem-solving skill**: Shows ability to break down complex problems
-3. **Optimization thinking**: Demonstrates understanding of time-space tradeoffs
-4. **Pattern recognition**: Many problems are variations of core patterns
+1. **Interview Frequency**: DP is heavily tested; a significant percentage of coding interviews feature DP problems.
+2. **Problem-Solving Skill**: It demonstrates your ability to break down complex problems into manageable subproblems.
+3. **Optimization Thinking**: It highlights your understanding of time-space tradeoffs and algorithmic efficiency.
+4. **Pattern Recognition**: Many seemingly unique problems are actually variations of a few core DP patterns.
 
 ---
 
@@ -98,20 +98,20 @@ For DP to apply, a problem must have:
 ## Quick Reference: State Transitions
 
 ```python
-# 1D Linear
-dp[i] = dp[i-1] + dp[i-2]          # Fibonacci-like
+# 1D Linear (e.g., Fibonacci, Climbing Stairs)
+dp[i] = dp[i-1] + dp[i-2]
 
-# 2D Grid
-dp[i][j] = dp[i-1][j] + dp[i][j-1] # Path counting
+# 2D Grid (e.g., Unique Paths)
+dp[i][j] = dp[i-1][j] + dp[i][j-1]
 
-# Knapsack
-dp[i][w] = max(dp[i-1][w], dp[i-1][w-wt[i]] + val[i])
+# 0/1 Knapsack
+dp[i][w] = max(dp[i-1][w], dp[i-1][w-wt[i-1]] + val[i-1])
 
-# String DP
-dp[i][j] = dp[i-1][j-1] + 1 if match else max(dp[i-1][j], dp[i][j-1])
+# String DP (e.g., Longest Common Subsequence)
+dp[i][j] = dp[i-1][j-1] + 1 if s1[i-1] == s2[j-1] else max(dp[i-1][j], dp[i][j-1])
 
-# Interval DP
-dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost) for k in [i, j)
+# Interval DP (e.g., Matrix Chain Multiplication)
+dp[i][j] = min([dp[i][k] + dp[k+1][j] + cost for k in range(i, j)])
 ```
 
 ---

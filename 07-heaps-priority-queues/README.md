@@ -60,8 +60,8 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 | Difficulty | Target Time | Examples                                            |
 | ---------- | ----------- | --------------------------------------------------- |
 | Easy       | 10-15 min   | Kth Largest in Array, Last Stone Weight             |
-| Medium     | 15-25 min   | Top K Frequent, Merge K Lists, Task Scheduler       |
-| Hard       | 25-40 min   | Find Median from Data Stream, Sliding Window Median |
+| Medium     | 15-25 min   | Top K Frequent, Task Scheduler, K Closest Points to Origin |
+| Hard       | 25-40 min   | Merge K Sorted Lists, Find Median from Data Stream, Sliding Window Median |
 
 ---
 
