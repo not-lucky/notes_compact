@@ -30,7 +30,7 @@ Most DSA resources are either too academic or too focused on competitive program
 - **Practical**: Covers what actually gets asked, not academic completeness
 - **Time-conscious**: Includes complexity analysis critical for interview discussions
 
-**What's NOT covered**: Competitive programming-only topics like segment trees, suffix automata, FFT, persistent structures, and advanced computational geometry. These rarely appear in FANG+ interviews.
+**What's NOT covered**: Competitive programming-only topics like segment trees, suffix automata, FFT, persistent structures, and advanced computational geometry. These rarely appear in FANG+ interviews, and studying them before mastering the fundamentals is a distraction.
 
 ---
 
@@ -91,6 +91,7 @@ Pattern Explanation → Example Walkthrough → Try Similar Problems → Review 
 | Review problems you solved after 1 week            | Move on and never revisit         |
 | Focus on patterns that connect problems            | Treat each problem as unique      |
 | Practice writing clean, readable code              | Sacrifice readability for brevity |
+| Trace your code manually before hitting "run"      | Rely entirely on the test button  |
 
 ### Time Targets by Difficulty
 
@@ -149,7 +150,6 @@ For those with a tight deadline or prior DSA experience.
 
 For thorough preparation with more time for practice and reinforcement.
 
-<<<<<<< HEAD
 | Week | Focus Areas | Chapters | Daily Goal |
 |------|-------------|----------|------------|
 | **Week 1** | Foundations | [01](#01---complexity-analysis), [02](#02---arrays--strings) (Part 1) | 2-3 problems |
@@ -160,18 +160,6 @@ For thorough preparation with more time for practice and reinforcement.
 | **Week 6** | Dynamic Programming | [09](#09---dynamic-programming) | 3 problems |
 | **Week 7** | Search + Recursion + Greedy | [10](#10---binary-search), [11](#11---recursion--backtracking), [12](#12---greedy-algorithms) | 3 problems |
 | **Week 8** | Advanced + Review | [13](#13---tries), [14](#14---union-find), [15](#15---bit-manipulation), [18](#18---low-level-design), [19](#19---high-level-design), Mock interviews | 3-4 problems |
-=======
-| Week       | Focus Areas                 | Chapters                                                                                      | Daily Goal   |
-| ---------- | --------------------------- | --------------------------------------------------------------------------------------------- | ------------ |
-| **Week 1** | Foundations                 | [01](#01---complexity-analysis), [02](#02---arrays--strings) (Part 1)                         | 2-3 problems |
-| **Week 2** | Arrays + Hashing            | [02](#02---arrays--strings) (Part 2), [03](#03---hashmaps--sets)                              | 2-3 problems |
-| **Week 3** | Linear Structures           | [04](#04---linked-lists), [05](#05---stacks--queues)                                          | 2-3 problems |
-| **Week 4** | Trees Deep Dive             | [06](#06---trees), [07](#07---heaps--priority-queues)                                         | 3 problems   |
-| **Week 5** | Graphs                      | [08](#08---graphs)                                                                            | 3 problems   |
-| **Week 6** | Dynamic Programming         | [09](#09---dynamic-programming)                                                               | 3 problems   |
-| **Week 7** | Search + Recursion + Greedy | [10](#10---binary-search), [11](#11---recursion--backtracking), [12](#12---greedy-algorithms) | 3 problems   |
-| **Week 8** | Advanced + Review           | [13](#13---tries), [14](#14---union-find), [15](#15---bit-manipulation), Mock interviews      | 3-4 problems |
->>>>>>> refs/remotes/origin/master
 
 **Detailed Weekly Breakdown:**
 
@@ -266,117 +254,81 @@ If you prefer to study by topic or need to focus on specific weak areas:
 ### Core Data Structures & Algorithms
 
 #### 01 - Complexity Analysis
-
 [Go to Chapter](./01-complexity-analysis/)
-
 Big-O notation, space/time tradeoffs, amortized analysis basics, and how to discuss complexity in interviews.
 
 #### 02 - Arrays & Strings
-
 [Go to Chapter](./02-arrays-strings/)
-
 Two-pointer technique, sliding window, prefix sums, Kadane's algorithm, string manipulation, and matrix traversal patterns.
 
 #### 03 - HashMaps & Sets
-
 [Go to Chapter](./03-hashmaps-sets/)
-
 Hash table internals, frequency counting, two-sum variants, anagram grouping, and subarray sum problems.
 
 #### 04 - Linked Lists
-
 [Go to Chapter](./04-linked-lists/)
-
 Fast/slow pointers, reversal patterns, merge operations, intersection detection, and the dummy node technique.
 
 #### 05 - Stacks & Queues
-
 [Go to Chapter](./05-stacks-queues/)
-
 Monotonic stack, valid parentheses, min/max stack, and sliding window maximum with deque.
 
 #### 06 - Trees
-
 [Go to Chapter](./06-trees/)
-
 Tree traversals, BST operations, tree construction, LCA, path sums, diameter, and serialization.
 
 #### 07 - Heaps & Priority Queues
-
 [Go to Chapter](./07-heaps-priority-queues/)
-
 Heap fundamentals, Top-K problems, merge K sorted lists, median from data stream, and task scheduling.
 
 #### 08 - Graphs
-
 [Go to Chapter](./08-graphs/)
-
 Graph representations, BFS, DFS, topological sort, Dijkstra's algorithm, clone graph, and islands problems.
 
 #### 09 - Dynamic Programming
-
 [Go to Chapter](./09-dynamic-programming/)
-
 DP fundamentals, 1D/2D patterns, knapsack variations, palindrome DP, interval DP, and state machine DP.
 
 #### 10 - Binary Search
-
 [Go to Chapter](./10-binary-search/)
-
 Classic binary search, rotated arrays, boundary finding, and search space binary search.
 
 #### 11 - Recursion & Backtracking
-
 [Go to Chapter](./11-recursion-backtracking/)
-
 Recursion fundamentals, subsets, permutations, N-Queens, word search, and pruning techniques.
 
 #### 12 - Greedy Algorithms
-
 [Go to Chapter](./12-greedy/)
-
 Greedy vs DP, interval scheduling, activity selection, jump game variants, and proof techniques.
 
 ### Advanced Topics
 
 #### 13 - Tries
-
 [Go to Chapter](./13-tries/)
-
 Trie implementation, prefix matching, autocomplete, and word search optimization.
 
 #### 14 - Union-Find
-
 [Go to Chapter](./14-union-find/)
-
 Union-Find with path compression, union by rank, connected components, and cycle detection.
 
 #### 15 - Bit Manipulation
-
 [Go to Chapter](./15-bit-manipulation/)
-
 Binary operations, XOR tricks, single number variants, counting bits, and power of two checks.
 
 #### 16 - Math for Interviews
-
 [Go to Chapter](./16-math-basics/)
-
 GCD/LCM, prime numbers, modular arithmetic, random sampling, and sqrt decomposition.
 
 #### 17 - System Design Basics
-
 [Go to Chapter](./17-system-design-basics/)
-
 Data structure selection for scale, trade-offs analysis, rate limiting, and LRU/LFU cache implementations.
 
 #### 18 - Low-Level Design
 [Go to Chapter](./18-low-level-design/)
-
 Object-oriented design, SOLID principles, design patterns, and case studies like Parking Lot and ATM.
 
 #### 19 - High-Level Design
 [Go to Chapter](./19-high-level-design/)
-
 Scalability, availability, distributed systems, databases (SQL vs NoSQL), and system design case studies.
 
 ---
