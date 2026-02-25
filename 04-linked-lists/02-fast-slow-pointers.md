@@ -14,7 +14,7 @@ The fast-slow pointer technique (tortoise and hare) uses two pointers moving at 
 
 2. **The Midpoint Discovery**: If fast moves 2 steps per iteration and slow moves 1 step, when fast reaches the end (n steps), slow is at n/2. No need to count the length first!
 
-3. **The Mathematical Invariant**: At any point, fast has traveled exactly 2× the distance of slow. This ratio is maintained throughout, which is why:
+3. **The Mathematical Invariant**: At any point, fast has traveled exactly 2$\times$ the distance of slow. This ratio is maintained throughout, which is why:
    - For midpoint: fast at end → slow at middle
    - For nth from end: create a gap of n, then move together
 
@@ -271,7 +271,7 @@ When they meet:
 - slow traveled: F + a
 - fast traveled: F + a + n*C (some number of complete cycles)
 
-Since fast travels 2× slow's speed:
+Since fast travels 2$\times$ slow's speed:
   2(F + a) = F + a + n*C
   F + a = n*C
   F = n*C - a
@@ -535,10 +535,10 @@ node2.next = node1  # Full cycle
 
 ## Key Takeaways
 
-1. **Fast moves 2x, slow moves 1x** - fundamental principle
+1. **Fast moves 2$\times$, slow moves 1$\times$** - fundamental principle
 2. **When fast reaches end, slow is at middle** - exactly half the steps
 3. **If they meet, there's a cycle** - no other way to meet in a finite list
-4. **Cycle start = reset slow to head, move both at 1x** - mathematical property
+4. **Cycle start = reset slow to head, move both at 1$\times$** - mathematical property
 5. **Gap technique for nth from end** - move fast n steps first
 6. **$\Theta(1)$ space** - major advantage over using extra data structures
 

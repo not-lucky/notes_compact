@@ -468,11 +468,11 @@ def swap_pairs_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
 
 | Pattern                    | Time Complexity | Space Complexity |
 | -------------------------- | --------------- | ---------------- |
-| Reverse entire (iterative) | $\Theta(n)$ | $\Theta(1)$  |
-| Reverse entire (recursive) | $\Theta(n)$ | $\Theta(n)$  |
-| Reverse between            | $\Theta(n)$ | $\Theta(1)$  |
-| Reverse k-group            | $\Theta(n)$ | $\Theta(1)$  |
-| Swap pairs                 | $\Theta(n)$ | $\Theta(1)$  |
+| Reverse entire (iterative) | $\Theta(n)$     | $\Theta(1)$      |
+| Reverse entire (recursive) | $\Theta(n)$     | $\Theta(n)$      |
+| Reverse between            | $\Theta(n)$     | $\Theta(1)$      |
+| Reverse k-group            | $\Theta(n)$     | $\Theta(1)$      |
+| Swap pairs                 | $\Theta(n)$     | $\Theta(1)$      |
 
 ---
 

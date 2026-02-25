@@ -173,8 +173,8 @@ def copy_random_list_hashmap(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using HashMap.
 
-    Time Complexity: $O(n)$
-    Space Complexity: $O(n)$ for the hashmap
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$ for the hashmap
     """
     if not head:
         return None
@@ -238,8 +238,8 @@ def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
     Deep copy using HashMap in single pass.
     Uses getOrCreate pattern.
 
-    Time Complexity: $O(n)$
-    Space Complexity: $O(n)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     if not head:
         return None
@@ -267,7 +267,7 @@ def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
 
 ---
 
-## Approach 3: Interleaving ($O(1)$ Space)
+## Approach 3: Interleaving ($\Theta(1)$ Space)
 
 This clever approach avoids using a hashmap by interleaving copied nodes with original nodes.
 
@@ -278,8 +278,8 @@ def copy_random_list(head: Optional[Node]) -> Optional[Node]:
 
     LeetCode 138: Copy List with Random Pointer
 
-    Time Complexity: $O(n)$
-    Space Complexity: $O(1)$ - no hashmap needed
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$ - no hashmap needed
     """
     if not head:
         return None
@@ -505,8 +505,8 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
     """
     Clone an undirected graph using DFS + HashMap.
 
-    Time Complexity: $O(V + E)$ where V is number of vertices and E is number of edges
-    Space Complexity: $O(V)$ for the recursion stack and hashmap
+    Time Complexity: $\Theta(V + E)$ where V is number of vertices and E is number of edges
+    Space Complexity: $\Theta(V)$ for the recursion stack and hashmap
     """
     if not node:
         return None
@@ -533,7 +533,7 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
 ## Interview Tips
 
 1. **Start with HashMap approach**: Easier to explain and implement correctly
-2. **Mention $O(1)$ space optimization**: Shows deeper knowledge
+2. **Mention $\Theta(1)$ space optimization**: Shows deeper knowledge
 3. **Draw the interleaving**: Visual explanation is crucial
 4. **Handle edge cases verbally**: Empty list, self-references
 5. **Verify deep copy**: Explain that no original nodes should be in the copy
@@ -552,8 +552,8 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
 
 ## Key Takeaways
 
-1. **HashMap approach** is $O(n)$ time and $O(n)$ space - simple and reliable
-2. **Interleaving approach** is $O(n)$ time and $O(1)$ extra space - optimal
+1. **HashMap approach** is $\Theta(n)$ time and $\Theta(n)$ space - simple and reliable
+2. **Interleaving approach** is $\Theta(n)$ time and $\Theta(1)$ extra space - optimal
 3. **Two-phase HashMap**: Create nodes first, connect pointers second
 4. **Interleaving phases**: Insert copies, set random, separate lists
 5. **Always verify**: Deep copy means NO shared references to original
