@@ -4,7 +4,7 @@
 
 ## Overview
 
-Checking if a linked list is a palindrome requires comparing the first half with the reversed second half. The $O(1)$ auxiliary space solution combines fast-slow pointers (to find the middle) with in-place reversal—a beautiful synthesis of two fundamental patterns.
+Checking if a linked list is a palindrome requires comparing the first half with the reversed second half. The $\Theta(1)$ auxiliary space solution combines fast-slow pointers (to find the middle) with in-place reversal—a beautiful synthesis of two fundamental patterns.
 
 ## Building Intuition
 
@@ -45,13 +45,13 @@ For odd-length lists, the middle element is compared with itself (via the revers
 - We only compare until the shorter half is exhausted
 - The middle of an odd list ends up in the first half, not compared
 
-**Why $O(1)$ Auxiliary Space Matters**:
+**Why $\Theta(1)$ Auxiliary Space Matters**:
 
-- Array conversion: $O(n)$ auxiliary space for storing values
-- Stack approach: $O(n)$ auxiliary space for the stack
-- Fast-slow + reversal: $O(1)$ extra space (just pointers!)
+- Array conversion: $\Theta(n)$ auxiliary space for storing values
+- Stack approach: $\Theta(n)$ auxiliary space for the stack
+- Fast-slow + reversal: $\Theta(1)$ extra space (just pointers!)
 
-*Note: While often called "$O(1)$ space", this technically refers to auxiliary space. The input itself takes $O(n)$ space.*
+*Note: While often called "$\Theta(1)$ space", this technically refers to auxiliary space. The input itself takes $\Theta(n)$ space.*
 
 **The Restoration Question**:
 
@@ -64,7 +64,7 @@ slow.next = reverse_list(second_half)
 
 In interviews, always ask: "Should I preserve the original list?" Good practice is to restore it, showing attention to side effects.
 
-**Thread Safety Warning**: The $O(1)$ auxiliary space approach modifies the list in place temporarily. This is **not thread-safe**. If other threads might read the list while your palindrome check is running, they will see a corrupted (partially reversed) list. In concurrent environments, the $O(n)$ array or stack approach is often strictly required unless you can lock the entire list.
+**Thread Safety Warning**: The $\Theta(1)$ auxiliary space approach modifies the list in place temporarily. This is **not thread-safe**. If other threads might read the list while your palindrome check is running, they will see a corrupted (partially reversed) list. In concurrent environments, the $\Theta(n)$ array or stack approach is often strictly required unless you can lock the entire list.
 
 **Odd vs Even Length Handling**:
 
@@ -82,15 +82,15 @@ Even (4 elements): [1, 2, 2, 1]
 
 The fast.next and fast.next.next condition in the while loop naturally handles this split.
 
-## When NOT to Use the $O(1)$ Auxiliary Space Approach
+## When NOT to Use the $\Theta(1)$ Auxiliary Space Approach
 
 1. **List Cannot Be Modified**: If the list is read-only or modifications cause issues (concurrent access, persistence requirements), use the array or stack approach. This is an extremely common constraint in production systems!
 
-2. **Need to Know Position of Mismatch**: The $O(1)$ auxiliary space approach tells you true/false, not where the mismatch occurred. For debugging or partial matches, array comparison is easier.
+2. **Need to Know Position of Mismatch**: The $\Theta(1)$ auxiliary space approach tells you true/false, not where the mismatch occurred. For debugging or partial matches, array comparison is easier.
 
 3. **Very Short Lists**: For lists under 10 elements, the overhead of careful pointer manipulation isn't worth it. Just copy to an array.
 
-4. **Combined with Other Operations**: If you need the original list for subsequent operations in the same problem, the restoration step adds complexity and potential for hard-to-find bugs if it crashes mid-way. Consider $O(n)$ space instead.
+4. **Combined with Other Operations**: If you need the original list for subsequent operations in the same problem, the restoration step adds complexity and potential for hard-to-find bugs if it crashes mid-way. Consider $\Theta(n)$ space instead.
 
 5. **Doubly-Linked Lists**: With `.prev` pointers, you don't need reversal—just walk from both ends simultaneously.
 
@@ -101,7 +101,7 @@ The fast.next and fast.next.next condition in the while loop naturally handles t
 Checking if a linked list is a palindrome is a **popular interview problem** because:
 
 1. **Combines multiple techniques**: Fast-slow pointers + reversal
-2. **Space optimization**: $O(1)$ auxiliary space solution is non-trivial and tests pointer manipulation skills
+2. **Space optimization**: $\Theta(1)$ auxiliary space solution is non-trivial and tests pointer manipulation skills
 3. **Edge case handling**: Odd vs even length lists, empty lists, single nodes
 4. **Follow-up questions**: "Can you do it without modifying the list?" or "Is this thread-safe?"
 
@@ -136,8 +136,8 @@ def is_palindrome_array(head: Optional[ListNode]) -> bool:
     """
     Convert to array and check palindrome.
 
-    Time Complexity: $O(n)$ - one pass to copy to array, one pass to compare.
-    Space Complexity: $O(n)$ - auxiliary space to store array of values.
+    Time Complexity: $\Theta(n)$ - one pass to copy to array, one pass to compare.
+    Space Complexity: $\Theta(n)$ - auxiliary space to store array of values.
     """
     values = []
     current = head
@@ -149,23 +149,23 @@ def is_palindrome_array(head: Optional[ListNode]) -> bool:
     return values == values[::-1]
 ```
 
-Simple but uses $O(n)$ extra space.
+Simple but uses $\Theta(n)$ extra space.
 
 ---
 
-## Approach 2: Reverse and Compare ($O(1)$ Auxiliary Space)
+## Approach 2: Reverse and Compare ($\Theta(1)$ Auxiliary Space)
 
 ```python
 def is_palindrome(head: Optional[ListNode]) -> bool:
     """
-    Check palindrome with $O(1)$ auxiliary space.
+    Check palindrome with $\Theta(1)$ auxiliary space.
     Strategy: Find middle, reverse second half, compare, restore.
     Note: Temporarily modifies the input list. Not thread-safe!
 
     LeetCode 234: Palindrome Linked List
 
-    Time Complexity: $O(n)$
-    Space Complexity: $O(1)$ auxiliary
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$ auxiliary
     """
     if not head or not head.next:
         return True
@@ -282,8 +282,8 @@ def is_palindrome_recursive(head: Optional[ListNode]) -> bool:
     Check palindrome recursively using implicit stack.
     Avoids explicit arrays but relies heavily on call stack limit.
 
-    Time Complexity: $O(n)$ - one recursive pass
-    Space Complexity: $O(n)$ - auxiliary space for the recursive call stack
+    Time Complexity: $\Theta(n)$ - one recursive pass
+    Space Complexity: $\Theta(n)$ - auxiliary space for the recursive call stack
     """
     front = [head]  # Use list to maintain reference
 
@@ -340,8 +340,8 @@ def is_palindrome_stack(head: Optional[ListNode]) -> bool:
     Use stack to store first half, compare with second half.
     Stops storing early to save half the space of the array approach.
 
-    Time Complexity: $O(n)$ - one pass to middle, one pass to end.
-    Space Complexity: $O(n/2) \implies O(n)$ auxiliary space.
+    Time Complexity: $\Theta(n)$ - one pass to middle, one pass to end.
+    Space Complexity: $\Theta(n/2) \implies \Theta(n)$ auxiliary space.
     """
     if not head or not head.next:
         return True
@@ -374,10 +374,10 @@ def is_palindrome_stack(head: Optional[ListNode]) -> bool:
 
 | Approach     | Time   | Aux Space    | Modifies List | Notes                                      |
 | ------------ | ------ | ------------ | ------------- | ------------------------------------------ |
-| Array        | $O(n)$ | $O(n)$       | No            | Simple, reliable, best for production code |
-| Reverse half | $O(n)$ | $O(1)$       | Temporarily   | Elegant but not thread-safe                |
-| Recursive    | $O(n)$ | $O(n)$ stack | No            | Memory inefficient, risks stack overflow   |
-| Stack        | $O(n)$ | $O(n)$       | No            | Minor space optimization over array        |
+| Array        | $\Theta(n)$ | $\Theta(n)$       | No            | Simple, reliable, best for production code |
+| Reverse half | $\Theta(n)$ | $\Theta(1)$       | Temporarily   | Elegant but not thread-safe                |
+| Recursive    | $\Theta(n)$ | $\Theta(n)$ stack | No            | Memory inefficient, risks stack overflow   |
+| Stack        | $\Theta(n)$ | $\Theta(n)$       | No            | Minor space optimization over array        |
 
 ---
 
@@ -497,9 +497,9 @@ def is_palindrome_allow_one_removal(head: Optional[ListNode]) -> bool:
 
 ## Interview Discussion Points
 
-1. **Why reverse only half?** Reversing the entire list and comparing would use $O(n)$ space for a copy.
+1. **Why reverse only half?** Reversing the entire list and comparing would use $\Theta(n)$ space for a copy.
 
-2. **Why use fast-slow?** Finding the middle in one pass, then reversing, gives us $O(1)$ space.
+2. **Why use fast-slow?** Finding the middle in one pass, then reversing, gives us $\Theta(1)$ space.
 
 3. **Odd vs Even handling**: The key insight is that for odd-length lists, the middle element doesn't affect palindrome-ness.
 

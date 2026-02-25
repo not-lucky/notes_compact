@@ -111,8 +111,8 @@ def find_middle(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 876: Middle of the Linked List
 
-    Time: $\Theta(n)$
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     slow = fast = head
 
@@ -172,8 +172,8 @@ def has_cycle(head: Optional[ListNode]) -> bool:
 
     LeetCode 141: Linked List Cycle
 
-    Time: $\Theta(n)$
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or not head.next:
         return False
@@ -232,8 +232,8 @@ def detect_cycle_start(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 142: Linked List Cycle II
 
-    Time: $\Theta(n)$
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or not head.next:
         return None
@@ -294,8 +294,8 @@ def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
 
     LeetCode 19: Remove Nth Node From End of List
 
-    Time: $\Theta(n)$ - one pass
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$ - one pass
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -347,8 +347,8 @@ def get_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     Get the nth node from the end (1-indexed).
     Returns None if n is out of bounds.
 
-    Time: $\Theta(n)$
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     slow = fast = head
 
@@ -378,8 +378,8 @@ def is_palindrome(head: Optional[ListNode]) -> bool:
 
     LeetCode 234: Palindrome Linked List
 
-    Time: $\Theta(n)$
-    Space: $\Theta(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or not head.next:
         return True
@@ -430,8 +430,8 @@ def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
 ## Complexity Summary
 
-| Problem             | Time | Space |
-| ------------------- | ---- | ----- |
+| Problem             | Time Complexity | Space Complexity |
+| ------------------- | --------------- | ---------------- |
 | Find middle         | $\Theta(n)$ | $\Theta(1)$  |
 | Detect cycle        | $\Theta(n)$ | $\Theta(1)$  |
 | Find cycle start    | $\Theta(n)$ | $\Theta(1)$  |

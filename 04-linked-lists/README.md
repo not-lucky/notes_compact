@@ -97,14 +97,14 @@ This is the standard definition used in LeetCode and most interviews.
 
 ## Key Complexity Facts
 
-| Operation          | Singly Linked | Doubly Linked | Array          |
-| ------------------ | ------------- | ------------- | -------------- |
-| Access by index    | $\Theta(n)$        | $\Theta(n)$        | $\Theta(1)$        |
-| Insert at head     | $\Theta(1)$        | $\Theta(1)$        | $\Theta(n)$        |
-| Insert at tail     | $\Theta(n)$*       | $\Theta(1)$**      | $\Theta(1)$ amortized |
-| Insert at position | $\Theta(n)$        | $\Theta(n)$        | $\Theta(n)$        |
-| Delete at head     | $\Theta(1)$        | $\Theta(1)$        | $\Theta(n)$        |
-| Search             | $\Theta(n)$        | $\Theta(n)$        | $\Theta(n)$        |
+| Operation          | Singly Linked    | Doubly Linked    | Array                 |
+| ------------------ | ---------------- | ---------------- | --------------------- |
+| Access by index    | $\Theta(n)$      | $\Theta(n)$      | $\Theta(1)$           |
+| Insert at head     | $\Theta(1)$      | $\Theta(1)$      | $\Theta(n)$           |
+| Insert at tail     | $\Theta(n)$*     | $\Theta(1)$**    | $\Theta(1)$ amortized |
+| Insert at position | $\Theta(n)$      | $\Theta(n)$      | $\Theta(n)$           |
+| Delete at head     | $\Theta(1)$      | $\Theta(1)$      | $\Theta(n)$           |
+| Search             | $\Theta(n)$      | $\Theta(n)$      | $\Theta(n)$           |
 
 \*$\Theta(1)$ if tail pointer maintained
 \*\*$\Theta(1)$ if tail pointer maintained

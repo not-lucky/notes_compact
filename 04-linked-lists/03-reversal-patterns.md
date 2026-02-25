@@ -92,8 +92,8 @@ def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 206: Reverse Linked List
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     prev = None
     current = head
@@ -160,8 +160,8 @@ def reverse_list_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Reverse entire linked list recursively.
 
-    Time: O(n)
-    Space: O(n) - call stack
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$ - call stack
     """
     # Base case: empty or single node
     if not head or not head.next:
@@ -213,8 +213,8 @@ def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional
 
     LeetCode 92: Reverse Linked List II
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or left == right:
         return head
@@ -272,8 +272,8 @@ def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
 
     LeetCode 25: Reverse Nodes in k-Group
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     # Check if we have k nodes
     def get_kth_node(start: ListNode, k: int) -> ListNode:
@@ -338,8 +338,8 @@ def reverse_alternate_k_group(head: Optional[ListNode], k: int) -> Optional[List
     Reverse nodes in alternating k-groups.
     Reverse first k, skip next k, reverse next k, etc.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     def count_nodes(start: ListNode, k: int) -> bool:
         """Check if at least k nodes exist."""
@@ -396,8 +396,8 @@ def swap_pairs(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 24: Swap Nodes in Pairs
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -446,8 +446,8 @@ def swap_pairs_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Swap every two adjacent nodes recursively.
 
-    Time: O(n)
-    Space: O(n) - call stack
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$ - call stack
     """
     if not head or not head.next:
         return head
@@ -466,13 +466,13 @@ def swap_pairs_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
 
 ## Complexity Summary
 
-| Pattern                    | Time | Space |
-| -------------------------- | ---- | ----- |
-| Reverse entire (iterative) | O(n) | O(1)  |
-| Reverse entire (recursive) | O(n) | O(n)  |
-| Reverse between            | O(n) | O(1)  |
-| Reverse k-group            | O(n) | O(1)  |
-| Swap pairs                 | O(n) | O(1)  |
+| Pattern                    | Time Complexity | Space Complexity |
+| -------------------------- | --------------- | ---------------- |
+| Reverse entire (iterative) | $\Theta(n)$ | $\Theta(1)$  |
+| Reverse entire (recursive) | $\Theta(n)$ | $\Theta(n)$  |
+| Reverse between            | $\Theta(n)$ | $\Theta(1)$  |
+| Reverse k-group            | $\Theta(n)$ | $\Theta(1)$  |
+| Swap pairs                 | $\Theta(n)$ | $\Theta(1)$  |
 
 ---
 
@@ -489,8 +489,8 @@ def rotate_right(head: Optional[ListNode], k: int) -> Optional[ListNode]:
 
     LeetCode 61: Rotate List
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or not head.next or k == 0:
         return head
@@ -576,7 +576,7 @@ head = create_linked_list([1, 2])
 ## Key Takeaways
 
 1. **Three-pointer technique**: prev, current, next_temp is the core pattern
-2. **Iterative is O(1) space**, recursive is O(n) due to call stack
+2. **Iterative is $\Theta(1)$ space**, recursive is $\Theta(n)$ due to call stack
 3. **Dummy node prevents edge cases** when head might change
 4. **Reverse sublist**: Position pointers correctly before reversing
 5. **K-group**: Check if k nodes exist before reversing

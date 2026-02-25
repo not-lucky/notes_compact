@@ -4,13 +4,13 @@
 
 ## Overview
 
-Merge operations combine two or more sorted linked lists into one sorted list by comparing heads and stitching nodes together. The two-pointer merge is $O(n+m)$ with $O(1)$ extra space, and extends to merge sort and $k$-way merges using divide-and-conquer or heaps.
+Merge operations combine two or more sorted linked lists into one sorted list by comparing heads and stitching nodes together. The two-pointer merge is $\Theta(n+m)$ with $\Theta(1)$ extra space, and extends to merge sort and $k$-way merges using divide-and-conquer or heaps.
 
 ## Building Intuition
 
 **Why is merging linked lists so elegant?**
 
-Unlike arrays, merging linked lists requires no extra space for the result. You're just rearranging pointers—the nodes already exist in memory. This is why merge sort on linked lists uses $O(1)$ auxiliary space (vs $O(n)$ for arrays).
+Unlike arrays, merging linked lists requires no extra space for the result. You're just rearranging pointers—the nodes already exist in memory. This is why merge sort on linked lists uses $\Theta(1)$ auxiliary space (vs $\Theta(n)$ for arrays).
 
 **The Two-Finger Technique**:
 Imagine you have two sorted stacks of papers and want to combine them:
@@ -35,11 +35,11 @@ Without a dummy, you'd need special logic for "which list's head becomes the res
 
 **Merge K Lists: Two Approaches**
 
-1. **Divide and Conquer**: Like a tournament bracket. Pair up lists, merge each pair, repeat. Each "round" halves the number of lists. $\log(k)$ rounds $\times$ $O(N)$ work per round = $O(N \log k)$.
+1. **Divide and Conquer**: Like a tournament bracket. Pair up lists, merge each pair, repeat. Each "round" halves the number of lists. $\log(k)$ rounds $\times$ $\Theta(N)$ work per round = $\Theta(N \log k)$.
 
-2. **Min-Heap**: Keep the smallest element from each list in a heap. Pop the minimum, push its successor. Each of $N$ total elements does one push and one pop, each $O(\log k)$ = $O(N \log k)$.
+2. **Min-Heap**: Keep the smallest element from each list in a heap. Pop the minimum, push its successor. Each of $N$ total elements does one push and one pop, each $\Theta(\log k)$ = $\Theta(N \log k)$.
 
-Which is better? Heap has consistent $O(\log k)$ per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
+Which is better? Heap has consistent $\Theta(\log k)$ per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
 
 **The Index Trick for Heaps**:
 
@@ -53,7 +53,7 @@ Python's heap compares tuples element-by-element. If two nodes have the same val
 
 ## When NOT to Use Linked List Merge
 
-1. **Data Isn't Already Sorted**: Merging assumes sorted input. Unsorted? Sort first ($O(n \log n)$) or use different algorithms.
+1. **Data Isn't Already Sorted**: Merging assumes sorted input. Unsorted? Sort first ($\Theta(n \log n)$) or use different algorithms.
 
 2. **Random Access is Available**: For arrays, in-place merge is possible but tricky. Often simpler to use extra space or built-in sorts.
 
@@ -94,8 +94,8 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 
     LeetCode 21: Merge Two Sorted Lists
 
-    Time Complexity: $O(n + m)$
-    Space Complexity: $O(1)$ - only rearranging pointers
+    Time Complexity: $\Theta(n + m)$
+    Space Complexity: $\Theta(1)$ - only rearranging pointers
     """
     dummy = ListNode(0)
     current = dummy
@@ -158,8 +158,8 @@ def merge_two_lists_recursive(l1: Optional[ListNode], l2: Optional[ListNode]) ->
     """
     Merge two sorted lists recursively.
 
-    Time Complexity: $O(n + m)$
-    Space Complexity: $O(n + m)$ - call stack
+    Time Complexity: $\Theta(n + m)$
+    Space Complexity: $\Theta(n + m)$ - call stack
     """
     if not l1:
         return l2
@@ -187,8 +187,8 @@ def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
 
     LeetCode 23: Merge k Sorted Lists
 
-    Time Complexity: $O(N \log k)$ where $N$ = total nodes, $k$ = number of lists
-    Space Complexity: $O(\log k)$ for recursion
+    Time Complexity: $\Theta(N \log k)$ where $N$ = total nodes, $k$ = number of lists
+    Space Complexity: $\Theta(\log k)$ for recursion
     """
     if not lists:
         return None
@@ -255,8 +255,8 @@ def merge_k_lists_heap(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
     Merge k sorted linked lists using min-heap.
 
-    Time: $O(N \log k)$
-    Space: $O(k)$ for the heap
+    Time Complexity: $\Theta(N \log k)$
+    Space Complexity: $\Theta(k)$ for the heap
     """
     # Create min-heap with (value, index, node)
     # Index breaks ties (nodes aren't comparable)
@@ -309,8 +309,8 @@ def sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 148: Sort List
 
-    Time: $O(n \log n)$
-    Space: $O(\log n)$ for recursion (or $O(1)$ with bottom-up approach)
+    Time Complexity: $\Theta(n \log n)$
+    Space Complexity: $\Theta(\log n)$ for recursion (or $\Theta(1)$ with bottom-up approach)
     """
     # Base case
     if not head or not head.next:
@@ -360,16 +360,16 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
     return dummy.next
 ```
 
-### Bottom-Up Merge Sort (O(1) Space)
+### Bottom-Up Merge Sort ($\Theta(1)$ Space)
 
 ```python
 def sort_list_bottom_up(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Sort linked list using bottom-up merge sort.
-    $O(1)$ space (no recursion).
+    $\Theta(1)$ space (no recursion).
 
-    Time: $O(n \log n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n \log n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or not head.next:
         return head
@@ -448,8 +448,8 @@ def add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 
     LeetCode 2: Add Two Numbers
 
-    Time: $O(\max(n, m))$
-    Space: $O(\max(n, m))$
+    Time Complexity: $\Theta(\max(n, m))$
+    Space Complexity: $\Theta(\max(n, m))$
     """
     dummy = ListNode(0)
     current = dummy
@@ -484,8 +484,8 @@ def add_two_numbers_ii(l1: Optional[ListNode], l2: Optional[ListNode]) -> Option
     LeetCode 445: Add Two Numbers II
 
     Approach: Reverse both, add, reverse result.
-    Time: $O(n + m)$
-    Space: $O(1)$ extra (modify in place)
+    Time Complexity: $\Theta(n + m)$
+    Space Complexity: $\Theta(1)$ extra (modify in place)
     """
     def reverse(head: Optional[ListNode]) -> Optional[ListNode]:
         prev = None
@@ -528,16 +528,16 @@ def add_two_numbers_ii(l1: Optional[ListNode], l2: Optional[ListNode]) -> Option
 
 ## Complexity Comparison
 
-| Approach                          | Time         | Space        |
-| --------------------------------- | ------------ | ------------ |
-| Merge two sorted                  | $O(n + m)$     | $O(1)$         |
-| Merge k sorted (divide & conquer) | $O(N \log k)$   | $O(\log k)$     |
-| Merge k sorted (heap)             | $O(N \log k)$   | $O(k)$         |
-| Merge sort (recursive)            | $O(n \log n)$   | $O(\log n)$     |
-| Merge sort (bottom-up)            | $O(n \log n)$   | $O(1)$         |
-| Add two numbers                   | $O(\max(n, m))$| $O(\max(n, m))$\* |
+| Approach                          | Time Complexity | Space Complexity |
+| --------------------------------- | --------------- | ---------------- |
+| Merge two sorted                  | $\Theta(n + m)$        | $\Theta(1)$             |
+| Merge k sorted (divide & conquer) | $\Theta(N \log k)$      | $\Theta(\log k)$         |
+| Merge k sorted (heap)             | $\Theta(N \log k)$      | $\Theta(k)$             |
+| Merge sort (recursive)            | $\Theta(n \log n)$      | $\Theta(\log n)$         |
+| Merge sort (bottom-up)            | $\Theta(n \log n)$      | $\Theta(1)$             |
+| Add two numbers                   | $\Theta(\max(n, m))$   | $\Theta(\max(n, m))$*   |
 
-\* *Space complexity is $O(\max(n, m))$ because we construct a new linked list. If in-place modification is permitted, it can be $O(1)$ auxiliary space.*
+\* *Space complexity is $\Theta(\max(n, m))$ because we construct a new linked list. If in-place modification is permitted, it can be $\Theta(1)$ auxiliary space.*
 
 ---
 
@@ -611,8 +611,8 @@ def insertion_sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 147: Insertion Sort List
 
-    Time: $O(n^2)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n^2)$
+    Space Complexity: $\Theta(1)$
     """
     if not head:
         return None
@@ -655,10 +655,10 @@ def insertion_sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
 ## Key Takeaways
 
-1. **Two-pointer merge** is $O(n + m)$ time, $O(1)$ space
-2. **Merge K lists** with divide & conquer or heap: $O(N \log k)$
+1. **Two-pointer merge** is $\Theta(n + m)$ time, $\Theta(1)$ space
+2. **Merge K lists** with divide & conquer or heap: $\Theta(N \log k)$
 3. **Merge sort on linked lists** is efficient: no random access needed
-4. **Bottom-up merge sort** achieves $O(1)$ space
+4. **Bottom-up merge sort** achieves $\Theta(1)$ space
 5. **Add two numbers** is merge with carry logic
 6. **Always use dummy node** to simplify head handling
 
