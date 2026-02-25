@@ -119,13 +119,13 @@ returns 1   returns 2
 
 | Operation            | Description                           | Time Complexity |
 | -------------------- | ------------------------------------- | --------------- |
-| `enqueue(x)`         | Add element to rear                   | O(1)            |
-| `dequeue()`          | Remove and return front element       | O(1)\*          |
-| `front()` / `peek()` | Return front element without removing | O(1)            |
-| `isEmpty()`          | Check if queue is empty               | O(1)            |
-| `size()`             | Return number of elements             | O(1)            |
+| `enqueue(x)`         | Add element to rear                   | $\Theta(1)$            |
+| `dequeue()`          | Remove and return front element       | $\Theta(1)$*          |
+| `front()` / `peek()` | Return front element without removing | $\Theta(1)$            |
+| `isEmpty()`          | Check if queue is empty               | $\Theta(1)$            |
+| `size()`             | Return number of elements             | $\Theta(1)$            |
 
-\*O(1) with deque, O(n) with list
+*$\Theta(1)$ with deque, $\Theta(n)$ with list
 
 ---
 
@@ -164,14 +164,14 @@ size = len(queue)  # 2
 ### ⚠️ Why Not Use List for Queues?
 
 ```python
-# BAD - O(n) dequeue
+# BAD - $\Theta(n)$ dequeue
 queue = [1, 2, 3]
-val = queue.pop(0)  # O(n) - shifts all elements!
+val = queue.pop(0)  # $\Theta(n)$ - shifts all elements!
 
-# GOOD - O(1) dequeue
+# GOOD - $\Theta(1)$ dequeue
 from collections import deque
 queue = deque([1, 2, 3])
-val = queue.popleft()  # O(1)
+val = queue.popleft()  # $\Theta(1)$
 ```
 
 ### Queue Class Implementation
@@ -183,19 +183,22 @@ class Queue:
     """
     Queue implementation using deque.
 
-    All operations are O(1).
+    All operations are $\Theta(1)$.
     """
     def __init__(self):
         self._items = deque()
+        self._size = 0
 
     def enqueue(self, item) -> None:
         """Add item to rear of queue."""
         self._items.append(item)
+        self._size += 1
 
     def dequeue(self):
         """Remove and return front item. Raises IndexError if empty."""
         if self.is_empty():
             raise IndexError("dequeue from empty queue")
+        self._size -= 1
         return self._items.popleft()
 
     def front(self):
@@ -212,11 +215,11 @@ class Queue:
 
     def is_empty(self) -> bool:
         """Return True if queue is empty."""
-        return len(self._items) == 0
+        return self._size == 0
 
     def size(self) -> int:
         """Return number of items in queue."""
-        return len(self._items)
+        return self._size
 
     def __len__(self) -> int:
         return self.size()
@@ -268,12 +271,13 @@ class CircularQueue:
     """
     Fixed-size circular queue.
 
-    Time: O(1) for all operations
-    Space: O(k) where k is capacity
+    Time Complexity: $\Theta(1)$ for all operations
+    Space Complexity: $\Theta(k)$ where k is capacity
     """
     def __init__(self, capacity: int):
         self.capacity = capacity
-        self.queue = [None] * capacity
+        # Using a list of ints. Can be initialized with zeros.
+        self.queue = [0] * capacity
         self.front = 0
         self.rear = -1
         self.size = 0
@@ -340,12 +344,12 @@ cq.get_rear()  # 4
 ```python
 from collections import deque
 
-def bfs(graph: dict, start: str) -> list:
+def bfs(graph: dict[str, list[str]], start: str) -> list[str]:
     """
     Breadth-first search using queue.
 
-    Time: O(V + E)
-    Space: O(V)
+    Time Complexity: $\mathcal{O}(V + E)$
+    Space Complexity: $\mathcal{O}(V)$
     """
     visited = {start}
     result = []
@@ -368,12 +372,20 @@ def bfs(graph: dict, start: str) -> list:
 ```python
 from collections import deque
 
-def level_order_traversal(root) -> list[list]:
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def level_order_traversal(root: Optional[TreeNode]) -> list[list[int]]:
     """
     Binary tree level order traversal.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     if not root:
         return []
@@ -408,8 +420,8 @@ class MovingAverage:
     """
     Calculate moving average of last size elements.
 
-    Time: O(1) per next() call
-    Space: O(size)
+    Time Complexity: $\Theta(1)$ per next() call
+    Space Complexity: $\Theta(size)$
     """
     def __init__(self, size: int):
         self.size = size
@@ -443,8 +455,8 @@ class RecentCounter:
     """
     Count requests in the last 3000 milliseconds.
 
-    Time: O(1) amortized
-    Space: O(number of requests in window)
+    Time Complexity: $\mathcal{O}(1)$ amortized
+    Space Complexity: $\mathcal{O}(w)$ where w is the number of requests in window
     """
     def __init__(self):
         self.requests = deque()
@@ -471,7 +483,7 @@ print(rc.ping(3002))   # 3 (request at t=1 expired)
 
 ## Deque: Double-Ended Queue
 
-A deque allows insertion and deletion at both ends in O(1).
+A deque allows insertion and deletion at both ends in $\Theta(1)$ time.
 
 ```python
 from collections import deque
@@ -505,29 +517,31 @@ if dq:
 
 | Implementation | enqueue | dequeue | front | Space |
 | -------------- | ------- | ------- | ----- | ----- |
-| List (bad)     | O(1)    | O(n) ⚠️ | O(1)  | O(n)  |
-| deque          | O(1)    | O(1)    | O(1)  | O(n)  |
-| Circular array | O(1)    | O(1)    | O(1)  | O(k)  |
-| Linked list    | O(1)\*  | O(1)    | O(1)  | O(n)  |
+| List (bad)     | $\Theta(1)$    | $\Theta(n)$ ⚠️ | $\Theta(1)$  | $\Theta(n)$  |
+| deque          | $\Theta(1)$    | $\Theta(1)$    | $\Theta(1)$  | $\Theta(n)$  |
+| Circular array | $\Theta(1)$    | $\Theta(1)$    | $\Theta(1)$  | $\Theta(k)$  |
+| Linked list    | $\Theta(1)$*  | $\Theta(1)$    | $\Theta(1)$  | $\Theta(n)$  |
 
-\*With tail pointer
+*With tail pointer
 
 ---
 
 ## Queue Using Linked List
 
 ```python
+from typing import Optional
+
 class ListNode:
-    def __init__(self, val=0, next=None):
+    def __init__(self, val: int = 0, next: Optional['ListNode'] = None):
         self.val = val
         self.next = next
 
 class LinkedQueue:
-    """Queue using linked list with O(1) operations."""
+    """Queue using linked list with $\Theta(1)$ operations."""
 
     def __init__(self):
-        self.front = None
-        self.rear = None
+        self.front: Optional[ListNode] = None
+        self.rear: Optional[ListNode] = None
         self._size = 0
 
     def enqueue(self, val: int) -> None:
@@ -589,8 +603,8 @@ if queue:  # Always check first
 
 ## Interview Tips
 
-1. **Use `deque`** for O(1) operations in Python
-2. **Never use `list.pop(0)`** - it's O(n)
+1. **Use `deque`** for $\Theta(1)$ operations in Python
+2. **Never use `list.pop(0)`** - it's $\Theta(n)$
 3. **BFS = Queue, DFS = Stack** - this pattern is fundamental
 4. **Circular queue for fixed capacity** - more space efficient
 5. **Level-by-level processing**: Track level size before processing
@@ -614,8 +628,8 @@ if queue:  # Always check first
 ## Key Takeaways
 
 1. **FIFO**: First-In-First-Out principle
-2. **Use deque**: `collections.deque` for O(1) operations
-3. **Never `list.pop(0)`**: It's O(n), use `deque.popleft()`
+2. **Use deque**: `collections.deque` for $\Theta(1)$ operations
+3. **Never `list.pop(0)`**: It's $\Theta(n)$, use `deque.popleft()`
 4. **BFS foundation**: Queue is essential for breadth-first algorithms
 5. **Circular queue**: Efficient fixed-size buffer with wrap-around
 

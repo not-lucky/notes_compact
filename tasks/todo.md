@@ -61,7 +61,7 @@
 
 ## Stacks & Queues (Chapter 5)
 - [ ] Process Chapter 5 Notes
-  - [ ] Analyze and improve 02-queue-basics.md
+  - [x] Analyze and improve 02-queue-basics.md
   - [x] Analyze and improve 06-min-stack.md
   - [x] Analyze and improve 08-queue-with-stacks.md
   - [x] Analyze and improve 09-expression-evaluation.md
