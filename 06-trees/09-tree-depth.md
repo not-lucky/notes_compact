@@ -62,13 +62,13 @@ A balanced tree guarantees O(log n) operations because height is logarithmic in 
 
 - Only need to check if tree is empty → Simple null check
 - Need exact level of specific node → Track depth during search
-- Tree is always balanced by design (heap) → Height is log(n) by definition
+- Tree is always balanced by design (heap) → Height is $\mathcal{O}(\log N)$ by definition
 
 **Common mistake scenarios:**
 
 - Confusing depth (from root) with height (from leaves)
 - Off-by-one errors (0-indexed vs 1-indexed depth)
-- Computing height twice per node → O(n²) instead of O(n)
+- Computing height twice per node → $\mathcal{O}(N^2)$ instead of $\Theta(N)$
 
 **The balanced tree trap**:
 
@@ -76,7 +76,7 @@ A balanced tree guarantees O(log n) operations because height is logarithmic in 
 Definition varies! Common definitions:
 1. AVL: |height(left) - height(right)| ≤ 1 for ALL nodes
 2. Red-Black: No path is more than 2x any other
-3. "Approximately balanced": Height is O(log n)
+3. "Approximately balanced": Height is $\mathcal{O}(\log N)$
 
 Clarify with interviewer which definition to use!
 ```
@@ -511,24 +511,26 @@ def is_complete_tree(root: Optional[TreeNode]) -> bool:
 
 ---
 
-## Count Complete Tree Nodes (O(log²n))
+## Count Complete Tree Nodes ($\mathcal{O}(\log^2 N)$)
 
 ```python
-def count_nodes(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+def count_nodes(root: Optional[TreeNode]) -> int:
+    r"""
     Count nodes in complete binary tree.
 
     LeetCode 222: Count Complete Tree Nodes
 
     For complete tree, can use binary search on last level.
 
-    Time: O(log²n) - log n levels, log n to check each
-    Space: O(log n)
+    Time: $\mathcal{O}(\log^2 N)$ - $\log N$ levels, $\log N$ to check each via get_height
+    Space: $\mathcal{O}(\log N)$ - recursion stack depth matches tree height $\log N$
     """
     if not root:
         return 0
 
-    def get_height(node):
+    def get_height(node: Optional[TreeNode]) -> int:
         height = 0
         while node:
             height += 1
@@ -540,10 +542,10 @@ def count_nodes(root: TreeNode) -> int:
 
     if left_height == right_height:
         # Left subtree is perfect, recurse on right
-        return (1 << left_height) + count_nodes(root.right)
+        return (1 << left_height) - 1 + 1 + count_nodes(root.right)
     else:
         # Right subtree is perfect (one level shorter), recurse on left
-        return (1 << right_height) + count_nodes(root.left)
+        return (1 << right_height) - 1 + 1 + count_nodes(root.left)
 ```
 
 ---
@@ -552,10 +554,10 @@ def count_nodes(root: TreeNode) -> int:
 
 | Problem             | Time     | Space    | Notes                       |
 | ------------------- | -------- | -------- | --------------------------- |
-| Max depth           | O(n)     | O(h)     | Visit all nodes             |
-| Min depth           | O(n)     | O(h)     | BFS can be faster           |
-| Is balanced         | O(n)     | O(h)     | Single pass with early exit |
-| Complete tree nodes | O(log²n) | O(log n) | Exploit tree properties     |
+| Max depth           | $\Theta(N)$ | $\mathcal{O}(H)$ | Visit all nodes             |
+| Min depth           | $\mathcal{O}(N)$ | $\mathcal{O}(H)$ or $\mathcal{O}(W)$ | BFS can be faster (early exit) |
+| Is balanced         | $\Theta(N)$ | $\mathcal{O}(H)$ | Single pass with early exit via -1 |
+| Complete tree nodes | $\mathcal{O}(\log^2 N)$ | $\mathcal{O}(\log N)$ | Exploit tree properties     |
 
 ---
 
