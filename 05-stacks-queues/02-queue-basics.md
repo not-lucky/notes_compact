@@ -136,7 +136,7 @@ returns 1   returns 2
 ```python
 from collections import deque
 
-# deque for O(1) operations on both ends
+# deque for $\Theta(1)$ operations on both ends
 queue = deque()
 
 # Enqueue (add to rear)

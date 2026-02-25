@@ -433,18 +433,18 @@ stack: list[int] = []
 # → Check before pop/peek to avoid IndexError
 
 # 2. Single element
-stack = [1]
-stack.pop()  # Now empty
+stack_single = [1]
+stack_single.pop()  # Now empty
 # → Check if empty before next operation
 
 # 3. Pop from empty
-stack: list[int] = []
-if stack:  # Always check first
-    stack.pop()
+stack_empty: list[int] = []
+if stack_empty:  # Always check first
+    stack_empty.pop()
 
 # 4. Peek from empty
-stack: list[int] = []
-top = stack[-1] if stack else None  # Safe peek
+stack_peek: list[int] = []
+top = stack_peek[-1] if stack_peek else None  # Safe peek
 ```
 
 ---
