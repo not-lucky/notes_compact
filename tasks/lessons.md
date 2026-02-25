@@ -42,3 +42,4 @@
 - **Python Typing Conventions**: In code blocks, always import the `List` type hint from the `typing` module if standardizing, or use lowercase `list` if using Python 3.9+. Consistency in typing across markdown code blocks is crucial for senior-level clarity.
 - **Big-O/Theta Precision (Again)**: Be extremely careful converting $\mathcal{O}(n)$ bounds to $\Theta(N)$ in amortized contexts. If an operation takes amortized $\mathcal{O}(1)$, representing it as strictly $\Theta(1)$ may invite pedantic critique. Instead, specify `$\mathcal{O}(1)$ amortized`.
 - **Testing Code Execution in Bash**: Ensure all docstring assertions and markdown snippets are valid python scripts before marking a file as successfully audited.
+- **Python Docstring Escaping**: When using LaTeX math formulas like `$\mathcal{O}(n)$` inside Python docstrings, always use raw strings (`r"""..."""`) to prevent `SyntaxWarning: invalid escape sequence \m`.

@@ -288,7 +288,7 @@ class TextEditor:
 
 ```python
 def dfs_iterative(graph: dict[str, list[str]], start: str) -> list[str]:
-    """
+    r"""
     Iterative DFS using explicit stack.
 
     Time: $\mathcal{O}(V + E)$
@@ -392,7 +392,7 @@ class ListNode:
         self.next = next
 
 class LinkedStack:
-    """Stack using linked list - $\mathcal{O}(1)$ guaranteed (no resizing)."""
+    r"""Stack using linked list - $\mathcal{O}(1)$ guaranteed (no resizing)."""
 
     def __init__(self):
         self.head: Optional[ListNode] = None
