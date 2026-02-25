@@ -13,6 +13,17 @@ Tree comparison problems are important because:
 
 These are considered "easy" but tricky to get right on the first try.
 
+*Note: All code examples assume the following `TreeNode` definition:*
+```python
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+```
+
 ---
 
 ## Same Tree
@@ -22,14 +33,16 @@ Check if two trees are structurally identical with same values.
 ### Recursive Solution
 
 ```python
-def is_same_tree(p: TreeNode, q: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_same_tree(p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+    r"""
     Check if two trees are identical.
 
     LeetCode 100: Same Tree
 
-    Time: O(min(n, m)) - stop at first mismatch
-    Space: O(min(h1, h2)) - recursion depth
+    Time Complexity: $\mathcal{O}(\min(N, M))$ where $N, M$ are the number of nodes in trees `p` and `q`. We stop at the first mismatch.
+    Space Complexity: $\mathcal{O}(\min(H_1, H_2))$ where $H_1, H_2$ are the heights of the trees, due to the recursive call stack. In the worst case (skewed tree), this is $\mathcal{O}(\min(N, M))$. In a balanced tree, it is $\mathcal{O}(\min(\log N, \log M))$.
     """
     # Both null
     if not p and not q:
@@ -48,16 +61,17 @@ def is_same_tree(p: TreeNode, q: TreeNode) -> bool:
 ### Iterative Solution
 
 ```python
+from typing import Optional, Tuple
 from collections import deque
 
-def is_same_tree_iterative(p: TreeNode, q: TreeNode) -> bool:
-    """
+def is_same_tree_iterative(p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+    r"""
     Iterative same tree check using BFS.
 
-    Time: O(min(n, m))
-    Space: O(min(w1, w2)) - queue width
+    Time Complexity: $\mathcal{O}(\min(N, M))$ where $N, M$ are the number of nodes.
+    Space Complexity: $\mathcal{O}(\min(W_1, W_2))$ where $W_1, W_2$ are the maximum widths of the trees. In the worst case (a full binary tree), the width is roughly $\frac{N}{2}$, so space is $\mathcal{O}(\min(N, M))$.
     """
-    queue = deque([(p, q)])
+    queue: deque[Tuple[Optional[TreeNode], Optional[TreeNode]]] = deque([(p, q)])
 
     while queue:
         node1, node2 = queue.popleft()
@@ -95,19 +109,21 @@ Mirror property: left subtree mirrors right subtree
 ### Recursive Solution
 
 ```python
-def is_symmetric(root: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_symmetric(root: Optional[TreeNode]) -> bool:
+    r"""
     Check if tree is symmetric (mirror of itself).
 
     LeetCode 101: Symmetric Tree
 
-    Time: O(n)
-    Space: O(h)
+    Time Complexity: $\Theta(N)$ where $N$ is the number of nodes. We must visit all nodes to confirm symmetry.
+    Space Complexity: $\mathcal{O}(H)$ where $H$ is the height of the tree, representing the recursive call stack. Worst case $\mathcal{O}(N)$ for skewed trees, $\mathcal{O}(\log N)$ for balanced trees.
     """
     if not root:
         return True
 
-    def is_mirror(left, right):
+    def is_mirror(left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
         # Both null
         if not left and not right:
             return True
@@ -127,17 +143,20 @@ def is_symmetric(root: TreeNode) -> bool:
 ### Iterative Solution
 
 ```python
-def is_symmetric_iterative(root: TreeNode) -> bool:
-    """
+from typing import Optional, Tuple
+from collections import deque
+
+def is_symmetric_iterative(root: Optional[TreeNode]) -> bool:
+    r"""
     Iterative symmetry check using queue.
 
-    Time: O(n)
-    Space: O(w)
+    Time Complexity: $\Theta(N)$ to visit all nodes if symmetric.
+    Space Complexity: $\mathcal{O}(W)$ where $W$ is the maximum width of the tree. In a balanced tree, the widest level contains roughly $\frac{N}{2}$ nodes, making space $\mathcal{O}(N)$ in the worst case.
     """
     if not root:
         return True
 
-    queue = deque([(root.left, root.right)])
+    queue: deque[Tuple[Optional[TreeNode], Optional[TreeNode]]] = deque([(root.left, root.right)])
 
     while queue:
         left, right = queue.popleft()
@@ -185,14 +204,16 @@ All checks pass → Symmetric!
 ## Subtree of Another Tree
 
 ```python
-def is_subtree(root: TreeNode, sub_root: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_subtree(root: Optional[TreeNode], sub_root: Optional[TreeNode]) -> bool:
+    r"""
     Check if sub_root is a subtree of root.
 
     LeetCode 572: Subtree of Another Tree
 
-    Time: O(m * n) where m, n are sizes of trees
-    Space: O(h)
+    Time Complexity: $\mathcal{O}(M \cdot N)$ where $M$ is the number of nodes in `root` and $N$ is the number of nodes in `sub_root`. In the worst case, we compare the entire `sub_root` for every node in `root`.
+    Space Complexity: $\mathcal{O}(H_M + H_N)$ where $H_M$ and $H_N$ are the heights of the two trees. This accounts for the maximum depth of the nested recursive call stacks.
     """
     if not sub_root:
         return True
@@ -200,36 +221,38 @@ def is_subtree(root: TreeNode, sub_root: TreeNode) -> bool:
     if not root:
         return False
 
-    if is_same_tree(root, sub_root):
+    if is_same_tree_helper(root, sub_root):
         return True
 
     return is_subtree(root.left, sub_root) or is_subtree(root.right, sub_root)
 
 
-def is_same_tree(p, q):
+def is_same_tree_helper(p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
     if not p and not q:
         return True
     if not p or not q:
         return False
     return (p.val == q.val and
-            is_same_tree(p.left, q.left) and
-            is_same_tree(p.right, q.right))
+            is_same_tree_helper(p.left, q.left) and
+            is_same_tree_helper(p.right, q.right))
 ```
 
 ### Optimized with Serialization
 
 ```python
-def is_subtree_optimized(root: TreeNode, sub_root: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_subtree_optimized(root: Optional[TreeNode], sub_root: Optional[TreeNode]) -> bool:
+    r"""
     Serialize trees and use string matching.
 
-    Time: O(m + n) with KMP
-    Space: O(m + n) for strings
+    Time Complexity: $\Theta(M + N)$ where $M$ and $N$ are the number of nodes in each tree. Preorder traversal takes $\Theta(M+N)$ time. Python's `in` operator uses an implementation of Boyer-Moore-Horspool or similar, bounded closely to $\mathcal{O}(M + N)$ in typical string matching, though technically $\mathcal{O}(M \cdot N)$ in adversarial worst cases. KMP strictly gives $\mathcal{O}(M+N)$.
+    Space Complexity: $\Theta(M + N)$ for the serialized strings, plus $\mathcal{O}(\max(H_M, H_N))$ for the recursive traversal stack. Overall $\Theta(M + N)$.
     """
-    def serialize(node):
+    def serialize(node: Optional[TreeNode]) -> str:
         if not node:
             return "#"
-        # Use delimiters to avoid false matches
+        # Use delimiters to avoid false matches (e.g. 12 in 123)
         return f"^{node.val},{serialize(node.left)},{serialize(node.right)}"
 
     root_str = serialize(root)
@@ -243,14 +266,16 @@ def is_subtree_optimized(root: TreeNode, sub_root: TreeNode) -> bool:
 ## Invert Binary Tree
 
 ```python
-def invert_tree(root: TreeNode) -> TreeNode:
-    """
+from typing import Optional
+
+def invert_tree(root: Optional[TreeNode]) -> Optional[TreeNode]:
+    r"""
     Invert binary tree (mirror it).
 
     LeetCode 226: Invert Binary Tree
 
-    Time: O(n)
-    Space: O(h)
+    Time Complexity: $\Theta(N)$ because every node in the tree is visited exactly once.
+    Space Complexity: $\mathcal{O}(H)$ where $H$ is the height of the tree. The recursive call stack bounds space to $\mathcal{O}(\log N)$ for balanced trees and $\mathcal{O}(N)$ worst-case for skewed trees.
     """
     if not root:
         return None
@@ -268,19 +293,20 @@ def invert_tree(root: TreeNode) -> TreeNode:
 ### Iterative Version
 
 ```python
+from typing import Optional
 from collections import deque
 
-def invert_tree_iterative(root: TreeNode) -> TreeNode:
-    """
+def invert_tree_iterative(root: Optional[TreeNode]) -> Optional[TreeNode]:
+    r"""
     Iterative tree inversion.
 
-    Time: O(n)
-    Space: O(w)
+    Time Complexity: $\Theta(N)$ since we process every node once.
+    Space Complexity: $\mathcal{O}(W)$ where $W$ is the maximum width of the tree, which corresponds to the maximum size of the queue. For balanced trees, this is $\mathcal{O}(N)$.
     """
     if not root:
         return None
 
-    queue = deque([root])
+    queue: deque[TreeNode] = deque([root])
 
     while queue:
         node = queue.popleft()
@@ -299,8 +325,10 @@ def invert_tree_iterative(root: TreeNode) -> TreeNode:
 ## Flip Equivalent Binary Trees
 
 ```python
-def flip_equiv(root1: TreeNode, root2: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def flip_equiv(root1: Optional[TreeNode], root2: Optional[TreeNode]) -> bool:
+    r"""
     Check if trees are flip equivalent.
 
     Trees are flip equivalent if we can make them identical
@@ -308,8 +336,8 @@ def flip_equiv(root1: TreeNode, root2: TreeNode) -> bool:
 
     LeetCode 951: Flip Equivalent Binary Trees
 
-    Time: O(n)
-    Space: O(h)
+    Time Complexity: $\mathcal{O}(\min(N_1, N_2))$ where $N_1$ and $N_2$ are the number of nodes in each tree. We essentially traverse matched pairs, short-circuiting on mismatch.
+    Space Complexity: $\mathcal{O}(\min(H_1, H_2))$ where $H_1, H_2$ are the heights of the trees, bounding the recursive call stack length.
     """
     if not root1 and not root2:
         return True
@@ -332,14 +360,16 @@ def flip_equiv(root1: TreeNode, root2: TreeNode) -> bool:
 ## Merge Two Binary Trees
 
 ```python
-def merge_trees(root1: TreeNode, root2: TreeNode) -> TreeNode:
-    """
+from typing import Optional
+
+def merge_trees(root1: Optional[TreeNode], root2: Optional[TreeNode]) -> Optional[TreeNode]:
+    r"""
     Merge two trees by summing overlapping nodes.
 
     LeetCode 617: Merge Two Binary Trees
 
-    Time: O(min(n1, n2))
-    Space: O(min(h1, h2))
+    Time Complexity: $\mathcal{O}(\min(N_1, N_2))$ since we only traverse and compute where both trees have overlapping nodes.
+    Space Complexity: $\mathcal{O}(\min(H_1, H_2))$ representing the maximum recursion depth, which stops at the shortest leaf traversal path among matching subtrees.
     """
     if not root1:
         return root2
@@ -360,14 +390,14 @@ def merge_trees(root1: TreeNode, root2: TreeNode) -> TreeNode:
 
 ## Complexity Analysis
 
-| Problem         | Time          | Space | Notes                     |
-| --------------- | ------------- | ----- | ------------------------- |
-| Same Tree       | O(n)          | O(h)  | Stop at first mismatch    |
-| Symmetric Tree  | O(n)          | O(h)  | Compare mirror pairs      |
-| Subtree Check   | O(m\*n)       | O(h)  | O(m+n) with serialization |
-| Invert Tree     | O(n)          | O(h)  | Visit all nodes           |
-| Flip Equivalent | O(n)          | O(h)  | Branch on flip/no-flip    |
-| Merge Trees     | O(min(n1,n2)) | O(h)  | Only overlapping nodes    |
+| Problem         | Time Complexity | Space Complexity | Notes                     |
+| --------------- | --------------- | ---------------- | ------------------------- |
+| Same Tree       | $\mathcal{O}(\min(N, M))$ | $\mathcal{O}(\min(H_1, H_2))$ | Stop at first mismatch    |
+| Symmetric Tree  | $\Theta(N)$ | $\mathcal{O}(H)$ | Compare mirror pairs      |
+| Subtree Check   | $\mathcal{O}(M \cdot N)$ | $\mathcal{O}(H_M + H_N)$ | $\Theta(M+N)$ with serialization |
+| Invert Tree     | $\Theta(N)$ | $\mathcal{O}(H)$ | Visit all nodes           |
+| Flip Equivalent | $\mathcal{O}(\min(N_1, N_2))$ | $\mathcal{O}(\min(H_1, H_2))$ | Branch on flip/no-flip    |
+| Merge Trees     | $\mathcal{O}(\min(N_1, N_2))$ | $\mathcal{O}(\min(H_1, H_2))$ | Only overlapping nodes    |
 
 ---
 

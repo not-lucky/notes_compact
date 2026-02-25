@@ -45,3 +45,8 @@
 - **Python Docstring Escaping**: When using LaTeX math formulas like `$\mathcal{O}(n)$` inside Python docstrings, always use raw strings (`r"""..."""`) to prevent `SyntaxWarning: invalid escape sequence \m`.
 - **Histogram Problems:** A monotonic stack easily finds the "first smaller element on the left and right" in $\mathcal{O}(n)$ time, which forms the optimal solution for computing the largest rectangle. Always emphasize that popping from the stack means the right boundary has been found, and the new top of the stack is the left boundary.
 - **2D to 1D Conversions:** Problems like "Maximal Rectangle" in a binary matrix are just "Largest Rectangle in Histogram" computed row by row. Treat columns as vertical bars.
+
+### Chapter 6 (Trees) Review Lessons
+- **Path Sum / Prefix Sums:** When describing the space complexity of paths algorithms that use `path` arrays or `result` arrays, distinguish between the $\mathcal{O}(H)$ stack space and the $\mathcal{O}(N \cdot H)$ space to store resulting valid paths. Path Sum III space complexity should be $\mathcal{O}(N)$ for the hash map storing prefix sums in the worst case, not just $\mathcal{O}(H)$.
+- **BFS vs DFS Space Complexity:** Clearly state the difference: DFS uses $\mathcal{O}(H)$ space for the call stack, where $H$ is the tree height. BFS uses $\mathcal{O}(W)$ space for the queue, where $W$ is the maximum width of the tree. Do not just blindly say $\mathcal{O}(N)$.
+- **Trees: Type Hinting**: Provide the definition of `TreeNode` in files when demonstrating algorithms, or add appropriate comments, and importantly, ensure all node references are correctly typed with `Optional[TreeNode]` when `None` is a valid return/argument type.
