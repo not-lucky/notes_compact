@@ -58,3 +58,12 @@
   - [x] Analyze and improve 08-copy-with-random.md
 - [x] Update tasks/lessons.md with findings from Chapter 4.
 - [x] Update tasks/todo.md with current progress.
+
+## Stacks & Queues (Chapter 5)
+- [ ] Process Chapter 5 Notes
+  - [ ] Analyze and improve 02-queue-basics.md
+  - [x] Analyze and improve 06-min-stack.md
+  - [ ] Analyze and improve 10-histogram-problems.md
+- [ ] Update tasks/lessons.md with findings from Chapter 5.
+- [ ] Update tasks/todo.md with current progress.
+   - [x] Analyze and improve 05-stacks-queues/03-valid-parentheses.md

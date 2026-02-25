@@ -66,6 +66,12 @@ The stack-based parentheses pattern is wrong when:
 ```python
 # No stack needed for just '(' and ')'
 def is_valid_simple(s: str) -> bool:
+    """
+    Check if a string of simple parentheses is valid.
+
+    Time: $\mathcal{O}(N)$ - single pass
+    Space: $\mathcal{O}(1)$ - constant extra space
+    """
     balance = 0
     for c in s:
         if c == '(':
@@ -143,8 +149,8 @@ def is_valid(s: str) -> bool:
     """
     Check if parentheses are valid.
 
-    Time: O(n) - single pass through string
-    Space: O(n) - stack can hold all opening brackets
+    Time: $\mathcal{O}(N)$ - single pass through string
+    Space: $\mathcal{O}(N)$ - stack can hold all opening brackets
     """
     stack = []
     mapping = {')': '(', '}': '{', ']': '['}
@@ -178,8 +184,8 @@ def is_valid_v2(s: str) -> bool:
     """
     Alternative using set for opening brackets.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     stack = []
     opening = {'(', '[', '{'}
@@ -212,8 +218,8 @@ def min_remove_to_make_valid(s: str) -> str:
 
     LeetCode 1249: Minimum Remove to Make Valid Parentheses
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     # Track indices of invalid parentheses
     indices_to_remove = set()
@@ -249,8 +255,8 @@ def longest_valid_parentheses(s: str) -> int:
 
     LeetCode 32: Longest Valid Parentheses
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     # Stack stores indices; start with -1 as base
     stack = [-1]
@@ -286,8 +292,8 @@ def score_of_parentheses(s: str) -> int:
 
     LeetCode 856: Score of Parentheses
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     stack = [0]  # Stack of scores at each depth
 
@@ -320,8 +326,8 @@ def generate_parentheses(n: int) -> list[str]:
 
     LeetCode 22: Generate Parentheses
 
-    Time: O(4^n / sqrt(n)) - Catalan number
-    Space: O(n) for recursion stack
+    Time: $\mathcal{O}(4^N / \sqrt{N})$ - Catalan number bound
+    Space: $\mathcal{O}(N)$ for recursion stack
     """
     result = []
 
@@ -356,8 +362,8 @@ def check_valid_string(s: str) -> bool:
 
     LeetCode 678: Valid Parenthesis String
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(1)$
     """
     # Track range of possible open count
     low = 0   # Minimum possible open '(' count
@@ -394,9 +400,9 @@ print(check_valid_string("*("))    # False
 
 | Approach                  | Time | Space | Notes                            |
 | ------------------------- | ---- | ----- | -------------------------------- |
-| Stack-based               | O(n) | O(n)  | Standard approach                |
-| Count-based (single type) | O(n) | O(1)  | Only works for one bracket type  |
-| Two-pass counter          | O(n) | O(1)  | Alternative for one bracket type |
+| Stack-based               | $\mathcal{O}(N)$ | $\mathcal{O}(N)$  | Standard approach                |
+| Count-based (single type) | $\mathcal{O}(N)$ | $\mathcal{O}(1)$  | Only works for one bracket type  |
+| Two-pass counter          | $\mathcal{O}(N)$ | $\mathcal{O}(1)$  | Alternative for one bracket type |
 
 ---
 
@@ -433,7 +439,12 @@ is_valid("(" * 5000 + ")" * 5000)  # True
 
 ```python
 def is_valid_optimized(s: str) -> bool:
-    """Optimized with early termination."""
+    """
+    Optimized with early termination.
+
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
+    """
     # Quick length check
     if len(s) % 2 == 1:
         return False
