@@ -48,14 +48,16 @@ List 1 sends new representative: 3
 
 The heap is our "judging panel" that quickly finds the winner (O(log k)).
 
-**Why O(n log k) and Not O(nk)?**
+**Why O(N log k) and Not O(N·k)?**
+
+Let **N** be the total number of elements across all lists, and **k** be the number of lists.
 
 ```
-Naive approach: For each of n elements, scan all k heads → O(nk)
+Naive approach: For each of N elements, scan all k heads → O(N·k)
 
-Heap approach: For each of n elements, do one heap operation → O(n log k)
+Heap approach: For each of N elements, do one heap operation → O(N log k)
 
-With k=1000 lists and n=1,000,000 elements:
+With k=1000 lists and N=1,000,000 elements:
 - Naive: 1,000,000 × 1,000 = 1 billion comparisons
 - Heap: 1,000,000 × log₂(1000) ≈ 10 million comparisons
 ```
@@ -116,29 +118,27 @@ If average list length is small, divide-and-conquer might have better constants:
 
 **3. Lists Are on Disk (External Merge Sort)**
 
-For disk-based merge, you need buffered I/O:
-
-```python
-# Can't use standard heap approach directly
-# Need: buffer chunks from each file, merge buffers, write output buffer
-# The principle is same, but implementation differs
-```
+For datasets too large to fit in memory (e.g., merging many large server log files), you must use **External Merge Sort**:
+- The principle remains the same: a min-heap tracks the smallest elements.
+- Instead of tracking all individual nodes in RAM, you read small sorted "chunks" from each file into an in-memory buffer.
+- When an element is popped from the heap, you pull the next item from that file's stream.
+- This is exactly how massive databases perform large-scale `ORDER BY` operations.
 
 **4. You Don't Need Fully Sorted Output**
 
-If you just need, say, the first 10 elements from the merged result:
+If you just need, say, the first $m$ elements from the merged result:
 
 ```python
-# Heap is fine, but stop after 10 elements
-# No need to process all n elements
+# Heap approach is perfect! Just stop after popping m elements.
+# There is no need to process the rest of the elements.
 ```
 
 **Red Flags:**
 
-- "K is always 2" → Use simple two-pointer merge
-- "Files don't fit in memory" → Need external merge sort
-- "Only need first m elements" → Stop early (heap still works)
-- "Lists are actually linked lists" → Make sure to handle None carefully
+- "K is always 2" → Use a simple two-pointer merge
+- "Files don't fit in memory" → You need an external merge sort (buffering chunks)
+- "Only need first m elements" → Stop early; the heap approach is optimal here
+- "Lists are actually linked lists" → Be careful to handle `None` gracefully
 
 ---
 
@@ -177,7 +177,7 @@ def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
     Merge k sorted linked lists using min heap.
 
-    Time: O(n log k) where n = total nodes, k = number of lists
+    Time: O(N log k) where N = total nodes, k = number of lists
     Space: O(k) for heap
 
     Strategy: Heap contains one node from each list.
@@ -213,16 +213,31 @@ def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
 
 ## Why list_index as Tiebreaker?
 
-Python's heapq compares tuples element by element. If values are equal, it compares the next element. ListNode objects aren't comparable, so we need a tiebreaker:
+Python's heapq compares tuples element by element. If values are equal, it compares the next element. `ListNode` objects aren't natively comparable in Python, so we need a tiebreaker:
 
 ```python
 # This would fail:
 heapq.heappush(heap, (1, node1))
-heapq.heappush(heap, (1, node2))  # Error: can't compare ListNode
+heapq.heappush(heap, (1, node2))  # Error: '<' not supported between instances of 'ListNode' and 'ListNode'
 
-# Solution: Add unique index
+# Solution 1: Add unique index (Cleanest)
 heapq.heappush(heap, (1, 0, node1))
 heapq.heappush(heap, (1, 1, node2))  # Works: 0 < 1 breaks tie
+```
+
+**Alternative: Wrapper Class**
+In interviews, you may be asked how to solve this using Object-Oriented principles. You can create a wrapper class with the `__lt__` (less than) magic method:
+
+```python
+class Wrapper:
+    def __init__(self, node):
+        self.node = node
+
+    def __lt__(self, other):
+        # Only compare values. Python will now know how to sort Wrappers
+        return self.node.val < other.node.val
+
+# Usage: heapq.heappush(heap, Wrapper(node))
 ```
 
 ---
@@ -238,8 +253,8 @@ def merge_k_sorted_arrays(arrays: list[list[int]]) -> list[int]:
     """
     Merge k sorted arrays.
 
-    Time: O(n log k)
-    Space: O(k) for heap + O(n) for result
+    Time: O(N log k) where N is total elements across all k arrays
+    Space: O(k) for heap + O(N) for result
     """
     result = []
     # (value, array_index, element_index)
@@ -280,8 +295,8 @@ def merge_k_sorted_builtin(arrays: list[list[int]]) -> list[int]:
     """
     Use heapq.merge for sorted iterables.
 
-    Time: O(n log k)
-    Space: O(k)
+    Time: O(N log k)
+    Space: O(k) for iterators + O(N) for result list
     """
     return list(heapq.merge(*arrays))
 
@@ -297,7 +312,7 @@ print(merge_k_sorted_builtin(arrays))  # [1, 1, 2, 3, 4, 4, 5, 6]
 
 ## Approach 2: Divide and Conquer
 
-Merge pairs of lists, reducing k to k/2 each round.
+Merge pairs of lists iteratively, reducing k to k/2 each round. This can be done in `O(1)` auxiliary space without a recursion stack or allocating new lists in each round.
 
 ```python
 from typing import Optional
@@ -309,15 +324,16 @@ class ListNode:
 
 def merge_k_lists_divide_conquer(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
-    Divide and conquer: merge pairs of lists.
+    Divide and conquer: merge pairs of lists iteratively.
 
-    Time: O(n log k) - log k rounds, O(n) per round
-    Space: O(log k) recursion stack (or O(1) iterative)
+    Time: O(N log k) - log k rounds, O(N) comparisons per round
+    Space: O(1) auxiliary space (done in-place)
     """
     if not lists:
         return None
-    if len(lists) == 1:
-        return lists[0]
+
+    amount = len(lists)
+    interval = 1
 
     def merge_two(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
         dummy = ListNode(0)
@@ -335,14 +351,11 @@ def merge_k_lists_divide_conquer(lists: list[Optional[ListNode]]) -> Optional[Li
         current.next = l1 or l2
         return dummy.next
 
-    # Merge pairs until one list remains
-    while len(lists) > 1:
-        merged = []
-        for i in range(0, len(lists), 2):
-            l1 = lists[i]
-            l2 = lists[i + 1] if i + 1 < len(lists) else None
-            merged.append(merge_two(l1, l2))
-        lists = merged
+    # Iteratively merge pairs in-place
+    while interval < amount:
+        for i in range(0, amount - interval, interval * 2):
+            lists[i] = merge_two(lists[i], lists[i + interval])
+        interval *= 2
 
     return lists[0]
 ```
@@ -351,14 +364,14 @@ def merge_k_lists_divide_conquer(lists: list[Optional[ListNode]]) -> Optional[Li
 
 ## Comparison of Approaches
 
-| Approach           | Time       | Space    | Notes                   |
-| ------------------ | ---------- | -------- | ----------------------- |
-| Heap               | O(n log k) | O(k)     | Best for streaming      |
-| Divide & Conquer   | O(n log k) | O(log k) | No extra data structure |
-| Merge one by one   | O(nk)      | O(1)     | Too slow                |
-| Collect all + sort | O(n log n) | O(n)     | Ignores sorted property |
+| Approach             | Time       | Space    | Notes                                  |
+| -------------------- | ---------- | -------- | -------------------------------------- |
+| Heap (Min Priority)  | O(N log k) | O(k)     | Best for streaming or large inputs     |
+| Divide & Conquer     | O(N log k) | O(1)     | Iterative in-place needs no extra space|
+| Merge one by one     | O(N·k)     | O(1)     | Naive loop comparison is too slow      |
+| Collect all + sort   | O(N log N) | O(N)     | Easy to write but ignores sorted input |
 
-**n** = total number of elements across all lists
+**N** = total number of elements across all lists
 **k** = number of lists
 
 ---
@@ -400,29 +413,41 @@ def smallest_range(nums: list[list[int]]) -> list[int]:
     """
     Find smallest range covering all k lists.
 
-    Time: O(n log k)
-    Space: O(k)
+    Time: O(N log k) where N is total elements, k is lists
+    Space: O(k) for tracking one element from each list
 
-    Track current max while heap tracks current min.
+    Track current max iteratively while heap tracks current min.
     """
     k = len(nums)
-    # (value, list_index, element_index)
-    heap = [(lst[0], i, 0) for i, lst in enumerate(nums) if lst]
-    heapq.heapify(heap)
+    heap = []
+    current_max = float('-inf')
 
-    current_max = max(lst[0] for lst in nums if lst)
+    # Initialize heap and current_max
+    for i in range(k):
+        # Only process if list is non-empty. If an empty list is allowed and
+        # required to be in the range, the problem is impossible.
+        if nums[i]:
+            val = nums[i][0]
+            heapq.heappush(heap, (val, i, 0))
+            current_max = max(current_max, val)
+
+    # If any list was empty, we can't find a range covering all lists
+    if len(heap) < k:
+        return []
+
+    # Initialize result with initial min and max
     result = [heap[0][0], current_max]
 
     while True:
         min_val, list_idx, elem_idx = heapq.heappop(heap)
 
-        # Update result if current range is smaller
+        # Update result if current range is strictly smaller
         if current_max - min_val < result[1] - result[0]:
             result = [min_val, current_max]
 
-        # Try to advance in the list that had minimum
+        # Try to advance in the list that had the minimum value
         if elem_idx + 1 >= len(nums[list_idx]):
-            break  # Can't advance, this is optimal
+            break  # Can't advance further, so this range is optimal
 
         next_val = nums[list_idx][elem_idx + 1]
         current_max = max(current_max, next_val)
@@ -472,27 +497,29 @@ merge_k_lists([[1], [2], [3], ...])  # Works fine with heap
 ```python
 # WRONG: Comparing ListNode objects
 heap = [(node.val, node) for node in lists if node]
-# Fails when values are equal
+# Fails when values are equal (Python tries to compare node < node)
 
-# CORRECT: Add unique index
+# CORRECT 1: Add unique index tiebreaker
 heap = [(node.val, i, node) for i, node in enumerate(lists) if node]
+
+# CORRECT 2: Wrapper Class with __lt__ defined
 
 
 # WRONG: Not checking for empty lists
 for node in lists:
-    heapq.heappush(heap, (node.val, 0, node))  # None.val fails!
+    heapq.heappush(heap, (node.val, 0, node))  # None.val causes AttributeError!
 
-# CORRECT: Filter None
+# CORRECT: Filter None heads
 for i, node in enumerate(lists):
     if node:
         heapq.heappush(heap, (node.val, i, node))
 
 
-# WRONG: Forgetting to advance in same list
+# WRONG: Forgetting to advance to the next node in the same list
 while heap:
-    val, _, node = heapq.heappop(heap)
+    val, idx, node = heapq.heappop(heap)
     result.append(val)
-    # Missing: push node.next if exists!
+    # Missing: Must push node.next if it exists!
 ```
 
 ---
@@ -512,10 +539,10 @@ while heap:
 ## Key Takeaways
 
 1. **Min heap tracks k candidates**: One from each list
-2. **Time O(n log k)**: Each of n elements does log k heap operations
-3. **Tiebreaker needed**: Use index when values can be equal
-4. **Two approaches**: Heap (streaming) vs Divide & Conquer
-5. **heapq.merge**: Built-in for sorted iterables
+2. **Time O(N log k)**: Each of N total elements does log k heap operations
+3. **Tiebreaker needed**: Use index or wrapper class when values can be equal
+4. **Two approaches**: Heap (streaming/large N) vs Divide & Conquer (in-place)
+5. **heapq.merge**: Built-in for sorted iterables in Python
 
 ---
 
