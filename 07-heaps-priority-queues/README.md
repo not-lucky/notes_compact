@@ -20,11 +20,11 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 
 | Pattern            | Frequency | Key Problems                       |
 | ------------------ | --------- | ---------------------------------- |
-| Top-K Elements     | Very High | Kth largest, K most frequent       |
-| Merge K Sorted     | High      | Merge K lists, smallest range      |
-| Two Heaps          | High      | Find median, sliding window median |
-| Scheduling         | Medium    | Task scheduler, meeting rooms II   |
-| K Closest/Smallest | High      | K closest points, K smallest pairs |
+| [Top-K Elements](./03-top-k-pattern.md) | Very High | Kth largest, K most frequent       |
+| [Merge K Sorted](./05-merge-k-sorted.md) | High      | Merge K lists, smallest range      |
+| [Two Heaps](./06-median-stream.md)      | High      | Find median, sliding window median |
+| [Scheduling](./07-task-scheduler.md)     | Medium    | Task scheduler, meeting rooms II   |
+| [K Closest/Smallest](./08-k-closest-points.md) | High  | K closest points, K smallest pairs |
 
 ---
 
@@ -45,13 +45,14 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 
 ## Common Mistakes Interviewers Watch For
 
-1. **Using max heap when min heap is needed**: Python's heapq is min heap only
-2. **Forgetting to negate values for max heap**: Must negate when pushing/popping
-3. **Wrong K vs N-K choice**: For K largest, use min heap of size K (not max heap of size N)
-4. **Not handling duplicates**: Frequency counting with heap needs (freq, value) tuples
-5. **Ignoring heap ordering**: Heap is not fully sorted, only root is guaranteed min/max
-6. **Off-by-one errors**: K elements means heap size K, not K-1
-7. **Modifying heap incorrectly**: Must use heappush/heappop, not direct list operations
+1. **Using max heap when min heap is needed**: Python's `heapq` is min heap only.
+2. **Forgetting to negate values for max heap**: Must push `-val` and pop `-result`.
+3. **Wrong K vs N-K choice**: For **K largest**, use a **Min Heap of size K**. For **K smallest**, use a **Max Heap of size K**.
+4. **Not handling duplicates or ties**: Frequency counting or complex objects need tiebreakers. Use `(priority, tiebreaker_id, object)` to avoid comparison errors in Python.
+5. **Ignoring heap ordering**: A heap is not fully sorted. Only the root is guaranteed min/max. Siblings have no guaranteed relative order.
+6. **Off-by-one errors**: `K` elements means heap size `K`, not `K-1`.
+7. **Modifying heap incorrectly**: Must use `heappush`/`heappop`, not direct list operations like `.pop()` or `.append()` without `heapify`.
+8. **Thinking `heapify()` is $O(n \log n)$**: Building a heap from an array is $O(n)$.
 
 ---
 
@@ -67,32 +68,38 @@ At FANG+ companies, heap problems test your ability to recognize when O(n log k)
 
 ## Pattern Recognition Guide
 
-```
-"Find K largest/smallest..."      → Min/Max heap of size K
+```text
+"Find K largest/smallest..."      → Min/Max heap of size K (Use the *opposite* heap!)
+    - K Largest  → Min Heap (evict smallest)
+    - K Smallest → Max Heap (evict largest)
 "Find Kth largest/smallest..."    → Heap of size K, root is answer
 "Merge K sorted..."               → Min heap with one element from each source
-"Find median in stream..."        → Two heaps (max heap + min heap)
-"Schedule tasks with cooldown..." → Max heap + queue for cooldown
-"K closest to..."                 → Max heap of size K (for furthest eviction)
-"Top K frequent..."               → Count first, then heap
-"Smallest range covering..."      → Min heap tracking all lists
+"Find median in stream..."        → Two heaps (max heap for smaller half, min heap for larger half)
+"Schedule tasks with cooldown..." → Max heap (frequencies) + queue (cooldown)
+"K closest to origin..."          → Max heap of size K (evict furthest)
+"Top K frequent..."               → Count first, then Min Heap of size K
+"Smallest range covering..."      → Min heap tracking k lists, manually tracking max
 ```
 
 ---
 
 ## Heap Property Reminder
 
-```
-Min Heap:                   Max Heap (simulated in Python):
-     1                           -(-5) = 5
-    / \                          /     \
-   3   2                    -(-3)=3   -(-4)=4
-  / \
- 7   4
+```text
+Min Heap:                    Max Heap:
+      1                            9
+     / \                          / \
+    3   2                        7   8
+   / \                          / \
+  7   4                        3   5
 
-Parent ≤ Children           Parent ≥ Children
-Root = minimum              Root = maximum
+Parent ≤ Children            Parent ≥ Children
+Root = minimum               Root = maximum
+
+Array: [1, 3, 2, 7, 4]       Array: [9, 7, 8, 3, 5]
 ```
+
+> **Python Note**: `heapq` is Min Heap only. To simulate a Max Heap, negate values when pushing (`-val`) and popping (`-result`).
 
 ---
 
@@ -100,12 +107,14 @@ Root = minimum              Root = maximum
 
 | Operation          | Time       | Notes                                 |
 | ------------------ | ---------- | ------------------------------------- |
-| heappush           | O(log n)   | Bubble up to maintain heap property   |
-| heappop            | O(log n)   | Remove root, bubble down              |
-| heapify            | O(n)       | Build heap from list (NOT O(n log n)) |
-| peek (heap[0])     | O(1)       | Access root without removal           |
-| nlargest(k, list)  | O(n log k) | Uses heap internally                  |
-| nsmallest(k, list) | O(n log k) | Uses heap internally                  |
+| `heappush`         | O(log n)   | Bubble up to maintain heap property   |
+| `heappop`          | O(log n)   | Remove root, bubble down              |
+| `heapify`          | O(n)       | Build heap from array (NOT O(n log n))|
+| `heappushpop`      | O(log n)   | Push then pop (faster than doing separately) |
+| `heapreplace`      | O(log n)   | Pop then push (faster than doing separately) |
+| `heap[0]`          | O(1)       | Access root without removal           |
+| `nlargest(k, arr)` | O(n log k) | Uses heap internally when K << N      |
+| `nsmallest(k, arr)`| O(n log k) | Uses heap internally when K << N      |
 
 ### Why Use Heap Over Sorting?
 
