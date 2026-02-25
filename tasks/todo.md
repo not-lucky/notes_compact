@@ -64,6 +64,7 @@
   - [ ] Analyze and improve 02-queue-basics.md
   - [x] Analyze and improve 06-min-stack.md
   - [x] Analyze and improve 08-queue-with-stacks.md
+  - [x] Analyze and improve 09-expression-evaluation.md
   - [ ] Analyze and improve 10-histogram-problems.md
 - [ ] Update tasks/lessons.md with findings from Chapter 5.
 - [ ] Update tasks/todo.md with current progress.

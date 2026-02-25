@@ -141,14 +141,16 @@ Interviewers use this to assess your ability to handle complex multi-step algori
 ## Pattern 1: Evaluate Reverse Polish Notation
 
 ```python
-def eval_rpn(tokens: list[str]) -> int:
+from typing import List
+
+def eval_rpn(tokens: List[str]) -> int:
     """
     Evaluate expression in Reverse Polish Notation.
 
     LeetCode 150: Evaluate Reverse Polish Notation
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     stack = []
 
@@ -164,6 +166,7 @@ def eval_rpn(tokens: list[str]) -> int:
             elif token == '*':
                 result = a * b
             else:  # Division truncates toward zero
+                # int(a / b) works in Python to truncate towards zero
                 result = int(a / b)
 
             stack.append(result)
@@ -209,8 +212,8 @@ def calculate(s: str) -> int:
 
     LeetCode 224: Basic Calculator
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     stack = []
     num = 0
@@ -285,8 +288,8 @@ def calculate_ii(s: str) -> int:
 
     LeetCode 227: Basic Calculator II
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     stack = []
     num = 0
@@ -350,10 +353,10 @@ def calculate_iii(s: str) -> int:
 
     LeetCode 772: Basic Calculator III
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
-    def helper(s: list) -> int:
+    def helper(s: List[str]) -> int:
         stack = []
         num = 0
         prev_op = '+'
@@ -375,7 +378,9 @@ def calculate_iii(s: str) -> int:
                 elif prev_op == '*':
                     stack.append(stack.pop() * num)
                 elif prev_op == '/':
-                    stack.append(int(stack.pop() / num))
+                    # Integer division truncates toward zero
+                    top = stack.pop()
+                    stack.append(int(top / num))
 
                 num = 0
                 prev_op = char
@@ -405,8 +410,8 @@ def infix_to_postfix(expression: str) -> str:
     """
     Convert infix to postfix (Shunting Yard algorithm).
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
     right_associative = {'^'}
@@ -470,8 +475,8 @@ def decode_string(s: str) -> str:
 
     LeetCode 394: Decode String
 
-    Time: O(output length)
-    Space: O(n)
+    Time Complexity: $\Theta(\text{output length})$
+    Space Complexity: $\Theta(n)$
     """
     stack = []
     current_string = ""
@@ -526,7 +531,7 @@ Right associative: 2 ^ 3 ^ 2 = 2 ^ (3 ^ 2) = 2 ^ 9 = 512
 ## Common Mistakes
 
 1. **Last number**: Don't forget to process the final number
-2. **Division truncation**: `int(a/b)` truncates toward zero, not floor division
+2. **Division truncation**: `int(a / b)` truncates toward zero, not floor division (which `//` does)
 3. **Negative numbers**: Handle unary minus (e.g., "-5 + 3")
 4. **Spaces**: Skip spaces during parsing
 5. **Empty string**: Handle empty input
