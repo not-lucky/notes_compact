@@ -4,7 +4,7 @@
 
 ## Overview
 
-Deep copying a linked list with random pointers requires creating entirely new nodes where both `next` and `random` pointers reference the new nodes, not the originals. The challenge is mapping old nodes to new nodes. HashMap gives $O(n)$ time/space; the interleaving technique achieves $O(1)$ extra space.
+Deep copying a linked list with random pointers requires creating entirely new nodes where both `next` and `random` pointers reference the new nodes, not the originals. The challenge is mapping old nodes to new nodes. HashMap gives $\Theta(n)$ time/space; the interleaving technique achieves $\Theta(1)$ extra space.
 
 ## Building Intuition
 
@@ -40,7 +40,7 @@ A'.random = old_to_new[A.random]
 
 The hashmap acts as a translator between the old world and the new world. Every old node maps to its corresponding new node.
 
-**Solution 2: Interleaving—The $O(1)$ Space Magic**
+**Solution 2: Interleaving—The $\Theta(1)$ Space Magic**
 
 Instead of a separate data structure, embed the mapping in the list itself:
 
@@ -93,7 +93,7 @@ Deep copy means complete independence. Modifying the copy doesn't affect the ori
 
 2. **Immutable/Read-Only Lists**: Interleaving modifies the original list temporarily. If the list can't be modified (concurrent access, immutability requirements), use the hashmap approach.
 
-3. **Memory is More Important than Clarity**: Interleaving is $O(1)$ space but harder to understand and debug. If $O(n)$ space is acceptable, hashmap is cleaner.
+3. **Memory is More Important than Clarity**: Interleaving is $\Theta(1)$ space but harder to understand and debug. If $\Theta(n)$ space is acceptable, hashmap is cleaner.
 
 4. **Graph Structures (Not Just Lists)**: For general graphs with cycles, DFS/BFS with hashmap is the standard approach. Interleaving doesn't generalize beyond linked lists.
 
@@ -381,11 +381,11 @@ current = None
 
 | Approach              | Time Complexity | Space Complexity |
 | --------------------- | --------------- | ---------------- |
-| HashMap (two pass)    | $O(n)$            | $O(n)$             |
-| HashMap (single pass) | $O(n)$            | $O(n)$             |
-| Interleaving          | $O(n)$            | $O(1)$*            |
+| HashMap (two pass)    | $\Theta(n)$            | $\Theta(n)$             |
+| HashMap (single pass) | $\Theta(n)$            | $\Theta(n)$             |
+| Interleaving          | $\Theta(n)$            | $\Theta(1)$*            |
 
-\*$O(1)$ extra space (the copied list itself is $O(n)$ but that is required for the output and typically not counted against the space complexity of the algorithm).
+\*$\Theta(1)$ extra space (the copied list itself is $\Theta(n)$ but that is required for the output and typically not counted against the space complexity of the algorithm).
 
 ---
 
