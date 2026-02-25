@@ -165,6 +165,8 @@ Single-node caches don't scale:
 
 **Problem**: Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. It should support `get(key)` and `put(key, value)` in O(1) time. When the cache reaches its capacity, it should invalidate the least recently used item before inserting a new item.
 
+**Note on Interviews:** While Python's `collections.OrderedDict` provides LRU functionality out of the box, interviewers almost always want you to implement the Doubly Linked List manually to demonstrate you understand the underlying mechanics.
+
 **Explanation**: We combine a hashmap with a doubly linked list. The hashmap provides O(1) access to any node in the list. The doubly linked list maintains the order of access, where the head is the most recently used and the tail is the least recently used. When an item is accessed or added, we move it to the head of the list.
 
 ```python
@@ -172,41 +174,43 @@ class LRUCache:
     """
     LeetCode 146: LRU Cache
 
-    Least Recently Used cache with O(1) get and put.
+    Least Recently Used cache with amortized O(1) get and put.
 
     Key insight: HashMap for O(1) lookup, Doubly Linked List for O(1) reordering.
 
-    Time: O(1) for both get and put
-    Space: O(capacity)
+    Time: Amortized O(1) for both get and put (due to underlying hashmap)
+    Space: O(K) where K is capacity
     """
 
     class Node:
-        def __init__(self, key=0, val=0):
-            self.key = key
-            self.val = val
-            self.prev = None
-            self.next = None
+        def __init__(self, key: int = 0, val: int = 0):
+            self.key: int = key
+            self.val: int = val
+            self.prev: 'Optional[LRUCache.Node]' = None
+            self.next: 'Optional[LRUCache.Node]' = None
 
     def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.cache = {}  # key → Node
+        self.capacity: int = capacity
+        self.cache: dict[int, 'LRUCache.Node'] = {}  # key → Node
 
         # Dummy head and tail for easier insertion/deletion
-        self.head = self.Node()
-        self.tail = self.Node()
+        self.head: 'LRUCache.Node' = self.Node()
+        self.tail: 'LRUCache.Node' = self.Node()
         self.head.next = self.tail
         self.tail.prev = self.head
 
-    def _remove(self, node):
+    def _remove(self, node: 'LRUCache.Node') -> None:
         """Remove node from linked list."""
-        node.prev.next = node.next
-        node.next.prev = node.prev
+        if node.prev and node.next:
+            node.prev.next = node.next
+            node.next.prev = node.prev
 
-    def _add_to_front(self, node):
+    def _add_to_front(self, node: 'LRUCache.Node') -> None:
         """Add node right after head (most recent)."""
         node.next = self.head.next
         node.prev = self.head
-        self.head.next.prev = node
+        if self.head.next:
+            self.head.next.prev = node
         self.head.next = node
 
     def get(self, key: int) -> int:
@@ -270,16 +274,20 @@ head ⟷ [4] ⟷ [1] ⟷ [3] ⟷ tail
 
 ```python
 from collections import OrderedDict
+from typing import Optional
 
 class LRUCacheSimple:
     """
     LRU Cache using Python's OrderedDict.
     Simpler but less instructive for interviews.
+
+    Time: Amortized O(1) for both get and put
+    Space: O(K) where K is capacity
     """
 
     def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.cache = OrderedDict()
+        self.capacity: int = capacity
+        self.cache: OrderedDict[int, int] = OrderedDict()
 
     def get(self, key: int) -> int:
         if key not in self.cache:
@@ -314,26 +322,26 @@ class LFUCache:
     """
     LeetCode 460: LFU Cache
 
-    Least Frequently Used cache with O(1) get and put.
+    Least Frequently Used cache with amortized O(1) get and put.
 
     Uses:
-    - key → (value, frequency) mapping
+    - key → [value, frequency] mapping
     - frequency → OrderedDict of keys (for LRU within same frequency)
     - min_freq to track minimum frequency
 
-    Time: O(1) for both get and put
-    Space: O(capacity)
+    Time: Amortized O(1) for both get and put
+    Space: O(K) where K is capacity
     """
 
     def __init__(self, capacity: int):
         from collections import OrderedDict
 
-        self.capacity = capacity
-        self.cache = {}  # key → [value, freq]
-        self.freq_to_keys = defaultdict(OrderedDict)  # freq → OrderedDict of keys
-        self.min_freq = 0
+        self.capacity: int = capacity
+        self.cache: dict[int, list[int]] = {}  # key → [value, freq]
+        self.freq_to_keys: dict[int, OrderedDict[int, None]] = defaultdict(OrderedDict)  # freq → OrderedDict of keys
+        self.min_freq: int = 0
 
-    def _update_freq(self, key: int):
+    def _update_freq(self, key: int) -> None:
         """Increment frequency and update structures."""
         value, freq = self.cache[key]
 
@@ -393,18 +401,18 @@ class RandomizedSet:
     """
     LeetCode 380: Insert Delete GetRandom O(1)
 
-    All operations in O(1) average time.
+    All operations in amortized O(1) average time.
 
     Key insight: HashMap for O(1) lookup, Array for O(1) random access.
     Swap-to-end trick for O(1) deletion.
 
-    Time: O(1) for all operations
-    Space: O(n)
+    Time: Amortized O(1) average for all operations
+    Space: O(N) where N is number of elements
     """
 
     def __init__(self):
-        self.val_to_idx = {}  # value → index in array
-        self.values = []      # array of values
+        self.val_to_idx: dict[int, int] = {}  # value → index in array
+        self.values: list[int] = []      # array of values
 
     def insert(self, val: int) -> bool:
         if val in self.val_to_idx:
@@ -419,6 +427,8 @@ class RandomizedSet:
             return False
 
         # Swap with last element
+        # Note: If val is already the last element, it simply swaps with itself.
+        # This is safe and avoids an edge case check.
         idx = self.val_to_idx[val]
         last_val = self.values[-1]
 
@@ -466,13 +476,13 @@ class RandomizedCollection:
     """
     LeetCode 381: Insert Delete GetRandom O(1) - Duplicates allowed
 
-    Time: O(1) for all operations
-    Space: O(n)
+    Time: Amortized O(1) average for all operations
+    Space: O(N) where N is number of elements
     """
 
     def __init__(self):
-        self.val_to_indices = defaultdict(set)  # value → set of indices
-        self.values = []
+        self.val_to_indices: dict[int, set[int]] = defaultdict(set)  # value → set of indices
+        self.values: list[int] = []
 
     def insert(self, val: int) -> bool:
         self.val_to_indices[val].add(len(self.values))
@@ -521,12 +531,12 @@ class TimeMap:
     Store key-value pairs with timestamps.
     get(key, timestamp) returns value at or before timestamp.
 
-    Time: O(1) for set, O(log n) for get
-    Space: O(n)
+    Time: Amortized O(1) for set, O(log N) for get where N is number of timestamps for the key
+    Space: O(N) where N is total number of key-value pairs
     """
 
     def __init__(self):
-        self.store = defaultdict(list)  # key → [(timestamp, value), ...]
+        self.store: dict[str, list[tuple[int, str]]] = defaultdict(list)  # key → [(timestamp, value), ...]
 
     def set(self, key: str, value: str, timestamp: int) -> None:
         self.store[key].append((timestamp, value))
@@ -538,7 +548,11 @@ class TimeMap:
         values = self.store[key]
 
         # Binary search for largest timestamp <= given timestamp
-        # bisect_right finds insertion point, so -1 gives us the answer
+        # bisect_right finds insertion point, so -1 gives us the answer.
+        # We search for (timestamp, chr(127)) to ensure we find the latest
+        # value for the given timestamp (since chr(127) is greater than
+        # typical string characters, it acts as an upper bound for tuples
+        # with matching timestamps).
         idx = bisect.bisect_right(values, (timestamp, chr(127)))
 
         if idx == 0:
@@ -553,7 +567,7 @@ class TimeMap:
 
 **Problem**: Implement a `SnapshotArray` that supports `set(index, val)`, `snap()`, and `get(index, snap_id)`. `get` returns the value at the given index at the time the snapshot with `snap_id` was taken.
 
-**Explanation**: Instead of copying the entire array during a snapshot (which is inefficient), we store the history of changes for each index. Each index maps to a list of `(snap_id, value)` pairs. When `get` is called, we perform binary search on the history list of that index to find the largest `snap_id` that is less than or equal to the requested `snap_id`.
+**Explanation**: Instead of copying the entire array during a snapshot (which would take $O(N)$ space per snapshot), we store the history of changes for each index. Each index maps to a list of `(snap_id, value)` pairs. When `get` is called, we perform binary search on the history list of that index to find the largest `snap_id` that is less than or equal to the requested `snap_id`. The overall space complexity is $O(N + U)$, where $U$ is the number of updates (`set` operations).
 
 ```python
 import bisect
@@ -564,14 +578,14 @@ class SnapshotArray:
 
     Support snapshots and historical lookups.
 
-    Time: O(log S) for get where S = number of snaps for that index
-    Space: O(n + S)
+    Time: O(log S) for get where S is number of snaps for that index. Amortized O(1) for set.
+    Space: O(N + U) where N is length of array and U is total number of updates (sets)
     """
 
     def __init__(self, length: int):
         # Each index stores list of (snap_id, value)
-        self.history = [[(-1, 0)] for _ in range(length)]
-        self.snap_id = 0
+        self.history: list[list[tuple[int, int]]] = [[(-1, 0)] for _ in range(length)]
+        self.snap_id: int = 0
 
     def set(self, index: int, val: int) -> None:
         self.history[index].append((self.snap_id, val))
@@ -601,36 +615,40 @@ class AllOne:
     """
     LeetCode 432: All O'one Data Structure
 
-    Inc, Dec, GetMaxKey, GetMinKey all in O(1).
+    Inc, Dec, GetMaxKey, GetMinKey all in amortized O(1).
 
     Uses: HashMap + Doubly Linked List of frequency buckets.
     """
 
     class Bucket:
-        def __init__(self, count=0):
-            self.count = count
-            self.keys = set()
-            self.prev = None
-            self.next = None
+        def __init__(self, count: float = 0):
+            self.count: float = count
+            self.keys: set[str] = set()
+            self.prev: 'Optional[AllOne.Bucket]' = None
+            self.next: 'Optional[AllOne.Bucket]' = None
 
     def __init__(self):
-        self.key_to_bucket = {}  # key → Bucket
+        self.key_to_bucket: dict[str, 'AllOne.Bucket'] = {}  # key → Bucket
 
         # Dummy head and tail
-        self.head = self.Bucket(0)
-        self.tail = self.Bucket(float('inf'))
+        self.head: 'AllOne.Bucket' = self.Bucket(0)
+        self.tail: 'AllOne.Bucket' = self.Bucket(float('inf'))
         self.head.next = self.tail
         self.tail.prev = self.head
 
-    def _insert_after(self, prev_bucket, new_bucket):
+    def _insert_after(self, prev_bucket: 'AllOne.Bucket', new_bucket: 'AllOne.Bucket') -> None:
+        """Helper to insert a new frequency bucket into the DLL."""
         new_bucket.prev = prev_bucket
-        new_bucket.next = prev_bucket.next
-        prev_bucket.next.prev = new_bucket
+        if prev_bucket.next:
+            new_bucket.next = prev_bucket.next
+            prev_bucket.next.prev = new_bucket
         prev_bucket.next = new_bucket
 
-    def _remove_bucket(self, bucket):
-        bucket.prev.next = bucket.next
-        bucket.next.prev = bucket.prev
+    def _remove_bucket(self, bucket: 'AllOne.Bucket') -> None:
+        """Helper to remove a frequency bucket from the DLL when empty."""
+        if bucket.prev and bucket.next:
+            bucket.prev.next = bucket.next
+            bucket.next.prev = bucket.prev
 
     def inc(self, key: str) -> None:
         if key not in self.key_to_bucket:
@@ -703,12 +721,12 @@ class Logger:
 
     Returns true if message should be printed (not printed in last 10 seconds).
 
-    Time: O(1)
-    Space: O(M) where M = number of unique messages
+    Time: Amortized O(1)
+    Space: O(M) where M is number of unique messages
     """
 
     def __init__(self):
-        self.message_time = {}  # message → last timestamp
+        self.message_time: dict[str, int] = {}  # message → last timestamp
 
     def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
         if message not in self.message_time:

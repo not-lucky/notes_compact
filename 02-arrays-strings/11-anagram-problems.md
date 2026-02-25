@@ -18,6 +18,8 @@ The key insight is **order-independent equality**:
 
 **Mental Model**: Think of each string as a bag of lettered tiles (like Scrabble). Two bags are anagrams if they contain exactly the same tiles. You don't care about the order the tiles were pulled out—just count each tile type. When you need a "canonical" representation (like a key in a hash map), sorting the tiles is like organizing them alphabetically before putting them on a shelf, whereas counting them is like filling out an inventory sheet.
 
+Think of a hash map as a set of labeled buckets. Throwing tiles into buckets is fast ($\Theta(1)$ amortized per tile), but if you have a massive, unlucky pile of tiles that all somehow want to go into the *same* bucket (a hash collision), you have to dig through that specific bucket to find the right slot (worst-case $\Theta(n)$). A fixed array `[0] * 26`, on the other hand, is like having exactly 26 dedicated, pre-labeled slots—no collisions ever happen, so placing a tile is strictly $\Theta(1)$ always.
+
 **Why Counting Beats Sorting**:
 
 ```text
@@ -36,12 +38,14 @@ For small, fixed alphabets (like lowercase English letters), a fixed-size array 
 
 ```python
 # Instead of two hash maps, use one list (dynamic array) and increment/decrement
-count = [0] * 26
-for c in s: count[ord(c) - ord('a')] += 1  # Add s's characters
-for c in t: count[ord(c) - ord('a')] -= 1  # Remove t's characters
+count: list[int] = [0] * 26
+for c in s:
+    count[ord(c) - ord('a')] += 1  # Add s's characters
+for c in t:
+    count[ord(c) - ord('a')] -= 1  # Remove t's characters
 
 # If all zeros, s and t are anagrams
-is_anagram = all(x == 0 for x in count)
+is_anagram: bool = all(x == 0 for x in count)
 ```
 
 ## When NOT to Use Anagram Techniques
@@ -51,7 +55,7 @@ Anagram patterns have limitations:
 1. **Order Matters**: Anagram techniques ignore order. If the problem requires order (e.g., "is s a rotation of t?"), use string concatenation or other techniques.
 2. **Approximate Matching**: "Almost anagrams" (differ by at most $k$ characters) require more complex counting or dynamic programming.
 3. **Non-Character Properties**: If you need to match by word frequency (not character), adapt the technique for word-level counting (using actual hash maps since the "alphabet" of words is unbounded).
-4. **Large Alphabets**: The array trick assumes a small alphabet (26 letters). For full Unicode or large character sets, use hash maps instead, noting that hash map operations are amortized $\Theta(1)$ but $\Theta(n)$ worst-case.
+4. **Large Alphabets**: The array trick assumes a small alphabet (26 letters). For full Unicode or large character sets, use hash maps instead. **Crucial Note:** Hash map operations are amortized $\Theta(1)$ but degrade to $\Theta(n)$ in the worst-case due to collisions.
 5. **Counting Isn't Enough**: Some problems look like anagrams but have additional constraints (e.g., "rearrange into palindrome"—you need to check for at most one odd-count character, not just identical counts).
 
 **Red Flags:**
@@ -66,7 +70,7 @@ Anagram patterns have limitations:
 
 Anagram problems test your ability to:
 
-- Use hash tables effectively (and understand their amortized vs. worst-case bounds).
+- Use hash tables effectively (and demonstrate you understand the difference between their amortized $\Theta(1)$ vs. worst-case $\Theta(n)$ bounds).
 - Understand character frequency counting.
 - Apply sliding window techniques.
 - Recognize when sorting helps vs. when counting is optimal.
@@ -109,7 +113,8 @@ def is_anagram(s: str, t: str) -> bool:
           Comparison is Θ(k) where k is the number of unique characters.
     Space: Θ(k) where k is the number of unique characters.
            For ASCII, this is bounded by Θ(128) = Θ(1).
-           Note: Counter operations are amortized Θ(1) due to underlying hash map.
+           Note: Counter operations are amortized Θ(1) due to the underlying hash map,
+           but worst-case Θ(n) on collisions.
     """
     if len(s) != len(t):
         return False
@@ -140,7 +145,7 @@ def is_anagram_array(s: str, t: str) -> bool:
         count[ord(c) - ord('a')] += 1
 
     for c in t:
-        idx = ord(c) - ord('a')
+        idx: int = ord(c) - ord('a')
         count[idx] -= 1
         # Early exit if a character count goes negative
         if count[idx] < 0:
@@ -157,8 +162,8 @@ def is_anagram_sort(s: str, t: str) -> bool:
     """
     Sort and compare.
 
-    Time: Θ(n log n)
-    Space: Θ(n) - sorted() creates a new list in Python
+    Time: Θ(n log n) tightest bound for Python's Timsort.
+    Space: Θ(n) - sorted() creates a new list in Python.
     """
     return sorted(s) == sorted(t)
 ```
@@ -186,13 +191,13 @@ def group_anagrams(strs: list[str]) -> list[list[str]]:
     Time: Θ(n × k log k) where n = number of strings, k = max string length.
           Sorting each string takes Θ(k log k).
     Space: Θ(n × k) to store the result and the hash map.
-           Note: Hash map insertion is amortized Θ(1).
+           Note: Hash map insertion is amortized Θ(1), worst-case Θ(n).
     """
     groups: dict[tuple[str, ...], list[str]] = defaultdict(list)
 
     for s in strs:
         # Use sorted string (converted to tuple) as the canonical key
-        key = tuple(sorted(s))
+        key: tuple[str, ...] = tuple(sorted(s))
         groups[key].append(s)
 
     return list(groups.values())
@@ -214,12 +219,12 @@ def group_anagrams_count(strs: list[str]) -> list[list[str]]:
 
     for s in strs:
         # Count characters and use as key
-        count = [0] * 26
+        count: list[int] = [0] * 26
         for c in s:
             count[ord(c) - ord('a')] += 1
 
         # Lists are unhashable, must convert to tuple for dict key
-        key = tuple(count)
+        key: tuple[int, ...] = tuple(count)
         groups[key].append(s)
 
     return list(groups.values())
@@ -247,20 +252,20 @@ def find_anagrams(s: str, p: str) -> list[int]:
     Time: Θ(n) where n = len(s)
           Comparing two arrays of size 26 is Θ(1).
     Space: Θ(1) - constant 26 characters for the arrays.
-           (Excluding the result array which could be O(n)).
+           (Excluding the result array which could be Θ(n) in worst-case).
     """
     if len(p) > len(s):
         return []
 
     result: list[int] = []
-    p_count = [0] * 26
-    window_count = [0] * 26
+    p_count: list[int] = [0] * 26
+    window_count: list[int] = [0] * 26
 
     # Build pattern count
     for c in p:
         p_count[ord(c) - ord('a')] += 1
 
-    k = len(p)
+    k: int = len(p)
 
     for i in range(len(s)):
         # Add new character to window
@@ -279,7 +284,7 @@ def find_anagrams(s: str, p: str) -> list[int]:
 
 ### Optimized: Track Matches Instead of Full Comparison
 
-Instead of comparing the full 26-element array every step, we can track the number of characters whose counts match perfectly.
+Instead of comparing the full 26-element array every step, we can track the number of characters whose counts match perfectly. This provides a minor performance boost.
 
 ```python
 from collections import Counter
@@ -289,22 +294,23 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
     Track number of matching character counts.
 
     Time: Θ(n)
-    Space: Θ(k) where k is unique characters in p (bounded by Θ(1) for fixed alphabet)
+    Space: Θ(k) where k is unique characters in p (bounded by Θ(1) for fixed alphabet).
+           Note: Counter operations are amortized Θ(1), worst-case Θ(n).
     """
     if len(p) > len(s):
         return []
 
-    p_count = Counter(p)
+    p_count: Counter[str] = Counter(p)
     window_count: Counter[str] = Counter()
 
     result: list[int] = []
-    matches = 0  # Number of characters with perfectly matching frequencies
-    required_matches = len(p_count)
-    k = len(p)
+    matches: int = 0  # Number of characters with perfectly matching frequencies
+    required_matches: int = len(p_count)
+    k: int = len(p)
 
     for i in range(len(s)):
         # Add character
-        c = s[i]
+        c: str = s[i]
         if c in p_count:
             if window_count[c] == p_count[c]:
                 matches -= 1 # It was matching, now it won't be
@@ -314,7 +320,7 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
 
         # Remove character leaving window
         if i >= k:
-            c_remove = s[i - k]
+            c_remove: str = s[i - k]
             if c_remove in p_count:
                 if window_count[c_remove] == p_count[c_remove]:
                     matches -= 1
@@ -354,13 +360,13 @@ def check_inclusion(s1: str, s2: str) -> bool:
     if len(s1) > len(s2):
         return False
 
-    s1_count = [0] * 26
-    window_count = [0] * 26
+    s1_count: list[int] = [0] * 26
+    window_count: list[int] = [0] * 26
 
     for c in s1:
         s1_count[ord(c) - ord('a')] += 1
 
-    k = len(s1)
+    k: int = len(s1)
 
     for i in range(len(s2)):
         window_count[ord(s2[i]) - ord('a')] += 1
@@ -388,7 +394,7 @@ def min_window_anagram(s: str, p: str) -> str:
     If the problem is "minimum window containing all characters of p",
     that is a variable-length sliding window problem, not a pure anagram problem.
     """
-    anagram_indices = find_anagrams(s, p)
+    anagram_indices: list[int] = find_anagrams(s, p)
     if anagram_indices:
         return s[anagram_indices[0]:anagram_indices[0] + len(p)]
     return ""
@@ -418,11 +424,11 @@ def is_scramble(s1: str, s2: str) -> bool:
     Check if s2 is a scrambled version of s1.
     (Can recursively swap non-empty substrings)
 
-    Time: O(n⁴) without anagram check optimization, realistically much faster with it.
-          The memoization table has O(n²) states, and each state tries O(n) splits.
-          String slicing takes O(n) per split.
-    Space: O(n³) for the memoization cache (O(n²) states, storing strings of length O(n)).
-           The recursion call stack adds an additional O(n) depth.
+    Time: Θ(n⁴) without anagram check optimization, realistically much faster with it.
+          The memoization table has Θ(n²) states, and each state tries Θ(n) splits.
+          String slicing takes Θ(n) per split.
+    Space: Θ(n³) for the memoization cache (Θ(n²) states, storing strings of length Θ(n)).
+           The recursion call stack adds an additional Θ(n) depth.
     """
     if len(s1) != len(s2):
         return False
@@ -434,10 +440,11 @@ def is_scramble(s1: str, s2: str) -> bool:
 
         # Early exit: if they aren't anagrams, they can't be scrambles.
         # This prunes massive branches of the recursion tree.
+        # sorted() takes Θ(k log k).
         if sorted(str1) != sorted(str2):
             return False
 
-        n = len(str1)
+        n: int = len(str1)
         # Try splitting at every possible index
         for i in range(1, n):
             # Option 1: No swap (left matches left, right matches right)
@@ -447,6 +454,9 @@ def is_scramble(s1: str, s2: str) -> bool:
             # Option 2: Swap (left matches right, right matches left)
             if helper(str1[:i], str2[n-i:]) and helper(str1[i:], str2[:n-i]):
                 return True
+
+            # Note on memoization: @lru_cache operations use a hash map internally,
+            # offering amortized Θ(1) lookups/inserts, but worst-case Θ(n) on collisions.
 
         return False
 
@@ -507,7 +517,7 @@ def is_scramble(s1: str, s2: str) -> bool:
 ## Key Takeaways
 
 1. **Character count is the essence** of anagram checking. Think of words as bags of Scrabble tiles.
-2. **Use a fixed array `[0]*26`** for lowercase English letters (faster than dict, strict $\Theta(1)$ updates).
+2. **Use a fixed array `[0]*26`** for lowercase English letters (faster than dict, strict $\Theta(1)$ updates, completely avoiding hash map collisions which cause worst-case $\Theta(n)$ scenarios).
 3. **Use a count tuple** or **sorted string** as the key for grouping anagrams. (Tuples are hashable in Python).
 4. **Fixed-size sliding window** is the go-to pattern for finding anagrams within a larger text.
 5. Always address **amortized vs. worst-case** when discussing hash maps in interviews.

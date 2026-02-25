@@ -6,10 +6,10 @@
 
 Understanding hash tables at a conceptual level is crucial because:
 
-1. **Design questions**: "Design a HashMap" is a common interview problem
-2. **Optimization discussions**: Knowing why O(1) is "average case" not "always"
-3. **Trade-off awareness**: Space vs time, load factor decisions
-4. **Edge case handling**: Collision scenarios, worst-case behavior
+1. **Design questions**: "Design a HashMap" is a common interview problem.
+2. **Optimization discussions**: Knowing why $O(1)$ is an "average case" (amortized) and $O(n)$ in the worst case (due to hash collisions).
+3. **Trade-off awareness**: Space vs time, load factor decisions.
+4. **Edge case handling**: Collision scenarios, worst-case behavior.
 
 Interviewers want to see that you understand _why_ hash tables work, not just _that_ they work.
 
@@ -17,7 +17,7 @@ Interviewers want to see that you understand _why_ hash tables work, not just _t
 
 ## Building Intuition
 
-**Why O(1) Lookup Is "Magic"**
+**Why $O(1)$ Lookup Is "Magic"**
 
 Think of a hash table like a huge filing cabinet with numbered drawers:
 
@@ -38,9 +38,9 @@ The hash function is like a magical index that tells you EXACTLY where to look.
 
 Hash tables sacrifice memory for speed:
 
-- You allocate MORE buckets than you have items
-- Most buckets are empty (wasted space)
-- But lookups are instant (no searching)
+- You allocate MORE buckets than you have items.
+- Most buckets are empty (wasted space).
+- But lookups are instant (no searching).
 
 ```
 Items: 10
@@ -54,8 +54,8 @@ BUT: Every lookup is O(1) instead of O(n)
 
 Even with a good hash function, collisions happen surprisingly often:
 
-- With 23 people, there's a 50% chance two share a birthday
-- With n buckets and √n items, expect at least one collision
+- With 23 people, there's a 50% chance two share a birthday.
+- With $n$ buckets and $\sqrt{n}$ items, expect at least one collision.
 
 This is why collision handling isn't optional—it's essential.
 
@@ -88,23 +88,27 @@ The file is "lost" because the key changed. This is why Python requires immutabl
 
 **1. Order Matters**
 
-Hash tables don't maintain insertion order (historically) or sorted order:
+Hash tables historically don't maintain insertion order or sorted order:
 
 ```python
 # Need sorted iteration? → Use list + sort, or sortedcontainers
-# Need oldest-first? → Use OrderedDict or deque
+# Need oldest-first? → Use collections.deque
 ```
 
-Note: Python 3.7+ dicts maintain insertion order, but this is a CPython implementation detail.
+_Note: Python 3.7+ dicts guarantee insertion order, but many interviews are language-agnostic. Always clarify this if you rely on it._
 
 **2. Memory Is Critical**
 
-Hash tables use 2-3× more memory than the data alone:
+Hash tables use $2-3\times$ more memory than the data alone:
 
 ```python
+import sys
 # 1000 integers
-list: ~8KB
-dict: ~36KB (4.5× more!)
+l = [i for i in range(1000)]
+d = {i: i for i in range(1000)}
+
+sys.getsizeof(l)  # ~8KB
+sys.getsizeof(d)  # ~36KB (4.5× more!)
 ```
 
 For embedded systems or huge datasets, arrays may be better.
@@ -114,15 +118,16 @@ For embedded systems or huge datasets, arrays may be better.
 Lists, dicts, and other mutable objects can't be keys:
 
 ```python
-d[["a", "b"]] = 1  # TypeError!
+d: dict[Any, int] = {}
+d[["a", "b"]] = 1  # TypeError: unhashable type: 'list'
 # Solution: d[tuple(["a", "b"])] = 1
 ```
 
-If your keys are naturally mutable, you need a different structure.
+If your keys are naturally mutable, you need a different structure or must convert them to an immutable representation.
 
 **4. Range Queries or Nearest Neighbors**
 
-Hash tables only support exact match:
+Hash tables only support exact match lookups:
 
 ```python
 # "Find all keys between 10 and 20" → O(n) scan
@@ -131,21 +136,21 @@ Hash tables only support exact match:
 # Use instead: Sorted array + binary search, or balanced BST
 ```
 
-**5. Very Small Data Sets (n < 10)**
+**5. Very Small Data Sets ($n < 10$)**
 
 The overhead of hashing isn't worth it:
 
 ```python
-# For 5 items, linear search in list is often faster
-# Cache locality matters more than O(1) vs O(n)
+# For 5 items, linear search in a list is often faster
+# Cache locality matters more than O(1) vs O(n) at small scales
 ```
 
 **Red Flags:**
 
-- "Maintain sorted order" → Use sorted structure
-- "Find range of keys" → Use BST or sorted array
-- "Memory-constrained environment" → Use arrays
-- "Keys are mutable objects" → Convert to tuples or use different approach
+- "Maintain sorted order" → Use sorted structure.
+- "Find range of keys" → Use BST or sorted array.
+- "Memory-constrained environment" → Use arrays.
+- "Keys are mutable objects" → Convert to tuples or use a different approach.
 
 ---
 
@@ -187,17 +192,17 @@ Bucket Array (size=10):
 
 ### What Makes a Good Hash Function?
 
-1. **Deterministic**: Same input always produces same output
-2. **Uniform distribution**: Spreads keys evenly across buckets
-3. **Fast to compute**: O(1) for fixed-size keys
+1. **Deterministic**: The same input always produces the exact same output.
+2. **Uniform distribution**: Spreads keys evenly across buckets (minimizes collisions).
+3. **Fast to compute**: $O(1)$ calculation for fixed-size keys, or $O(k)$ where $k$ is the length of the string/key.
 
 ### Python's Built-in hash()
 
 ```python
 # Python computes hash for immutable types
-hash("hello")    # → 8733897261432381906 (varies by session)
-hash(42)         # → 42
-hash((1, 2, 3))  # → 529344067295497451
+print(hash("hello"))    # Varies by Python session (security feature)
+print(hash(42))         # → 42 (small integers hash to themselves)
+print(hash((1, 2, 3)))  # Varies
 
 # Mutable types are NOT hashable
 hash([1, 2, 3])  # TypeError: unhashable type: 'list'
@@ -208,12 +213,12 @@ hash({1: 2})     # TypeError: unhashable type: 'dict'
 
 ```python
 # This is WHY mutable objects can't be dictionary keys:
-my_list = [1, 2, 3]
-d = {}
-d[my_list] = "value"  # TypeError!
+my_list: list[int] = [1, 2, 3]
+d: dict[Any, str] = {}
+d[my_list] = "value"  # TypeError: unhashable type: 'list'
 
 # If this worked, what happens after:
-my_list.append(4)     # Hash would change, but key is "same" object
+my_list.append(4)     # The list's contents change, so a new hash would be computed
 # → The value would be lost in the wrong bucket!
 
 # Solution: Convert to immutable
@@ -224,11 +229,11 @@ d[tuple(my_list)] = "value"  # Works!
 
 ## Collision Handling
 
-When two keys hash to the same index, we have a **collision**. Two main strategies:
+When two keys hash to the same index, we have a **collision**. There are two main strategies:
 
 ### 1. Chaining (Separate Chaining)
 
-Each bucket stores a linked list of key-value pairs.
+Each bucket stores a linked list (or dynamic array) of key-value pairs.
 
 ```
 Bucket 4 (at [0x500]):
@@ -243,27 +248,27 @@ Lookup "fish":
 ```
 
 ```python
-# Chaining implementation sketch
+# Chaining implementation sketch (often expected in "Design HashMap" interviews)
 class HashMapChaining:
-    def __init__(self, size=1000):
+    def __init__(self, size: int = 1000) -> None:
         self.size = size
-        self.buckets = [[] for _ in range(size)]
+        self.buckets: list[list[tuple[Any, Any]]] = [[] for _ in range(size)]
 
-    def _hash(self, key):
+    def _hash(self, key: Any) -> int:
         return hash(key) % self.size
 
-    def put(self, key, value):
+    def put(self, key: Any, value: Any) -> None:
         idx = self._hash(key)
         bucket = self.buckets[idx]
 
         for i, (k, v) in enumerate(bucket):
             if k == key:
-                bucket[i] = (key, value)  # Update
+                bucket[i] = (key, value)  # Update existing
                 return
 
-        bucket.append((key, value))  # Insert
+        bucket.append((key, value))  # Insert new
 
-    def get(self, key):
+    def get(self, key: Any) -> Optional[Any]:
         idx = self._hash(key)
         bucket = self.buckets[idx]
 
@@ -276,7 +281,7 @@ class HashMapChaining:
 
 ### 2. Open Addressing (Linear Probing)
 
-If a bucket is occupied, look for the next empty one.
+If a bucket is occupied, search for the next empty bucket sequentially (or using a probing sequence).
 
 ```
 Insert "fish" (hash = 4), but bucket 4 is occupied by "cat":
@@ -293,32 +298,32 @@ Insert "fish" (hash = 4), but bucket 4 is occupied by "cat":
 
 ## Time Complexity Analysis
 
-| Operation | Average Case | Worst Case |
-| --------- | ------------ | ---------- |
-| Insert    | O(1)         | O(n)       |
-| Lookup    | O(1)         | O(n)       |
-| Delete    | O(1)         | O(n)       |
+| Operation | Average Case (Amortized) | Worst Case (Many Collisions) |
+| --------- | ------------------------ | ---------------------------- |
+| Insert    | $\Theta(1)$              | $O(n)$                       |
+| Lookup    | $\Theta(1)$              | $O(n)$                       |
+| Delete    | $\Theta(1)$              | $O(n)$                       |
 
-### Why Worst Case is O(n)
+### Why Worst Case is $O(n)$
 
 ```
-If all keys hash to the same bucket:
+If all keys hash to the same bucket (a "Hash DOS" attack or terrible hash function):
 Bucket 0: [k1] → [k2] → [k3] → ... → [kn]
 
 Lookup kn requires traversing entire chain = O(n)
 ```
 
-### Why Average Case is O(1)
+### Why Average Case is $O(1)$
 
-With a good hash function and reasonable **load factor**, collisions are rare.
+With a good hash function and reasonable **load factor**, collisions are rare and mostly uniform.
 
 ```
 Load Factor = n / m
 where n = number of elements, m = number of buckets
 
-Python dict maintains load factor ≈ 0.66
+Python dict maintains a max load factor of 2/3 (≈ 0.66)
 → Average bucket has < 1 element
-→ Lookups are effectively O(1)
+→ Lookups require checking 1 or 2 items effectively giving O(1) time
 ```
 
 ---
@@ -331,54 +336,56 @@ Python dict maintains load factor ≈ 0.66
 Load Factor α = n / m
 
 α < 0.5  → Wasting space
-α ≈ 0.7  → Good balance (Python uses ~0.66)
-α > 1.0  → Many collisions (for chaining)
+α ≈ 0.7  → Good balance (Python resizes at 0.66)
+α > 1.0  → Severe collisions (chaining) or probing delays (open addressing)
 ```
 
 ### Automatic Resizing
 
-When load factor exceeds threshold:
+When the load factor exceeds the threshold:
 
-1. Create new array with 2× size
-2. Rehash all existing keys
-3. Insert into new buckets
+1. Create a new array, typically with $2\times$ size (or more).
+2. Rehash all existing keys using the new size `m`.
+3. Insert into the new buckets.
 
 ```python
-def _resize(self):
-    """Double the size and rehash all elements."""
+def _resize(self) -> None:
+    """Double the size and rehash all elements. O(n) operation."""
     old_buckets = self.buckets
     self.size *= 2
     self.buckets = [[] for _ in range(self.size)]
-    self.count = 0
+    # count remains unchanged
 
     for bucket in old_buckets:
         for key, value in bucket:
             self.put(key, value)  # Rehash with new size
 ```
 
-**Amortized O(1)**: Resizing is O(n), but happens rarely enough that average insert is still O(1).
+**Amortized $O(1)$**: An individual `_resize()` takes $O(n)$, but happens rarely enough (every $2^k$ insertions) that the _average_ insert operation remains $O(1)$.
 
 ---
 
-## Python dict Internals (Interview Knowledge)
+## Python `dict` Internals (Interview Knowledge)
 
 ### Key Facts to Know
 
-1. **Implementation**: Open addressing with pseudo-random probing
-2. **Load factor**: ~66% before resize
-3. **Growth**: 2× or 4× when resizing
-4. **Ordering**: Insertion order preserved (Python 3.7+)
-5. **Space**: ~3× memory of equivalent list of tuples
+1. **Compact Representation**: Since Python 3.6, dicts use a compact representation that significantly reduces memory usage by storing an array of indices that point to a dense array of key-value-hash entries.
+2. **Implementation**: Open addressing with pseudo-random probing for collision resolution (unlike chaining used in languages like Java).
+3. **Load factor**: ~66% before resize.
+4. **Growth**: Typically doubles ($2\times$) when resizing.
+5. **Ordering**: Insertion order is guaranteed (language spec since Python 3.7).
+6. **Negative Hash Modulo**: In Python, the modulo operator (`%`) with a negative dividend and positive divisor always returns a positive result (e.g., `-5 % 3 == 1`). This is different from C++ or Java where it can be negative (`-5 % 3 == -2`). Python handles negative hashes cleanly without needing `abs()` before modulo.
+7. **Space**: While more efficient than older versions, dicts still use more memory than an equivalent list of tuples due to the hash table overhead.
 
 ```python
-# Memory comparison
 import sys
 
+# Memory comparison
 d = {i: i for i in range(1000)}
 l = [(i, i) for i in range(1000)]
 
-sys.getsizeof(d)  # ~36,960 bytes
-sys.getsizeof(l)  # ~9,024 bytes (but lookup is O(n))
+print(sys.getsizeof(d))  # ~36,960 bytes
+print(sys.getsizeof(l))  # ~8,056 bytes (but lookups take O(n) instead of O(1))
 ```
 
 ---
@@ -386,36 +393,35 @@ sys.getsizeof(l)  # ~9,024 bytes (but lookup is O(n))
 ## Template: Basic HashMap Operations
 
 ```python
-# Creating and using dictionaries
+from typing import Any, Optional
 
-# Initialize
-d = {}                      # Empty dict
-d = {"a": 1, "b": 2}        # With initial values
-d = dict.fromkeys([1,2,3])  # Keys with None values
+# Initialization
+d: dict[str, int] = {}             # Empty dict
+d = {"a": 1, "b": 2}               # With initial values
+d = dict.fromkeys([1, 2, 3], 0)    # Keys mapping to a default 0
 
-# Insert/Update
-d["key"] = value            # O(1)
+# Insert/Update -> O(1) amortized
+d["key"] = 100
 
-# Lookup
-value = d["key"]            # O(1), raises KeyError if missing
-value = d.get("key")        # O(1), returns None if missing
-value = d.get("key", 0)     # O(1), returns default if missing
+# Lookup -> O(1) amortized
+value = d["key"]                   # Raises KeyError if missing
+opt_val = d.get("missing")         # Returns None if missing
+def_val = d.get("missing", -1)     # Returns default (-1) if missing
 
-# Check existence
-if "key" in d:              # O(1)
+# Check existence -> O(1) amortized
+if "key" in d:
     pass
 
-# Delete
-del d["key"]                # O(1), raises KeyError if missing
-value = d.pop("key")        # O(1), returns value
-value = d.pop("key", None)  # O(1), returns default if missing
+# Deletion -> O(1) amortized
+del d["key"]                       # Raises KeyError if missing
+popped = d.pop("key", None)        # Returns value, or None if missing
 
-# Iteration (all O(n))
-for key in d:
+# Iteration -> O(N) where N is the current size
+for key in d:                      # Iterate keys
     pass
-for value in d.values():
+for value in d.values():           # Iterate values
     pass
-for key, value in d.items():
+for key, value in d.items():       # Iterate key-value tuples
     pass
 ```
 
@@ -426,22 +432,21 @@ for key, value in d.items():
 ```python
 from collections import defaultdict, Counter
 
-# defaultdict - auto-initializes missing keys
-freq = defaultdict(int)     # Missing keys default to 0
-freq["a"] += 1              # No KeyError!
+# defaultdict - Auto-initializes missing keys
+freq: defaultdict[str, int] = defaultdict(int)  # Missing keys default to 0
+freq["a"] += 1                                  # No KeyError! (Creates "a": 1)
 
-graph = defaultdict(list)   # Missing keys default to []
-graph["a"].append("b")      # No KeyError!
+graph: defaultdict[str, list[str]] = defaultdict(list)  # Missing default to []
+graph["nodeA"].append("nodeB")                          # No KeyError!
 
-# Counter - specialized for counting
+# Counter - Specialized hash map for counting iterables
 nums = [1, 2, 2, 3, 3, 3]
-count = Counter(nums)       # Counter({3: 3, 2: 2, 1: 1})
+counts = Counter(nums)          # -> Counter({3: 3, 2: 2, 1: 1})
 
 # Counter operations
-count.most_common(2)        # [(3, 3), (2, 2)]
-count["new_key"]            # Returns 0, not KeyError
-count.update([1, 1, 1])     # Add more counts
-count.total()               # Sum of all counts (Python 3.10+)
+top_k = counts.most_common(2)   # O(N log K) -> [(3, 3), (2, 2)]
+counts["missing_key"]           # Returns 0, not KeyError
+counts.update([1, 4])           # Add multiple counts
 ```
 
 ---
@@ -452,20 +457,20 @@ count.total()               # Sum of all counts (Python 3.10+)
 # setdefault: get value or set default if missing
 # Returns the value (existing or newly set)
 
+words = ["apple", "banana", "cherry", "apricot", "blueberry"]
+groups: dict[str, list[str]] = {}
+
 # Without setdefault
-if key not in d:
-    d[key] = []
-d[key].append(value)
+for word in words:
+    char = word[0]
+    if char not in groups:
+        groups[char] = []
+    groups[char].append(word)
 
 # With setdefault (cleaner)
-d.setdefault(key, []).append(value)
-
-# Example: Group words by first letter
-words = ["apple", "banana", "cherry", "apricot", "blueberry"]
-groups = {}
-
+groups_clean: dict[str, list[str]] = {}
 for word in words:
-    groups.setdefault(word[0], []).append(word)
+    groups_clean.setdefault(word[0], []).append(word)
 
 # Result: {'a': ['apple', 'apricot'], 'b': ['banana', 'blueberry'], 'c': ['cherry']}
 ```
@@ -475,24 +480,25 @@ for word in words:
 ## Edge Cases
 
 ```python
-# Empty dict
-d = {}
-len(d)       # 0
-"key" in d   # False
-d.get("key") # None
+# Empty Dict
+d: dict[str, Any] = {}
+print(len(d))       # 0
+print("key" in d)   # False
+print(d.get("key")) # None
 
-# None as value vs missing key
+# None Value vs Missing Key
 d = {"key": None}
-d.get("key")        # None
-d.get("missing")    # None  <- Same result!
-"key" in d          # True  <- Use this to distinguish
+print(d.get("key"))     # None
+print(d.get("missing")) # None  <-- Same result!
+print("key" in d)       # True  <-- Distinguishes key existence
 
-# Mutable default values (gotcha!)
-def bad_function(d={}):  # WRONG: same dict reused
-    d["count"] = d.get("count", 0) + 1
+# Mutable Default Arguments (Python Gotcha!)
+# Never use empty mutable defaults `dict={}` or `list=[]`
+def bad_function(d: dict = {}) -> dict:  # WRONG
+    d["count"] = d.get("count", 0) + 1   # Modifies the persistent default object!
     return d
 
-def good_function(d=None):  # RIGHT: create new each time
+def good_function(d: Optional[dict] = None) -> dict:  # RIGHT
     if d is None:
         d = {}
     d["count"] = d.get("count", 0) + 1
@@ -503,12 +509,12 @@ def good_function(d=None):  # RIGHT: create new each time
 
 ## Complexity Summary
 
-| Operation | dict     | set      | list (for comparison)    |
-| --------- | -------- | -------- | ------------------------ |
-| Insert    | O(1) avg | O(1) avg | O(1) append, O(n) insert |
-| Lookup    | O(1) avg | O(1) avg | O(n)                     |
-| Delete    | O(1) avg | O(1) avg | O(n)                     |
-| Space     | O(n)     | O(n)     | O(n)                     |
+| Operation | `dict`              | `set`               | `list` (comparison)          |
+| --------- | ------------------- | ------------------- | ---------------------------- |
+| Insert    | $\Theta(1)$ amort.  | $\Theta(1)$ amort.  | $\Theta(1)$ amort. (append)  |
+| Lookup    | $\Theta(1)$ amort.  | $\Theta(1)$ amort.  | $O(n)$                       |
+| Delete    | $\Theta(1)$ amort.  | $\Theta(1)$ amort.  | $O(n)$                       |
+| Space     | $O(n)$              | $O(n)$              | $O(n)$ (less overhead)       |
 
 ---
 
@@ -526,12 +532,12 @@ def good_function(d=None):  # RIGHT: create new each time
 
 ## Key Takeaways
 
-1. **Hash tables give O(1) average** for insert, lookup, delete
-2. **Collisions are handled** via chaining or open addressing
-3. **Load factor matters** - Python maintains ~0.66
-4. **Only immutable types** can be dict keys (hashable requirement)
-5. **Use defaultdict/Counter** for cleaner frequency counting
-6. **Space-time trade-off**: Hash tables use more memory for faster access
+1. **Hash tables give $\Theta(1)$ amortized** time for insert, lookup, and delete.
+2. **Collisions are handled** via chaining (linked lists) or open addressing (probing).
+3. **Load factor matters** - Python maintains a max load factor of ~0.66.
+4. **Only immutable types** can be dictionary keys (must be hashable).
+5. **Use `defaultdict` and `Counter`** for cleaner frequency counting.
+6. **Space-time trade-off**: Hash tables use significantly more memory to achieve their faster access times.
 
 ---
 

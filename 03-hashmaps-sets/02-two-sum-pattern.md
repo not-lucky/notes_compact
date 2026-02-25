@@ -10,7 +10,7 @@ The Two Sum pattern is **the most important hashmap pattern** to master. It appe
 - As a building block for 3Sum, 4Sum, K-Sum
 - In combination with other techniques (sliding window, binary search)
 
-The core insight: instead of checking all pairs O(n²), use a hashmap to check if the complement exists in O(1).
+The core insight: instead of checking all pairs $O(n^2)$, use a hashmap to check if the complement exists in $O(1)$.
 
 **Interview frequency**: Very high. This is often the first coding question in a phone screen.
 
@@ -21,7 +21,7 @@ The core insight: instead of checking all pairs O(n²), use a hashmap to check i
 **The Key Insight: Don't Search—Remember**
 
 Brute force Two Sum asks: "For each number, does any OTHER number complete the sum?"
-This requires checking all pairs → O(n²).
+This requires checking all pairs → $O(n^2)$.
 
 The hashmap insight flips this: "Have I ALREADY seen the number I need?"
 
@@ -32,7 +32,7 @@ Brute Force Thinking:
   At num=2: "Is there a 7 somewhere?" → scan entire array
 
 Hashmap Thinking:
-  At num=2: "Have I seen 7 before?" → check hashmap O(1)
+  At num=2: "Have I seen 7 before?" → check hashmap $O(1)$
   Store 2 for future use.
   At num=7: "Have I seen 2 before?" → YES! Found it.
 ```
@@ -44,13 +44,13 @@ Imagine you're at a party looking for someone whose age + yours = 50:
 ```
 Brute Force:
 - For each person you meet, ask everyone else their age
-- O(n²) conversations
+- $O(n^2)$ conversations
 
 Hashmap Approach:
 - Memorize each person's age as you meet them
 - When you meet someone new, check your memory:
   "Do I know someone who's (50 - their age)?"
-- O(n) conversations total
+- $O(n)$ conversations total
 ```
 
 **Why One Pass Is Enough**
@@ -85,15 +85,19 @@ All use the same insight: store what you've seen, check for complement.
 
 **1. Array Is Already Sorted**
 
-Use two pointers instead—O(1) space vs O(n):
+Use two pointers instead—$O(1)$ space vs $O(n)$:
 
 ```python
 # Sorted array: two pointers is better
-left, right = 0, n-1
+left, right = 0, len(nums) - 1
 while left < right:
-    if nums[left] + nums[right] == target: return True
-    elif sum < target: left += 1
-    else: right -= 1
+    current_sum = nums[left] + nums[right]
+    if current_sum == target:
+        return True
+    elif current_sum < target:
+        left += 1
+    else:
+        right -= 1
 ```
 
 **2. Need Multiple Solutions But Array Has No Duplicates**
@@ -102,27 +106,27 @@ If the problem guarantees unique values and exactly one solution, hashmap is fin
 
 **3. Memory Is Extremely Constrained**
 
-Hashmap uses O(n) extra space. For huge arrays with strict memory limits:
+Hashmap uses $O(n)$ extra space. For huge arrays with strict memory limits:
 
-- Sort + two pointers: O(1) space (if in-place sort allowed)
-- Trade time for space with O(n²) brute force
+- Sort + two pointers: $O(1)$ space (if in-place sort allowed)
+- Trade time for space with $O(n^2)$ brute force
 
 **4. Looking for K-Sum with Large K**
 
 For 3Sum/4Sum, hashmap alone isn't optimal:
 
-- 3Sum: Sort + fix one + two pointers = O(n²)
-- 4Sum: Sort + fix two + two pointers = O(n³)
+- 3Sum: Sort + fix one + two pointers = $O(n^2)$
+- 4Sum: Sort + fix two + two pointers = $O(n^3)$
 - General K-Sum: Recursive reduction to 2Sum
 
 Hashmap is the inner primitive, not the whole solution.
 
 **Red Flags:**
 
-- "Array is sorted" → Two pointers (O(1) space)
+- "Array is sorted" → Two pointers ($O(1)$ space)
 - "Count all pairs" → Need Counter, not basic hashmap
 - "Find closest sum to target" → Two pointers + tracking
-- "Memory limit: O(1)" → Sort + two pointers
+- "Memory limit: $O(1)$" → Sort + two pointers
 
 ---
 
@@ -130,9 +134,9 @@ Hashmap is the inner primitive, not the whole solution.
 
 **Problem**: Find two numbers in an array that add up to a target.
 
-**Brute Force**: Check all pairs - O(n²)
+**Brute Force**: Check all pairs - $O(n^2)$
 
-**HashMap Approach**: For each number, check if `target - num` was seen before - O(n)
+**HashMap Approach**: For each number, check if `target - num` was seen before - $O(n)$
 
 ```
 nums = [2, 7, 11, 15], target = 9
@@ -154,20 +158,20 @@ Iteration 2: num = 7
 
 **Problem**: Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`. Each input has exactly one solution, and you may not use the same element twice.
 
-**Explanation**: We use a hashmap to store the values we've seen so far as keys and their indices as values. For each number, we calculate its `complement` (target - num). If the complement is in the map, we've found our pair and return their indices. Otherwise, we store the current number in the map and continue. This works because it reduces the search for a complement from O(n) to O(1).
+**Explanation**: We use a hashmap to store the values we've seen so far as keys and their indices as values. For each number, we calculate its `complement` (target - num). If the complement is in the map, we've found our pair and return their indices. Otherwise, we store the current number in the map and continue. This works because it reduces the search for a complement from $O(n)$ to $O(1)$.
 
 ```python
 def two_sum(nums: list[int], target: int) -> list[int]:
     """
     Find indices of two numbers that add up to target.
 
-    Time: O(n) - single pass
-    Space: O(n) - hashmap storage
+    Time: $O(n)$ - single pass average case. $O(n^2)$ worst case if many hash collisions.
+    Space: $O(n)$ - hashmap storage
 
     Example:
     nums = [2, 7, 11, 15], target = 9 → [0, 1]
     """
-    seen = {}  # value → index
+    seen: dict[int, int] = {}  # value → index
 
     for i, num in enumerate(nums):
         complement = target - num
@@ -202,8 +206,8 @@ def two_sum_values(nums: list[int], target: int) -> list[int] | None:
     """
     Find two numbers that add up to target.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $O(n)$ - average case. $O(n^2)$ worst case if many hash collisions.
+    Space: $O(n)$ - set storage
 
     Example:
     nums = [2, 7, 11, 15], target = 9 → [2, 7]
@@ -234,8 +238,8 @@ def two_sum_count(nums: list[int], target: int) -> int:
     """
     Count pairs that sum to target.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $O(n)$ - one pass through the counts
+    Space: $O(n)$ - Counter storage
 
     Example:
     nums = [1, 1, 1], target = 2 → 3 (three ways to pick two 1s)
@@ -268,15 +272,15 @@ def two_sum_count(nums: list[int], target: int) -> int:
 **Explanation**: To ensure uniqueness of pairs, we use a frequency map and a `used` set. For each number, if its complement exists and hasn't been used in a pair yet, we add the pair to our result. If the number is its own complement, we ensure there are at least two occurrences.
 
 ```python
-def two_sum_all_pairs(nums: list[int], target: int) -> list[list[int]]:
+def two_sum_all_pairs(nums: list[int], target: int) -> list[tuple[int, int]]:
     """
     Find all unique pairs that sum to target.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $O(n)$ - one pass through counts
+    Space: $O(n)$ - Counter and used set storage
 
     Example:
-    nums = [1, 1, 2, 2, 3, 3], target = 4 → [[1, 3], [2, 2]]
+    nums = [1, 1, 2, 2, 3, 3], target = 4 → [(1, 3), (2, 2)]
     """
     from collections import Counter
 
@@ -285,18 +289,21 @@ def two_sum_all_pairs(nums: list[int], target: int) -> list[list[int]]:
     used = set()
 
     for num in count:
+        if num in used:
+            continue
+
         complement = target - num
 
-        if complement in count and num not in used and complement not in used:
+        if complement in count:
             if complement == num:
                 # Need at least 2 of same number
                 if count[num] >= 2:
-                    result.append([num, num])
+                    result.append((num, num))
             else:
-                result.append(sorted([num, complement]))
-                used.add(complement)
+                result.append((min(num, complement), max(num, complement)))
 
             used.add(num)
+            used.add(complement)
 
     return result
 ```
@@ -307,7 +314,7 @@ def two_sum_all_pairs(nums: list[int], target: int) -> list[list[int]]:
 
 **Problem**: Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.
 
-**Explanation**: Since the array is sorted, we can use two pointers (left and right). If the `current_sum` is too small, we increment the left pointer to increase the sum. If it's too large, we decrement the right pointer. This achieves O(1) space complexity, which is better than the O(n) hashmap approach.
+**Explanation**: Since the array is sorted, we can use two pointers (left and right). If the `current_sum` is too small, we increment the left pointer to increase the sum. If it's too large, we decrement the right pointer. This achieves $O(1)$ space complexity, which is better than the $O(n)$ hashmap approach.
 
 ```python
 def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
@@ -315,8 +322,8 @@ def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
     Two Sum on sorted array - use two pointers instead of hashmap.
     Returns 1-indexed positions.
 
-    Time: O(n)
-    Space: O(1) - better than hashmap!
+    Time: $O(n)$
+    Space: $O(1)$ - better than hashmap!
 
     Example:
     numbers = [2, 7, 11, 15], target = 9 → [1, 2]
@@ -336,7 +343,7 @@ def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
     return []
 ```
 
-**Key Insight**: For sorted arrays, two pointers is O(1) space vs O(n) for hashmap.
+**Key Insight**: For sorted arrays, two pointers is $O(1)$ space vs $O(n)$ for hashmap.
 
 ---
 
@@ -347,15 +354,15 @@ def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
 **Explanation**: We sort the array first. Then, we iterate through the array, fixing one element `nums[i]` and treating the rest of the problem as a "Two Sum II" (sorted) problem for the remaining target `-nums[i]`. We skip duplicate values for both the fixed element and the two pointers to ensure the result contains only unique triplets.
 
 ```python
-def three_sum(nums: list[int]) -> list[list[int]]:
+def three_sum(nums: list[int]) -> list[tuple[int, int, int]]:
     """
     Find all unique triplets that sum to zero.
 
-    Time: O(n²) - sort + two-pointer for each element
-    Space: O(1) excluding output (O(n) for sorting in Python)
+    Time: $O(n^2)$ - sort + two-pointer for each element
+    Space: $O(n)$ or $O(\\log n)$ - Python's list.sort() uses Timsort which requires $O(n)$ space. In C++, std::sort takes $O(\\log n)$ space.
 
     Example:
-    nums = [-1, 0, 1, 2, -1, -4] → [[-1, -1, 2], [-1, 0, 1]]
+    nums = [-1, 0, 1, 2, -1, -4] → [(-1, -1, 2), (-1, 0, 1)]
     """
     nums.sort()
     result = []
@@ -374,7 +381,7 @@ def three_sum(nums: list[int]) -> list[list[int]]:
             current_sum = nums[left] + nums[right]
 
             if current_sum == target:
-                result.append([nums[i], nums[left], nums[right]])
+                result.append((nums[i], nums[left], nums[right]))
 
                 # Skip duplicates
                 while left < right and nums[left] == nums[left + 1]:
@@ -401,16 +408,16 @@ def three_sum(nums: list[int]) -> list[list[int]]:
 **Explanation**: This is an extension of 3Sum. We fix two elements using nested loops and then use the two-pointer approach for the remaining two. Sorting and duplicate skipping are essential to maintain the uniqueness of the quadruplets.
 
 ```python
-def four_sum(nums: list[int], target: int) -> list[list[int]]:
+def four_sum(nums: list[int], target: int) -> list[tuple[int, int, int, int]]:
     """
     Find all unique quadruplets that sum to target.
 
-    Time: O(n³)
-    Space: O(1) excluding output
+    Time: $O(n^3)$ - fix two nested loops, two-pointer for the rest
+    Space: $O(n)$ or $O(\\log n)$ - depending on the sorting algorithm implementation.
 
     Example:
     nums = [1, 0, -1, 0, -2, 2], target = 0
-    → [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+    → [(-2, -1, 1, 2), (-2, 0, 0, 2), (-1, 0, 0, 1)]
     """
     nums.sort()
     n = len(nums)
@@ -432,7 +439,7 @@ def four_sum(nums: list[int], target: int) -> list[list[int]]:
                 current_sum = nums[left] + nums[right]
 
                 if current_sum == remaining:
-                    result.append([nums[i], nums[j], nums[left], nums[right]])
+                    result.append((nums[i], nums[j], nums[left], nums[right]))
 
                     while left < right and nums[left] == nums[left + 1]:
                         left += 1
@@ -462,8 +469,8 @@ def two_sum_less_than_k(nums: list[int], k: int) -> int:
     """
     Find maximum sum of two numbers that is less than k.
 
-    Time: O(n log n) - sorting
-    Space: O(1)
+    Time: $O(n \log n)$ - sorting
+    Space: $O(1)$
 
     Example:
     nums = [34, 23, 1, 24, 75, 33, 54, 8], k = 60 → 58 (34 + 24)
@@ -497,8 +504,8 @@ def two_sum_closest(nums: list[int], target: int) -> list[int]:
     """
     Find pair with sum closest to target.
 
-    Time: O(n log n)
-    Space: O(1)
+    Time: $O(n \log n)$
+    Space: $O(1)$
 
     Example:
     nums = [1, 2, 3, 4, 5], target = 10 → [4, 5] (sum = 9)
@@ -570,8 +577,8 @@ def two_sum_closest(nums: list[int], target: int) -> list[int]:
 ## Interview Tips
 
 1. **Clarify requirements**: Return indices or values? Handle duplicates?
-2. **Mention brute force first**: "The naive approach is O(n²), but we can do better with a hashmap"
-3. **Consider sorted input**: If sorted, mention two-pointer as O(1) space alternative
+2. **Mention brute force first**: "The naive approach is $O(n^2)$, but we can do better with a hashmap"
+3. **Consider sorted input**: If sorted, mention two-pointer as $O(1)$ space alternative
 4. **Handle edge cases**: Empty array, single element, no solution
 
 ---
@@ -594,8 +601,8 @@ def two_sum_closest(nums: list[int], target: int) -> list[int]:
 ## Key Takeaways
 
 1. **Two Sum is the foundation** for many hashmap problems
-2. **Hashmap gives O(n)** by storing complements for O(1) lookup
-3. **Sorted arrays use two pointers** for O(1) space
+2. **Hashmap gives $O(n)$** by storing complements for $O(1)$ lookup
+3. **Sorted arrays use two pointers** for $O(1)$ space
 4. **K-Sum reduces to Two Sum** by fixing k-2 elements
 5. **Handle duplicates carefully** - skip or count appropriately
 6. **Always clarify** indices vs values, duplicates handling

@@ -34,12 +34,12 @@ Same signature = Same anagram group!
 **Two Signature Strategies**
 
 1. **Sorted String**: Simple, works for any characters
-   - `"listen"` → `sorted("listen")` → `"eilnst"`
-   - Time: O(k log k) per string
+   - `"listen"` → `"".join(sorted("listen"))` → `"eilnst"`
+   - Time: $O(k \log k)$ per string of length $k$
 
-2. **Count Tuple**: Faster for lowercase, fixed alphabet
+2. **Count Tuple**: Faster for fixed alphabet (e.g., lowercase English)
    - `"listen"` → `(0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,0,1,1,0,0,0,0,0,0)`
-   - Time: O(k) per string
+   - Time: $O(k)$ per string of length $k$
 
 **Mental Model: The Signature as a "Name Tag"**
 
@@ -49,22 +49,22 @@ Imagine a party where everyone wearing the same "name tag" is grouped together:
 - Give each person a name tag based on their letters
 - People with matching name tags go to the same table
 
-The hashmap groups by name tag in O(1) per lookup.
+The hashmap groups by name tag in $O(1)$ amortized per lookup/insertion.
 
 **Why Sliding Window for Substring Anagrams**
 
 Naive approach for "find all anagrams of 'abc' in 'cbaebabacd'":
 
-- Check every substring of length 3: O(n × k) where k=3
-- Each check sorts or counts: O(k log k) or O(k)
+- Check every substring of length $k=3$: $O(n \cdot k)$
+- Each check sorts or counts: $O(k \log k)$ or $O(k)$
 
 Sliding window optimization:
 
-- Start with first window, compute signature
+- Start with first window, compute signature: $O(k)$
 - Slide right: add new char, remove old char
-- Update signature incrementally → O(1) per slide
+- Update signature incrementally → $O(1)$ per slide
 
-Total: O(n) instead of O(n × k)
+Total Time: $O(n)$ instead of $O(n \cdot k)$
 
 **The Delete-Zero Trick**
 
@@ -166,8 +166,8 @@ def is_anagram(s: str, t: str) -> bool:
     """
     Check if t is an anagram of s.
 
-    Time: O(n)
-    Space: O(1) - at most 26 lowercase letters
+    Time: O(n) where n is the length of the strings
+    Space: O(A) where A is the alphabet size (e.g., O(1) for 26 lowercase letters)
     """
     if len(s) != len(t):
         return False
@@ -178,7 +178,11 @@ def is_anagram(s: str, t: str) -> bool:
 
 def is_anagram_array(s: str, t: str) -> bool:
     """
-    Using array instead of Counter (slightly faster for lowercase letters).
+    Using an array instead of Counter (slightly faster for fixed alphabet).
+    Constraint: Only works for lowercase English letters ('a'-'z').
+
+    Time: O(n)
+    Space: O(1) - exactly 26 ints
     """
     if len(s) != len(t):
         return False
@@ -203,10 +207,10 @@ def is_anagram_array(s: str, t: str) -> bool:
 ```python
 def group_anagrams(strs: list[str]) -> list[list[str]]:
     """
-    Group strings that are anagrams of each other.
+    Group strings that are anagrams of each other using sorted string signatures.
 
-    Time: O(n * k log k) where k = max string length (due to sorting)
-    Space: O(n * k)
+    Time: O(n * k log k) where n = len(strs), k = max string length
+    Space: O(n * k) for the hashmap storing all strings
 
     Example:
     ["eat", "tea", "tan", "ate", "nat", "bat"]
@@ -214,7 +218,7 @@ def group_anagrams(strs: list[str]) -> list[list[str]]:
     """
     from collections import defaultdict
 
-    groups = defaultdict(list)
+    groups: defaultdict[str, list[str]] = defaultdict(list)
 
     for s in strs:
         # Signature: sorted string
@@ -226,19 +230,24 @@ def group_anagrams(strs: list[str]) -> list[list[str]]:
 
 def group_anagrams_count(strs: list[str]) -> list[list[str]]:
     """
-    Using character count as signature - O(n * k) time.
+    Using character count tuple as signature.
 
-    Avoids sorting for better performance on long strings.
+    Time: O(n * k) where n = len(strs), k = max string length
+    Space: O(n * k) to store the result + O(n) tuples of size 26
+
+    Avoids O(k log k) sorting, better for longer strings with fixed alphabet.
     """
     from collections import defaultdict
 
-    groups = defaultdict(list)
+    groups: defaultdict[tuple[int, ...], list[str]] = defaultdict(list)
 
     for s in strs:
-        # Signature: tuple of character counts
+        # Signature: tuple of 26 character counts
         count = [0] * 26
         for char in s:
             count[ord(char) - ord('a')] += 1
+
+        # Lists cannot be dict keys (unhashable), so convert to tuple
         key = tuple(count)
         groups[key].append(s)
 
@@ -274,8 +283,8 @@ def find_anagrams(s: str, p: str) -> list[int]:
     """
     Find all start indices of p's anagrams in s.
 
-    Time: O(n) - sliding window
-    Space: O(1) - fixed alphabet size
+    Time: O(n) where n = len(s)
+    Space: O(A) where A is the size of the alphabet
 
     Example:
     s = "cbaebabacd", p = "abc" → [0, 6]
@@ -283,6 +292,7 @@ def find_anagrams(s: str, p: str) -> list[int]:
     """
     from collections import Counter
 
+    # Cannot find anagram if the target string is longer
     if len(p) > len(s):
         return []
 
@@ -300,6 +310,8 @@ def find_anagrams(s: str, p: str) -> list[int]:
         # Remove old character
         left_char = s[i - len(p)]
         window[left_char] -= 1
+
+        # Ensure we delete zero counts so Counter equality works
         if window[left_char] == 0:
             del window[left_char]
 
@@ -310,6 +322,31 @@ def find_anagrams(s: str, p: str) -> list[int]:
     return result
 ```
 
+### Visual Trace for Sliding Window
+
+```
+s = "cbaebabacd", p = "abc"
+
+Window size = 3
+p_count = {a:1, b:1, c:1}
+
+Window 1: "cba" (indices 0..2)
+window = {c:1, b:1, a:1} == p_count → MATCH! Add index 0
+
+Slide to Window 2: "bae" (indices 1..3)
+Add 'e', remove 'c'
+window = {b:1, a:1, e:1} != p_count → No match
+
+Slide to Window 3: "aeb" (indices 2..4)
+Add 'b', remove 'b'
+window = {a:1, e:1, b:1} != p_count → No match
+
+...
+Slide to Window 7: "bac" (indices 6..8)
+Add 'c', remove 'e'
+window = {b:1, a:1, c:1} == p_count → MATCH! Add index 6
+```
+
 ### Optimized Version (Tracking Matches)
 
 ```python
@@ -318,7 +355,7 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
     Track number of matching characters instead of comparing full dicts.
 
     Time: O(n)
-    Space: O(1)
+    Space: O(1) - alphabet size is fixed (e.g., 26 lowercase letters)
     """
     from collections import Counter
 
@@ -328,31 +365,31 @@ def find_anagrams_optimized(s: str, p: str) -> list[int]:
     p_count = Counter(p)
     window_count = Counter()
     result = []
-    matches = 0  # Number of characters with correct frequency
+    matches = 0  # Number of distinct characters with correct frequency
+    required_matches = len(p_count)
 
-    for i, char in enumerate(s):
+    for right, char in enumerate(s):
         # Add char to window
-        window_count[char] += 1
-        if window_count[char] == p_count.get(char, 0):
-            matches += 1
-        elif window_count[char] == p_count.get(char, 0) + 1:
-            matches -= 1  # Was matching, now exceeds
+        if char in p_count:
+            window_count[char] += 1
+            if window_count[char] == p_count[char]:
+                matches += 1
+            elif window_count[char] == p_count[char] + 1:
+                matches -= 1  # Was matching, now exceeds
 
         # Remove char leaving window
-        if i >= len(p):
-            left_char = s[i - len(p)]
-            if window_count[left_char] == p_count.get(left_char, 0):
-                matches -= 1
-            elif window_count[left_char] == p_count.get(left_char, 0) + 1:
-                matches += 1  # Will match after decrement
-
-            window_count[left_char] -= 1
-            if window_count[left_char] == 0:
-                del window_count[left_char]
+        if right >= len(p):
+            left_char = s[right - len(p)]
+            if left_char in p_count:
+                if window_count[left_char] == p_count[left_char]:
+                    matches -= 1
+                elif window_count[left_char] == p_count[left_char] + 1:
+                    matches += 1  # Will match after decrement
+                window_count[left_char] -= 1
 
         # Check for anagram
-        if matches == len(p_count):
-            result.append(i - len(p) + 1)
+        if matches == required_matches:
+            result.append(right - len(p) + 1)
 
     return result
 ```
@@ -370,8 +407,8 @@ def check_inclusion(s1: str, s2: str) -> bool:
     """
     Check if s2 contains a permutation of s1.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) where n = len(s2)
+    Space: O(A) where A is the size of the alphabet
 
     Example:
     s1 = "ab", s2 = "eidbaooo" → True ("ba" is permutation of "ab")
@@ -382,15 +419,19 @@ def check_inclusion(s1: str, s2: str) -> bool:
         return False
 
     s1_count = Counter(s1)
+    # Initial window
     window = Counter(s2[:len(s1)])
 
     if window == s1_count:
         return True
 
-    for i in range(len(s1), len(s2)):
-        window[s2[i]] += 1
+    # Slide window
+    for right in range(len(s1), len(s2)):
+        # Add new character
+        window[s2[right]] += 1
 
-        left_char = s2[i - len(s1)]
+        # Remove oldest character
+        left_char = s2[right - len(s1)]
         window[left_char] -= 1
         if window[left_char] == 0:
             del window[left_char]
@@ -414,8 +455,8 @@ def min_window(s: str, t: str) -> str:
     """
     Find minimum window in s that contains all characters of t.
 
-    Time: O(n + m)
-    Space: O(m) where m = len(t)
+    Time: O(n + m) where n = len(s), m = len(t)
+    Space: O(A) where A is the size of the alphabet
 
     Example:
     s = "ADOBECODEBANC", t = "ABC" → "BANC"
@@ -428,12 +469,13 @@ def min_window(s: str, t: str) -> str:
     t_count = Counter(t)
     required = len(t_count)  # Unique characters to match
 
-    window_count = {}
-    formed = 0  # Unique characters with required frequency
+    window_count: dict[str, int] = {}
+    formed = 0  # Unique characters with required frequency met
 
     left = 0
-    min_len = float('inf')
-    result = ""
+    # Store length and left, right pointers
+    best_len = float('inf')
+    best_window = [-1, -1]
 
     for right, char in enumerate(s):
         # Expand window
@@ -442,23 +484,25 @@ def min_window(s: str, t: str) -> str:
         if char in t_count and window_count[char] == t_count[char]:
             formed += 1
 
-        # Contract window while valid
-        while formed == required:
-            # Update result
-            if right - left + 1 < min_len:
-                min_len = right - left + 1
-                result = s[left:right + 1]
+        # Contract window from left while valid
+        while left <= right and formed == required:
+            # Update result if better
+            window_len = right - left + 1
+            if window_len < best_len:
+                best_len = window_len
+                best_window = [left, right]
 
             # Remove left character
             left_char = s[left]
             window_count[left_char] -= 1
 
+            # Only decrease formed if we actually drop below the requirement
             if left_char in t_count and window_count[left_char] < t_count[left_char]:
                 formed -= 1
 
             left += 1
 
-    return result
+    return "" if best_len == float('inf') else s[best_window[0]:best_window[1] + 1]
 ```
 
 ---
@@ -474,22 +518,25 @@ def length_of_longest_substring(s: str) -> int:
     """
     Find length of longest substring without repeating characters.
 
-    Time: O(n)
-    Space: O(min(n, alphabet_size))
+    Time: O(n) where n = len(s)
+    Space: O(min(n, A)) where A is the alphabet size
 
     Example:
     "abcabcbb" → 3 ("abc")
     """
-    char_index = {}  # Character → last seen index
+    char_index: dict[str, int] = {}  # Character → last seen index
     left = 0
     max_len = 0
 
     for right, char in enumerate(s):
-        # If char is in window, shrink from left
+        # If char is in window, shrink window from left
+        # Ensure we don't move 'left' backward
         if char in char_index and char_index[char] >= left:
             left = char_index[char] + 1
 
+        # Update last seen index
         char_index[char] = right
+        # Update max length
         max_len = max(max_len, right - left + 1)
 
     return max_len
@@ -509,31 +556,34 @@ def character_replacement(s: str, k: int) -> int:
     Longest substring where you can replace at most k characters
     to make all characters the same.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) where n = len(s)
+    Space: O(A) where A is the size of the alphabet
 
     Example:
     s = "AABABBA", k = 1 → 4 ("AABA" or "ABBA" with 1 replacement)
     """
     from collections import defaultdict
 
-    count = defaultdict(int)
+    count: defaultdict[str, int] = defaultdict(int)
     left = 0
-    max_freq = 0  # Frequency of most common char in window
+    max_freq = 0  # Frequency of most common char in the CURRENT window
     max_len = 0
 
     for right, char in enumerate(s):
         count[char] += 1
+        # Update max_freq dynamically
         max_freq = max(max_freq, count[char])
 
         # Window is valid if: window_size - max_freq <= k
-        # (characters to replace <= k)
-        window_size = right - left + 1
-
-        if window_size - max_freq > k:
+        # Meaning: The total characters we have to replace is at most k
+        while (right - left + 1) - max_freq > k:
             count[s[left]] -= 1
             left += 1
+            # Note: We don't need to decrement max_freq here.
+            # A lower max_freq won't increase our answer, only a HIGHER one will.
+            # So keeping an old "high water mark" doesn't invalidate future better answers.
 
+        # At this point, the window is valid, so we update the max length
         max_len = max(max_len, right - left + 1)
 
     return max_len
@@ -552,8 +602,8 @@ def count_anagram_substrings(text: str, pattern: str) -> int:
     """
     Count how many substrings of text are anagrams of pattern.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) where n = len(text)
+    Space: O(A) where A is the size of the alphabet
     """
     from collections import Counter
 
@@ -565,13 +615,18 @@ def count_anagram_substrings(text: str, pattern: str) -> int:
     count = 1 if window == pattern_count else 0
 
     for i in range(len(pattern), len(text)):
+        # Add new character
         window[text[i]] += 1
 
+        # Remove old character
         left_char = text[i - len(pattern)]
         window[left_char] -= 1
+
+        # Ensure Counter equality works
         if window[left_char] == 0:
             del window[left_char]
 
+        # Check equality
         if window == pattern_count:
             count += 1
 
@@ -584,10 +639,10 @@ def count_anagram_substrings(text: str, pattern: str) -> int:
 
 | Strategy              | Key Type    | Time per String | When to Use                    |
 | --------------------- | ----------- | --------------- | ------------------------------ |
-| Sorted string         | `str`       | O(k log k)      | Short strings, simple code     |
-| Character count tuple | `tuple`     | O(k)            | Long strings, lowercase only   |
-| Prime product         | `int`       | O(k)            | Unique product (overflow risk) |
-| Frozen Counter        | `frozenset` | O(k)            | When Counter comparison needed |
+| Sorted string         | `str`       | $O(k \log k)$   | Short strings, simple code     |
+| Character count tuple | `tuple`     | $O(k)$          | Long strings, fixed alphabet   |
+| Prime product         | `int`       | $O(k)$          | Unique product (overflow risk) |
+| Frozen Counter        | `frozenset` | $O(k)$          | When Counter comparison needed |
 
 ### Prime Product Example (Careful of Overflow)
 
@@ -643,7 +698,7 @@ def anagram_signature_prime(s: str) -> int:
 1. **Clarify character set**: Lowercase only? Unicode? Spaces?
 2. **Choose signature strategy**: Sorted is cleaner, count tuple is faster
 3. **Sliding window for substrings**: Don't check every window from scratch
-4. **Counter comparison is O(1)** for fixed alphabet (26 letters)
+4. **Counter comparison is $O(A)$** where $A$ is the alphabet size (effectively $O(1)$ for 26 letters)
 5. **Delete zero counts** from Counter to ensure equality works
 
 ---
@@ -668,7 +723,7 @@ def anagram_signature_prime(s: str) -> int:
 1. **Anagrams share a signature** - sorted string or count tuple
 2. **Group by hashmap key** - signature becomes the key
 3. **Sliding window for substring anagrams** - maintain window count
-4. **Counter == Counter is O(alphabet)** - effectively O(1)
+4. **`Counter == Counter` is $O(A)$** - effectively $O(1)$ for fixed alphabets
 5. **Delete zero counts** - ensures Counter equality works
 6. **Consider both sorted and count-based** signatures in interviews
 

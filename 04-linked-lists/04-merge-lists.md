@@ -53,7 +53,7 @@ Python's heap compares tuples element-by-element. If two nodes have the same val
 
 ## When NOT to Use Linked List Merge
 
-1. **Data Isn't Already Sorted**: Merging assumes sorted input. Unsorted? Sort first (O(n log n)) or use different algorithms.
+1. **Data Isn't Already Sorted**: Merging assumes sorted input. Unsorted? Sort first ($O(n \log n)$) or use different algorithms.
 
 2. **Random Access is Available**: For arrays, in-place merge is possible but tricky. Often simpler to use extra space or built-in sorts.
 
@@ -61,7 +61,7 @@ Python's heap compares tuples element-by-element. If two nodes have the same val
 
 4. **Frequent Insertions During Merge**: If you're inserting new elements while merging, a balanced BST or skip list might be better.
 
-5. **K is Very Large**: With k=1000 lists of 10 elements each, heap overhead dominates. Consider concatenate-then-sort for extreme cases.
+5. **$K$ is Very Large**: With $k=1000$ lists of 10 elements each, heap overhead dominates. Consider concatenate-then-sort for extreme cases.
 
 **Common Mistake**: Using merge when lists aren't sorted. The algorithm assumes sorted input—unsorted input produces garbage.
 
@@ -94,8 +94,8 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 
     LeetCode 21: Merge Two Sorted Lists
 
-    Time: O(n + m)
-    Space: O(1) - only rearranging pointers
+    Time: $O(n + m)$
+    Space: $O(1)$ - only rearranging pointers
     """
     dummy = ListNode(0)
     current = dummy
@@ -158,8 +158,8 @@ def merge_two_lists_recursive(l1: Optional[ListNode], l2: Optional[ListNode]) ->
     """
     Merge two sorted lists recursively.
 
-    Time: O(n + m)
-    Space: O(n + m) - call stack
+    Time: $O(n + m)$
+    Space: $O(n + m)$ - call stack
     """
     if not l1:
         return l2
@@ -187,8 +187,8 @@ def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
 
     LeetCode 23: Merge k Sorted Lists
 
-    Time: O(N log k) where N = total nodes, k = number of lists
-    Space: O(log k) for recursion
+    Time: $O(N \log k)$ where $N$ = total nodes, $k$ = number of lists
+    Space: $O(\log k)$ for recursion
     """
     if not lists:
         return None
@@ -255,8 +255,8 @@ def merge_k_lists_heap(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
     Merge k sorted linked lists using min-heap.
 
-    Time: O(N log k)
-    Space: O(k) for the heap
+    Time: $O(N \log k)$
+    Space: $O(k)$ for the heap
     """
     # Create min-heap with (value, index, node)
     # Index breaks ties (nodes aren't comparable)
@@ -309,8 +309,8 @@ def sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 148: Sort List
 
-    Time: O(n log n)
-    Space: O(log n) for recursion (or O(1) with bottom-up approach)
+    Time: $O(n \log n)$
+    Space: $O(\log n)$ for recursion (or $O(1)$ with bottom-up approach)
     """
     # Base case
     if not head or not head.next:
@@ -366,10 +366,10 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 def sort_list_bottom_up(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Sort linked list using bottom-up merge sort.
-    O(1) space (no recursion).
+    $O(1)$ space (no recursion).
 
-    Time: O(n log n)
-    Space: O(1)
+    Time: $O(n \log n)$
+    Space: $O(1)$
     """
     if not head or not head.next:
         return head
@@ -448,8 +448,8 @@ def add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 
     LeetCode 2: Add Two Numbers
 
-    Time: O(max(n, m))
-    Space: O(max(n, m))
+    Time: $O(\max(n, m))$
+    Space: $O(\max(n, m))$
     """
     dummy = ListNode(0)
     current = dummy
@@ -484,8 +484,8 @@ def add_two_numbers_ii(l1: Optional[ListNode], l2: Optional[ListNode]) -> Option
     LeetCode 445: Add Two Numbers II
 
     Approach: Reverse both, add, reverse result.
-    Time: O(n + m)
-    Space: O(1) extra (modify in place)
+    Time: $O(n + m)$
+    Space: $O(1)$ extra (modify in place)
     """
     def reverse(head: Optional[ListNode]) -> Optional[ListNode]:
         prev = None
@@ -530,12 +530,12 @@ def add_two_numbers_ii(l1: Optional[ListNode], l2: Optional[ListNode]) -> Option
 
 | Approach                          | Time         | Space        |
 | --------------------------------- | ------------ | ------------ |
-| Merge two sorted                  | O(n + m)     | O(1)         |
-| Merge k sorted (divide & conquer) | O(N log k)   | O(log k)     |
-| Merge k sorted (heap)             | O(N log k)   | O(k)         |
-| Merge sort (recursive)            | O(n log n)   | O(log n)     |
-| Merge sort (bottom-up)            | O(n log n)   | O(1)         |
-| Add two numbers                   | O(max(n, m)) | O(max(n, m))* |
+| Merge two sorted                  | $O(n + m)$     | $O(1)$         |
+| Merge k sorted (divide & conquer) | $O(N \log k)$   | $O(\log k)$     |
+| Merge k sorted (heap)             | $O(N \log k)$   | $O(k)$         |
+| Merge sort (recursive)            | $O(n \log n)$   | $O(\log n)$     |
+| Merge sort (bottom-up)            | $O(n \log n)$   | $O(1)$         |
+| Add two numbers                   | $O(\max(n, m))$| $O(\max(n, m))$\* |
 
 \* *Space complexity is $O(\max(n, m))$ because we construct a new linked list. If in-place modification is permitted, it can be $O(1)$ auxiliary space.*
 
@@ -611,8 +611,8 @@ def insertion_sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 147: Insertion Sort List
 
-    Time: O(n²)
-    Space: O(1)
+    Time: $O(n^2)$
+    Space: $O(1)$
     """
     if not head:
         return None

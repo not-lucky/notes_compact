@@ -39,11 +39,17 @@ Sets use hashing:
 
 ```
 Stack of Papers (List):
-"Find the red paper" → Flip through entire stack → O(n)
+"Find the red paper" → Flip through entire stack → O(N)
 
 Filing Cabinet (Set):
-"Find the red paper" → Open 'R' drawer → O(1)
+"Find the red paper" → Open 'R' drawer → Amortized O(1)
 ```
+
+**Floyd's Cycle Detection vs Set-based Cycle Detection**
+For problems like "Happy Number" or linked list cycles:
+- **Set-based**: Easier to implement and reason about. Stores visited states. Takes $O(N)$ space.
+- **Floyd's (Tortoise & Hare)**: Slightly more complex logic, but takes $O(1)$ auxiliary space.
+Use sets in an interview first for speed/correctness, then optimize to Floyd's if asked to improve space complexity.
 
 **The XOR Trick Explained**
 
@@ -59,7 +65,7 @@ So: a ^ b ^ a = (a ^ a) ^ b = 0 ^ b = b
 All duplicates cancel out, leaving only the unique element!
 ```
 
-No extra space needed.
+No extra space needed ($O(1)$ auxiliary space).
 
 **Why "Check Sequence Start" for Longest Consecutive**
 
@@ -68,7 +74,7 @@ Naive approach:
 ```python
 for num in nums:
     count = 1
-    while num + 1 in set: ...  # Could recount same sequence many times!
+    while num + 1 in num_set: ...  # Could recount same sequence many times!
 ```
 
 Problem: If sequence is [1,2,3,4,5], we count:
@@ -80,11 +86,11 @@ Problem: If sequence is [1,2,3,4,5], we count:
 Optimization: Only start counting from sequence START:
 
 ```python
-if num - 1 not in set:  # This is the start!
+if num - 1 not in num_set:  # This is the start!
     count from here
 ```
 
-Now we count each element exactly once → O(n).
+Now we count each element exactly once within the while loop → $O(N)$ overall time.
 
 **Bidirectional Mapping for Isomorphism**
 
@@ -115,7 +121,7 @@ Need BOTH:
 Sets are unordered:
 
 ```python
-s = {3, 1, 2}
+s: set[int] = {3, 1, 2}
 list(s)  # Could be [1, 2, 3] or [2, 1, 3] or...
 ```
 
@@ -154,8 +160,8 @@ Can't put lists or dicts in a set:
 Finding "closest element" or "range of elements":
 
 ```python
-# Set: O(n) to find element closest to x
-# Sorted structure (BST, sorted list): O(log n)
+# Set: O(N) to find element closest to x
+# Sorted structure (BST, sorted list): O(log N)
 ```
 
 Use `sortedcontainers.SortedSet` for ordered set operations.
@@ -171,12 +177,12 @@ Use `sortedcontainers.SortedSet` for ordered set operations.
 
 ## Core Concept
 
-A set is an unordered collection of **unique elements** with O(1) average-case operations.
+A set is an unordered collection of **unique elements** with amortized $O(1)$ operations.
 
 ```python
-s = {1, 2, 3}
+s: set[int] = {1, 2, 3}
 
-# O(1) operations
+# Amortized O(1) operations
 1 in s           # True
 s.add(4)         # {1, 2, 3, 4}
 s.remove(1)      # {2, 3, 4}
@@ -188,8 +194,8 @@ s.discard(99)    # No error if missing
 ## Python Set Operations
 
 ```python
-a = {1, 2, 3, 4}
-b = {3, 4, 5, 6}
+a: set[int] = {1, 2, 3, 4}
+b: set[int] = {3, 4, 5, 6}
 
 # Union (elements in a OR b)
 a | b            # {1, 2, 3, 4, 5, 6}
@@ -217,14 +223,17 @@ a >= {1, 2}      # True (superset)
 
 | Operation      | Method         | Time Complexity        |
 | -------------- | -------------- | ---------------------- |
-| Add            | `s.add(x)`     | O(1) average           |
-| Remove         | `s.remove(x)`  | O(1) average           |
-| Discard        | `s.discard(x)` | O(1) average           |
-| Membership     | `x in s`       | O(1) average           |
-| Union          | `a \| b`       | O(len(a) + len(b))     |
-| Intersection   | `a & b`        | O(min(len(a), len(b))) |
-| Difference     | `a - b`        | O(len(a))              |
-| Symmetric Diff | `a ^ b`        | O(len(a) + len(b))     |
+| Add            | `s.add(x)`     | $O(1)$ amortized       |
+| Remove         | `s.remove(x)`  | $O(1)$ average         |
+| Discard        | `s.discard(x)` | $O(1)$ average         |
+| Membership     | `x in s`       | $O(1)$ average         |
+| Union          | `a \| b`       | $O(N + M)$             |
+| Intersection   | `a & b`        | $O(\min(N, M))$        |
+| Difference     | `a - b`        | $O(N)$                 |
+| Symmetric Diff | `a ^ b`        | $O(N + M)$             |
+
+*Note on Insertion & Lookup*: Sets use hash tables under the hood. Insertion is amortized $O(1)$ and lookup is average $O(1)$, but both can degrade to $O(N)$ in the worst case due to hash collisions.
+*Note on Intersection Efficiency*: In Python, `set_a & set_b` is optimized to iterate over the smaller set and check membership in the larger set. If sizes are drastically different ($M \ll N$), the intersection takes $O(M)$ time.
 
 ---
 
@@ -239,8 +248,8 @@ def intersection(nums1: list[int], nums2: list[int]) -> list[int]:
     """
     Find elements that appear in both arrays (unique).
 
-    Time: O(n + m)
-    Space: O(n + m)
+    Time: O(N + M)
+    Space: O(N + M) for the sets, output takes O(min(N, M))
 
     Example:
     [1, 2, 2, 1], [2, 2] → [2]
@@ -261,23 +270,23 @@ def intersect(nums1: list[int], nums2: list[int]) -> list[int]:
     """
     Find intersection including duplicates (by frequency).
 
-    Time: O(n + m)
-    Space: O(min(n, m))
+    Time: O(N + M)
+    Space: O(min(N, M)) for Counter
 
     Example:
     [1, 2, 2, 1], [2, 2] → [2, 2]
     """
     from collections import Counter
 
-    # Use smaller array for counter
+    # Use smaller array for counter to optimize space
     if len(nums1) > len(nums2):
         nums1, nums2 = nums2, nums1
 
-    count = Counter(nums1)
-    result = []
+    count: dict[int, int] = Counter(nums1)
+    result: list[int] = []
 
     for num in nums2:
-        if count[num] > 0:
+        if count.get(num, 0) > 0:
             result.append(num)
             count[num] -= 1
 
@@ -293,12 +302,12 @@ def intersect(nums1: list[int], nums2: list[int]) -> list[int]:
 ```python
 def intersect_sorted(nums1: list[int], nums2: list[int]) -> list[int]:
     """
-    If arrays are sorted, use two pointers for O(1) space.
+    If arrays are sorted, use two pointers for O(1) auxiliary space.
 
-    Time: O(n + m)
-    Space: O(1) excluding output
+    Time: O(N + M) where N, M are lengths of the arrays
+    Space: O(1) auxiliary, O(min(N, M)) for output
     """
-    result = []
+    result: list[int] = []
     i = j = 0
 
     while i < len(nums1) and j < len(nums2):
@@ -327,8 +336,8 @@ def union(nums1: list[int], nums2: list[int]) -> list[int]:
     """
     Find all unique elements from both arrays.
 
-    Time: O(n + m)
-    Space: O(n + m)
+    Time: O(N + M)
+    Space: O(N + M) for sets
     """
     return list(set(nums1) | set(nums2))
 ```
@@ -346,8 +355,8 @@ def difference(nums1: list[int], nums2: list[int]) -> list[int]:
     """
     Find elements in nums1 but not in nums2.
 
-    Time: O(n + m)
-    Space: O(n + m)
+    Time: O(N + M)
+    Space: O(N + M) for sets
     """
     return list(set(nums1) - set(nums2))
 ```
@@ -365,8 +374,8 @@ def find_the_difference(s: str, t: str) -> str:
     """
     t is s with one extra character. Find it.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(N) where N is len(s)
+    Space: O(1) auxiliary
     """
     result = 0
 
@@ -389,8 +398,8 @@ def contains_duplicate(nums: list[int]) -> bool:
     """
     Check if any element appears more than once.
 
-    Time: O(n)
-    Space: O(n)
+    Time: O(N)
+    Space: O(N) worst case
     """
     return len(nums) != len(set(nums))
 
@@ -398,8 +407,11 @@ def contains_duplicate(nums: list[int]) -> bool:
 def contains_duplicate_early_exit(nums: list[int]) -> bool:
     """
     Early exit version - better for large arrays with early duplicates.
+
+    Time: O(N) worst case, but average time is faster if duplicate exists early
+    Space: O(N) worst case
     """
-    seen = set()
+    seen: set[int] = set()
 
     for num in nums:
         if num in seen:
@@ -422,8 +434,8 @@ def single_number(nums: list[int]) -> int:
     """
     Every element appears twice except one. Find it.
 
-    Time: O(n)
-    Space: O(1) with XOR
+    Time: O(N)
+    Space: O(1) auxiliary with XOR trick
     """
     result = 0
     for num in nums:
@@ -431,12 +443,16 @@ def single_number(nums: list[int]) -> int:
     return result
 
 
-def single_number_set(nums: list[int]) -> list[int]:
+def single_number_set(nums: list[int]) -> int:
     """
     Alternative: 2 * sum(set) - sum(nums) = single element.
 
+    Time: O(N)
+    Space: O(N) for set
+
     Works because: 2(a + b + c) - (a + a + b + b + c) = c
     """
+    # Note: Using int instead of list[int] for return type
     return 2 * sum(set(nums)) - sum(nums)
 ```
 
@@ -453,8 +469,8 @@ def single_number_iii(nums: list[int]) -> list[int]:
     """
     All elements appear twice except two. Find them.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(N)
+    Space: O(1) auxiliary
 
     Example:
     [1, 2, 1, 3, 2, 5] → [3, 5]
@@ -491,14 +507,14 @@ def is_happy(n: int) -> bool:
     """
     A happy number eventually reaches 1 after repeated digit square sum.
 
-    Time: O(log n) per step, O(log n) steps
-    Space: O(log n) for set
+    Time: O(log n) per step, overall time is bound by properties of digit sum (usually constant bounded loops)
+    Space: O(log n) for set storing history
 
     Example:
     19 → 82 → 68 → 100 → 1 (happy!)
     2 → 4 → 16 → 37 → 58 → 89 → 145 → 42 → 20 → 4 (cycle, not happy)
     """
-    def digit_square_sum(num):
+    def digit_square_sum(num: int) -> int:
         total = 0
         while num:
             digit = num % 10
@@ -506,7 +522,7 @@ def is_happy(n: int) -> bool:
             num //= 10
         return total
 
-    seen = set()
+    seen: set[int] = set()
 
     while n != 1 and n not in seen:
         seen.add(n)
@@ -517,9 +533,9 @@ def is_happy(n: int) -> bool:
 
 def is_happy_floyd(n: int) -> bool:
     """
-    O(1) space using Floyd's cycle detection.
+    O(1) auxiliary space using Floyd's cycle detection.
     """
-    def digit_square_sum(num):
+    def digit_square_sum(num: int) -> int:
         total = 0
         while num:
             total += (num % 10) ** 2
@@ -551,8 +567,8 @@ def longest_consecutive(nums: list[int]) -> int:
     """
     Find length of longest consecutive elements sequence.
 
-    Time: O(n)
-    Space: O(n)
+    Time: O(N) because each number is checked at most twice (once for existence, once in inner loop)
+    Space: O(N) for set storage
 
     Example:
     [100, 4, 200, 1, 3, 2] → 4 (sequence: 1, 2, 3, 4)
@@ -560,7 +576,7 @@ def longest_consecutive(nums: list[int]) -> int:
     if not nums:
         return 0
 
-    num_set = set(nums)
+    num_set: set[int] = set(nums)
     max_length = 0
 
     for num in num_set:
@@ -617,8 +633,8 @@ def missing_number(nums: list[int]) -> int:
     """
     Find missing number in [0, n].
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(N)
+    Space: O(1) auxiliary
     """
     n = len(nums)
     expected_sum = n * (n + 1) // 2
@@ -629,6 +645,9 @@ def missing_number(nums: list[int]) -> int:
 def missing_number_xor(nums: list[int]) -> int:
     """
     XOR approach: a ^ a = 0, so missing number remains.
+
+    Time: O(N)
+    Space: O(1) auxiliary
     """
     result = len(nums)  # Include n
 
@@ -641,8 +660,9 @@ def missing_number_xor(nums: list[int]) -> int:
 def missing_number_set(nums: list[int]) -> int:
     """
     Set approach (less efficient but clearer).
+    Note: Space complexity is O(N), unlike math/XOR which are O(1) auxiliary.
     """
-    full_set = set(range(len(nums) + 1))
+    full_set: set[int] = set(range(len(nums) + 1))
     return (full_set - set(nums)).pop()
 ```
 
@@ -659,16 +679,16 @@ def find_disappeared_numbers(nums: list[int]) -> list[int]:
     """
     Find all numbers in [1, n] not appearing in nums.
 
-    Time: O(n)
-    Space: O(1) excluding output - use array as set!
+    Time: O(N)
+    Space: O(1) auxiliary - mutates input array to serve as marker set!
     """
-    # Mark seen numbers by negating at that index
+    # Mark seen numbers by negating value at corresponding index
     for num in nums:
         index = abs(num) - 1
         nums[index] = -abs(nums[index])
 
-    # Positive indices indicate missing numbers
-    result = []
+    # Positive values mean their indices were never seen
+    result: list[int] = []
     for i in range(len(nums)):
         if nums[i] > 0:
             result.append(i + 1)
@@ -689,8 +709,8 @@ def is_isomorphic(s: str, t: str) -> bool:
     """
     Check if characters in s can be replaced to get t.
 
-    Time: O(n)
-    Space: O(1) - limited alphabet
+    Time: O(N) where N is len(s)
+    Space: O(K) where K is size of character set (O(1) if bounded e.g., ASCII)
 
     Example:
     "egg", "add" → True (e→a, g→d)
@@ -699,8 +719,8 @@ def is_isomorphic(s: str, t: str) -> bool:
     if len(s) != len(t):
         return False
 
-    s_to_t = {}
-    t_to_s = {}
+    s_to_t: dict[str, str] = {}
+    t_to_s: dict[str, str] = {}
 
     for c1, c2 in zip(s, t):
         if c1 in s_to_t:
@@ -731,8 +751,8 @@ def word_pattern(pattern: str, s: str) -> bool:
     """
     Check if words follow the same pattern.
 
-    Time: O(n)
-    Space: O(n)
+    Time: O(N) where N is len(s) or len(pattern)
+    Space: O(N) for split words array and hashmaps
 
     Example:
     pattern = "abba", s = "dog cat cat dog" → True
@@ -742,8 +762,8 @@ def word_pattern(pattern: str, s: str) -> bool:
     if len(pattern) != len(words):
         return False
 
-    p_to_w = {}
-    w_to_p = {}
+    p_to_w: dict[str, str] = {}
+    w_to_p: dict[str, str] = {}
 
     for p, w in zip(pattern, words):
         if p in p_to_w:
@@ -776,10 +796,10 @@ def num_unique_emails(emails: list[str]) -> int:
     - Ignore dots in local name
     - Ignore everything after + in local name
 
-    Time: O(n * m) where m is email length
-    Space: O(n)
+    Time: O(N * M) where N is number of emails, M is average length
+    Space: O(N * M) for the set storing processed emails
     """
-    unique = set()
+    unique: set[str] = set()
 
     for email in emails:
         local, domain = email.split('@')
@@ -801,7 +821,7 @@ def num_unique_emails(emails: list[str]) -> int:
 
 | Need              | Use                 | Why                 |
 | ----------------- | ------------------- | ------------------- |
-| Check existence   | Set                 | O(1) lookup         |
+| Check existence   | Set                 | Amortized $O(1)$ lookup |
 | Count occurrences | Dict/Counter        | Need frequency      |
 | Preserve order    | List or dict (3.7+) | Sets are unordered  |
 | Remove duplicates | Set                 | Automatic dedup     |
@@ -851,11 +871,11 @@ set() <= {1}      # True (empty is subset of everything)
 
 ## Key Takeaways
 
-1. **Set for existence checks** - O(1) vs O(n) for list
+1. **Set for existence checks** - Amortized $O(1)$ vs $O(N)$ for list
 2. **Set operations are powerful** - union, intersection, difference
-3. **XOR for "appears twice except one"** - O(1) space trick
+3. **XOR for "appears twice except one"** - $O(1)$ auxiliary space trick
 4. **Bidirectional mapping** for isomorphism problems
-5. **Use array as set** when range is [1, n] for O(1) space
+5. **Use array as set** when range is [1, n] for $O(1)$ auxiliary space
 6. **Check sequence start** for longest consecutive - skip non-starts
 
 ---

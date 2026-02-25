@@ -13,19 +13,19 @@ Difference arrays are the inverse of prefix sums. While prefix sums enable $\The
 The key insight is **deferred computation**. Instead of updating every element in a range, we record where changes start and stop:
 
 1. **The "Delta" Concept**: A difference array stores changes between consecutive elements. Adding `v` to range `[i, j]` means:
-   - At position `i`: values start being `v` more than before
-   - At position `j+1`: values stop being `v` more than before
+   - At position `i`: values start being `v` more than before.
+   - At position `j + 1`: values stop being `v` more than before.
    - Only these two boundaries matter!
 
 2. **Reconstruction via Prefix Sum**: When we need actual values, we compute prefix sums of the difference array. Each position accumulates all the "start adding" signals minus all the "stop adding" signals up to that point.
 
-3. **The Event Model**: Think of `diff[i]` as "at position `i`, increase all future values by this amount." Adding at start, subtracting after end creates a pulse that spans exactly `[i, j]`.
+3. **The Event Model**: Think of `diff[i]` as "at position `i`, increase all future values by this amount." Adding at the start and subtracting after the end creates a pulse that spans exactly `[i, j]`.
 
-**Mental Model**: Imagine you're managing a toll booth on a highway. Instead of having a worker at every single mile marker updating a whiteboard with "cars currently on this stretch", you just record cars entering (+1) and cars exiting (-1) at the on/off ramps. To find how many cars are on mile marker 50, you just tally up all the entrances and subtract all the exits up to that point.
+**Physical Metaphor**: Imagine you're managing a concert venue with a long hallway of numbered sections. Instead of sending a worker to add 3 chairs to every section from 5 to 20, you put a sticky note at section 5 saying "+3 chairs starting here" and another at section 21 saying "-3 chairs starting here". At the end of the day, a single worker walks the hallway, keeping a running total of the sticky notes and updating the actual chair counts in one pass.
 
 **Visual Trace**:
 
-```
+```text
 Range update: add 3 to indices [1, 4]
               add 2 to indices [2, 3]
 
@@ -49,31 +49,15 @@ Prefix:   0   3   5   5   3   0
 Difference arrays have specific requirements:
 
 1. **Queries Interleaved with Updates**: If you need to query the array value between updates, you must rebuild ($\Theta(n)$) each time. For interleaved update/query, use segment trees or binary indexed trees (Fenwick trees).
-
 2. **Point Updates, Not Range Updates**: If you're updating single elements (not ranges), difference arrays add complexity without benefit. Just update directly.
-
 3. **Large Sparse Ranges**: If the array is huge but updates are sparse and don't overlap much, using a list of `(start, end, value)` tuples or a hash map (remembering hash map lookups are amortized $\Theta(1)$ but worst-case $O(n)$) may be simpler.
-
 4. **When You Need Original Values Preserved**: Difference arrays typically overwrite the original or require an extra array. If you need both original and modified concurrently without extra space, this technique isn't magical.
-
 5. **Non-Additive Operations**: Difference arrays work perfectly for additive updates. For "set range to value" or "multiply range by x," you need different techniques like segment trees with lazy propagation.
 
 **Red Flags:**
-
-- "Query between updates" → Segment tree / Fenwick tree
-- "Update single elements" → Direct modification
-- "Set range to value" (not add) → Segment tree with lazy propagation
-
----
-
-## Interview Context
-
-Common interview problems:
-
-- Range addition queries
-- Car pooling / meeting room capacity
-- Flight booking problems
-- Painting fences / Sweepline events
+- "Query between updates" $\rightarrow$ Segment tree / Fenwick tree
+- "Update single elements" $\rightarrow$ Direct modification
+- "Set range to value" (not add) $\rightarrow$ Segment tree with lazy propagation
 
 ---
 
@@ -81,14 +65,14 @@ Common interview problems:
 
 A difference array stores the difference between consecutive elements:
 
-```
+```text
 Original:    [1, 3, 6, 10, 15]
 Difference:  [1, 2, 3, 4, 5]
 
 diff[0] = arr[0]
 diff[i] = arr[i] - arr[i-1]
 
-To recover original: prefix sum of difference array
+To recover original: compute the prefix sum of the difference array.
 ```
 
 ### Key Property
@@ -98,13 +82,14 @@ To add value `v` to range `[i, j]`:
 - Add `v` to `diff[i]` (start adding)
 - Subtract `v` from `diff[j+1]` (stop adding)
 
-After all updates, reconstruct array with prefix sum.
+After all updates, reconstruct the array with a prefix sum pass.
 
 ---
 
 ## Template: Range Addition
 
 ### Problem: Range Addition
+
 **Problem Statement:** You are given an integer `length` and a 2D array `updates` where `updates[i] = [start_i, end_i, inc_i]`. Increment each element of the array in the range `[start_i, end_i]` by `inc_i` and return the final array.
 
 **Why it works:**
@@ -117,16 +102,15 @@ This turns $\Theta(k \cdot n)$ range updates into $\Theta(k)$ point updates foll
 ```python
 def range_addition(length: int, updates: list[list[int]]) -> list[int]:
     """
-    Apply multiple range additions and return final array.
+    Apply multiple range additions and return the final array.
 
     Updates format: [[start, end, value], ...]
 
     Time Complexity: \Theta(n + k) where n = length, k = len(updates)
     Space Complexity: \Theta(n) for the difference array/result array
     """
-    # Python lists are dynamic arrays (amortized O(1) append/resize),
-    # but here we pre-allocate the exact size needed, which is \Theta(n) space.
-    diff: list[int] = [0] * (length + 1)  # Extra element for j+1
+    # Pre-allocate the exact size needed, which is \Theta(n) space.
+    diff: list[int] = [0] * (length + 1)  # Extra element for end + 1
 
     # Apply all updates to difference array
     for start, end, val in updates:
@@ -145,7 +129,7 @@ def range_addition(length: int, updates: list[list[int]]) -> list[int]:
 
 ### Visual Trace
 
-```
+```text
 length = 5, updates = [[1,3,2], [2,4,3], [0,2,-2]]
 
 Initial diff: [0, 0, 0, 0, 0, 0]
@@ -176,22 +160,23 @@ Final: [-2, 0, 3, 5, 3]
 ## Template: Car Pooling
 
 ### Problem: Car Pooling
-**Problem Statement:** There is a vehicle with `capacity` empty seats. Given a list of `trips` where `trips[i] = [num_passengers, start_location, end_location]`, return `true` if it is possible to pick up and drop off all passengers for all the given trips, or `false` otherwise.
+
+**Problem Statement:** There is a vehicle with `capacity` empty seats. Given a list of `trips` where `trips[i] = [num_passengers, start_location, end_location]`, return `True` if it is possible to pick up and drop off all passengers for all the given trips, or `False` otherwise.
 
 **Why it works:**
 The number of passengers in the car at any location `x` is the cumulative sum of all passengers who entered minus those who exited before or at `x`.
 1. We use a difference array where we add `num_passengers` at `start_location` and subtract them at `end_location`.
-2. We then compute the prefix sum to find the passenger count at every point along the route.
+2. We compute the prefix sum to find the passenger count at every point along the route.
 3. If the count exceeds `capacity` at any point, the schedule is impossible.
 
 ```python
 def car_pooling(trips: list[list[int]], capacity: int) -> bool:
     """
     Check if car can complete all trips without exceeding capacity.
-    trips[i] = [numPassengers, startLocation, endLocation]
+    trips[i] = [num_passengers, start_location, end_location]
 
-    Time Complexity: \Theta(n + \text{max\_loc}) where n = len(trips)
-    Space Complexity: \Theta(\text{max\_loc})
+    Time Complexity: \Theta(n + m) where n = len(trips), m = max_location
+    Space Complexity: \Theta(m) for the difference array
     """
     if not trips:
         return True
@@ -199,12 +184,12 @@ def car_pooling(trips: list[list[int]], capacity: int) -> bool:
     # Find max location to size our difference array
     max_loc = max(trip[2] for trip in trips)
 
-    # Difference array up to max_loc + 1 (for getting off at the exact end)
+    # Difference array up to max_loc + 1
     diff: list[int] = [0] * (max_loc + 2)
 
     for passengers, start, end in trips:
         diff[start] += passengers
-        diff[end] -= passengers  # Passengers get off at end (no +1 needed here based on problem rules)
+        diff[end] -= passengers  # Passengers get off at end (no +1 needed here)
 
     # Check capacity at each location
     current = 0
@@ -221,6 +206,7 @@ def car_pooling(trips: list[list[int]], capacity: int) -> bool:
 ## Template: Meeting Rooms II (Minimum Rooms)
 
 ### Problem: Meeting Rooms II
+
 **Problem Statement:** Given an array of meeting time intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of conference rooms required.
 
 **Why it works:**
@@ -236,8 +222,8 @@ def min_meeting_rooms(intervals: list[list[int]]) -> int:
     Minimum number of meeting rooms required (Difference Array approach).
     Best when max_time is relatively small.
 
-    Time Complexity: \Theta(n + \text{max\_time})
-    Space Complexity: \Theta(\text{max\_time})
+    Time Complexity: \Theta(n + m) where n = len(intervals), m = max_time
+    Space Complexity: \Theta(m) for the difference array
     """
     if not intervals:
         return 0
@@ -269,12 +255,11 @@ def min_meeting_rooms_events(intervals: list[list[int]]) -> int:
     Using sorted events instead of a full difference array.
     Better when time range is large but intervals are few.
 
-    Time Complexity: O(n \log n) for sorting
+    Time Complexity: \Theta(n \log n) for sorting
     Space Complexity: \Theta(n) for storing the events
     """
     events: list[tuple[int, int]] = []
 
-    # Python lists are dynamic arrays, appending takes amortized O(1) time
     for start, end in intervals:
         events.append((start, 1))   # Meeting starts
         events.append((end, -1))    # Meeting ends
@@ -297,6 +282,7 @@ def min_meeting_rooms_events(intervals: list[list[int]]) -> int:
 ## Template: Corporate Flight Bookings
 
 ### Problem: Corporate Flight Bookings
+
 **Problem Statement:** There are `n` flights that are labeled from `1` to `n`. You are given an array of flight bookings `bookings`, where `bookings[i] = [first_i, last_i, seats_i]` represents a booking for flights `first_i` through `last_i` with `seats_i` seats reserved for each flight in the range. Return an array `answer` of length `n` where `answer[i]` is the total number of seats reserved for flight `i`.
 
 **Why it works:**
@@ -312,7 +298,7 @@ def corp_flight_bookings(bookings: list[list[int]], n: int) -> list[int]:
     Return total seats for each flight.
 
     Time Complexity: \Theta(n + k) where k = len(bookings)
-    Space Complexity: \Theta(n)
+    Space Complexity: \Theta(n) for the difference array/result array
     """
     # 1-indexed flights require extra space. +2 for safety with last+1
     diff: list[int] = [0] * (n + 2)
@@ -325,7 +311,6 @@ def corp_flight_bookings(bookings: list[list[int]], n: int) -> list[int]:
     current = 0
     for i in range(1, n + 1):
         current += diff[i]
-        # Using append (amortized O(1)) to build the list
         result.append(current)
 
     return result
@@ -345,7 +330,7 @@ def range_addition_2d(matrix: list[list[int]],
     updates format: [(r1, c1, r2, c2, val), ...]
 
     Time Complexity: \Theta(m \cdot n + k) where k = len(updates)
-    Space Complexity: \Theta(m \cdot n)
+    Space Complexity: \Theta(m \cdot n) for the 2D difference array and result
     """
     if not matrix or not matrix[0]:
         return []
@@ -385,8 +370,8 @@ def range_addition_2d(matrix: list[list[int]],
 | Point Update | $\Theta(n)$| $\Theta(1)$      |
 | Point Query  | $\Theta(1)$| $\Theta(n)$      |
 
-**Use Prefix Sum when**: Many queries, few/no updates
-**Use Difference Array when**: Many updates, few queries
+**Use Prefix Sum when**: Many queries, few/no updates.
+**Use Difference Array when**: Many updates, few queries.
 
 ---
 
@@ -399,7 +384,6 @@ def to_difference(arr: list[int]) -> list[int]:
         return []
     diff: list[int] = [arr[0]]
     for i in range(1, len(arr)):
-        # Amortized O(1) append for Python lists
         diff.append(arr[i] - arr[i-1])
     return diff
 
@@ -417,7 +401,7 @@ def to_original(diff: list[int]) -> list[int]:
 
 ## Edge Cases
 
-```python
+```text
 # Single element
 [5] → diff = [5]
 

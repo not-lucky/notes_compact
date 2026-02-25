@@ -23,14 +23,14 @@ The key insight: `sum(i, j) = prefix[j] - prefix[i-1] = k` means `prefix[i-1] = 
 
 Without prefix sums:
 
-```
+```text
 "What's the sum of elements from index 2 to 5?"
-→ Add nums[2] + nums[3] + nums[4] + nums[5] → O(n) each time
+→ Add nums[2] + nums[3] + nums[4] + nums[5] → O(N) each time
 ```
 
-With prefix sums (O(n) preprocessing):
+With prefix sums (O(N) preprocessing):
 
-```
+```text
 prefix = [0, a, a+b, a+b+c, ...]
 sum(2, 5) = prefix[6] - prefix[2] → O(1)
 ```
@@ -39,15 +39,15 @@ sum(2, 5) = prefix[6] - prefix[2] → O(1)
 
 Naive approach for "find subarray with sum k":
 
-```
+```text
 For each end position j:
   For each start position i:
-    Check if sum(i, j) == k → O(n²)
+    Check if sum(i, j) == k → O(N²)
 ```
 
 Hashmap insight:
 
-```
+```text
 sum(i, j) = k
 → prefix[j] - prefix[i-1] = k
 → prefix[i-1] = prefix[j] - k
@@ -60,7 +60,7 @@ At position j: "Have I seen prefix_sum = (current_prefix - k) before?"
 
 Think of prefix sums as a running bank balance:
 
-```
+```text
 Deposits: [+3, +1, -2, +4]
 Balance:  [3, 4, 2, 6]
 
@@ -75,7 +75,7 @@ Balance:  [3, 4, 2, 6]
 
 The dummy prefix represents "before the array started":
 
-```
+```text
 nums = [3], k = 3
 
 Without {0: 1}:
@@ -93,7 +93,7 @@ It lets you find subarrays that START at index 0.
 
 If two prefix sums have the same remainder when divided by k:
 
-```
+```text
 prefix[i] = a × k + r
 prefix[j] = b × k + r
 
@@ -101,6 +101,16 @@ prefix[j] - prefix[i] = (b - a) × k → divisible by k!
 ```
 
 So: group by remainder, pairs within same group form valid subarrays.
+
+**Note on Negative Modulo:**
+In Python, the modulo operator (`%`) with a negative dividend and positive divisor always returns a positive result (e.g., `-5 % 3 == 1`). In C++ or Java, `-5 % 3` returns `-2`. When porting code or explaining logic, it's important to mention that Python automatically normalizes negative remainders, making divisibility logic simpler. In C++/Java, you must explicitly normalize: `mod = ((prefix_sum % k) + k) % k`.
+
+**Extending to 2D (Prefix Sum Matrix)**
+The 1D prefix sum pattern can be extended to 2D matrices.
+Instead of `prefix[i]`, we compute `prefix[r][c]` which stores the sum of the submatrix from `(0,0)` to `(r,c)`.
+The sum of any submatrix defined by top-left `(r1, c1)` and bottom-right `(r2, c2)` is:
+`sum = prefix[r2][c2] - prefix[r1-1][c2] - prefix[r2][c1-1] + prefix[r1-1][c1-1]`
+You can then use hashmaps on these 1D row/col projections or prefix values to solve 2D subarray sum problems (like "Number of Submatrices That Sum to Target" which fixes two rows and applies the 1D hashmap technique to the columns).
 
 ---
 
@@ -112,7 +122,7 @@ For positive-only arrays with sum >= k:
 
 ```python
 # Sliding window: O(1) space
-# Prefix + hashmap: O(n) space
+# Prefix + hashmap: O(N) space
 ```
 
 Sliding window works because sum only increases when expanding, only decreases when shrinking. Monotonic property → no need to store history.
@@ -132,7 +142,7 @@ For returning actual subarrays, track list of indices per prefix sum.
 
 Prefix sum + hashmap is 1D. For 2D:
 
-- Fix two rows, reduce to 1D problem
+- Fix two rows, reduce to 1D problem (Time: $O(R^2 \cdot C)$)
 - Or use 2D prefix sum matrix
 
 **4. "At Least K" or "At Most K" Instead of "Exactly K"**
@@ -168,7 +178,7 @@ For any subarray `[i, j]`:
 
 So at each position j, we ask: "How many previous prefix sums equal `prefix[j] - k`?"
 
-```
+```text
 nums = [1, 2, 3], k = 3
 
 Prefix sums: [0, 1, 3, 6]
@@ -186,15 +196,18 @@ Total: 2 subarrays
 
 **Problem**: Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
 
-**Explanation**: We use the prefix sum pattern. A subarray `nums[i...j]` has sum `k` if `prefix_sum[j] - prefix_sum[i-1] = k`, which is equivalent to `prefix_sum[i-1] = prefix_sum[j] - k`. As we iterate and compute the running `prefix_sum`, we use a hashmap to track how many times each prefix sum has occurred. This allows us to count how many previous indices `i-1` satisfy the condition in O(1) time.
+**Explanation**: We use the prefix sum pattern. A subarray `nums[i...j]` has sum `k` if `prefix_sum[j] - prefix_sum[i-1] = k`, which is equivalent to `prefix_sum[i-1] = prefix_sum[j] - k`. As we iterate and compute the running `prefix_sum`, we use a hashmap to track how many times each prefix sum has occurred. This allows us to count how many previous indices `i-1` satisfy the condition in O(1) average time.
 
 ```python
 def subarray_sum(nums: list[int], k: int) -> int:
     """
     Count subarrays with sum equal to k.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums. We iterate through the array once.
+                     Hashmap operations (lookup and insert) take O(1) on average.
+                     In the worst case (many hash collisions), it could degrade to O(N²),
+                     but standard interview analysis considers it O(N).
+    Space Complexity: O(N) to store the hashmap, as there can be at most N unique prefix sums.
 
     Example:
     nums = [1, 1, 1], k = 2 → 2
@@ -219,7 +232,7 @@ def subarray_sum(nums: list[int], k: int) -> int:
 
 ### Visual Trace
 
-```
+```text
 nums = [1, 2, 3], k = 3
 
 i=0: prefix=1, check 1-3=-2 (not found), prefix_count={0:1, 1:1}
@@ -231,7 +244,7 @@ Total: 2 subarrays ([1,2] and [3])
 
 ### Why We Need {0: 1}
 
-```
+```text
 Without {0: 1}:
 nums = [3], k = 3
 
@@ -259,8 +272,9 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
     Key insight: If prefix[j] % k == prefix[i] % k,
     then (prefix[j] - prefix[i]) % k == 0.
 
-    Time: O(n)
-    Space: O(k)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(K) because the remainder will always be in the range [0, k-1],
+                      so the hashmap will store at most K key-value pairs.
 
     Example:
     nums = [4, 5, 0, -2, -3, 1], k = 5 → 7
@@ -273,9 +287,9 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
         prefix_sum += num
         mod = prefix_sum % k
 
-        # Handle negative mod (Python handles this, but explicit is clearer)
-        if mod < 0:
-            mod += k
+        # Note: Python's modulo naturally handles negative numbers
+        # e.g., -2 % 5 returns 3.
+        # In C++/Java, you would need: mod = (mod + k) % k
 
         if mod in mod_count:
             count += mod_count[mod]
@@ -287,7 +301,7 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
 
 ### Visual Trace
 
-```
+```text
 nums = [4, 5, 0, -2, -3, 1], k = 5
 
 i=0: prefix=4, mod=4, count+=0, mod_count={0:1, 4:1}
@@ -313,8 +327,8 @@ def max_subarray_len(nums: list[int], k: int) -> int:
     """
     Find length of longest subarray with sum k.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(N) to store the earliest index of each prefix sum.
 
     Example:
     nums = [1, -1, 5, -2, 3], k = 3 → 4 ([1, -1, 5, -2])
@@ -329,7 +343,7 @@ def max_subarray_len(nums: list[int], k: int) -> int:
         if prefix_sum - k in first_occurrence:
             max_len = max(max_len, i - first_occurrence[prefix_sum - k])
 
-        # Only store first occurrence (for maximum length)
+        # Only store FIRST occurrence to maximize (i - earliest_index)
         if prefix_sum not in first_occurrence:
             first_occurrence[prefix_sum] = i
 
@@ -338,7 +352,7 @@ def max_subarray_len(nums: list[int], k: int) -> int:
 
 ### Why First Occurrence Only?
 
-```
+```text
 For MAXIMUM length, we want the EARLIEST index with the required prefix sum.
 
 nums = [1, 0, 0, -1, 2], k = 2
@@ -361,7 +375,7 @@ First occurrence → maximum length
 
 **Problem**: Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0 instead.
 
-**Explanation**: For arrays with only positive numbers, we don't need a hashmap. We can use a sliding window (two pointers) to find the minimum length. We expand the window until the sum is `≥ target`, then contract it from the left to find the smallest possible valid window. This is O(n) time and O(1) space.
+**Explanation**: For arrays with only positive numbers, we don't need a hashmap. We can use a sliding window (two pointers) to find the minimum length. We expand the window until the sum is `≥ target`, then contract it from the left to find the smallest possible valid window. This is O(N) time and O(1) space.
 
 ```python
 def min_subarray_len(target: int, nums: list[int]) -> int:
@@ -369,10 +383,11 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
     Find minimum length subarray with sum >= target.
     All numbers are positive.
 
-    Time: O(n) - sliding window (not prefix sum)
-    Space: O(1)
+    Time Complexity: O(N). Each element is processed at most twice (once added to the window,
+                     once removed).
+    Space Complexity: O(1). We only use a few integer variables to keep track of the window.
 
-    Note: For positive numbers, sliding window is better than prefix sum!
+    Note: For positive numbers, sliding window is better than prefix sum + hashmap!
     """
     left = 0
     current_sum = 0
@@ -389,7 +404,7 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
     return min_len if min_len != float('inf') else 0
 ```
 
-**Key Insight**: For positive-only arrays, sliding window is O(1) space. Prefix sum + hashmap is needed when negatives are present.
+**Key Insight**: For positive-only arrays, sliding window is $O(1)$ space. Prefix sum + hashmap is needed when negatives are present because the prefix sum array is no longer monotonic (sorted).
 
 ---
 
@@ -406,8 +421,8 @@ def find_max_length(nums: list[int]) -> int:
 
     Trick: Replace 0 with -1, then find longest subarray with sum 0.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(N) to store the first occurrences of prefix sums.
 
     Example:
     [0, 1] → 2
@@ -431,7 +446,7 @@ def find_max_length(nums: list[int]) -> int:
 
 ### Visual Trace
 
-```
+```text
 nums = [0, 1, 0, 1, 1, 0]
 converted = [-1, 1, -1, 1, 1, -1]
 
@@ -458,8 +473,9 @@ def check_subarray_sum(nums: list[int], k: int) -> bool:
     """
     Check if there exists a subarray of size >= 2 whose sum is a multiple of k.
 
-    Time: O(n)
-    Space: O(min(n, k))
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(min(N, K)) since the hashmap only stores up to K remainders,
+                      and there are at most N elements.
 
     Example:
     nums = [23, 2, 4, 6, 7], k = 6 → True ([2, 4] sums to 6)
@@ -493,8 +509,8 @@ def num_subarrays_with_sum(nums: list[int], goal: int) -> int:
     """
     Count subarrays with sum equal to goal (binary array).
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(N) to store prefix sum counts.
 
     Example:
     nums = [1, 0, 1, 0, 1], goal = 2 → 4
@@ -529,8 +545,8 @@ def number_of_subarrays(nums: list[int], k: int) -> int:
 
     Trick: Convert to binary (odd=1, even=0), then count subarrays with sum k.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(N) to store prefix sum counts.
     """
     count = 0
     prefix_sum = 0  # Count of odd numbers so far
@@ -560,8 +576,8 @@ def has_zero_sum_subarray(nums: list[int]) -> bool:
     """
     Check if any subarray has sum 0.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) where N is the length of nums.
+    Space Complexity: O(N) in the worst case if all prefix sums are unique.
     """
     prefix_sum = 0
     seen = {0}  # Include 0 for subarray starting at index 0
@@ -583,11 +599,11 @@ def has_zero_sum_subarray(nums: list[int]) -> bool:
 
 | Problem Type               | Technique             | Space |
 | -------------------------- | --------------------- | ----- |
-| Sum = K (with negatives)   | Prefix sum + HashMap  | O(n)  |
-| Sum >= K (positive only)   | Sliding window        | O(1)  |
-| Sum divisible by K         | Prefix mod + HashMap  | O(k)  |
-| Max length with sum K      | First occurrence only | O(n)  |
-| Count subarrays with sum K | Count all occurrences | O(n)  |
+| Sum = K (with negatives)   | Prefix sum + HashMap  | $O(N)$  |
+| Sum >= K (positive only)   | Sliding window        | $O(1)$  |
+| Sum divisible by K         | Prefix mod + HashMap  | $O(K)$  |
+| Max length with sum K      | First occurrence only | $O(N)$  |
+| Count subarrays with sum K | Count all occurrences | $O(N)$  |
 
 ---
 
@@ -620,11 +636,12 @@ Use Python (no overflow) or be careful in other languages
 
 ## Common Mistakes
 
-1. **Forgetting `{0: 1}`**: Misses subarrays starting at index 0
-2. **Wrong first/last occurrence**: First for max length, count for number of subarrays
-3. **Positive-only optimization**: Don't use hashmap when sliding window works
-4. **Mod with negatives**: Ensure positive remainder in some languages
-5. **Size >= 2 constraint**: Check length, not just existence
+1. **Forgetting `{0: 1}`**: Misses subarrays starting at index 0.
+2. **Wrong first/last occurrence**: Use first occurrence for max length, use count for total number of subarrays.
+3. **Positive-only optimization**: Don't use a hashmap when a sliding window works (and requires $O(1)$ space).
+4. **Mod with negatives**: Ensure positive remainder in languages like C++/Java (`mod = (mod + k) % k`). Python automatically handles it.
+5. **Size >= 2 constraint**: Check length (`i - earliest_index >= 2`), not just existence.
+6. **Shadowing Built-ins**: Avoid using `sum` or `max` as variable names. Use `current_sum` or `max_len` instead.
 
 ---
 
@@ -645,12 +662,12 @@ Use Python (no overflow) or be careful in other languages
 
 ## Key Takeaways
 
-1. **Prefix sum + HashMap = O(n)** for subarray sum problems
-2. **`{0: 1}` is crucial** - represents empty prefix for index-0 subarrays
-3. **First occurrence for max length**, count all for number of subarrays
-4. **Mod arithmetic for divisibility** - group by remainders
-5. **Transform problems**: 0→-1 for equal count, odd→1 for odd count
-6. **Sliding window for positive-only** - simpler and O(1) space
+1. **Prefix sum + HashMap = $O(N)$** for subarray sum problems (when array contains negatives).
+2. **`{0: 1}` is crucial** - represents empty prefix for index-0 subarrays.
+3. **First occurrence for max length**, count all for number of subarrays.
+4. **Mod arithmetic for divisibility** - group by remainders.
+5. **Transform problems**: 0→-1 for equal count, odd→1 for odd count.
+6. **Sliding window for positive-only** - simpler and $O(1)$ space.
 
 ---
 

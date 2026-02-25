@@ -4,7 +4,7 @@
 
 ## Overview
 
-Deep copying a linked list with random pointers requires creating entirely new nodes where both `next` and `random` pointers reference the new nodes, not the originals. The challenge is mapping old nodes to new nodes. HashMap gives O(n) time/space; the interleaving technique achieves O(1) extra space.
+Deep copying a linked list with random pointers requires creating entirely new nodes where both `next` and `random` pointers reference the new nodes, not the originals. The challenge is mapping old nodes to new nodes. HashMap gives $O(n)$ time/space; the interleaving technique achieves $O(1)$ extra space.
 
 ## Building Intuition
 
@@ -40,7 +40,7 @@ A'.random = old_to_new[A.random]
 
 The hashmap acts as a translator between the old world and the new world. Every old node maps to its corresponding new node.
 
-**Solution 2: Interleaving—The O(1) Space Magic**
+**Solution 2: Interleaving—The $O(1)$ Space Magic**
 
 Instead of a separate data structure, embed the mapping in the list itself:
 
@@ -93,7 +93,7 @@ Deep copy means complete independence. Modifying the copy doesn't affect the ori
 
 2. **Immutable/Read-Only Lists**: Interleaving modifies the original list temporarily. If the list can't be modified (concurrent access, immutability requirements), use the hashmap approach.
 
-3. **Memory is More Important than Clarity**: Interleaving is O(1) space but harder to understand and debug. If O(n) space is acceptable, hashmap is cleaner.
+3. **Memory is More Important than Clarity**: Interleaving is $O(1)$ space but harder to understand and debug. If $O(n)$ space is acceptable, hashmap is cleaner.
 
 4. **Graph Structures (Not Just Lists)**: For general graphs with cycles, DFS/BFS with hashmap is the standard approach. Interleaving doesn't generalize beyond linked lists.
 
@@ -173,8 +173,8 @@ def copy_random_list_hashmap(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using HashMap.
 
-    Time: O(n)
-    Space: O(n) for the hashmap
+    Time: $O(n)$
+    Space: $O(n)$ for the hashmap
     """
     if not head:
         return None
@@ -238,8 +238,8 @@ def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
     Deep copy using HashMap in single pass.
     Uses getOrCreate pattern.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $O(n)$
+    Space: $O(n)$
     """
     if not head:
         return None
@@ -267,7 +267,7 @@ def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
 
 ---
 
-## Approach 3: Interleaving (O(1) Space)
+## Approach 3: Interleaving ($O(1)$ Space)
 
 This clever approach avoids using a hashmap by interleaving copied nodes with original nodes.
 
@@ -278,8 +278,8 @@ def copy_random_list(head: Optional[Node]) -> Optional[Node]:
 
     LeetCode 138: Copy List with Random Pointer
 
-    Time: O(n)
-    Space: O(1) - no hashmap needed
+    Time: $O(n)$
+    Space: $O(1)$ - no hashmap needed
     """
     if not head:
         return None
@@ -381,11 +381,11 @@ current = None
 
 | Approach              | Time | Space  |
 | --------------------- | ---- | ------ |
-| HashMap (two pass)    | O(n) | O(n)   |
-| HashMap (single pass) | O(n) | O(n)   |
-| Interleaving          | O(n) | O(1)\* |
+| HashMap (two pass)    | $O(n)$ | $O(n)$   |
+| HashMap (single pass) | $O(n)$ | $O(n)$   |
+| Interleaving          | $O(n)$ | $O(1)$\* |
 
-\*O(1) extra space (the copied list itself is O(n) but that's required output)
+\*$O(1)$ extra space (the copied list itself is $O(n)$ but that's required output)
 
 ---
 
@@ -492,12 +492,6 @@ def verify_deep_copy(original: Optional['Node'], copy: Optional['Node']) -> bool
         c = c.next
 
     return o is None and c is None
-
-
-# Usage
-original = create_test_list([(1, 2), (2, 0), (3, None)])
-copy = copy_random_list(original)
-assert verify_deep_copy(original, copy)
 ```
 
 ---
@@ -511,8 +505,8 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
     """
     Clone an undirected graph using DFS + HashMap.
 
-    Time: O(V + E)
-    Space: O(V)
+    Time: $O(V + E)$
+    Space: $O(V)$
     """
     if not node:
         return None
@@ -539,7 +533,7 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
 ## Interview Tips
 
 1. **Start with HashMap approach**: Easier to explain and implement correctly
-2. **Mention O(1) space optimization**: Shows deeper knowledge
+2. **Mention $O(1)$ space optimization**: Shows deeper knowledge
 3. **Draw the interleaving**: Visual explanation is crucial
 4. **Handle edge cases verbally**: Empty list, self-references
 5. **Verify deep copy**: Explain that no original nodes should be in the copy
@@ -558,8 +552,8 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
 
 ## Key Takeaways
 
-1. **HashMap approach** is O(n) time and O(n) space - simple and reliable
-2. **Interleaving approach** is O(n) time and O(1) extra space - optimal
+1. **HashMap approach** is $O(n)$ time and $O(n)$ space - simple and reliable
+2. **Interleaving approach** is $O(n)$ time and $O(1)$ extra space - optimal
 3. **Two-phase HashMap**: Create nodes first, connect pointers second
 4. **Interleaving phases**: Insert copies, set random, separate lists
 5. **Always verify**: Deep copy means NO shared references to original

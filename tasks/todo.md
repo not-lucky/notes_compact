@@ -31,20 +31,6 @@
 - [x] Update tasks/lessons.md with findings from Chapter 2.
 - [x] Update tasks/todo.md with current progress.
 
-## Linked Lists (Chapter 4)
-- [x] Process Chapter 4 Notes
-  - [x] Analyze and improve README.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 01-linked-list-basics.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 02-fast-slow-pointers.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 03-reversal-patterns.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 04-merge-lists.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 05-intersection-detection.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 06-palindrome-list.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 07-dummy-node-technique.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-  - [x] Analyze and improve 08-copy-with-random.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
-- [x] Update tasks/lessons.md with findings from Chapter 4.
-- [x] Update tasks/todo.md with current progress.
-
 ## Hashmaps & Sets (Chapter 3)
 - [x] Process Chapter 3 Notes
   - [x] Analyze and improve README.md. Fix errors, improve explanations, correctness, and code readability using a subagent.
@@ -59,4 +45,16 @@
 - [x] Update tasks/lessons.md with findings from Chapter 3.
 - [x] Update tasks/todo.md with current progress.
 
-
+## Linked Lists (Chapter 4)
+- [x] Process Chapter 4 Notes
+  - [x] Analyze and improve README.md
+  - [x] Analyze and improve 01-linked-list-basics.md
+  - [x] Analyze and improve 02-fast-slow-pointers.md
+  - [x] Analyze and improve 03-reversal-patterns.md
+  - [x] Analyze and improve 04-merge-lists.md
+  - [x] Analyze and improve 05-intersection-detection.md
+  - [x] Analyze and improve 06-palindrome-list.md
+  - [x] Analyze and improve 07-dummy-node-technique.md
+  - [x] Analyze and improve 08-copy-with-random.md
+- [x] Update tasks/lessons.md with findings from Chapter 4.
+- [x] Update tasks/todo.md with current progress.

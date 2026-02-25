@@ -4,46 +4,45 @@
 
 ## Overview
 
-Interval problems model real-world scheduling scenarios (e.g., calendar appointments, resource allocation). The core strategy is **sorting** (usually by start or end time), which transforms an overlapping $\Theta(n^2)$ pairwise comparison problem into a streamlined $\Theta(n \log n)$ linear pass. Most interval problems follow a common structure: sort first, then traverse once.
+Interval problems model real-world scheduling scenarios (e.g., calendar appointments, resource allocation, event planning). The core strategy is **sorting** (usually by start or end time), which transforms an overlapping $\Theta(n^2)$ pairwise comparison problem into a streamlined $\Theta(n \log n)$ linear pass. Most interval problems follow a common structure: sort first, then traverse once.
 
 ## Building Intuition & Mental Models
 
 **Why does sorting unlock efficient interval algorithms?**
 
-The key insight is **sorted intervals reveal geometric structure**:
+The key insight is that **sorted intervals reveal geometric structure**:
 
-1. **Sort by Start = Merge Potential**: When sorted by start, consecutive intervals are most likely to overlap. Interval `[5, 10]` can only overlap with intervals starting at $\leq 10$. Once we encounter a start time of `11`, no more overlaps are possible for the current interval.
-2. **Sort by End = Greedy Selection**: When sorted by end time, the earliest-ending interval leaves maximum room for subsequent ones. This is why Activity Selection uses end-time sorting.
+1. **Sort by Start = Merge Potential**: When sorted by start, consecutive intervals are most likely to overlap. Interval `[5, 10]` can only overlap with intervals starting at $\le 10$. Once we encounter a start time of `11`, no more overlaps are possible for the current interval.
+2. **Sort by End = Greedy Selection**: When sorted by end time, the earliest-ending interval leaves maximum room for subsequent ones. This is why Activity Selection (or minimum removals to make non-overlapping) uses end-time sorting.
 3. **Event-Based Counting**: Treating starts and ends as atomic events and processing them chronologically lets us count concurrent intervals in one pass.
 
-**🧠 Mental Model: Merge Intervals (Lumber Stacking)**
-Imagine laying pieces of lumber (intervals) along a long measuring tape. Sorting by start time arranges them left-to-right. Walk left to right along the tape, extending your current continuous block of wood if the next piece overlaps, or starting a completely new block if there's a gap.
+**🧠 Mental Model: Merge Intervals (Painting a Fence)**
+Imagine you are painting a long wooden fence, one segment at a time. Each segment is an interval. Sorting by start time means you walk along the fence from left to right. As you walk, if the next paint job overlaps with the wet paint of your current job, you simply extend your continuous wet block. If there's a dry gap, you step over it and start a brand new block of paint.
 
-**🧠 Mental Model: Meeting Rooms (The Hotel Lobby)**
-Think of people entering (`+1`) and leaving (`-1`) a hotel lobby. Sort all enter/leave events by time. Walk through the events chronologically, tracking the current count of people. The peak count you observe is the maximum occupancy (rooms needed). If people leave and enter at the exact same minute, let them leave first so you don't overcount!
+**🧠 Mental Model: Meeting Rooms (The Bouncer's Clicker)**
+Think of a nightclub where people enter (`+1`) and leave (`-1`). A bouncer at the door logs the exact time of every entry and exit. Sort all these events chronologically. The bouncer walks through the log, clicking their tally counter up for entries and down for exits. The highest number the counter ever reaches is the maximum occupancy (rooms needed). If people leave and enter at the exact same minute, the bouncer processes the exits first so they don't incorrectly deny entry due to a full club!
 
-**Why Sort by Start for Merging**:
+**Why Sort by Start for Merging:**
 ```text
-Unsorted: [[8,10], [1,3], [2,6], [15,18]]
-Sorted:   [[1,3], [2,6], [8,10], [15,18]]
+Unsorted: [[8, 10], [1, 3], [2, 6], [15, 18]]
+Sorted:   [[1, 3], [2, 6], [8, 10], [15, 18]]
 
 After sorting, we check consecutive pairs left-to-right:
-[1,3] and [2,6]: 2 <= 3 -> overlap! Merge to [1,6]
-[1,6] and [8,10]: 8 > 6 -> gap! Start new interval [8,10]
-[8,10] and [15,18]: 15 > 10 -> gap! Start new interval [15,18]
+[1, 3] and [2, 6]   -> 2 <= 3  -> overlap! Merge to [1, 6]
+[1, 6] and [8, 10]  -> 8 > 6   -> gap! Start new interval [8, 10]
+[8, 10] and [15, 18]-> 15 > 10 -> gap! Start new interval [15, 18]
 
-Result: [[1,6], [8,10], [15,18]]
+Result: [[1, 6], [8, 10], [15, 18]]
 
-Without sorting, we must compare all pairs: $\Theta(n^2)$
+Without sorting, we must compare all pairs: \Theta(n^2)
 ```
 
 ## Python Nuances & Complexity Reminders
 
 When solving interval problems in Python, keep these facts in mind:
 - **Dynamic Arrays:** Python lists (`list`) are dynamic arrays. Appending an interval using `.append()` takes **amortized $\Theta(1)$ time**.
-- **Sorting Strings vs Tuples:** `list.sort()` in Python uses Timsort ($\Theta(n \log n)$). If sorting events represented as tuples `(time, delta)`, Python correctly sorts by time first, and breaks ties using the delta.
-- **Avoid String Concatenation:** If building string representations of intervals, avoid `+=` in loops (which can be $O(n^2)$ time). Accumulate parts in a list and use `"".join()`.
-- **Hash Maps:** Though rarely used as the primary data structure for intervals, remember that `dict` and `set` lookups/inserts are **amortized $\Theta(1)$**, but **worst-case $\Theta(n)$** due to hash collisions.
+- **Sorting:** `list.sort()` in Python uses Timsort (worst/average case $\Theta(n \log n)$, best case $\Theta(n)$). If sorting events represented as tuples `(time, delta)`, Python correctly sorts by time first, and breaks ties using the delta.
+- **Avoid String Concatenation:** If building string representations of intervals, avoid `+=` in loops (which can be $O(n^2)$ time worst case). Accumulate parts in a list and use `"".join()`.
 - **Recursion:** If you use recursion (e.g., Interval Trees), always factor the recursive call stack depth into your space complexity (often $\Theta(\log n)$ or $\Theta(n)$).
 
 ---
@@ -56,12 +55,10 @@ An interval is typically represented as `[start, end]` where `start <= end`.
 # Modern Python type hints
 interval: list[int] = [1, 5]  # starts at 1, ends at 5
 
-# Overlap check
 def overlaps(a: list[int], b: list[int]) -> bool:
     """Check if two intervals overlap (inclusive)."""
     return a[0] <= b[1] and b[0] <= a[1]
 
-# Merge two overlapping intervals
 def merge_two(a: list[int], b: list[int]) -> list[int]:
     """Merge two overlapping intervals."""
     return [min(a[0], b[0]), max(a[1], b[1])]
@@ -82,8 +79,8 @@ def merge(intervals: list[list[int]]) -> list[list[int]]:
     """
     Merge all overlapping intervals.
 
-    Time: \Theta(n \log n) for sorting. The merge pass is \Theta(n).
-    Space: \Theta(n) worst-case to store the result (or \Theta(\log n) for sort stack space).
+    Time Complexity: \Theta(n \log n) for sorting. The merge pass is \Theta(n).
+    Space Complexity: \Theta(n) worst-case to store the result (or \Theta(\log n) for sort stack space).
     """
     if not intervals:
         return []
@@ -125,8 +122,8 @@ def insert(intervals: list[list[int]], new_interval: list[int]) -> list[list[int
     Insert new interval and merge if necessary.
     Input intervals are already sorted and non-overlapping.
 
-    Time: \Theta(n) single pass.
-    Space: \Theta(n) for output array.
+    Time Complexity: \Theta(n) single pass.
+    Space Complexity: \Theta(n) for output array.
     """
     result: list[list[int]] = []
     i = 0
@@ -165,10 +162,10 @@ The "Line Sweep" or "Event" method treats time as a series of distinct chronolog
 ```python
 def min_meeting_rooms(intervals: list[list[int]]) -> int:
     """
-    Find minimum number of meeting rooms required.
+    Find minimum number of meeting rooms required using Line Sweep.
 
-    Time: \Theta(n \log n) to sort events.
-    Space: \Theta(n) to store events array.
+    Time Complexity: \Theta(n \log n) to sort events.
+    Space Complexity: \Theta(n) to store events array.
     """
     if not intervals:
         return 0
@@ -201,8 +198,10 @@ import heapq
 
 def min_meeting_rooms_heap(intervals: list[list[int]]) -> int:
     """
-    Time: O(n \log n)
-    Space: O(n) for the heap.
+    Find minimum number of meeting rooms required using a Min-Heap.
+
+    Time Complexity: \Theta(n \log n) to sort and manage heap operations.
+    Space Complexity: \Theta(n) worst-case for the heap.
     """
     if not intervals:
         return 0
@@ -213,12 +212,12 @@ def min_meeting_rooms_heap(intervals: list[list[int]]) -> int:
     for i in range(1, len(intervals)):
         # If the earliest ending meeting finishes before/when current starts
         if intervals[i][0] >= heap[0]:
-            heapq.heappop(heap) # Free that room
+            heapq.heappop(heap)  # Free that room
 
         # Add the current meeting's end time
         heapq.heappush(heap, intervals[i][1])
 
-    return len(heap) # Heap size is peak concurrency
+    return len(heap)  # Heap size is peak concurrency
 ```
 
 ---
@@ -229,15 +228,15 @@ def min_meeting_rooms_heap(intervals: list[list[int]]) -> int:
 Given an array of intervals, return the minimum number of intervals to remove to make the rest non-overlapping.
 
 **Why it works:**
-This is a classic Greedy problem. To keep the *maximum* number of intervals, always pick the interval that **ends the earliest** among available non-overlapping ones. This leaves the most possible room for future intervals.
+This is a classic Greedy problem. To keep the *maximum* number of intervals, always pick the interval that **ends the earliest** among available non-overlapping ones. This guarantees the maximum possible room for future intervals. By maximizing what we keep, we mathematically minimize what we remove.
 
 ```python
 def erase_overlap_intervals(intervals: list[list[int]]) -> int:
     """
     Greedy: Always keep the interval that ends earliest.
 
-    Time: \Theta(n \log n) for sorting.
-    Space: \Theta(\log n) for sorting in Python.
+    Time Complexity: \Theta(n \log n) for sorting.
+    Space Complexity: \Theta(\log n) for sorting in Python.
     """
     if not intervals:
         return 0
@@ -266,16 +265,18 @@ def erase_overlap_intervals(intervals: list[list[int]]) -> int:
 ## Template: Interval Intersection (Two Pointers)
 
 ### Problem Statement
-Given two lists of closed intervals `firstList` and `secondList`, where each list is internally sorted and disjoint. Return the intersection.
+Given two lists of closed intervals `A` and `B`, where each list is internally sorted and disjoint. Return the intersection.
 
 **Why it works:**
-A two-pointer approach is perfect here. The intersecting boundary is always `[max(start1, start2), min(end1, end2)]`. We advance the pointer of the interval that ends earliest, as it cannot overlap with any subsequent intervals.
+A two-pointer approach is perfect here. The intersecting boundary is always `[max(start1, start2), min(end1, end2)]`. We advance the pointer of the interval that ends earliest, as it cannot possibly overlap with any subsequent intervals in the other list.
 
 ```python
 def interval_intersection(A: list[list[int]], B: list[list[int]]) -> list[list[int]]:
     """
-    Time: \Theta(m + n)
-    Space: \Theta(m + n) worst-case output array.
+    Find intersection of two disjoint, sorted interval lists.
+
+    Time Complexity: \Theta(m + n)
+    Space Complexity: \Theta(m + n) worst-case output array.
     """
     result: list[list[int]] = []
     i = j = 0
@@ -302,12 +303,12 @@ def interval_intersection(A: list[list[int]], B: list[list[int]]) -> list[list[i
 
 ## Sorting Strategies Summary
 
-| Sort By             | Use Case                         |
-| ------------------- | -------------------------------- |
-| **Start time**      | Merging, Insertion               |
-| **End time**        | Activity selection, Min removals |
+| Sort By                 | Use Case                                       |
+| ----------------------- | ---------------------------------------------- |
+| **Start time**          | Merging, Insertion                             |
+| **End time**            | Activity selection, Min removals               |
 | **Start asc, end desc** | Covered intervals (keeps largest parent first) |
-| **Events (start/end)** | Counting concurrent (Line sweep) |
+| **Events (start/end)**  | Counting concurrent (Line sweep)               |
 
 ---
 
@@ -335,23 +336,23 @@ def interval_intersection(A: list[list[int]], B: list[list[int]]) -> list[list[i
 
 ## Practice Problems
 
-| Problem                     | Difficulty | Key Technique       |
-| --------------------------- | ---------- | ------------------- |
-| Merge Intervals             | Medium     | Sort by start + merge |
-| Insert Interval             | Medium     | Three linear passes |
-| Meeting Rooms               | Easy       | Sort by start, check adjacencies |
-| Meeting Rooms II            | Medium     | Events or Min-Heap  |
-| Non-overlapping Intervals   | Medium     | Greedy by end time  |
-| Interval List Intersections | Medium     | Two pointers        |
-| Remove Covered Intervals    | Medium     | Sort by start asc, end desc |
-| Employee Free Time          | Hard       | Flatten, merge all, find gaps |
+| Problem                     | Difficulty | Key Technique                   |
+| --------------------------- | ---------- | ------------------------------- |
+| Merge Intervals             | Medium     | Sort by start + merge           |
+| Insert Interval             | Medium     | Three linear passes             |
+| Meeting Rooms               | Easy       | Sort by start, check adjacencies|
+| Meeting Rooms II            | Medium     | Events or Min-Heap              |
+| Non-overlapping Intervals   | Medium     | Greedy by end time              |
+| Interval List Intersections | Medium     | Two pointers                    |
+| Remove Covered Intervals    | Medium     | Sort by start asc, end desc     |
+| Employee Free Time          | Hard       | Flatten, merge all, find gaps   |
 
 ---
 
 ## Key Takeaways
 
 1. **Sort first** - almost always necessary and drops time complexity to $\Theta(n \log n)$.
-2. **Overlap check formula**: `a.start <= b.end and b.start <= a.end`
+2. **Overlap check formula**: `a[0] <= b[1] and b[0] <= a[1]`
 3. **Merge formula**: `[min(starts), max(ends)]`
 4. **For minimum rooms / peak overlaps**: Treat time as events (`+1` and `-1`), sweep the timeline.
 5. **For minimum removals**: Greedy strategy. Sort by **end time** and keep the earliest ending ones.

@@ -176,14 +176,18 @@ Frequency Map:
 **Explanation**: We iterate through the array once and use a hashmap to store each element as a key and its frequency as the value. This allows us to retrieve the count of any element in O(1) time after an O(n) preprocessing step. Python's `collections.Counter` is a highly optimized tool for this specific task.
 
 ```python
-def frequency_count(nums: list) -> dict:
+from typing import TypeVar, Hashable
+
+T = TypeVar('T', bound=Hashable)
+
+def frequency_count(nums: list[T]) -> dict[T, int]:
     """
     Count frequency of each element.
 
-    Time: O(n)
-    Space: O(k) where k = unique elements
+    Time Complexity: O(N)
+    Space Complexity: O(K) where K = number of unique elements
     """
-    freq = {}
+    freq: dict[T, int] = {}
 
     for num in nums:
         freq[num] = freq.get(num, 0) + 1
@@ -193,8 +197,8 @@ def frequency_count(nums: list) -> dict:
 # Using defaultdict
 from collections import defaultdict
 
-def frequency_count_defaultdict(nums: list) -> dict:
-    freq = defaultdict(int)
+def frequency_count_defaultdict(nums: list[T]) -> dict[T, int]:
+    freq: defaultdict[T, int] = defaultdict(int)
 
     for num in nums:
         freq[num] += 1
@@ -204,7 +208,7 @@ def frequency_count_defaultdict(nums: list) -> dict:
 # Using Counter (most Pythonic)
 from collections import Counter
 
-def frequency_count_counter(nums: list) -> Counter:
+def frequency_count_counter(nums: list[T]) -> Counter[T]:
     return Counter(nums)
 ```
 
@@ -221,8 +225,8 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
     """
     Find k most frequent elements.
 
-    Time: O(n log k) with heap, O(n) with bucket sort
-    Space: O(n)
+    Time Complexity: O(N log K) with heap, O(N) with bucket sort
+    Space Complexity: O(N) for frequency map and heap/buckets
 
     Example:
     nums = [1, 1, 1, 2, 2, 3], k = 2 → [1, 2]
@@ -232,10 +236,14 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
 
     count = Counter(nums)
 
-    # Method 1: Use heap (O(n log k))
+    # Method 1: Use heap (O(N log K))
+    # nlargest pushes all elements then pops, or maintains a heap of size k
+    # heapq.nlargest is optimized to be O(N log K) when K < N
     return heapq.nlargest(k, count.keys(), key=count.get)
 
-    # Method 2: Use Counter's built-in (O(n log n))
+    # Method 2: Use Counter's built-in
+    # Under the hood, this also uses heapq.nlargest or sorting depending on K.
+    # Time Complexity: O(N log K)
     # return [item for item, freq in count.most_common(k)]
 ```
 
@@ -245,15 +253,20 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
 
 **Explanation**: Since the frequency of any element cannot exceed the total number of elements `n`, we can create an array of "buckets" where the index represents the frequency. We place elements into the bucket corresponding to their frequency. Then, we traverse the buckets from highest index to lowest to collect the `k` most frequent elements.
 
+*Intuition Check: Heap vs Bucket Sort*
+- **Heap approach ($O(N \log K)$)**: Best when $K$ is very small compared to $N$ (e.g., top 3 items out of 1 million). The logarithmic factor is negligible, and it avoids allocating $N$ buckets.
+- **Bucket Sort approach ($O(N)$)**: Best when frequencies are bounded by $N$ and $K$ is close to the number of unique elements. The space overhead is $O(N)$, but the time is strictly linear.
+
 ```python
 def top_k_frequent_bucket(nums: list[int], k: int) -> list[int]:
     """
-    Bucket sort approach for O(n) time.
+    Bucket sort approach for O(N) time.
 
-    Key insight: frequency is bounded by n, so use frequency as index.
+    Key insight: frequency is strictly bounded by N, so we can use frequency as the bucket index.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N) because we iterate through the N elements once to build the counts,
+    and then we iterate through N buckets at most once to collect the top K elements.
+    Space Complexity: O(N) to store the Counter and the list of buckets.
     """
     from collections import Counter
 
@@ -261,13 +274,14 @@ def top_k_frequent_bucket(nums: list[int], k: int) -> list[int]:
     n = len(nums)
 
     # buckets[i] = list of elements with frequency i
-    buckets = [[] for _ in range(n + 1)]
+    # Max possible frequency is n, so we need n + 1 buckets
+    buckets: list[list[int]] = [[] for _ in range(n + 1)]
 
     for num, freq in count.items():
         buckets[freq].append(num)
 
-    # Collect top k from highest frequency buckets
-    result = []
+    # Collect top k from highest frequency buckets (right to left)
+    result: list[int] = []
     for i in range(n, 0, -1):
         for num in buckets[i]:
             result.append(num)
@@ -309,8 +323,8 @@ def top_k_frequent_words(words: list[str], k: int) -> list[str]:
     """
     Find k most frequent words. If same frequency, sort alphabetically.
 
-    Time: O(n log k)
-    Space: O(n)
+    Time Complexity: O(N log K * L) where L is the maximum length of a word (string comparison).
+    Space Complexity: O(N * L) to store the words in the Counter.
 
     Example:
     words = ["i", "love", "leetcode", "i", "love", "coding"], k = 2
@@ -322,7 +336,9 @@ def top_k_frequent_words(words: list[str], k: int) -> list[str]:
     count = Counter(words)
 
     # Custom comparator: higher frequency first, then alphabetically
-    # heapq is min-heap, so negate frequency
+    # heapq is a min-heap, so negate the frequency to push the most frequent to the bottom
+    # However, since we want to return top K we can use nsmallest and define the sort order
+    # (higher freq first, alphabet second). Negating freq does this.
     return heapq.nsmallest(k, count.keys(), key=lambda x: (-count[x], x))
 ```
 
@@ -333,34 +349,39 @@ def top_k_frequent_words(words: list[str], k: int) -> list[str]:
 ```python
 def top_k_words_optimized(words: list[str], k: int) -> list[str]:
     """
-    Using min-heap for O(n log k) with proper tie-breaking.
+    Using min-heap for O(N log K * L) with proper tie-breaking for strings.
     """
     from collections import Counter
     import heapq
 
     count = Counter(words)
 
-    # Wrapper class for custom comparison
+    # Wrapper class to define custom comparison rules in a Min-Heap
     class Element:
-        def __init__(self, word, freq):
+        def __init__(self, word: str, freq: int):
             self.word = word
             self.freq = freq
 
-        def __lt__(self, other):
-            # Min-heap: lower frequency should be at top
-            # For same frequency: reverse alphabetical (z < a for min-heap)
+        def __lt__(self, other: 'Element') -> bool:
+            # We want to maintain a heap of size K containing the TOP K elements.
+            # In a min-heap, the root is the "smallest" (i.e. the one to discard next).
+            # So, "less than" means "less important" (lower frequency).
             if self.freq == other.freq:
-                return self.word > other.word  # Reversed for min-heap
+                # If frequencies tie, we want to KEEP the alphabetically earlier word,
+                # meaning it is MORE important. So the alphabetically LATER word is LESS important.
+                # Therefore, word1 < word2 returns True if word1 > word2 alphabetically.
+                return self.word > other.word
             return self.freq < other.freq
 
-    heap = []
+    heap: list[Element] = []
     for word, freq in count.items():
         heapq.heappush(heap, Element(word, freq))
+        # Keep only the top k elements in the heap
         if len(heap) > k:
             heapq.heappop(heap)
 
-    # Pop all and reverse
-    result = []
+    # Pop all and reverse to get highest frequency first
+    result: list[str] = []
     while heap:
         result.append(heapq.heappop(heap).word)
 
@@ -376,27 +397,34 @@ def top_k_words_optimized(words: list[str], k: int) -> list[str]:
 **Explanation**: While a hashmap can solve this in O(n) space, the Boyer-Moore Voting Algorithm achieves O(n) time and O(1) space. It works by maintaining a candidate and a counter. If the current number matches the candidate, we increment the counter; otherwise, we decrement it. If the counter reaches zero, we pick the current number as the new candidate. The majority element is guaranteed to survive this "cancellation" process.
 
 ```python
+from typing import Optional
+
 def majority_element(nums: list[int]) -> int:
     """
     Find element that appears more than n/2 times.
     Guaranteed to exist.
 
-    Time: O(n)
-    Space: O(1) with Boyer-Moore, O(n) with Counter
+    Time Complexity: O(N)
+    Space Complexity: O(N) using Counter
     """
-    # Method 1: Counter (O(n) space)
+    # Method 1: Counter (O(N) space)
     from collections import Counter
     count = Counter(nums)
+    # The max function takes an iterable of keys, and uses `count.get` as the key function
     return max(count.keys(), key=count.get)
 
 
 def majority_element_boyer_moore(nums: list[int]) -> int:
     """
-    Boyer-Moore Voting Algorithm - O(1) space.
+    Boyer-Moore Voting Algorithm.
 
-    Key insight: Majority element "survives" cancellation.
+    Key insight: The majority element always "survives" cancellation
+    because it makes up more than half of the elements.
+
+    Time Complexity: O(N)
+    Space Complexity: O(1)
     """
-    candidate = None
+    candidate: Optional[int] = None
     count = 0
 
     for num in nums:
@@ -408,7 +436,8 @@ def majority_element_boyer_moore(nums: list[int]) -> int:
         else:
             count -= 1
 
-    return candidate
+    # Safe to cast since problem guarantees a majority element exists
+    return candidate  # type: ignore
 ```
 
 ### Visual: Boyer-Moore
@@ -436,41 +465,48 @@ Result: 2 (verify by counting if not guaranteed)
 **Explanation**: This is an extension of Boyer-Moore. Since at most two elements can appear more than `n/3` times, we maintain two candidates and two counters. After one pass, we must perform a second pass to verify that the candidates actually meet the frequency requirement.
 
 ```python
+from typing import Optional
+
 def majority_element_ii(nums: list[int]) -> list[int]:
     """
     Find all elements appearing more than n/3 times.
     At most 2 such elements can exist.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: O(N) since we do two passes.
+    Space Complexity: O(1) space to store the two candidates.
     """
     if not nums:
         return []
 
-    # Boyer-Moore for 2 candidates
-    candidate1, candidate2 = None, None
+    # Boyer-Moore extended for 2 candidates
+    candidate1: Optional[int] = None
+    candidate2: Optional[int] = None
     count1, count2 = 0, 0
 
     for num in nums:
+        # Crucial ordering: first check if it matches an existing candidate
         if candidate1 == num:
             count1 += 1
         elif candidate2 == num:
             count2 += 1
+        # If it doesn't match, check if there's an empty slot for a new candidate
         elif count1 == 0:
             candidate1 = num
             count1 = 1
         elif count2 == 0:
             candidate2 = num
             count2 = 1
+        # If both slots are taken by other numbers, decrement both counts
         else:
             count1 -= 1
             count2 -= 1
 
-    # Verify candidates
-    result = []
+    # Verify candidates are actually > n/3
+    result: list[int] = []
     threshold = len(nums) // 3
 
     for candidate in [candidate1, candidate2]:
+        # count() iterates the list which is O(N) per candidate. Overall O(N) since there's only 2 candidates.
         if candidate is not None and nums.count(candidate) > threshold:
             result.append(candidate)
 
@@ -488,10 +524,10 @@ def majority_element_ii(nums: list[int]) -> list[int]:
 ```python
 def first_uniq_char(s: str) -> int:
     """
-    Find index of first non-repeating character.
+    Find the index of the first non-repeating character in a string.
 
-    Time: O(n)
-    Space: O(1) - at most 26 letters
+    Time Complexity: O(N) where N is the length of the string
+    Space Complexity: O(1) since English alphabet has a fixed size (at most 26 lowercase letters)
 
     Example:
     "leetcode" → 0 (l is first unique)
@@ -499,6 +535,8 @@ def first_uniq_char(s: str) -> int:
     """
     from collections import Counter
 
+    # In Python 3.7+, dictionaries (and Counter) maintain insertion order,
+    # but the naive approach iterates the string twice.
     count = Counter(s)
 
     for i, char in enumerate(s):
@@ -522,18 +560,21 @@ def find_duplicates(nums: list[int]) -> list[int]:
     Find all elements that appear exactly twice.
     Constraints: 1 <= nums[i] <= n where n = len(nums)
 
-    Time: O(n)
-    Space: O(1) - using array itself
+    Time Complexity: O(N)
+    Space Complexity: O(1) by modifying the array in-place
     """
-    result = []
+    result: list[int] = []
 
     for num in nums:
+        # Since nums are 1-indexed (1 to N), subtract 1 for 0-indexed array
         index = abs(num) - 1
 
         if nums[index] < 0:
-            result.append(abs(num))  # Already seen
+            # If the value at `index` is already negative, we've visited it before
+            result.append(abs(num))
         else:
-            nums[index] *= -1  # Mark as seen
+            # Mark the value at `index` as negative (visited)
+            nums[index] *= -1
 
     return result
 ```
@@ -568,10 +609,10 @@ def single_number(nums: list[int]) -> int:
     """
     Every element appears twice except one. Find it.
 
-    Time: O(n)
-    Space: O(1) - no hashmap needed!
+    Time Complexity: O(N)
+    Space Complexity: O(1)
 
-    Key insight: XOR of same numbers = 0, XOR with 0 = number itself
+    Key insight: XOR of a number with itself is 0, XOR of a number with 0 is itself.
     a ^ a = 0
     a ^ 0 = a
     """
@@ -596,8 +637,8 @@ def contains_duplicate(nums: list[int]) -> bool:
     """
     Check if any element appears at least twice.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(N)
+    Space Complexity: O(N) for the Set
     """
     return len(nums) != len(set(nums))
 
@@ -605,8 +646,9 @@ def contains_duplicate(nums: list[int]) -> bool:
 def contains_duplicate_early_exit(nums: list[int]) -> bool:
     """
     Early exit version - stops as soon as a duplicate is found.
+    Time Complexity: O(N) worst case, but better on average if duplicates exist.
     """
-    seen = set()
+    seen: set[int] = set()
 
     for num in nums:
         if num in seen:
@@ -629,21 +671,26 @@ def contains_nearby_duplicate(nums: list[int], k: int) -> bool:
     """
     Check if nums[i] == nums[j] and |i - j| <= k.
 
-    Time: O(n)
-    Space: O(min(n, k))
+    Time Complexity: O(N)
+    Space Complexity: O(min(N, K)) using sliding window logic
     """
-    seen = {}  # value → most recent index
+    seen: dict[int, int] = {}  # Map value to most recent index
 
     for i, num in enumerate(nums):
+        # We only care about the most recent occurrence
         if num in seen and i - seen[num] <= k:
             return True
         seen[num] = i
 
     return False
 
-# Sliding window approach (O(k) space)
+# Sliding window approach explicitly enforcing O(K) space
 def contains_nearby_duplicate_window(nums: list[int], k: int) -> bool:
-    window = set()
+    """
+    Time Complexity: O(N)
+    Space Complexity: O(min(N, K)) explicitly restricted
+    """
+    window: set[int] = set()
 
     for i, num in enumerate(nums):
         if num in window:
@@ -651,6 +698,7 @@ def contains_nearby_duplicate_window(nums: list[int], k: int) -> bool:
 
         window.add(num)
 
+        # Evict element that just left the window
         if len(window) > k:
             window.remove(nums[i - k])
 
@@ -666,37 +714,43 @@ def contains_nearby_duplicate_window(nums: list[int], k: int) -> bool:
 **Explanation**: We use a bucket sort-like approach to group numbers by their values. Each bucket has a width of `t + 1`. If two numbers fall into the same bucket, their difference is at most `t`. We also check adjacent buckets for potential matches. We maintain a sliding window of size `k` by removing old buckets as we move forward.
 
 ```python
-def contains_nearby_almost_duplicate(nums: list[int], k: int, t: int) -> bool:
+def contains_nearby_almost_duplicate(nums: list[int], index_diff: int, value_diff: int) -> bool:
     """
-    Check if nums[i] ≈ nums[j] (diff <= t) and |i - j| <= k.
+    Check if nums[i] ≈ nums[j] (diff <= value_diff) and |i - j| <= index_diff.
 
-    Time: O(n) with bucket sort
-    Space: O(min(n, k))
+    Time Complexity: O(N) using Bucket Sort logic.
+    Space Complexity: O(min(N, index_diff)) for the sliding window of buckets.
     """
-    if t < 0:
+    if value_diff < 0 or index_diff < 0:
         return False
 
-    buckets = {}
-    bucket_size = t + 1  # Bucket width
+    buckets: dict[int, int] = {}
+    bucket_size = value_diff + 1  # Width of each bucket
 
     for i, num in enumerate(nums):
         bucket_id = num // bucket_size
 
-        # Same bucket → diff <= t
+        # Note: Python's floor division `//` with negative numbers rounds towards negative infinity.
+        # e.g., -5 // 3 == -2 (not -1). This means negative numbers correctly map to contiguous unique buckets.
+
+        # Same bucket → difference is guaranteed to be <= value_diff
         if bucket_id in buckets:
             return True
 
-        # Adjacent buckets might also work
-        if bucket_id - 1 in buckets and num - buckets[bucket_id - 1] <= t:
+        # Adjacent buckets MIGHT have elements with diff <= value_diff.
+        # We must explicitly check the difference.
+        if bucket_id - 1 in buckets and num - buckets[bucket_id - 1] <= value_diff:
             return True
-        if bucket_id + 1 in buckets and buckets[bucket_id + 1] - num <= t:
+        if bucket_id + 1 in buckets and buckets[bucket_id + 1] - num <= value_diff:
             return True
 
+        # Store the number in the bucket. We only keep one number per bucket,
+        # because if there were two, we would have already returned True above.
         buckets[bucket_id] = num
 
-        # Maintain window size k
-        if i >= k:
-            old_bucket = nums[i - k] // bucket_size
+        # Maintain window size k (index_diff)
+        if i >= index_diff:
+            old_bucket = nums[i - index_diff] // bucket_size
             del buckets[old_bucket]
 
     return False

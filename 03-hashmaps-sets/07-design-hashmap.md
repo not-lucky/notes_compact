@@ -60,6 +60,9 @@ When both hash to 42:
 → Try #44 (empty!) → Store here
 
 Lookup: Same process—start at hash, probe until found or empty.
+
+Deletion problem: If we delete "Jane" from #42, how do we find "John" later? If we just empty #42, the probe for "John" will stop there!
+Solution: Use a "TOMBSTONE" marker. When probing for "John", skip tombstones but don't stop.
 ```
 
 **Why Prime Numbers for Bucket Size?**
@@ -469,10 +472,17 @@ class MyHashMapBetterHash:
         """
         Multiplicative hashing.
         Uses golden ratio for better distribution.
+
+        Note: If keys can be negative, take the absolute value or use
+        Python's modulo logic carefully before applying the multiplier.
         """
         # Knuth's multiplicative hash
         A = 0.6180339887  # (sqrt(5) - 1) / 2
-        return int(self.size * ((key * A) % 1))
+
+        # Handle negative keys gracefully
+        k = abs(key)
+
+        return int(self.size * ((k * A) % 1))
 
     # ... rest same as basic implementation
 ```

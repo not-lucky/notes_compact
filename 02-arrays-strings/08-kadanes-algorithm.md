@@ -21,7 +21,7 @@ The key insight is **local optimality leads to global optimality**. At each posi
 
 3. **Simpler Form**: `current_max = max(arr[i], current_max + arr[i])` simplifies to: "If `current_max` is negative, reset to `arr[i]`; otherwise, add `arr[i]` to it."
 
-**Mental Model**: Imagine you're walking down a road collecting coins (positive) and paying tolls (negative). Your pockets are your current subarray. At each step, ask: "Is my accumulated wealth from previous steps helping or hurting me?" If you're in debt (negative sum), empty your pockets, declare bankruptcy, and start over with the current step. If you have savings (positive sum), keep going and add the current step's value.
+**Mental Model**: Imagine you're walking down a road collecting coins (positive) and paying tolls (negative). Your pockets hold your current accumulated wealth (your current subarray). At each step, ask: "Is the accumulated wealth in my pockets helping me or hurting me?" If you're in debt (a negative sum), you are better off emptying your pockets, declaring bankruptcy, and starting over with the current coin or toll. If you have savings (a positive sum), keep going and add the current coin or toll to your pockets.
 
 **Visual Trace**:
 
@@ -76,7 +76,7 @@ Kadane's algorithm solves the Maximum Subarray problem in $\Theta(n)$ time. This
 - **Dynamic Arrays**: Python lists are dynamic arrays. While appending to them is amortized $\Theta(1)$, building a subarray item-by-item during Kadane's would require memory reallocation and cost $O(n)$ space. By only tracking sums (or indices), we maintain strict $\Theta(1)$ space.
 - **String/List Concatenation**: If the problem asked to return the subarray as a string, avoid string concatenation (`+=`) in a loop, as it results in $O(n^2)$ time due to memory churn. Use `.join()` or track indices instead.
 - **Hash Maps**: If a variation requires tracking seen sums (like in prefix sum approaches to subarray problems), remember that Python dictionary insertions/lookups are amortized $\Theta(1)$ but worst-case $O(n)$ due to hash collisions.
-- **Recursive Call Stack**: None of these standard iterative versions utilize recursion, so there is no hidden $O(n)$ space complexity on the call stack, guaranteeing an exact $\Theta(1)$ space footprint.
+- **Recursive Call Stack**: None of these standard iterative versions utilize recursion, so there is no hidden $\Theta(n)$ space complexity on the call stack, guaranteeing an exact $\Theta(1)$ space footprint.
 
 ---
 
@@ -98,7 +98,7 @@ def max_subarray(arr: list[int]) -> int:
     Find the maximum sum of any contiguous subarray.
 
     Time Complexity: $\Theta(n)$ - tight bound, single pass.
-    Space Complexity: $\Theta(1)$ - tight bound, strictly uses scalar variables (no recursive call stack).
+    Space Complexity: $\Theta(1)$ - tight bound, strictly uses scalar variables.
 
     Example:
     [-2, 1, -3, 4, -1, 2, 1, -5, 4] → 6
@@ -178,7 +178,7 @@ def max_product(arr: list[int]) -> int:
     negative × negative = positive.
 
     Time Complexity: $\Theta(n)$ - tight bound.
-    Space Complexity: $\Theta(1)$ - strict O(1) auxiliary space, no call stack.
+    Space Complexity: $\Theta(1)$ - strict auxiliary space, no call stack.
 
     Example:
     [2, 3, -2, 4] → 6 (subarray [2, 3])
@@ -246,7 +246,7 @@ def max_circular_subarray(arr: list[int]) -> int:
     2. Total - min subarray (wrapping around)
 
     Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(1)$ - helper functions do not add recursive call stack depth.
+    Space Complexity: $\Theta(1)$
     """
     total = sum(arr)
 
@@ -353,15 +353,15 @@ We can convert this 2D problem into 1D Kadane's.
 1. We pick a pair of columns `(L, R)`.
 2. We "compress" all columns between `L` and `R` into a single 1D array where each element is the sum of a row between these columns.
 3. We run Kadane's on this 1D array to find the best set of rows for this column pair.
-4. By iterating over all column pairs ($\Theta(cols^2)$), we find the global maximum rectangle.
+4. By iterating over all column pairs ($\Theta(\text{cols}^2)$), we find the global maximum rectangle.
 
 ```python
 def max_sum_rectangle(matrix: list[list[int]]) -> int:
     """
     Find rectangle with maximum sum in 2D matrix.
 
-    Time Complexity: $\Theta(cols^2 \times rows)$ - for each column pair, run Kadane
-    Space Complexity: $\Theta(rows)$ - temp array to store row sums. No recursion used.
+    Time Complexity: $\Theta(\text{cols}^2 \times \text{rows})$ - for each column pair, run Kadane
+    Space Complexity: $\Theta(\text{rows})$ - temp array to store row sums. No recursion used.
 
     Uses: For each pair of left/right columns,
           compress to 1D array and apply Kadane.
@@ -384,7 +384,7 @@ def max_sum_rectangle(matrix: list[list[int]]) -> int:
 
             # Apply Kadane on this 1D array
             current_max = kadane_max(temp)
-            max_sum = max(max_sum, current_max)
+            max_sum = max(max_sum, float(current_max))
 
     return int(max_sum) if max_sum != float('-inf') else 0
 ```

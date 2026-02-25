@@ -4,7 +4,7 @@
 
 ## Overview
 
-Checking if a linked list is a palindrome requires comparing the first half with the reversed second half. The O(1) space solution combines fast-slow pointers (to find the middle) with in-place reversal—a beautiful synthesis of two fundamental patterns.
+Checking if a linked list is a palindrome requires comparing the first half with the reversed second half. The $O(1)$ space solution combines fast-slow pointers (to find the middle) with in-place reversal—a beautiful synthesis of two fundamental patterns.
 
 ## Building Intuition
 
@@ -45,11 +45,11 @@ For odd-length lists, the middle element is compared with itself (via the revers
 - We only compare until the shorter half is exhausted
 - The middle of an odd list ends up in the first half, not compared
 
-**Why O(1) Space Matters**:
+**Why $O(1)$ Space Matters**:
 
-- Array conversion: O(n) space for storing values
-- Stack approach: O(n) space for the stack
-- Fast-slow + reversal: O(1) extra space (just pointers!)
+- Array conversion: $O(n)$ space for storing values
+- Stack approach: $O(n)$ space for the stack
+- Fast-slow + reversal: $O(1)$ extra space (just pointers!)
 
 **The Restoration Question**:
 
@@ -78,15 +78,15 @@ Even (4 elements): [1, 2, 2, 1]
 
 The fast.next and fast.next.next condition in the while loop naturally handles this split.
 
-## When NOT to Use the O(1) Space Approach
+## When NOT to Use the $O(1)$ Space Approach
 
 1. **List Cannot Be Modified**: If the list is read-only or modifications cause issues (concurrent access, persistence requirements), use the array or stack approach.
 
-2. **Need to Know Position of Mismatch**: The O(1) approach tells you true/false, not where the mismatch occurred. For debugging or partial matches, array comparison is easier.
+2. **Need to Know Position of Mismatch**: The $O(1)$ approach tells you true/false, not where the mismatch occurred. For debugging or partial matches, array comparison is easier.
 
 3. **Very Short Lists**: For lists under 10 elements, the overhead of careful pointer manipulation isn't worth it. Just copy to an array.
 
-4. **Combined with Other Operations**: If you need the original list for subsequent operations in the same problem, the restoration step adds complexity. Consider O(n) space instead.
+4. **Combined with Other Operations**: If you need the original list for subsequent operations in the same problem, the restoration step adds complexity. Consider $O(n)$ space instead.
 
 5. **Doubly-Linked Lists**: With `.prev` pointers, you don't need reversal—just walk from both ends simultaneously.
 
@@ -97,7 +97,7 @@ The fast.next and fast.next.next condition in the while loop naturally handles t
 Checking if a linked list is a palindrome is a **popular interview problem** because:
 
 1. **Combines multiple techniques**: Fast-slow pointers + reversal
-2. **Space optimization**: O(1) space solution is non-trivial
+2. **Space optimization**: $O(1)$ space solution is non-trivial
 3. **Edge case handling**: Odd vs even length lists
 4. **Follow-up questions**: "Can you do it without modifying the list?"
 
@@ -132,8 +132,8 @@ def is_palindrome_array(head: Optional[ListNode]) -> bool:
     """
     Convert to array and check palindrome.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $O(n)$
+    Space: $O(n)$
     """
     values = []
     current = head
@@ -145,22 +145,22 @@ def is_palindrome_array(head: Optional[ListNode]) -> bool:
     return values == values[::-1]
 ```
 
-Simple but uses O(n) extra space.
+Simple but uses $O(n)$ extra space.
 
 ---
 
-## Approach 2: Reverse and Compare (O(1) Space)
+## Approach 2: Reverse and Compare ($O(1)$ Space)
 
 ```python
 def is_palindrome(head: Optional[ListNode]) -> bool:
     """
-    Check palindrome with O(1) space.
+    Check palindrome with $O(1)$ space.
     Strategy: Find middle, reverse second half, compare, restore.
 
     LeetCode 234: Palindrome Linked List
 
-    Time: O(n)
-    Space: O(1) auxiliary
+    Time: $O(n)$
+    Space: $O(1)$ auxiliary
     """
     if not head or not head.next:
         return True
@@ -276,8 +276,8 @@ def is_palindrome_recursive(head: Optional[ListNode]) -> bool:
     """
     Check palindrome recursively using implicit stack.
 
-    Time: O(n)
-    Space: O(n) - call stack
+    Time: $O(n)$
+    Space: $O(n)$ - call stack
     """
     front = [head]  # Use list to maintain reference
 
@@ -333,8 +333,8 @@ def is_palindrome_stack(head: Optional[ListNode]) -> bool:
     """
     Use stack to store first half, compare with second half.
 
-    Time: O(n)
-    Space: O(n/2) = O(n)
+    Time: $O(n)$
+    Space: $O(n/2)$ = $O(n)$
     """
     if not head or not head.next:
         return True
@@ -365,12 +365,12 @@ def is_palindrome_stack(head: Optional[ListNode]) -> bool:
 
 ## Complexity Comparison
 
-| Approach     | Time | Space  | Modifies List |
-| ------------ | ---- | ------ | ------------- |
-| Array        | O(n) | O(n)   | No            |
-| Reverse half | O(n) | O(1)   | Temporarily   |
-| Recursive    | O(n) | O(n)   | No            |
-| Stack        | O(n) | O(n/2) | No            |
+| Approach     | Time   | Space    | Modifies List |
+| ------------ | ------ | -------- | ------------- |
+| Array        | $O(n)$ | $O(n)$   | No            |
+| Reverse half | $O(n)$ | $O(1)$   | Temporarily   |
+| Recursive    | $O(n)$ | $O(n)$   | No            |
+| Stack        | $O(n)$ | $O(n/2)$ | No            |
 
 ---
 
@@ -488,9 +488,9 @@ def is_palindrome_allow_one_removal(head: Optional[ListNode]) -> bool:
 
 ## Interview Discussion Points
 
-1. **Why reverse only half?** Reversing the entire list and comparing would use O(n) space for a copy.
+1. **Why reverse only half?** Reversing the entire list and comparing would use $O(n)$ space for a copy.
 
-2. **Why use fast-slow?** Finding the middle in one pass, then reversing, gives us O(1) space.
+2. **Why use fast-slow?** Finding the middle in one pass, then reversing, gives us $O(1)$ space.
 
 3. **Odd vs Even handling**: The key insight is that for odd-length lists, the middle element doesn't affect palindrome-ness.
 
@@ -511,12 +511,12 @@ def is_palindrome_allow_one_removal(head: Optional[ListNode]) -> bool:
 
 ## Key Takeaways
 
-1. **Combine fast-slow with reversal** for O(1) space palindrome check
+1. **Combine fast-slow with reversal** for $O(1)$ space palindrome check
 2. **Middle finding** naturally handles odd/even lengths
 3. **Only compare until second half ends** - it's shorter or equal to first half
 4. **Restore the list** if modification is not allowed
-5. **Recursive approach** uses O(n) stack space but is elegant
-6. **Stack of first half** is intuitive but uses O(n/2) space
+5. **Recursive approach** uses $O(n)$ stack space but is elegant
+6. **Stack of first half** is intuitive but uses $O(n/2)$ space
 
 ---
 

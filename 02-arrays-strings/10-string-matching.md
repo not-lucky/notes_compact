@@ -4,27 +4,26 @@
 
 ## Overview
 
-String matching (pattern search) finds occurrences of a pattern P in text T. While brute force is $\Theta(n \cdot m)$, techniques like Rabin-Karp (rolling hash) and KMP (prefix function) achieve $\Theta(n + m)$. Understanding when each applies is key to interview success.
+String matching (pattern search) finds occurrences of a pattern `P` in text `T`. While a naive brute-force approach has a worst-case time complexity of $\Theta(n \cdot m)$, advanced techniques like Rabin-Karp (rolling hash) and KMP (prefix function) can achieve $\Theta(n + m)$. Understanding when each applies is key to interview success.
 
 ## Building Intuition
 
 **Why is brute force $\Theta(n \cdot m)$ and how do we beat it?**
 
-The key insight is **avoiding redundant comparisons**:
+The key insight is **avoiding redundant comparisons**.
 
-1. **Brute Force Waste**: When a mismatch occurs at position i+j, brute force starts over at i+1. But we've already compared characters at i+1, i+2, etc. Can we reuse this work?
+1. **Brute Force Waste**: Imagine sliding a transparent sheet with the pattern written on it over the text, one letter at a time. If a mismatch occurs at position `i+j`, brute force shifts the sheet exactly one space right to `i+1` and starts checking all over again. But wait—we just compared characters at `i+1`, `i+2`, etc.! Why throw that information away?
 
-2. **Rabin-Karp Insight**: Instead of comparing characters one by one, compute a hash of the current window. If hashes don't match, no need to compare (O(1) rejection). If hashes match, verify character-by-character (handles collisions). Rolling hash updates in O(1) as the window slides.
+2. **Rabin-Karp Insight (The Barcode Scanner)**: Instead of looking at individual letters, imagine having a barcode scanner that reads a "window" of letters and gives you a single number (a hash). Comparing two numbers is lightning fast ($\Theta(1)$) compared to comparing a sequence of letters.
+   - If the scanner reads a different number, we slide it over. No need to look closer.
+   - If the numbers match, only *then* do we inspect the letters one by one (to handle rare barcode "collisions").
+   - Crucially, as we slide the scanner, we can calculate the new barcode mathematically based on the previous barcode, simply by subtracting the old letter that left the window and adding the new letter that entered it. This update is $\Theta(1)$.
 
-3. **KMP Insight**: When mismatch occurs, how far can we skip? If we've matched "ABAB" and the pattern is "ABABAC", the "AB" at the end of what we matched is also a prefix of the pattern. We can resume matching from there instead of starting over.
+3. **KMP Insight (The Smart Jigsaw Puzzle)**: When you're putting together a jigsaw puzzle with a repetitive border (like "ABABAC"), and you realize the 6th piece ("C") is wrong, you don't start the whole border over. You look at the pieces you *did* match ("ABABA"). Since "ABA" is at the start *and* the end of what you just matched, you can keep the last three pieces down and immediately try to fit the 4th piece ("B") again. KMP pre-calculates these "safe jump distances" for the pattern, ensuring we never check the same text character twice.
 
-**Mental Model - Rabin-Karp**: Think of hashing as a "fingerprint." Comparing fingerprints is fast (one number comparison), while comparing full documents is slow. The rolling hash is like sliding a fingerprint scanner across the text—each slide updates the fingerprint incrementally.
+**Why We Skip Ahead Safely (KMP):**
 
-**Mental Model - KMP (Failure Function)**: The LPS array (Longest Proper Prefix which is also Suffix) tells us: "If we fail at position j, where can we resume without rechecking earlier characters?" It's like having bookmarks in the pattern that tell us where to jump back.
-
-**Why We Skip Ahead Safely**:
-
-```
+```text
 Text:    A B A B A B C ...
 Pattern: A B A B A C
                    ↑ mismatch at position 5
@@ -33,7 +32,7 @@ We've matched "ABABA". The pattern is "ABABAC".
 Longest prefix of "ABABA" that's also a suffix: "ABA" (length 3)
 
 We can resume matching the pattern from position 3 (after "ABA")
-because we know those characters already match!
+because we know those characters already perfectly match the text!
 
 Text:    A B A B A B C ...
 Pattern:     A B A B A C
@@ -44,52 +43,45 @@ Pattern:     A B A B A C
 
 Sometimes simpler approaches work better:
 
-1. **Short Strings**: For small inputs (n, m < 1000), brute force is fast and clear. KMP's constant factors may not pay off.
-
-2. **Built-in Is Available**: In interviews, `text.find(pattern)` is often acceptable. Modern languages have optimized implementations (often Boyer-Moore variants).
-
-3. **Single Search in Short Text**: Building KMP's failure function is O(m). For one search in short text, brute force may be faster.
-
-4. **Multiple Different Patterns**: If searching for many patterns simultaneously, consider Aho-Corasick (automaton-based) instead of repeated KMP.
-
-5. **Approximate Matching**: For fuzzy matching (edit distance ≤ k), use DP-based approaches, not exact match algorithms.
+1. **Short Strings**: For small inputs ($n, m < 1000$), brute force is fast and code is crystal clear. The constant overhead of calculating hashes or KMP prefix arrays may actually be slower.
+2. **Built-in Methods**: In interviews, `text.find(pattern)` is often perfectly acceptable. Modern language implementations are highly optimized (often using variants of Boyer-Moore).
+3. **Single Search in Short Text**: Building KMP's failure function takes $\Theta(m)$ time. If you only search once in a short text, brute force may finish before KMP finishes setting up.
+4. **Multiple Different Patterns**: If searching for a dictionary of words simultaneously, an automaton-based approach like Aho-Corasick or a Trie is better than repeating KMP.
+5. **Approximate Matching**: For fuzzy matching (e.g., "allow 1 typo"), you need Dynamic Programming (Edit Distance), not exact match algorithms.
 
 **Red Flags:**
-
-- "Find multiple patterns" → Aho-Corasick or suffix structures
-- "Approximate match" or "at most k differences" → Edit distance DP
-- "Replace all occurrences" → Python's `str.replace()` is fine for interviews
+- "Find multiple patterns" → Aho-Corasick or Suffix Trie
+- "Approximate match" or "at most k differences" → Edit Distance DP
+- "Replace all occurrences" → Python's `str.replace()` is fine
 
 ---
 
 ## Interview Context
 
-String matching (finding a pattern in text) appears in interviews as:
-
-- Direct pattern matching problems
-- Foundation for more complex problems (regex, wildcard)
-- Testing algorithmic thinking (brute force → optimization)
+String matching problems appear in interviews as:
+- Direct pattern matching (e.g., implement `strStr()`)
+- Foundation for complex problems (regex matching, wildcard matching)
+- Testing optimization thinking (can you improve on brute force?)
 
 For interviews, focus on:
+1. **Brute force**: Know how to code it quickly and state the worst-case $\Theta(n \cdot m)$ complexity.
+2. **Rabin-Karp**: Understand the "rolling hash" concept. It is much easier to implement from scratch than KMP.
+3. **Built-ins**: Know when it's safe to just use `text.find()`.
 
-1. Brute force (know the complexity)
-2. Rabin-Karp (rolling hash concept)
-3. Understanding when to use built-in functions
-
-KMP is rarely expected but good to mention.
+*(Note: Implementing KMP flawlessly under 45-minute pressure is rarely expected, but explaining its conceptual advantage is a massive plus.)*
 
 ---
 
 ## Problem Definition
 
-Given:
-
+**Given:**
 - Text `T` of length `n`
 - Pattern `P` of length `m`
 
-Find all occurrences of `P` in `T`.
+**Find:**
+- All starting indices of occurrences of `P` in `T`.
 
-```
+```text
 T = "ABABDABACDABABCABAB"
 P = "ABABC"
          ↑
@@ -100,24 +92,28 @@ P = "ABABC"
 
 ## Approach 1: Brute Force
 
-### Problem: Implement strStr()
+### Problem: Implement `strStr()`
 **Problem Statement:** Given two strings `needle` and `haystack`, return the index of the first occurrence of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.
 
 **Why it works:**
-The brute force approach checks every possible starting position in the `haystack`.
-1. For each index `i`, we compare the substring `haystack[i:i+len(needle)]` with `needle`.
-2. While simple, its worst-case complexity is $\Theta(n \cdot m)$ where N is haystack length and M is needle length.
-Modern built-in functions often use more advanced variants, but brute force is the foundational logic.
+The transparent sheet metaphor: we slide the pattern over the text, checking every possible starting position.
+1. For each index `i` in the text, we compare the substring `text[i:i+len(pattern)]` character-by-character against the pattern.
+2. While simple, its worst-case complexity is exactly $\Theta(n \cdot m)$. Imagine `T = "AAAAAA...B"` and `P = "AAAB"`. We match all the way to the end of the pattern before failing and shifting only by 1.
 
 ```python
 def brute_force_search(text: str, pattern: str) -> list[int]:
     """
-    Check pattern at every position in text.
+    Check pattern at every possible starting position in text.
 
-    Time: $\Theta((n - m + 1) \cdot m) = \Theta(n \cdot m)$
-    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
+    Time Complexity:
+    - Worst case: $\Theta((n - m + 1) \cdot m)$ which simplifies to $\Theta(n \cdot m)$
+    - Best case: $\Theta(n)$ (e.g., first character mismatch always)
+    Space Complexity: $\Theta(1)$ auxiliary, $\Theta(k)$ for output list of size k.
     """
     n, m = len(text), len(pattern)
+    if m == 0:
+        return []
+
     occurrences = []
 
     for i in range(n - m + 1):
@@ -137,23 +133,28 @@ def brute_force_search(text: str, pattern: str) -> list[int]:
 ```python
 def brute_force_pythonic(text: str, pattern: str) -> list[int]:
     """
-    Using list comprehensions (lists are dynamic arrays with amortized $O(1)$ append) (still $\Theta(n \cdot m)$ due to slice comparison).
-    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
+    Using list comprehensions and string slicing.
+    Note: Slicing creates a new string, so `text[i:i+m] == pattern` takes $\Theta(m)$ time and space.
+    Overall Time: $\Theta(n \cdot m)$ worst case.
     """
     n, m = len(text), len(pattern)
+    if m == 0:
+        return []
     return [i for i in range(n - m + 1) if text[i:i + m] == pattern]
 ```
 
-### Built-in Methods
+### Built-in Methods (Standard in Interviews)
 
 ```python
 # Find first occurrence
 idx = text.find(pattern)    # Returns -1 if not found
 idx = text.index(pattern)   # Raises ValueError if not found
 
-# Find all occurrences
 def find_all(text: str, pattern: str) -> list[int]:
-    """Find all occurrences using built-in methods."""
+    """Find all occurrences efficiently using built-in methods."""
+    if not pattern:
+        return []
+
     indices = []
     start = 0
     while True:
@@ -170,36 +171,34 @@ def find_all(text: str, pattern: str) -> list[int]:
 ## Approach 2: Rabin-Karp (Rolling Hash)
 
 ### Problem: Substring Search using Hashing
-**Problem Statement:** Find all occurrences of a pattern in a text efficiently by comparing hashes instead of characters.
 
 **Why it works:**
-Comparing two strings of length `M` takes O(M). Comparing two numbers takes O(1).
-1. We compute a hash for the pattern and for the first window of the text.
-2. As we slide the window, we update the hash in O(1) by removing the old character and adding the new one (rolling hash).
-3. If hashes match, we perform a character-by-character comparison to confirm (to handle collisions).
-This results in an average time complexity of $\Theta(n + m)$.
-
-Use hashing to quickly compare pattern with text windows.
+The barcode scanner metaphor. Comparing two strings of length $m$ takes $\Theta(m)$. Comparing two integers takes $\Theta(1)$.
+1. Compute a numerical hash for the pattern and for the first $m$-length window of the text.
+2. Slide the window one character right. We update the hash mathematically in $\Theta(1)$ by removing the value of the character that left the window and adding the value of the new character.
+3. If the integer hashes match, we perform a character-by-character string comparison to confirm (since distinct strings might occasionally have the same hash, a "collision").
 
 ```python
 def rabin_karp(text: str, pattern: str) -> list[int]:
     """
-    Use rolling hash for O(1) window comparison.
+    Use a rolling hash for $\Theta(1)$ window comparison.
 
-    Time: $\Theta(n + m)$ average, O(n \cdot m) worst case (due to hash collisions)
-    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
+    Time Complexity:
+    - Average/Best: $\Theta(n + m)$
+    - Worst case: $\Theta(n \cdot m)$ (if there are many hash collisions, or if text consists entirely of matches)
+    Space Complexity: $\Theta(1)$ auxiliary.
     """
-    if len(pattern) > len(text):
+    n, m = len(text), len(pattern)
+    if m == 0 or m > n:
         return []
 
-    n, m = len(text), len(pattern)
     base = 256      # Number of characters in alphabet
-    mod = 10**9 + 7 # Large prime to avoid overflow
+    mod = 10**9 + 7 # Large prime to minimize collisions
 
-    # Compute base^(m-1) % mod
+    # h is the positional multiplier for the leftmost character in a window: base^(m-1) % mod
     h = pow(base, m - 1, mod)
 
-    # Compute initial hashes
+    # Compute initial hashes for pattern and the first window in text
     pattern_hash = 0
     window_hash = 0
     for i in range(m):
@@ -209,87 +208,91 @@ def rabin_karp(text: str, pattern: str) -> list[int]:
     occurrences = []
 
     for i in range(n - m + 1):
-        # Check if hashes match
+        # 1. Check if hashes match
         if pattern_hash == window_hash:
-            # Verify character by character (handle collisions)
+            # 2. Verify character by character to handle potential hash collisions
             if text[i:i + m] == pattern:
                 occurrences.append(i)
 
-        # Roll the hash: remove leftmost, add rightmost
+        # 3. Roll the hash to the next window (remove leftmost, add rightmost)
         if i < n - m:
+            # Subtract the leftmost character (multiplying by its positional weight `h`)
             window_hash = (window_hash - ord(text[i]) * h) % mod
+
+            # Shift remaining characters left (multiply by base) and add new character
             window_hash = (window_hash * base + ord(text[i + m])) % mod
-            window_hash = (window_hash + mod) % mod  # Handle negative
+
+            # Ensure the modulo result is positive (Python handles this natively, but good practice for other languages)
+            window_hash = (window_hash + mod) % mod
 
     return occurrences
 ```
 
 ### Rolling Hash Visualization
 
-```
-Text: "ABCDE", Pattern: "BCD"
+```text
+Text: "ABCDE", Pattern: "BCD", Base: 10 (for simplicity)
 
-Initial window hash (ABC):
-hash = ord('A') × 256² + ord('B') × 256 + ord('C')
+Initial window hash ("ABC"):
+hash = 'A'*100 + 'B'*10 + 'C'*1
 
-Roll to next window (BCD):
-new_hash = (hash - ord('A') × 256²) × 256 + ord('D')
+Slide window right to "BCD":
+1. Remove 'A':  hash - 'A'*100
+2. Shift left:  (hash - 'A'*100) * 10
+3. Add 'D':     (hash - 'A'*100) * 10 + 'D'*1
 
-This is O(1) instead of O(m) to compute!
+Resulting hash is exactly the numerical representation of "BCD".
+We did this in $\Theta(1)$ math operations, rather than scanning the 3 letters again!
 ```
 
 ---
 
 ## Approach 3: KMP (Knuth-Morris-Pratt)
 
-### Problem: Efficient Substring Search
-**Problem Statement:** Find all occurrences of a pattern in a text in guaranteed $\Theta(n + m)$ time.
+### Problem: Guaranteed Linear Time Search
 
 **Why it works:**
-KMP avoids backtracking in the text by using a "failure function" (LPS array) precalculated from the pattern.
-1. The LPS array tells us the length of the longest proper prefix of `P[0...i]` that is also a suffix of `P[0...i]`.
-2. When a mismatch occurs, we know some portion of the pattern already matches the text.
-3. We "jump" the pattern forward to the next possible match based on the LPS, ensuring we never re-compare characters in the text that we've already matched.
-
-Uses a prefix function to avoid redundant comparisons.
+KMP uses a "failure function" (LPS array) precalculated from the pattern. The LPS array answers the question: "If I mismatch at this character, what is the longest prefix of my pattern that still matches the text I just successfully read?"
+1. Precalculate LPS: `lps[i]` is the length of the longest proper prefix of `P[0...i]` that is also a suffix of `P[0...i]`.
+2. As we scan the text, if a mismatch occurs, we jump the pattern forward based on the LPS value, meaning we *never move our text pointer backwards*.
 
 ```python
 def kmp_search(text: str, pattern: str) -> list[int]:
     """
-    KMP algorithm using failure function.
+    KMP algorithm using a precomputed Longest Proper Prefix which is also Suffix (LPS) array.
 
-    Time: $\Theta(n + m)$
-    Space: $O(m)$ for the LPS (failure function) array, plus $O(n)$ for the output list
+    Time Complexity: Guaranteed $\Theta(n + m)$ worst case.
+    Space Complexity: $\Theta(m)$ for the LPS array.
     """
-    if not pattern:
-        return [0]
+    n, m = len(text), len(pattern)
+    if m == 0:
+        return []
 
-    # Build failure function (longest proper prefix suffix)
-    def build_lps(pattern: str) -> list[int]:
-        m = len(pattern)
-        lps = [0] * m
-        length = 0
+    # Helper function to build the LPS array
+    def build_lps(p: str) -> list[int]:
+        lps = [0] * len(p)
+        length = 0 # Length of the previous longest prefix suffix
         i = 1
 
-        while i < m:
-            if pattern[i] == pattern[length]:
+        while i < len(p):
+            if p[i] == p[length]:
                 length += 1
                 lps[i] = length
                 i += 1
             else:
                 if length != 0:
+                    # Fall back to the previous valid prefix
                     length = lps[length - 1]
                 else:
                     lps[i] = 0
                     i += 1
-
         return lps
 
     lps = build_lps(pattern)
     occurrences = []
 
-    n, m = len(text), len(pattern)
-    i = j = 0
+    i = 0 # index for text
+    j = 0 # index for pattern
 
     while i < n:
         if pattern[j] == text[i]:
@@ -297,161 +300,160 @@ def kmp_search(text: str, pattern: str) -> list[int]:
             j += 1
 
         if j == m:
+            # Full pattern match found
             occurrences.append(i - j)
+            # Use LPS to find the next possible start without backtracking `i`
             j = lps[j - 1]
         elif i < n and pattern[j] != text[i]:
+            # Mismatch after j matches
             if j != 0:
+                # Don't match `lps[0..lps[j-1]]` characters, they will match anyway
                 j = lps[j - 1]
             else:
+                # First character didn't match, move to next text character
                 i += 1
 
     return occurrences
 ```
 
-### LPS (Failure Function) Explanation
-
-```
-Pattern: "ABABAC"
-LPS:     [0, 0, 1, 2, 3, 0]
-
-lps[i] = length of longest proper prefix of pattern[0:i+1]
-         that is also a suffix
-
-"ABABA" → longest prefix-suffix is "ABA" (length 3)
-
-When mismatch at position j, jump to lps[j-1] instead of 0.
-```
-
 ---
 
-## When to Use Which
+## When to Use Which Algorithm
 
-| Algorithm   | Time       | Space | Use When                                      |
-| ----------- | ---------- | ----- | --------------------------------------------- |
-| Brute Force | $\Theta(n \cdot m)$      | O(1)  | Short strings, simple cases                   |
-| Built-in    | $\Theta(n \cdot m)$\*    | O(1)  | Production code, interview shortcuts          |
-| Rabin-Karp  | $\Theta(n + m)$ avg | O(1)  | Multiple pattern search, plagiarism detection |
-| KMP         | $\Theta(n + m)$     | O(m)  | Guaranteed linear, streaming text             |
+| Algorithm   | Time Complexity      | Space Complexity | Ideal Use Case                               |
+| ----------- | -------------------- | ---------------- | -------------------------------------------- |
+| Brute Force | $\Theta(n \cdot m)$  | $\Theta(1)$      | Short strings, simple one-off searches       |
+| Built-in    | $\Theta(n \cdot m)$* | $\Theta(1)$      | Production code, standard interview use      |
+| Rabin-Karp  | $\Theta(n + m)$ avg  | $\Theta(1)$      | Multiple pattern search, plagiarism check    |
+| KMP         | $\Theta(n + m)$      | $\Theta(m)$      | Streaming text, guaranteed linear guarantees |
 
-\*Python's `find()` uses optimized algorithms internally.
+*\* Python's `find()` internally uses highly optimized C-level string search algorithms, usually significantly faster than Python-level loops.*
 
 ---
 
 ## Template: Find and Replace
 
+In interviews, sometimes you're asked to find a pattern and replace it.
+
 ```python
 def find_replace(text: str, pattern: str, replacement: str) -> str:
     """
-    Replace all occurrences of pattern with replacement.
-
-    Time: $\Theta(n \cdot m)$ for finding, $\Theta(n)$ for replacement
-    Space: $O(n)$ for the result list
+    Preferred interview approach: just use built-ins!
+    Time: highly optimized
+    Space: $\Theta(N)$ for the new string
     """
-    # Using built-in (preferred in interviews)
     return text.replace(pattern, replacement)
 
 def find_replace_manual(text: str, pattern: str, replacement: str) -> str:
-    """Manual implementation."""
+    """
+    Manual implementation. Note the use of a list for the result.
+    String concatenation via `+=` inside a loop can be $\Theta(N^2)$ in worst cases
+    because strings are immutable and must be copied entirely every time.
+    Appending to a list and joining at the end is strictly $\Theta(N)$.
+    """
+    if not pattern:
+        return text
+
     result = []
     i = 0
     n, m = len(text), len(pattern)
 
     while i < n:
+        # Check if window matches pattern
         if text[i:i + m] == pattern:
             result.append(replacement)
-            i += m
+            i += m # Skip over the matched pattern
         else:
             result.append(text[i])
             i += 1
 
-    return "".join(result)  # O(n) join is efficient compared to += string concatenation (which is often $O(n^2)$ due to memory churn)
+    return "".join(result)
 ```
 
 ---
 
-## Template: Wildcard Matching
+## Advanced: Dynamic Programming String Matching
+
+String matching takes on a new form when wildcards are introduced. We transition from simple pointer matching to 2D Dynamic Programming.
 
 ### Problem: Wildcard Matching
-**Problem Statement:** Implement wildcard pattern matching with support for `'?'` and `'*'`. `'?'` matches any single character. `'*'` matches any sequence of characters (including the empty sequence).
+
+**Problem Statement:** Implement wildcard pattern matching with support for `'?'` (matches any single character) and `'*'` (matches any sequence of characters, including the empty sequence).
 
 **Why it works:**
-We use 2D Dynamic Programming where `dp[i][j]` is true if the first `i` characters of the string match the first `j` characters of the pattern.
-1. If `p[j-1] == '?'` or characters match, `dp[i][j] = dp[i-1][j-1]`.
-2. If `p[j-1] == '*'`, it can either match empty (`dp[i][j-1]`) or one or more characters (`dp[i-1][j]`).
-The DP table systematically builds up the solution by combining these sub-problems.
+We use a 2D DP table where `dp[i][j]` is `True` if the first `i` characters of the text match the first `j` characters of the pattern.
+- The state transition for `*` is the crux: `*` can either represent nothing (so we look at `dp[i][j-1]`), or it can represent the current text character (meaning we "consume" a text character but keep the `*` active for future characters, so we look at `dp[i-1][j]`).
 
 ```python
-def is_match(s: str, p: str) -> bool:
+def is_match_wildcard(s: str, p: str) -> bool:
     """
-    Wildcard pattern matching:
-    '?' matches any single character
-    '*' matches any sequence (including empty)
-
-    Time: $\Theta(m \cdot n)$
-    Space: $\Theta(m \cdot n)$ for the DP table
+    Time Complexity: $\Theta(m \cdot n)$ where m = len(s), n = len(p)
+    Space Complexity: $\Theta(m \cdot n)$ for DP table (can be optimized to $\Theta(n)$)
     """
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
+
+    # Empty text matches empty pattern
     dp[0][0] = True
 
-    # Handle patterns like "*", "**", etc.
+    # Initialize first row (empty string `s`)
+    # A sequence of '*' at the start of `p` can match an empty `s`
     for j in range(1, n + 1):
         if p[j - 1] == '*':
             dp[0][j] = dp[0][j - 1]
 
+    # Fill DP table
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             if p[j - 1] == '*':
-                # '*' matches empty (dp[i][j-1]) or one+ chars (dp[i-1][j])
+                # '*' acts as empty string (ignore '*') OR '*' consumes `s[i-1]`
                 dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
             elif p[j - 1] == '?' or s[i - 1] == p[j - 1]:
+                # Exact match or single wildcard '?'
                 dp[i][j] = dp[i - 1][j - 1]
 
     return dp[m][n]
 ```
 
----
+### Problem: Regular Expression Matching (Simplified)
 
-## Template: Regex Matching (Simplified)
-
-### Problem: Regular Expression Matching
-**Problem Statement:** Implement regular expression matching with support for `'.'` and `'*'`. `'.'` matches any single character. `'*'` matches zero or more of the preceding element.
+**Problem Statement:** Implement regular expression matching with support for `'.'` (matches any single character) and `'*'` (matches **zero or more of the preceding element**).
 
 **Why it works:**
-This is more complex than wildcard matching because `'*'` depends on the *preceding* character.
-1. If `p[j-1] == '*'`, we check:
-   a. Zero occurrences of the preceding char: `dp[i][j-2]`.
-   b. One or more occurrences: if the preceding char matches `s[i-1]`, we can stay in the same state `dp[i-1][j]`.
-The state transition for `'*'` is the "killer feature" of this DP approach.
+Regex matching is fundamentally harder than Wildcard matching because the `*` is bound to the character immediately preceding it.
+- If `p[j-1]` is `*`, the pattern is actually treating the preceding character `p[j-2]` plus the `*` as a single unit.
+- This unit can match ZERO occurrences of the preceding char (`dp[i][j-2]`).
+- Or, if the preceding character matches the current text character, the unit can match ONE OR MORE occurrences (`dp[i-1][j]`).
 
 ```python
 def is_match_regex(s: str, p: str) -> bool:
     """
-    Simple regex with '.' and '*'.
-    '.' matches any single character
-    '*' means zero or more of the preceding element
-
-    Time: $\Theta(m \cdot n)$
-    Space: $\Theta(m \cdot n)$ for the DP table
+    Time Complexity: $\Theta(m \cdot n)$
+    Space Complexity: $\Theta(m \cdot n)$
     """
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
     dp[0][0] = True
 
-    # Handle patterns like "a*", "a*b*"
+    # Initialize first row (empty string `s`)
+    # Patterns like "a*", "a*b*" can match an empty string by evaluating to zero occurrences
     for j in range(2, n + 1):
         if p[j - 1] == '*':
             dp[0][j] = dp[0][j - 2]
 
+    # Fill DP table
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             if p[j - 1] == '*':
-                # Zero occurrences
+                # Option 1: Zero occurrences of preceding char. Ignore `p[j-2]` and `*`.
                 dp[i][j] = dp[i][j - 2]
-                # One or more occurrences
+
+                # Option 2: One or more occurrences.
+                # Requires preceding char to match current string char.
                 if p[j - 2] == '.' or p[j - 2] == s[i - 1]:
                     dp[i][j] = dp[i][j] or dp[i - 1][j]
             elif p[j - 1] == '.' or p[j - 1] == s[i - 1]:
+                # Exact match or single wildcard '.'
                 dp[i][j] = dp[i - 1][j - 1]
 
     return dp[m][n]
@@ -459,52 +461,37 @@ def is_match_regex(s: str, p: str) -> bool:
 
 ---
 
-## Edge Cases
+## Edge Cases to Consider
 
-```python
-# Empty pattern
-"" in "hello" → True (at every position)
+When solving string matching problems, always check:
 
-# Empty text
-"abc" in "" → False
-
-# Pattern longer than text
-Immediately return []
-
-# Single character
-One comparison
-
-# All same characters
-"aaa" in "aaaaaaa" → multiple overlapping matches
-
-# Substring at start/end
-"abc" in "abcdef" → 0
-"abc" in "defabc" → 3
-```
+- **Empty pattern:** Usually matches at the beginning of any string, or at every position.
+- **Empty text:** Handled gracefully if pattern isn't empty (should return `False` or `[]`).
+- **Pattern longer than text:** Immediate return `[]` or `False`.
+- **Overlapping matches:** Does "aba" in "ababa" occur once or twice? (The algorithms above find both indices: 0 and 2).
+- **All identical characters:** `T = "AAAAAAA", P = "AAA"`. Worst case for brute force.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                     | Difficulty | Pattern               |
-| --- | --------------------------- | ---------- | --------------------- |
-| 1   | Implement strStr()          | Easy       | Brute force or KMP    |
-| 2   | Repeated Substring Pattern  | Easy       | Pattern matching      |
-| 3   | Wildcard Matching           | Hard       | DP                    |
-| 4   | Regular Expression Matching | Hard       | DP                    |
-| 5   | Shortest Palindrome         | Hard       | KMP prefix function   |
-| 6   | Longest Happy Prefix        | Hard       | KMP LPS               |
-| 7   | Find All Anagrams           | Medium     | Sliding window + hash |
+| #   | Problem | Difficulty | Pattern |
+| --- | --- | --- | --- |
+| 1   | [Find the Index of the First Occurrence in a String](https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/) | Easy | Brute Force / KMP |
+| 2   | [Repeated Substring Pattern](https://leetcode.com/problems/repeated-substring-pattern/) | Easy | String manipulation |
+| 3   | [Wildcard Matching](https://leetcode.com/problems/wildcard-matching/) | Hard | DP |
+| 4   | [Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) | Hard | DP |
+| 5   | [Shortest Palindrome](https://leetcode.com/problems/shortest-palindrome/) | Hard | KMP Prefix Function |
+| 6   | [Longest Happy Prefix](https://leetcode.com/problems/longest-happy-prefix/) | Hard | KMP LPS Array |
 
 ---
 
 ## Key Takeaways
 
-1. **Brute force is $\Theta(n \cdot m)$** - acceptable for interviews if explained
-2. **Built-in methods are fine** - Python's find() is optimized
-3. **Rabin-Karp** - rolling hash, good for multiple patterns
-4. **KMP** - guaranteed $\Theta(n + m)$, know the concept
-5. **Wildcard/Regex** - DP approach with careful state transitions
+1. **Brute Force is often enough:** For basic interviews, a clean $\Theta(n \cdot m)$ solution using built-ins (`text.find()`) or slicing is often step one.
+2. **Rabin-Karp is a Barcode Scanner:** Convert string matching to integer matching via a rolling hash. Understand how to "roll" the hash mathematically in $\Theta(1)$.
+3. **KMP is a Smart Jigsaw Puzzle:** It uses a prefix table (LPS) to never re-evaluate a text character it has already seen, guaranteeing $\Theta(n + m)$.
+4. **Strings + Wildcards = DP:** When you introduce `*` or `?` modifiers, step away from linear pointers and use a 2D DP table.
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Overview
 
-The same-direction two-pointer technique uses two pointers moving through an array in the same direction at different speeds or with different roles. It's the foundation for in-place array transformations with \Theta(1) auxiliary space.
+The same-direction two-pointer technique uses two pointers moving through an array in the same direction at different speeds or with different roles. It's the foundation for in-place array transformations with $\Theta(1)$ auxiliary space.
 
 ## Building Intuition
 
@@ -16,9 +16,13 @@ Think of two pointers as a "reader" and a "writer" in a copy-editing process:
 
 2. **The Key Invariant**: Everything before the slow pointer is the "processed, valid" portion of the array. Everything between slow and fast is "garbage" that will be overwritten. This invariant is maintained throughout the algorithm.
 
-3. **Why \Theta(1) Space**: We're reusing the input array as our output buffer. The slow pointer marks the boundary of our result, and we write valid elements there in-place. Note that python lists are actually dynamic arrays (amortized \Theta(1) append). When we say \Theta(1) space, we mean \Theta(1) *auxiliary* space, as we are overwriting elements within the existing data structure without using additional call stacks or data structures.
+3. **Why $\Theta(1)$ Space**: We're reusing the input array as our output buffer. The slow pointer marks the boundary of our result, and we write valid elements there in-place. Note that python lists are actually dynamic arrays (amortized $\Theta(1)$ append). When we say $\Theta(1)$ space, we mean $\Theta(1)$ *auxiliary* space, as we are overwriting elements within the existing data structure without using additional call stacks or data structures.
 
-**Mental Model**: Imagine you're compacting items on a physical shelf. You have a "reader" hand scanning through all the items and a "writer" hand placing the items you want to keep starting from the left edge. The reading hand moves faster, skipping items you want to throw away, while the writing hand only moves when it receives an item to keep and pack tightly.
+**Mental Model**: Imagine a conveyor belt of mixed fruits (the array). You are tasked with boxing only the fresh apples. You have two roles:
+1. **The Inspector (Fast Pointer):** Moves along the belt quickly, examining every fruit.
+2. **The Packer (Slow Pointer):** Stands by the box. Whenever the Inspector finds a fresh apple, they hand it to the Packer, who places it in the next available spot in the box and moves to the next empty spot.
+
+The Inspector always stays ahead of or equal to the Packer. The space between them is filled with bruised fruits (garbage) that we are ignoring.
 
 **The Fundamental Pattern**:
 
@@ -32,7 +36,7 @@ Think of two pointers as a "reader" and a "writer" in a copy-editing process:
 
 This pattern has limitations:
 
-1. **Need to Preserve Original Array**: This pattern modifies the array in-place. If you need the original data, you must copy first (defeating the \Theta(1) space benefit) or use a different approach.
+1. **Need to Preserve Original Array**: This pattern modifies the array in-place. If you need the original data, you must copy first (defeating the $\Theta(1)$ space benefit) or use a different approach.
 
 2. **Complex Validity Conditions**: If determining "valid" requires looking at future elements (not just past), the reader-writer model breaks down. Consider sliding window or DP.
 
@@ -57,7 +61,7 @@ The same-direction two-pointer technique (also called "fast and slow pointers" o
 - Removing duplicates in-place
 - Partitioning arrays
 - Cycle detection (in linked lists)
-- Processing arrays with \Theta(1) auxiliary space requirement
+- Processing arrays with $\Theta(1)$ auxiliary space requirement
 
 This pattern appears in 15-20% of array problems at FANG+ companies.
 
@@ -89,9 +93,9 @@ The key insight: **slow only advances when we find valid elements to keep**.
 **Problem Statement:** Given a sorted array, remove the duplicates in-place such that each element appears only once and returns the new length.
 
 **Why it works:**
-We use a `fast` pointer to explore the array and a `slow` pointer to keep track of the last unique element found. 
-1. The `fast` pointer scans ahead. 
-2. When `arr[fast]` is different from `arr[slow]`, it means we've found a new unique value. 
+We use a `fast` pointer to explore the array and a `slow` pointer to keep track of the last unique element found.
+1. The `fast` pointer scans ahead.
+2. When `arr[fast]` is different from `arr[slow]`, it means we've found a new unique value.
 3. We move `slow` forward and copy the new value there.
 This ensures we only keep one copy of each element in the prefix of the array.
 
@@ -102,7 +106,7 @@ def remove_duplicates(arr: list[int]) -> int:
     Returns new length.
 
     Time: \Theta(n) - single pass through the array.
-    Space: \Theta(1) - in-place modification (Python lists are dynamic arrays, but we modify existing elements).
+    Space: \Theta(1) - in-place modification.
 
     Example:
     [1, 1, 2, 2, 2, 3, 4]
@@ -308,53 +312,6 @@ Different! Copy and advance slow.
 
 ---
 
-## Template: Squaring Sorted Array
-
-### Problem: Squares of a Sorted Array
-**Problem Statement:** Given an array of integers sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.
-
-**Why it works:**
-Since the input is sorted, the largest squares are either at the very beginning (large negative numbers) or at the very end (large positive numbers).
-1. We use two pointers, `left` and `right`, starting at the ends.
-2. We compare the squares of `arr[left]` and `arr[right]`.
-3. The larger square is placed at the end of the result array, and we move the corresponding pointer inward.
-This allows us to construct the sorted result in \Theta(n) without sorting.
-
-```python
-def sorted_squares(arr: list[int]) -> list[int]:
-    """
-    Given sorted array (may have negatives), return sorted squares.
-
-    Time: \Theta(n) - One pass scanning from both ends.
-    Space: \Theta(n) - A new array of size `n` is instantiated.
-
-    Example:
-    [-4, -1, 0, 3, 10] → [0, 1, 9, 16, 100]
-    """
-    n = len(arr)
-    result = [0] * n
-
-    left = 0
-    right = n - 1
-    pos = n - 1  # Fill result from end (largest first)
-
-    while left <= right:
-        left_sq = arr[left] ** 2
-        right_sq = arr[right] ** 2
-
-        if left_sq > right_sq:
-            result[pos] = left_sq
-            left += 1
-        else:
-            result[pos] = right_sq
-            right -= 1
-        pos -= 1
-
-    return result
-```
-
----
-
 ## Common Variations
 
 ### Slow Catches Up to Fast
@@ -363,10 +320,10 @@ def sorted_squares(arr: list[int]) -> list[int]:
 **Problem Statement:** Given an unsorted array of integers, find the length of the longest continuous increasing subsequence (subarray).
 
 **Why it works:**
-An increasing subsequence is continuous as long as each element is greater than the one before it.
+An increasing subsequence is continuous as long as each element is greater than the one before it. We can track the current sequence and jump our tracking pointer forward when the sequence breaks.
 1. We use `fast` to scan the array.
-2. If we find an element that is NOT greater than the previous one, it means the current increasing streak has ended.
-3. We "reset" our `slow` pointer to the current `fast` position to start tracking a new potential longest streak.
+2. If we find an element that is NOT greater than the previous one, the current increasing streak has ended.
+3. We "reset" our `slow` pointer to the current `fast` position to start tracking a new streak.
 4. `max_len` tracks the largest window `[slow, fast]` seen so far.
 
 ```python
@@ -381,31 +338,16 @@ def find_length_of_lcis(arr: list[int]) -> int:
         return 0
 
     max_len = 1
-    slow = 0
+    slow = 0  # Start index of the current increasing sequence
 
     for fast in range(1, len(arr)):
         if arr[fast] <= arr[fast - 1]:
-            slow = fast  # Reset slow to current position
+            # Sequence broken, slow catches up to fast
+            slow = fast
 
         max_len = max(max_len, fast - slow + 1)
 
     return max_len
-```
-
-### Gap Pointer
-
-```python
-def compare_with_gap(arr: list[int], gap: int) -> bool:
-    """
-    Check if any element equals another element 'gap' positions away.
-
-    Time: \Theta(n) in worst case (traverses size - gap), where n is array length.
-    Space: \Theta(1) - Loop variable overhead.
-    """
-    for i in range(len(arr) - gap):
-        if arr[i] == arr[i + gap]:
-            return True
-    return False
 ```
 
 ---
@@ -462,8 +404,7 @@ Use when: sorted array pair finding, palindromes, reversing
 | 3   | Move Zeroes                            | Easy       | Partition           |
 | 4   | Remove Element                         | Easy       | Filter in-place     |
 | 5   | Sort Colors (Dutch Flag)               | Medium     | Three-way partition |
-| 6   | Squares of a Sorted Array              | Easy       | Fill from ends      |
-| 7   | Linked List Cycle                      | Easy       | Fast/slow pointers  |
+| 6   | Linked List Cycle                      | Easy       | Fast/slow pointers  |
 
 ---
 
@@ -472,8 +413,8 @@ Use when: sorted array pair finding, palindromes, reversing
 1. **Slow = write position, fast = read position**
 2. **Slow only advances when finding valid elements**
 3. **Works for sorted arrays** (duplicates) and unsorted (partitioning)
-4. **\Theta(1) Space** by modifying in-place
-5. **Compare carefully**: with previous element? with slow? with gap?
+4. **$\Theta(1)$ Space** by modifying in-place
+5. **Compare carefully**: with previous element? with slow? with slow-k?
 
 ---
 

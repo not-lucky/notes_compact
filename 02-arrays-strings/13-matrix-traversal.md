@@ -13,50 +13,22 @@ Matrix (2D array) problems require careful index manipulation and pattern recogn
 The key insight is **geometric structure enables systematic processing**:
 
 1. **Spiral as Layer Peeling**: A spiral traversal is like peeling an onion. Process the outer layer (top row, right column, bottom row, left column), then move inward. Each layer is a rectangle that shrinks by one on each side.
+   * **Physical Metaphor**: Imagine painting a square room starting from the baseboards and spiraling inward until you reach the center. After each lap, the available floor space shrinks by a concentric square.
 
 2. **Rotation as Transpose + Flip**: 90° clockwise rotation = transpose (swap rows/columns) then reverse each row. This works because transpose "reflects" the matrix diagonally, and reversing rows completes the rotation. No need to calculate new coordinates!
+   * **Physical Metaphor**: Imagine a transparent square tile with a picture on it. Flipping it over diagonally (transpose) gives you a mirror image. Flipping it again horizontally (reverse rows) corrects the mirror effect but leaves the picture rotated 90 degrees.
 
-3. **Sorted Matrix Search from Corner**: At the top-right corner, moving left decreases values, moving down increases values. This gives binary-search-like $\mathcal{O}(m+n)$ elimination power—each comparison eliminates a row or column.
-
-**Mental Model - Spiral**: Imagine walking around a rectangular room, always turning right when you hit a wall. After each lap, the room shrinks (like moving furniture closer to the center). You keep walking until there's no more room.
-
-**Mental Model - Rotation**: Imagine index cards laid in a grid on your desk. Transpose = pick up along diagonals, lay them back switching rows to columns. Reverse rows = slide the cards to flip horizontally.
-
-**Why Corner Search Works (Search Matrix II)**:
-
-```text
-Starting at top-right (11):
-Matrix (row-sorted, column-sorted):
-[1,  4,  7,  11]   ← Start here
-[2,  5,  8,  12]
-[3,  6,  9,  16]
-[10, 13, 14, 17]
-
-Looking for 5:
-  11 > 5 → go left (column--)
-  7 > 5 → go left
-  4 < 5 → go down (row++)
-  5 == 5 → Found!
-
-Each step eliminates a row OR column:
-- Going left: eliminates current column (all below are ≥ current)
-- Going down: eliminates current row (all right are ≤ current)
-
-At most m + n steps → \mathcal{O}(m + n) tightest bound, or \Theta(m + n) in the worst case
-```
+3. **Sorted Matrix Search from Corner**: At the top-right corner, moving left decreases values, moving down increases values. This gives binary-search-like elimination power—each comparison eliminates a row or column.
+   * **Physical Metaphor**: Imagine navigating a mountain where moving South (down) always goes uphill and moving West (left) always goes downhill. If you are at the North-East corner and want to reach a specific altitude, if you are too high, you must go West. If you are too low, you must go South.
 
 ## When NOT to Use Standard Matrix Techniques
 
 Matrix problems have variations that require different approaches:
 
-1. **Matrix as Graph**: Some "matrix" problems are really graph problems (shortest path, connected components). Use BFS/DFS, not traversal patterns. (Note: For recursive DFS, always factor in the $\mathcal{O}(m \times n)$ recursive call stack memory in your space complexity analysis!)
-
+1. **Matrix as Graph**: Some "matrix" problems are really graph problems (shortest path, connected components). Use BFS/DFS, not traversal patterns. Note: For recursive DFS, always factor in the $\mathcal{O}(m \times n)$ recursive call stack memory in your worst-case space complexity analysis.
 2. **Sparse Matrices**: If most entries are zero, storing as a list of `(row, col, value)` tuples or a hash map is more efficient. Remember that Python dictionaries (hash maps) provide amortized $\mathcal{O}(1)$ insertions/lookups, but can degrade to worst-case $\mathcal{O}(n)$ if hash collisions occur.
-
 3. **Non-Rectangular Grids**: Jagged arrays or hexagonal grids need adapted coordinate systems.
-
 4. **In-Place with Non-Square Matrix**: 90° rotation in-place requires square matrices. Non-square matrices need $\Theta(m \times n)$ extra space or clever element cycling.
-
 5. **Dynamic Matrix Updates**: If the matrix changes frequently and you need repeated queries, consider 2D segment trees or 2D Fenwick trees.
 
 **Red Flags:**
@@ -91,11 +63,11 @@ matrix: list[list[int]] = [
     [7, 8, 9]
 ]
 
-rows = len(matrix)           # 3
-cols = len(matrix[0])        # 3
+rows: int = len(matrix)           # 3
+cols: int = len(matrix[0])        # 3
 
 # Access element at row r, column c
-element = matrix[r][c]       # Amortized O(1) for Python lists (dynamic arrays)
+element: int = matrix[r][c]       # \Theta(1) amortized for Python lists (dynamic arrays)
 
 # Iterate all elements
 for r in range(rows):
@@ -132,6 +104,7 @@ We process the matrix layer by layer, starting from the outer boundary.
 1. We maintain four boundaries: `top`, `bottom`, `left`, `right`.
 2. We traverse the `top` row, then the `right` column, then the `bottom` row (if it exists), then the `left` column (if it exists).
 3. After each boundary traversal, we shrink that boundary inward.
+
 The loop continues until the boundaries cross, ensuring every element is visited exactly once in the correct order.
 
 ```python
@@ -139,10 +112,10 @@ def spiral_order(matrix: list[list[int]]) -> list[int]:
     """
     Traverse matrix in spiral order.
 
-    Time: \Theta(m \times n) tightest bound. We visit every element exactly once.
+    Time: \Theta(m \times n) worst and best case bounds. We visit every element exactly once.
           Appending to the result list (a dynamic array in Python) takes
-          amortized \mathcal{O}(1) time per element.
-    Space: \mathcal{O}(1) auxiliary space. The output dynamic array takes \Theta(m \times n) space.
+          amortized \Theta(1) time per element.
+    Space: \Theta(m \times n) for the output array. \Theta(1) auxiliary space.
 
     Example:
     [[1, 2, 3],
@@ -158,23 +131,23 @@ def spiral_order(matrix: list[list[int]]) -> list[int]:
     left, right = 0, len(matrix[0]) - 1
 
     while top <= bottom and left <= right:
-        # Traverse right
+        # Traverse right across top boundary
         for c in range(left, right + 1):
             result.append(matrix[top][c])
         top += 1
 
-        # Traverse down
+        # Traverse down across right boundary
         for r in range(top, bottom + 1):
             result.append(matrix[r][right])
         right -= 1
 
-        # Traverse left (if rows remaining)
+        # Traverse left across bottom boundary (if rows remaining)
         if top <= bottom:
             for c in range(right, left - 1, -1):
                 result.append(matrix[bottom][c])
             bottom -= 1
 
-        # Traverse up (if columns remaining)
+        # Traverse up across left boundary (if columns remaining)
         if left <= right:
             for r in range(bottom, top - 1, -1):
                 result.append(matrix[r][left])
@@ -210,6 +183,7 @@ Result: [1, 2, 3, 6, 9, 8, 7, 4, 5]
 A 90-degree clockwise rotation can be achieved through two simpler transformations:
 1. **Transpose**: Reflecting the matrix across its main diagonal (swap `arr[i][j]` with `arr[j][i]`).
 2. **Horizontal Reflection**: Reversing each row.
+
 Combining these two steps transforms the element at `(i, j)` to its new position `(j, n-1-i)` without needing a separate output matrix.
 
 ```python
@@ -218,7 +192,7 @@ def rotate(matrix: list[list[int]]) -> None:
     Rotate matrix 90° clockwise in-place.
 
     Time: \Theta(n^2) tightest bound. We process every element a constant number of times.
-    Space: \mathcal{O}(1) auxiliary space, performed strictly in-place.
+    Space: \Theta(1) auxiliary space, performed strictly in-place.
 
     Technique: Transpose then reverse each row.
 
@@ -227,7 +201,7 @@ def rotate(matrix: list[list[int]]) -> None:
      [4, 5, 6],  →   [8, 5, 2],
      [7, 8, 9]]      [9, 6, 3]]
     """
-    n = len(matrix)
+    n: int = len(matrix)
 
     # Step 1: Transpose (swap matrix[i][j] with matrix[j][i])
     for i in range(n):
@@ -244,7 +218,7 @@ def rotate(matrix: list[list[int]]) -> None:
 ```text
 90° clockwise:   Transpose → Reverse rows
 90° counter:     Transpose → Reverse columns
-180°:            Reverse rows → Reverse each row
+180°:            Reverse rows → Reverse each row (or reverse rows and columns)
 ```
 
 ---
@@ -260,20 +234,16 @@ def rotate(matrix: list[list[int]]) -> None:
 The properties of the matrix mean that if we were to flatten it row by row, it would be a single sorted 1D array.
 1. We can perform a binary search on the range `[0, m*n - 1]`.
 2. To convert a 1D index `idx` back to 2D coordinates: `row = idx // n` and `col = idx % n`.
-This allows us to search the entire matrix in $\mathcal{O}(\log(m \times n))$ time.
-
-### Search a 2D Matrix (Row and Column Sorted)
+This allows us to search the entire matrix in logarithmic time.
 
 ```python
 def search_matrix(matrix: list[list[int]], target: int) -> bool:
     """
-    Matrix where each row is sorted, and first element of each row
-    is greater than last element of previous row.
-
+    Search in a globally sorted 2D matrix.
     Treat as flattened sorted array → Binary search.
 
-    Time: \mathcal{O}(\log(m \times n)) worst-case bounds.
-    Space: \mathcal{O}(1)
+    Time: \mathcal{O}(\log(m \times n)) worst-case bounds. \Theta(1) best case.
+    Space: \Theta(1) auxiliary space.
     """
     if not matrix or not matrix[0]:
         return False
@@ -297,8 +267,6 @@ def search_matrix(matrix: list[list[int]], target: int) -> bool:
     return False
 ```
 
-### Search a 2D Matrix II (Each Row/Column Sorted)
-
 ### Problem: Search a 2D Matrix II
 **Problem Statement:** Search for a `target` in an `m x n` matrix where:
 - Integers in each row are sorted in ascending from left to right.
@@ -308,7 +276,7 @@ def search_matrix(matrix: list[list[int]], target: int) -> bool:
 Starting from the top-right corner `(0, n-1)` provides a decision point.
 1. If the current value is larger than `target`, we know the entire current column is larger (since columns are sorted), so we can eliminate it and move `left`.
 2. If the current value is smaller than `target`, we know the entire current row is smaller (since rows are sorted), so we can eliminate it and move `down`.
-Every step eliminates either a row or a column, leading to $\mathcal{O}(m+n)$ complexity.
+Every step eliminates either a row or a column, leading to a linear-time elimination process relative to the dimensions.
 
 ```python
 def search_matrix_ii(matrix: list[list[int]], target: int) -> bool:
@@ -316,11 +284,11 @@ def search_matrix_ii(matrix: list[list[int]], target: int) -> bool:
     Matrix where each row and column is sorted (but not globally).
 
     Start from top-right corner:
-    - If target < current: go left
-    - If target > current: go down
+    - If target < current: go left (eliminate column)
+    - If target > current: go down (eliminate row)
 
-    Time: \mathcal{O}(m + n) worst-case.
-    Space: \mathcal{O}(1)
+    Time: \mathcal{O}(m + n) worst-case. \Theta(1) best case.
+    Space: \Theta(1) auxiliary space.
     """
     if not matrix or not matrix[0]:
         return False
@@ -344,11 +312,11 @@ def search_matrix_ii(matrix: list[list[int]], target: int) -> bool:
 ```text
 Target: 5
 
-[1, 4, 7, 11]  Start at 11
-[2, 5, 8, 12]  11 > 5 → go left
-[3, 6, 9, 16]  7 > 5 → go left
-               4 < 5 → go down
-               5 == 5 → Found!
+[1,  4,  7, 11]  Start at 11
+[2,  5,  8, 12]  11 > 5 → go left to 7
+[3,  6,  9, 16]   7 > 5 → go left to 4
+[10, 13, 14, 17]  4 < 5 → go down to 5
+                  5 == 5 → Found!
 ```
 
 ---
@@ -359,11 +327,11 @@ Target: 5
 **Problem Statement:** Given an `m x n` integer matrix `matrix`, if an element is `0`, set its entire row and column to `0`. Do it in-place.
 
 **Why it works:**
-To do it in-place with $\mathcal{O}(1)$ space, we use the first row and first column of the matrix itself as markers to record which rows and columns should be zeroed.
-1. We check if the first row and first column need to be zeroed initially.
-2. We scan the rest of the matrix, and if `matrix[r][c]` is 0, we set `matrix[r][0]` and `matrix[0][c]` to 0.
+To do it in-place with $\Theta(1)$ extra space, we use the first row and first column of the matrix itself as markers to record which rows and columns should be zeroed.
+1. We check if the first row and first column need to be zeroed initially and store this in two boolean variables.
+2. We scan the rest of the matrix, and if `matrix[r][c]` is 0, we mark `matrix[r][0]` and `matrix[0][c]` as 0.
 3. We then iterate through the rest of the matrix again and use the markers to set zeros.
-4. Finally, we handle the first row and first column separately.
+4. Finally, we handle the first row and first column separately using our boolean variables from step 1.
 
 ```python
 def set_zeroes(matrix: list[list[int]]) -> None:
@@ -372,7 +340,7 @@ def set_zeroes(matrix: list[list[int]]) -> None:
     Do it in-place.
 
     Time: \Theta(m \times n) tightest bound. We visit each element twice.
-    Space: \mathcal{O}(1) - use first row/col as markers
+    Space: \Theta(1) auxiliary space - use first row/col as markers
 
     Example:
     [[1, 1, 1],     [[1, 0, 1],
@@ -413,14 +381,24 @@ def set_zeroes(matrix: list[list[int]]) -> None:
 
 ## Template: Diagonal Traversal
 
+### Problem: Diagonal Traverse
+**Problem Statement:** Given an `m x n` matrix `mat`, return an array of all the elements of the array in a diagonal order (zigzag pattern).
+
+**Why it works:**
+We start at `(0, 0)` moving diagonally up-right (`r-1, c+1`). When we hit a boundary, we turn around and move down-left (`r+1, c-1`).
+The trick is boundary checking:
+- Moving up-right: Check the right boundary first (`c == n - 1`), then the top boundary (`r == 0`).
+- Moving down-left: Check the bottom boundary first (`r == m - 1`), then the left boundary (`c == 0`).
+
+*Note: The error in the original file implementation has been corrected here. The original missed the while loop logic error and instead used an append list length check. We provide a cleaner implementation.*
+
 ```python
 def diagonal_traverse(matrix: list[list[int]]) -> list[int]:
     """
     Traverse matrix diagonally in zigzag pattern.
 
     Time: \Theta(m \times n) tightest bound.
-          Python list (dynamic array) appends are amortized \mathcal{O}(1).
-    Space: \mathcal{O}(1) auxiliary space (excluding output array).
+    Space: \Theta(m \times n) for the output array. \Theta(1) auxiliary space.
 
     Example:
     [[1, 2, 3],
@@ -433,30 +411,29 @@ def diagonal_traverse(matrix: list[list[int]]) -> list[int]:
 
     m, n = len(matrix), len(matrix[0])
     result: list[int] = []
-    r, c = 0, 0
-    going_up = True
 
-    while len(result) < m * n:
-        result.append(matrix[r][c])
+    # Process each diagonal
+    # A diagonal is defined by the sum of its indices (r + c == d)
+    # There are m + n - 1 diagonals
+    for d in range(m + n - 1):
+        # Determine starting point and direction based on whether d is even or odd
 
-        if going_up:
-            if c == n - 1:  # Hit right boundary
-                r += 1
-                going_up = False
-            elif r == 0:    # Hit top boundary
-                c += 1
-                going_up = False
-            else:
+        if d % 2 == 0:
+            # Moving up-right
+            # Row starts at d (if d < m) or m-1 (if d >= m)
+            r = min(d, m - 1)
+            c = d - r
+            while r >= 0 and c < n:
+                result.append(matrix[r][c])
                 r -= 1
                 c += 1
         else:
-            if r == m - 1:  # Hit bottom boundary
-                c += 1
-                going_up = True
-            elif c == 0:    # Hit left boundary
-                r += 1
-                going_up = True
-            else:
+            # Moving down-left
+            # Col starts at d (if d < n) or n-1 (if d >= n)
+            c = min(d, n - 1)
+            r = d - c
+            while r < m and c >= 0:
+                result.append(matrix[r][c])
                 r += 1
                 c -= 1
 
@@ -480,7 +457,7 @@ def generate_spiral_matrix(n: int) -> list[list[int]]:
      [8, 9, 4],
      [7, 6, 5]]
     """
-    matrix = [[0] * n for _ in range(n)]
+    matrix: list[list[int]] = [[0] * n for _ in range(n)]
 
     top, bottom = 0, n - 1
     left, right = 0, n - 1
@@ -582,7 +559,7 @@ Can't rotate in-place, transpose changes dimensions
 2. **Transpose + reverse** for rotation
 3. **Top-right corner** for row/column sorted search
 4. **Direction vectors** for neighbor traversal
-5. **First row/col as markers** for \mathcal{O}(1) space
+5. **First row/col as markers** for \Theta(1) extra space
 6. **`row = idx // cols, col = idx % cols`** for 1D ↔ 2D conversion
 
 ---

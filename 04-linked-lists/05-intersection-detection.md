@@ -4,7 +4,7 @@
 
 ## Overview
 
-Finding the intersection point of two linked lists determines where two separate chains merge into one shared tail. The elegant two-pointer technique solves this in O(n+m) time with O(1) space by having each pointer traverse both lists, equalizing their total travel distances.
+Finding the intersection point of two linked lists determines where two separate chains merge into one shared tail. The elegant two-pointer technique solves this in $O(n+m)$ time with $O(1)$ space by having each pointer traverse both lists, equalizing their total travel distances.
 
 ## Building Intuition
 
@@ -38,8 +38,8 @@ Both walk exactly 8 miles. If there's a meeting point, they arrive together. If 
 
 **Why This Beats Hash Set**:
 
-- Hash set: O(n) space to store all nodes from one list
-- Two pointers: O(1) space, same time complexity
+- Hash set: $O(n)$ space to store all nodes from one list
+- Two pointers: $O(1)$ space, same time complexity
 
 **The Length-Alignment Alternative**:
 
@@ -83,7 +83,7 @@ Intersection means the same physical node in memory, not just equal values.
 Finding the intersection point of two linked lists is a **classic interview question** because:
 
 1. **Multiple solutions**: Tests ability to compare approaches
-2. **Elegant O(1) space solution**: Two-pointer technique shines here
+2. **Elegant $O(1)$ space solution**: Two-pointer technique shines here
 3. **Mathematical insight**: Length difference approach demonstrates analytical thinking
 4. **Real-world analogy**: Two paths merging into one (file systems, roads)
 
@@ -127,8 +127,8 @@ def get_intersection_node_hashset(headA: Optional[ListNode], headB: Optional[Lis
     """
     Find intersection using hash set.
 
-    Time: O(n + m) where n, m are lengths of list A and B
-    Space: O(n) or O(m) - store one list's nodes
+    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space: $O(n)$ or $O(m)$ - store one list's nodes
     """
     # Store all nodes from list A
     seen = set()
@@ -156,12 +156,12 @@ def get_intersection_node_hashset(headA: Optional[ListNode], headB: Optional[Lis
 def get_intersection_node(headA: Optional[ListNode], headB: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find intersection using two pointers.
-    The elegant O(1) space solution.
+    The elegant $O(1)$ space solution.
 
     LeetCode 160: Intersection of Two Linked Lists
 
-    Time: O(n + m) where n, m are lengths of list A and B
-    Space: O(1) auxiliary
+    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space: $O(1)$ auxiliary
     """
     if not headA or not headB:
         return None
@@ -228,8 +228,8 @@ def get_intersection_node_length(headA: Optional[ListNode], headB: Optional[List
     """
     Find intersection by aligning list lengths.
 
-    Time: O(n + m) where n, m are lengths of list A and B
-    Space: O(1) auxiliary
+    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space: $O(1)$ auxiliary
     """
     def get_length(head: Optional[ListNode]) -> int:
         length = 0
@@ -357,11 +357,11 @@ a, b, intersection = create_intersecting_lists([1, 2], [3, 4, 5], [6, 7, 8])
 
 ## Complexity Comparison
 
-| Approach          | Time     | Space | Notes                       |
-| ----------------- | -------- | ----- | --------------------------- |
-| Hash Set          | O(n + m) | O(n)  | Simple but uses extra space |
-| Two Pointers      | O(n + m) | O(1)  | Elegant, optimal            |
-| Length Difference | O(n + m) | O(1)  | Two passes but intuitive    |
+| Approach          | Time       | Space    | Notes                       |
+| ----------------- | ---------- | -------- | --------------------------- |
+| Hash Set          | $O(n + m)$ | $O(n)$   | Simple but uses extra space |
+| Two Pointers      | $O(n + m)$ | $O(1)$   | Elegant, optimal            |
+| Length Difference | $O(n + m)$ | $O(1)$   | Two passes but intuitive    |
 
 ---
 
@@ -448,9 +448,9 @@ In the standard problem, once lists intersect, they never diverge. But if the qu
 
 ## Key Takeaways
 
-1. **Two-pointer switch technique** is elegant O(1) space solution
+1. **Two-pointer switch technique** is elegant $O(1)$ space solution
 2. **Length alignment** is intuitive alternative
-3. **Hash set** works but uses O(n) space
+3. **Hash set** works but uses $O(n)$ space
 4. **Compare references**, not values
 5. **After intersection, lists share same tail** - useful for quick check
 6. **Both pointers travel same total distance** to meet at intersection
