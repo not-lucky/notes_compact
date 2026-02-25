@@ -520,12 +520,12 @@ def is_palindrome_allow_one_removal(head: Optional[ListNode]) -> bool:
 
 ## Key Takeaways
 
-1. **Combine fast-slow with reversal** for $O(1)$ auxiliary space palindrome check
+1. **Combine fast-slow with reversal** for $\Theta(1)$ auxiliary space palindrome check
 2. **Middle finding** naturally handles odd/even lengths
 3. **Only compare until second half ends** - it's shorter or equal to first half
 4. **Restore the list** if modification is not allowed or if the data structure is used concurrently
-5. **Recursive approach** uses $O(n)$ stack space but is elegant
-6. **Stack of first half** is intuitive but uses $O(n)$ auxiliary space (specifically $O(n/2)$ nodes stored)
+5. **Recursive approach** uses $\Theta(n)$ stack space but is elegant
+6. **Stack of first half** is intuitive but uses $\Theta(n)$ auxiliary space (specifically $\Theta(n/2)$ nodes stored)
 7. **Thread safety matters**: The in-place reversal is dangerous in concurrent environments since readers would see a severed list mid-check.
 
 ---

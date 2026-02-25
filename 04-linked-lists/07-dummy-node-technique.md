@@ -158,8 +158,8 @@ def remove_elements_no_dummy(head: Optional[ListNode], val: int) -> Optional[Lis
     """
     Remove all nodes with given value (without dummy).
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     # Handle head deletions separately
     while head and head.val == val:
@@ -188,8 +188,8 @@ def remove_elements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
 
     LeetCode 203: Remove Linked List Elements
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -242,8 +242,8 @@ def insert_at_position(head: Optional[ListNode], val: int, position: int) -> Opt
     """
     Insert new node at given position (0-indexed).
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -285,8 +285,8 @@ def partition(head: Optional[ListNode], x: int) -> Optional[ListNode]:
 
     LeetCode 86: Partition List
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     # Two dummy nodes for two partitions
     before_dummy = ListNode(0)
@@ -343,8 +343,8 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
     """
     Merge two sorted lists.
 
-    Time: $O(n + m)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n + m)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     tail = dummy
@@ -374,8 +374,8 @@ def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
 
     LeetCode 19: Remove Nth Node From End of List
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -411,8 +411,8 @@ def delete_duplicates_all(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 82: Remove Duplicates from Sorted List II
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -443,8 +443,8 @@ def delete_duplicates_keep_one(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 83: Remove Duplicates from Sorted List
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     # No dummy needed here - head never changes
     current = head
@@ -469,8 +469,8 @@ def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional
 
     LeetCode 92: Reverse Linked List II
 
-    Time: $O(n)$
-    Space: $O(1)$
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not head or left == right:
         return head
