@@ -4,198 +4,36 @@
 
 ## Interview Context
 
-Heaps are fundamental because:
+Heaps are fundamental data structures that frequently appear in interviews because they are:
 
-1. **Optimal for priority operations**: O(log n) insert/remove, O(1) peek
-2. **Foundation for many patterns**: Top-K, merge K sorted, scheduling
-3. **Memory efficient**: Stored as array, no pointer overhead
-4. **Interview frequency**: Heap understanding is prerequisite for medium/hard problems
+1. **Optimal for priority operations**: $O(\log n)$ insert/remove, $O(1)$ peek min/max.
+2. **Foundation for many patterns**: Top-K elements, Merge K Sorted Lists, task scheduling algorithms.
+3. **Memory efficient**: They are stored as an array with no pointer overhead.
+4. **Prerequisites for advanced algorithms**: Dijkstra's shortest path, Prim's minimum spanning tree.
 
-Interviewers expect you to know heap properties and operations, even if you use library functions.
-
----
-
-## Building Intuition
-
-**Why Store a Tree as an Array?**
-
-The heap's brilliance is using array indices as implicit pointers. No node objects, no left/right references—just math:
-
-```
-Parent of i:     (i - 1) // 2
-Left child of i:  2*i + 1
-Right child of i: 2*i + 2
-
-For index 3:
-- Parent: (3-1)//2 = 1
-- Left child: 2*3+1 = 7
-- Right child: 2*3+2 = 8
-
-This works because a complete binary tree has NO GAPS.
-Level 0: 1 node  (indices 0)
-Level 1: 2 nodes (indices 1-2)
-Level 2: 4 nodes (indices 3-6)
-Level 3: 8 nodes (indices 7-14)
-```
-
-**Mental Model: The Tournament Bracket**
-
-Think of a min heap as an ongoing tournament where smaller values win:
-
-```
-Round 1 (leaves):    7   4   6   5
-                      \ /     \ /
-Round 2:              4       5
-                       \     /
-Finals:                  4 (winner = minimum)
-```
-
-Each parent "won" against both children. The root is the ultimate winner (smallest value). When you remove the winner, you run a new tournament from that position down.
-
-**Why Heapify Up vs Heapify Down?**
-
-- **Heapify UP**: New element enters at bottom, might be "too good" (too small for min heap), bubbles up to its rightful place
-- **Heapify DOWN**: Element at top might be "not good enough", sinks down as better elements rise
-
-```
-Insert 1 into [3, 5, 4, 7, 8]:
-
-  3          3          1     ← 1 bubbles UP
- / \   →    / \    →   / \
-5   4      1   4      3   4
-/\        / \        / \
-7 8 1    7 8 5      7 8 5
-
-Pop from [1, 3, 4, 7, 8, 5]:
-
-  1          5          3     ← 5 sinks DOWN
- / \   →    / \    →   / \
-3   4      3   4      5   4
-/\ /      /\ /       /\ /
-7 8 5    7 8        7 8
-         (5 moved)
-```
-
-**Why O(n) Build Heap Is Not Intuitive**
-
-Most people think: "n elements × O(log n) per insert = O(n log n)". But building bottom-up is different:
-
-```
-Heap of height h has 2^h nodes at bottom level.
-
-Work done at each level:
-- Level h (leaves): 2^h nodes × 0 swaps = 0
-- Level h-1:        2^(h-1) nodes × 1 swap max
-- Level h-2:        2^(h-2) nodes × 2 swaps max
-- ...
-- Level 0 (root):   1 node × h swaps max
-
-Total = Σ (nodes at level) × (distance to bottom)
-      = O(n) by mathematical analysis
-
-KEY INSIGHT: Half the nodes are leaves doing ZERO work!
-```
-
-**When to Use Heap vs Sorted Structure**
-
-```
-Need                          | Use
-------------------------------|----------------
-Only min OR max repeatedly    | Heap
-Range queries (all in [5,10]) | Sorted array/BST
-Find kth element once         | QuickSelect
-Find kth repeatedly (dynamic) | Heap or BST
-```
-
----
-
-## When NOT to Use a Heap
-
-**1. You Need to Search for Arbitrary Elements**
-
-Heap has O(n) search—it only orders parent-child, not siblings:
-
-```
-Min Heap:
-      1
-     / \
-    5   2    ← 5 and 2 are NOT ordered relative to each other
-   / \
-  7   6      ← 7 and 6 are NOT ordered either
-
-To find "is 6 in the heap?" → Must check every element
-```
-
-Use instead: Hash set O(1), BST O(log n), sorted array O(log n)
-
-**2. You Need Both Min AND Max**
-
-A min heap gives O(1) min but O(n) max (and vice versa). If you need both:
-
-```python
-# Bad: two separate heaps get out of sync when removing
-
-# Good: Use a min-max heap (complex) or just sorted structure
-```
-
-Use instead: Balanced BST, or two heaps with lazy deletion
-
-**3. You Need the Kth Element (Not Just First)**
-
-Heap only guarantees the root. Getting kth smallest requires k pops:
-
-```python
-# To get 5th smallest: pop 5 times = O(k log n)
-# Not efficient for large k
-```
-
-Use instead: Order statistic tree, sorted array with index access
-
-**4. You Need to Modify Priorities Efficiently**
-
-Standard heap has O(n) to find an element before changing its priority:
-
-```python
-# Change priority of "task_x" from 5 to 2?
-# Step 1: Find "task_x" → O(n) scan
-# Step 2: Update and reheapify → O(log n)
-# Total: O(n)
-```
-
-Use instead: Indexed heap (heap + hash map), or Fibonacci heap
-
-**5. Data Is Already Sorted**
-
-If input is sorted and you just need min/max:
-
-```python
-sorted_arr = [1, 2, 3, 4, 5]
-min_val = sorted_arr[0]   # O(1)
-max_val = sorted_arr[-1]  # O(1)
-# No heap needed!
-```
-
-**Red Flags:**
-
-- "Find if X exists in the heap" → Need hash set or BST
-- "Get both minimum and maximum" → Need different structure
-- "Update priority of specific item" → Need indexed priority queue
-- "Get kth smallest without removing" → Need order statistic tree
+Interviewers expect you to intimately understand heap properties, the underlying array math, and operations, even if you just use library functions (like Python's `heapq`) in practice.
 
 ---
 
 ## Core Concept: What is a Heap?
 
-A **heap** is a complete binary tree stored as an array where each parent satisfies the **heap property** with its children.
+A **heap** is a specialized tree-based data structure that satisfies two main properties:
 
-### Min Heap vs Max Heap
+1. **Structural Property (Complete Binary Tree):**
+   - All levels of the tree are fully filled except possibly the last level.
+   - The last level is filled strictly from left to right.
+   - This guarantees the tree's height is always exactly $O(\log n)$ and allows it to be efficiently stored in an array without gaps.
+
+2. **Ordering Property (Heap Property):**
+   - In a **Min Heap**, the value of every parent node is less than or equal to the values of its children. The root node is the minimum element.
+   - In a **Max Heap**, the value of every parent node is greater than or equal to the values of its children. The root node is the maximum element.
 
 | Type         | Property          | Root Contains   |
 | ------------ | ----------------- | --------------- |
-| **Min Heap** | Parent ≤ Children | Minimum element |
-| **Max Heap** | Parent ≥ Children | Maximum element |
+| **Min Heap** | Parent $\le$ Children | Minimum element |
+| **Max Heap** | Parent $\ge$ Children | Maximum element |
 
-```
+```text
 Min Heap:                    Max Heap:
       1                           9
      / \                         / \
@@ -206,197 +44,200 @@ Min Heap:                    Max Heap:
 Array: [1, 3, 2, 7, 4]       Array: [9, 7, 8, 3, 5]
 ```
 
+> **Crucial Distinction:** A heap is a partially ordered data structure. It only guarantees ordering between parents and children. Sibling nodes have no guaranteed relationship to each other (e.g., in the Min Heap above, 3 is the left child and 2 is the right child, but 3 > 2).
+
 ---
 
-## Array Representation
+## Building Intuition
 
-A heap is stored as an array where:
+### Why Store a Tree as an Array?
 
-- **Root** is at index 0
-- For node at index `i`:
-  - **Left child**: `2*i + 1`
-  - **Right child**: `2*i + 2`
-  - **Parent**: `(i - 1) // 2`
+The brilliance of a heap is using array indices as implicit pointers. There are no node objects and no left/right references—just math. Because a complete binary tree has NO GAPS, we can lay out the nodes level by level into a flat array.
 
+```text
+Tree Level      Nodes      Array Indices
+Level 0:        1 node     [0]
+Level 1:        2 nodes    [1, 2]
+Level 2:        4 nodes    [3, 4, 5, 6]
+Level 3:        8 nodes    [7, ..., 14]
 ```
+
+**The Math (0-Indexed Array):**
+
+If a node is at index `i`:
+- **Parent Index**: `(i - 1) // 2`
+- **Left Child Index**: `2*i + 1`
+- **Right Child Index**: `2*i + 2`
+
+```text
 Array:  [  1,    3,    2,    7,    4  ]
 Index:     0     1     2     3     4
 
-Tree:
+Tree mapping:
              1 [idx:0]
            /   \
   [idx:1] 3     2 [idx:2]
          / \
 [idx:3] 7   4 [idx:4]
 
-Parent of index 3: (3-1)//2 = 1 → value 3 ✓
-Left child of index 1: 2*1+1 = 3 → value 7 ✓
-Right child of index 1: 2*1+2 = 4 → value 4 ✓
+Let's verify for index 1 (value 3):
+- Parent: (1 - 1) // 2 = 0       -> value 1  (Correct)
+- Left Child: 2*1 + 1 = 3        -> value 7  (Correct)
+- Right Child: 2*1 + 2 = 4       -> value 4  (Correct)
 ```
 
----
+### Mental Model: The Tournament Bracket
 
-## Complete Binary Tree Property
+Think of a min heap as an ongoing tournament where smaller values "win" and advance towards the top.
 
-A heap is always a **complete binary tree**:
-
-- All levels fully filled except possibly the last
-- Last level filled from left to right
-
-This guarantees:
-
-- Height is always O(log n)
-- No gaps in array representation
-- Efficient memory usage
-
+```text
+Round 1 (leaves):    7   4   6   5
+                      \ /     \ /
+Round 2:               4       5
+                        \     /
+Finals (root):             4 (winner = minimum)
 ```
-Complete (valid):        Not complete (invalid):
-      1                        1
-     / \                      / \
-    3   2                    3   2
-   / \                        \
-  7   4                        4
-```
+
+Each parent "won" a match against both of its children. The root is the ultimate winner (the smallest value). When you remove the winner (pop), you take an unknown participant (usually the last leaf node), place them at the top, and run a new tournament from that position downwards to find the new winner.
+
+### Why Heapify Up vs Heapify Down?
+
+- **Heapify UP (Bubble Up / Sift Up)**: Used when a *new element* enters at the bottom (end of the array). It might be "too good" (too small for a min heap), so it bubbles UP by swapping with its parent until it finds its rightful place.
+- **Heapify DOWN (Bubble Down / Sift Down)**: Used when an element at the top (the root) is removed, and a *leaf element* is placed there. This element is likely "not good enough", so it sinks DOWN by swapping with its smallest child as better elements rise.
 
 ---
 
 ## Core Operations
 
-### 1. Heapify Up (Bubble Up / Sift Up)
+### 1. Push (Insert)
 
-Used after inserting a new element at the end.
-
-```python
-def heapify_up(heap: list, index: int) -> None:
-    """
-    Move element up until heap property is satisfied.
-    Used after insertion at the end.
-
-    Time: O(log n) - at most height of tree
-    Space: O(1)
-    """
-    while index > 0:
-        parent = (index - 1) // 2
-        if heap[index] < heap[parent]:  # Min heap: child < parent
-            heap[index], heap[parent] = heap[parent], heap[index]
-            index = parent
-        else:
-            break
-```
-
-### 2. Heapify Down (Bubble Down / Sift Down)
-
-Used after removing root or during heap construction.
+To add a new element:
+1. Append it to the end of the array (maintaining the complete tree property).
+2. **Heapify Up** to restore the heap property.
 
 ```python
-def heapify_down(heap: list, index: int, size: int) -> None:
-    """
-    Move element down until heap property is satisfied.
-    Used after removing root.
-
-    Time: O(log n)
-    Space: O(1)
-    """
-    while True:
-        smallest = index
-        left = 2 * index + 1
-        right = 2 * index + 2
-
-        if left < size and heap[left] < heap[smallest]:
-            smallest = left
-        if right < size and heap[right] < heap[smallest]:
-            smallest = right
-
-        if smallest != index:
-            heap[index], heap[smallest] = heap[smallest], heap[index]
-            index = smallest
-        else:
-            break
-```
-
-### 3. Push (Insert)
-
-```python
-def heap_push(heap: list, val: int) -> None:
+def heap_push(heap: list[int], val: int) -> None:
     """
     Insert element into heap.
-
-    Time: O(log n)
-    Space: O(1)
+    Time: O(log n) | Space: O(1)
     """
-    heap.append(val)              # Add to end
-    heapify_up(heap, len(heap) - 1)  # Bubble up
+    heap.append(val)
+    _heapify_up(heap, len(heap) - 1)
+
+def _heapify_up(heap: list[int], index: int) -> None:
+    while index > 0:
+        parent = (index - 1) // 2
+        # Min heap: if child is smaller than parent, swap them
+        if heap[index] < heap[parent]:
+            heap[index], heap[parent] = heap[parent], heap[index]
+            index = parent  # Move up
+        else:
+            break  # Heap property satisfied
 ```
 
-### 4. Pop (Extract Min/Max)
+### 2. Pop (Extract Min/Max)
+
+To remove the root (minimum/maximum) element:
+1. Save the root element to return later.
+2. Remove the *last* element in the array and place it at the root (this destroys the heap property at the root, but keeps the complete tree structure).
+3. **Heapify Down** from the root to restore the heap property.
 
 ```python
-def heap_pop(heap: list) -> int:
+def heap_pop(heap: list[int]) -> int:
     """
     Remove and return root element.
-
-    Time: O(log n)
-    Space: O(1)
+    Time: O(log n) | Space: O(1)
     """
     if not heap:
         raise IndexError("pop from empty heap")
 
     root = heap[0]
-    heap[0] = heap[-1]            # Move last to root
-    heap.pop()                     # Remove last
-    if heap:
-        heapify_down(heap, 0, len(heap))  # Bubble down
+    last = heap.pop()  # Remove last element
+    if heap:           # If heap wasn't just 1 element
+        heap[0] = last # Move last element to root
+        _heapify_down(heap, 0)
 
     return root
+
+def _heapify_down(heap: list[int], index: int) -> None:
+    size = len(heap)
+    while True:
+        smallest = index
+        left = 2 * index + 1
+        right = 2 * index + 2
+
+        # Find the smallest among node and its two children
+        if left < size and heap[left] < heap[smallest]:
+            smallest = left
+        if right < size and heap[right] < heap[smallest]:
+            smallest = right
+
+        # If smallest is not the current node, swap and continue down
+        if smallest != index:
+            heap[index], heap[smallest] = heap[smallest], heap[index]
+            index = smallest
+        else:
+            break  # Heap property satisfied
 ```
 
-### 5. Build Heap (Heapify)
+---
+
+## The $O(n)$ Build Heap Concept
+
+One of the most frequently asked theoretical interview questions is: **"Why does building a heap from an unsorted array take $O(n)$ time, rather than $O(n \log n)$?"**
+
+If you build a heap by calling `push()` $n$ times, it *is* $O(n \log n)$ because each insert takes up to $O(\log n)$ time.
+
+However, an optimized `build_heap` (often called Floyd's algorithm) works **bottom-up**:
 
 ```python
-def build_heap(arr: list) -> None:
+def build_heap(arr: list[int]) -> None:
     """
-    Convert array to heap in-place.
-
-    Time: O(n) - NOT O(n log n)!
-    Space: O(1)
-
-    Why O(n)? Nodes near bottom (most nodes) do little work.
+    Convert an unsorted array into a valid heap in-place.
+    Time: O(n) | Space: O(1)
     """
     n = len(arr)
-    # Start from last non-leaf node
+    # Start from the last non-leaf node and heapify down to the root
     for i in range(n // 2 - 1, -1, -1):
-        heapify_down(arr, i, n)
+        _heapify_down(arr, i)
 ```
 
-**Why Build Heap is O(n), not O(n log n)?**
+### Why is Build Heap $O(n)$?
 
-Most nodes are near the bottom and do little work:
+The intuition lies in realizing that **most nodes in a tree are near the bottom**, and nodes near the bottom have very little distance to travel when they heapify down.
 
-- n/2 nodes at leaves: 0 swaps
-- n/4 nodes at level 1: at most 1 swap
-- n/8 nodes at level 2: at most 2 swaps
-- Sum: n/4 + 2(n/8) + 3(n/16) + ... = O(n)
+Consider a complete binary tree of $n$ nodes and height $h \approx \log n$:
+- Roughly **half the nodes** ($\approx n/2$) are leaves. They have no children, so calling `heapify_down` on them does $0$ work. (This is why the loop starts at `n // 2 - 1`).
+- A quarter of the nodes ($\approx n/4$) are exactly one level above the leaves. They can travel at most $1$ level down.
+- An eighth of the nodes ($\approx n/8$) can travel at most $2$ levels down.
+- ... Only the **$1$ root node** can travel the maximum $h \approx \log n$ levels down.
+
+Total Work = $\sum (\text{number of nodes at level}) \times (\text{max distance to bottom})$
+Total Work = $0(n/2) + 1(n/4) + 2(n/8) + 3(n/16) + \dots + h(1)$
+
+This converges to an infinite geometric series that bounds to **$O(n)$**.
+
+> **Key Insight:** The algorithm does the *most* work (heapify down) on the *fewest* nodes (those near the root), and the *least* work (no heapify down) on the *most* nodes (the leaves).
 
 ---
 
 ## Complete Min Heap Implementation
 
+While you should almost always use the built-in library (`heapq` in Python), understanding how to build it from scratch demonstrates deep knowledge.
+
 ```python
 class MinHeap:
-    """
-    Min heap implementation for interview understanding.
-    In practice, use Python's heapq module.
-    """
+    """Min heap implementation for interview understanding."""
     def __init__(self):
         self.heap = []
 
     def push(self, val: int) -> None:
-        """Add element to heap. Time: O(log n)"""
+        """Time: O(log n)"""
         self.heap.append(val)
         self._heapify_up(len(self.heap) - 1)
 
     def pop(self) -> int:
-        """Remove and return minimum. Time: O(log n)"""
+        """Time: O(log n)"""
         if not self.heap:
             raise IndexError("pop from empty heap")
 
@@ -408,7 +249,7 @@ class MinHeap:
         return root
 
     def peek(self) -> int:
-        """Return minimum without removing. Time: O(1)"""
+        """Time: O(1)"""
         if not self.heap:
             raise IndexError("peek from empty heap")
         return self.heap[0]
@@ -448,13 +289,36 @@ class MinHeap:
 
 ## Complexity Analysis
 
-| Operation  | Time     | Space | Notes                        |
-| ---------- | -------- | ----- | ---------------------------- |
-| push       | O(log n) | O(1)  | Heapify up                   |
-| pop        | O(log n) | O(1)  | Heapify down                 |
-| peek       | O(1)     | O(1)  | Access root                  |
-| build_heap | O(n)     | O(1)  | In-place heapify             |
-| search     | O(n)     | O(1)  | Must check all (no ordering) |
+| Operation            | Time Complexity | Space Complexity | Description                               |
+| -------------------- | --------------- | ---------------- | ----------------------------------------- |
+| **Push**             | $O(\log n)$     | $O(1)$           | Insert at end, heapify up.                |
+| **Pop**              | $O(\log n)$     | $O(1)$           | Replace root with last, heapify down.     |
+| **Peek**             | $O(1)$          | $O(1)$           | Access array at index 0.                  |
+| **Build Heap**       | $O(n)$          | $O(1)$           | In-place heapify array.                   |
+| **Search (arbitrary)** | $O(n)$          | $O(1)$           | Must check all elements (no ordering).    |
+
+---
+
+## When NOT to Use a Heap
+
+Heaps are heavily optimized for min/max queries. They are **terrible** for almost everything else. Here are major "anti-patterns" where a heap is the wrong choice:
+
+**1. Searching for Arbitrary Elements ($O(n)$)**
+A heap does not order siblings. To check if an element `x` exists, you must scan the entire array.
+*Use instead:* Hash Set $O(1)$ or Binary Search Tree $O(\log n)$.
+
+**2. You Need Both Min AND Max Efficiently**
+A min heap gives $O(1)$ min, but finding the max requires inspecting all $O(n/2)$ leaf nodes.
+*Use instead:* Balanced BST, or a more complex dual-structure (like separate min and max heaps with lazy deletion).
+
+**3. Finding the Kth Element Once ($O(n \log k)$ or $O(k \log n)$)**
+If you just need the 5th smallest element in a static list, putting everything in a heap and popping 5 times works, but it's not optimal.
+*Use instead:* QuickSelect $O(n)$.
+*(Note: If the list is dynamic and you repeatedly need the Kth element, a heap is the right choice).*
+
+**4. Modifying Priorities of Existing Items ($O(n)$)**
+Standard heaps cannot efficiently find an item to change its priority. E.g., changing the priority of "task_A" from 5 to 2 requires an $O(n)$ search, followed by an $O(\log n)$ heapify.
+*Use instead:* Indexed Priority Queue (a heap augmented with a Hash Map) or Fibonacci Heap.
 
 ---
 
@@ -462,109 +326,72 @@ class MinHeap:
 
 ### Max Heap (Negate Values)
 
-Python's heapq is min heap only. For max heap, negate values:
+Python's `heapq` is strictly a min heap. To simulate a max heap with numbers, simply **negate the values** before pushing, and negate them again after popping:
 
 ```python
 import heapq
 
-# Max heap simulation
 max_heap = []
-heapq.heappush(max_heap, -5)  # Push -5 to get max behavior
-heapq.heappush(max_heap, -3)
-heapq.heappush(max_heap, -7)
+heapq.heappush(max_heap, -5)  # Representing 5
+heapq.heappush(max_heap, -10) # Representing 10
+heapq.heappush(max_heap, -3)  # Representing 3
 
-max_val = -heapq.heappop(max_heap)  # Returns 7 (largest)
+# Pops -10, negate to get 10
+largest = -heapq.heappop(max_heap)
 ```
 
-### Heap with Custom Comparator
+### Heap with Custom Objects
 
-For complex objects, use tuples or wrapper classes:
+When dealing with complex objects (like tasks, nodes, or graphs), store a tuple: `(priority, object)`. Python's `heapq` will sort based on the first element (the priority).
+
+If priorities tie, Python will try to compare the objects themselves. If the objects don't support comparison (e.g., custom classes without `__lt__`), it will crash. **Fix ties** by adding a unique identifier (like an incrementing counter) as the second element: `(priority, insert_order_id, object)`.
 
 ```python
 import heapq
 
-# Priority queue with (priority, item)
 pq = []
-heapq.heappush(pq, (2, "task B"))
-heapq.heappush(pq, (1, "task A"))
-heapq.heappush(pq, (3, "task C"))
+heapq.heappush(pq, (2, 0, "task B")) # (priority, id, task)
+heapq.heappush(pq, (1, 1, "task A"))
+heapq.heappush(pq, (1, 2, "task C")) # Ties resolved by id
 
-priority, task = heapq.heappop(pq)  # (1, "task A")
+# Pops (1, 1, "task A") -> lowest priority, lowest id
+priority, _, task = heapq.heappop(pq)
 ```
 
 ---
 
-## Edge Cases
+## Edge Cases to Consider
 
-```python
-# 1. Empty heap
-heap = []
-# → pop/peek should raise exception
-
-# 2. Single element
-heap = [5]
-# → pop returns 5, heap becomes empty
-
-# 3. All same values
-heap = [3, 3, 3, 3]
-# → Still valid heap, any order of same values works
-
-# 4. Already sorted (ascending)
-heap = [1, 2, 3, 4, 5]
-# → Already a valid min heap
-
-# 5. Reverse sorted (descending)
-heap = [5, 4, 3, 2, 1]
-# → Requires O(n) heapify to become min heap
-```
-
----
-
-## Heap vs Other Data Structures
-
-| Operation      | Heap     | Sorted Array | BST (balanced) |
-| -------------- | -------- | ------------ | -------------- |
-| Find min/max   | O(1)     | O(1)         | O(log n)       |
-| Insert         | O(log n) | O(n)         | O(log n)       |
-| Delete min/max | O(log n) | O(1) or O(n) | O(log n)       |
-| Search         | O(n)     | O(log n)     | O(log n)       |
-| Build          | O(n)     | O(n log n)   | O(n log n)     |
-
-**Use heap when**: You only need min/max, not arbitrary search.
+- **Empty Heap**: Calling pop or peek on an empty heap should raise an `IndexError`. Handle this explicitly in interviews.
+- **Single Element**: Popping from a single-element heap should not trigger `heapify_down`, it just returns the element and leaves the heap empty.
+- **Duplicate Values**: Heaps handle duplicate values perfectly well. The structural property prevents any issues.
+- **Already Sorted Data**:
+  - An ascending array `[1, 2, 3, 4, 5]` is *already* a valid min heap.
+  - A descending array `[5, 4, 3, 2, 1]` is a valid max heap, but takes $O(n)$ time to convert to a min heap.
 
 ---
 
 ## Interview Tips
 
-1. **Know the formulas**: Parent = (i-1)//2, Left = 2i+1, Right = 2i+2
-2. **Understand O(n) heapify**: Interviewers often ask why it's not O(n log n)
-3. **Use library in practice**: Implement only if asked, use heapq otherwise
-4. **Min vs Max**: Default is min heap; negate for max heap
-5. **Complete binary tree**: This is why height is always O(log n)
+1. **Know the formulas by heart**: Parent = `(i-1)//2`, Left = `2i+1`, Right = `2i+2`.
+2. **Nail the $O(n)$ heapify explanation**: Interviewers will probe this. Mention "half the nodes are leaves doing zero work".
+3. **Use the library**: Unless specifically asked to implement one from scratch, ALWAYS say "I'll use Python's built-in `heapq` to maintain a min/max heap".
+4. **Spot the pattern**: "Kth largest/smallest", "Top K frequent", "Merge K sorted lists" are immediate giveaways for a Heap.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                         | Difficulty | Key Concept             |
-| --- | ------------------------------- | ---------- | ----------------------- |
-| 1   | Last Stone Weight               | Easy       | Basic heap operations   |
-| 2   | Kth Largest Element in a Stream | Easy       | Maintain heap of size K |
-| 3   | Sort an Array (Heap Sort)       | Medium     | Build heap + extract    |
-| 4   | Kth Largest Element in an Array | Medium     | Heap or QuickSelect     |
+| #   | Problem | Difficulty | Key Concept |
+| --- | --- | --- | --- |
+| 1 | Last Stone Weight | Easy | Basic max heap operations (negate values). |
+| 2 | Kth Largest Element in a Stream | Easy | Maintain a min heap of size exactly $K$. |
+| 3 | Kth Largest Element in an Array | Medium | Use a heap or implement QuickSelect. |
+| 4 | Sort an Array (Heap Sort) | Medium | Build heap $O(n)$, then extract min/max $O(n \log n)$. |
 
 ---
 
-## Key Takeaways
+## Next Steps
 
-1. **Heap = Complete binary tree + Heap property** stored as array
-2. **Min heap**: Parent ≤ children, root is minimum
-3. **Max heap**: Parent ≥ children, root is maximum
-4. **Build heap is O(n)**, not O(n log n) — common interview question
-5. **Use heapq in Python**: Don't implement from scratch unless asked
-
----
-
-## Next: [02-python-heapq.md](./02-python-heapq.md)
-
-Learn Python's heapq module and common usage patterns.
+Learn how to use Python's built-in heap library and common usage patterns in:
+[02-python-heapq.md](./02-python-heapq.md)
