@@ -10,7 +10,7 @@ Merge operations combine two or more sorted linked lists into one sorted list by
 
 **Why is merging linked lists so elegant?**
 
-Unlike arrays, merging linked lists requires no extra space for the result. You're just rearranging pointers—the nodes already exist in memory. This is why merge sort on linked lists uses O(1) auxiliary space (vs O(n) for arrays).
+Unlike arrays, merging linked lists requires no extra space for the result. You're just rearranging pointers—the nodes already exist in memory. This is why merge sort on linked lists uses $O(1)$ auxiliary space (vs $O(n)$ for arrays).
 
 **The Two-Finger Technique**:
 Imagine you have two sorted stacks of papers and want to combine them:
@@ -35,11 +35,11 @@ Without a dummy, you'd need special logic for "which list's head becomes the res
 
 **Merge K Lists: Two Approaches**
 
-1. **Divide and Conquer**: Like a tournament bracket. Pair up lists, merge each pair, repeat. Each "round" halves the number of lists. log(k) rounds × O(N) work per round = O(N log k).
+1. **Divide and Conquer**: Like a tournament bracket. Pair up lists, merge each pair, repeat. Each "round" halves the number of lists. $\log(k)$ rounds $\times$ $O(N)$ work per round = $O(N \log k)$.
 
-2. **Min-Heap**: Keep the smallest element from each list in a heap. Pop the minimum, push its successor. Each of N total elements does one push and one pop, each O(log k) = O(N log k).
+2. **Min-Heap**: Keep the smallest element from each list in a heap. Pop the minimum, push its successor. Each of $N$ total elements does one push and one pop, each $O(\log k)$ = $O(N \log k)$.
 
-Which is better? Heap has consistent O(log k) per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
+Which is better? Heap has consistent $O(\log k)$ per element. Divide-and-conquer has better cache behavior. In practice, both are excellent.
 
 **The Index Trick for Heaps**:
 
