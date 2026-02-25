@@ -149,8 +149,8 @@ def eval_rpn(tokens: List[str]) -> int:
 
     LeetCode 150: Evaluate Reverse Polish Notation
 
-    Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     stack = []
 
@@ -212,8 +212,8 @@ def calculate(s: str) -> int:
 
     LeetCode 224: Basic Calculator
 
-    Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     stack = []
     num = 0
@@ -288,8 +288,8 @@ def calculate_ii(s: str) -> int:
 
     LeetCode 227: Basic Calculator II
 
-    Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     stack = []
     num = 0
@@ -353,8 +353,8 @@ def calculate_iii(s: str) -> int:
 
     LeetCode 772: Basic Calculator III
 
-    Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     def helper(s: List[str]) -> int:
         stack = []
@@ -410,8 +410,8 @@ def infix_to_postfix(expression: str) -> str:
     """
     Convert infix to postfix (Shunting Yard algorithm).
 
-    Time Complexity: $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
     right_associative = {'^'}
@@ -475,8 +475,8 @@ def decode_string(s: str) -> str:
 
     LeetCode 394: Decode String
 
-    Time Complexity: $\Theta(\text{output length})$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: $\mathcal{O}(\text{output length})$
+    Space Complexity: $\mathcal{O}(n)$
     """
     stack = []
     current_string = ""
