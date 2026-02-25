@@ -32,7 +32,7 @@ incomplete item must be resolved before returning to earlier items.
 - **Undo systems**: The most recent action is undone first
 - **DFS traversal**: The most recently discovered path is explored first
 
-**Mental Model**: Imagine a narrow pipe where you can only add or remove balls from one end. This constraint forces LIFO ordering. The "cost" of this constraint is that you can't access middle elements. The "benefit" is that push/pop are O(1) and you automatically get LIFO ordering without any bookkeeping.
+**Mental Model**: Imagine a narrow pipe where you can only add or remove balls from one end. This constraint forces LIFO ordering. The "cost" of this constraint is that you can't access middle elements. The "benefit" is that push/pop are $\mathcal{O}(1)$ and you automatically get LIFO ordering without any bookkeeping.
 
 ## When NOT to Use Stacks
 
@@ -101,11 +101,11 @@ Stack operations:
 
 | Operation          | Description                         | Time Complexity |
 | ------------------ | ----------------------------------- | --------------- |
-| `push(x)`          | Add element to top                  | O(1)\*          |
-| `pop()`            | Remove and return top element       | O(1)            |
-| `peek()` / `top()` | Return top element without removing | O(1)            |
-| `isEmpty()`        | Check if stack is empty             | O(1)            |
-| `size()`           | Return number of elements           | O(1)            |
+| `push(x)`          | Add element to top                  | $\mathcal{O}(1)$*       |
+| `pop()`            | Remove and return top element       | $\mathcal{O}(1)$        |
+| `peek()` / `top()` | Return top element without removing | $\mathcal{O}(1)$        |
+| `isEmpty()`        | Check if stack is empty             | $\mathcal{O}(1)$        |
+| `size()`           | Return number of elements           | $\mathcal{O}(1)$        |
 
 \*Amortized for dynamic arrays
 
@@ -117,7 +117,7 @@ Stack operations:
 
 ```python
 # Python list as stack - most common in interviews
-stack = []
+stack: list[int] = []
 
 # Push
 stack.append(1)
@@ -144,26 +144,28 @@ size = len(stack)  # 2
 ### Stack Class Implementation
 
 ```python
+from typing import Any
+
 class Stack:
     """
     Stack implementation using Python list.
 
-    All operations are O(1) amortized.
+    All operations are $\mathcal{O}(1)$ amortized.
     """
     def __init__(self):
-        self._items = []
+        self._items: list[Any] = []
 
-    def push(self, item) -> None:
+    def push(self, item: Any) -> None:
         """Add item to top of stack."""
         self._items.append(item)
 
-    def pop(self):
+    def pop(self) -> Any:
         """Remove and return top item. Raises IndexError if empty."""
         if self.is_empty():
             raise IndexError("pop from empty stack")
         return self._items.pop()
 
-    def peek(self):
+    def peek(self) -> Any:
         """Return top item without removing. Raises IndexError if empty."""
         if self.is_empty():
             raise IndexError("peek from empty stack")
@@ -197,9 +199,12 @@ print(stack.size())  # 1
 
 ```python
 from collections import deque
+from typing import Deque
 
 # deque can also be used as stack (append/pop from right)
-stack = deque()
+# Unlike lists, deque operations are strictly $\mathcal{O}(1)$ non-amortized,
+# because deque is implemented as a doubly linked list in Python.
+stack: Deque[int] = deque()
 
 stack.append(1)       # Push
 val = stack.pop()     # Pop
@@ -218,11 +223,11 @@ def is_valid_parentheses(s: str) -> bool:
     """
     Check if parentheses are valid.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
-    stack = []
-    mapping = {')': '(', '}': '{', ']': '['}
+    stack: list[str] = []
+    mapping = {")": "(", "}": "{", "]": "["}
 
     for char in s:
         if char in mapping:
@@ -244,16 +249,16 @@ def reverse_string(s: str) -> str:
     """
     Reverse string using stack.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     stack = list(s)  # Push all characters
-    result = []
+    result: list[str] = []
 
     while stack:
         result.append(stack.pop())  # Pop in reverse order
 
-    return ''.join(result)
+    return "".join(result)
 ```
 
 ### Pattern 3: Undo/History
@@ -264,11 +269,11 @@ class TextEditor:
 
     def __init__(self):
         self.text = ""
-        self.history = []  # Stack of previous states
+        self.history: list[str] = []  # Stack of previous states
 
     def write(self, chars: str) -> None:
         self.history.append(self.text)  # Save current state
-        self.text += chars
+        self.text += chars  # Note: string concatenation is O(n). A real editor uses more complex structures.
 
     def delete(self, k: int) -> None:
         self.history.append(self.text)
@@ -282,12 +287,12 @@ class TextEditor:
 ### Pattern 4: Iterative DFS
 
 ```python
-def dfs_iterative(graph: dict, start: str) -> list:
+def dfs_iterative(graph: dict[str, list[str]], start: str) -> list[str]:
     """
     Iterative DFS using explicit stack.
 
-    Time: O(V + E)
-    Space: O(V)
+    Time: $\mathcal{O}(V + E)$
+    Space: $\mathcal{O}(V)$
     """
     visited = set()
     result = []
@@ -312,17 +317,17 @@ def dfs_iterative(graph: dict, start: str) -> list:
 
 | Operation | List-based | Linked List-based |
 | --------- | ---------- | ----------------- |
-| push      | O(1)\*     | O(1)              |
-| pop       | O(1)       | O(1)              |
-| peek      | O(1)       | O(1)              |
-| isEmpty   | O(1)       | O(1)              |
-| Space     | O(n)       | O(n)              |
+| push      | $\mathcal{O}(1)$* | $\mathcal{O}(1)$         |
+| pop       | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
+| peek      | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
+| isEmpty   | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
+| Space     | $\mathcal{O}(n)$  | $\mathcal{O}(n)$         |
 
-\*Amortized - occasional O(n) when resizing
+\*Amortized - occasional $\mathcal{O}(n)$ when resizing
 
 ### Why Python List Works Well
 
-- `append()` and `pop()` operate at the end - O(1) amortized
+- `append()` and `pop()` operate at the end - $\mathcal{O}(1)$ amortized
 - Dynamic resizing handled automatically
 - Simple and clean syntax
 
@@ -337,11 +342,13 @@ Track maximum element efficiently (covered in [06-min-stack.md](./06-min-stack.m
 ### 2. Two Stacks in One Array
 
 ```python
+from typing import Optional
+
 class TwoStacks:
-    """Two stacks using single array."""
+    """Two stacks using a single array."""
 
     def __init__(self, capacity: int):
-        self.arr = [None] * capacity
+        self.arr: list[Optional[int]] = [None] * capacity
         self.top1 = -1
         self.top2 = capacity
 
@@ -359,14 +366,14 @@ class TwoStacks:
             return True
         return False  # Full
 
-    def pop1(self) -> int:
+    def pop1(self) -> Optional[int]:
         if self.top1 >= 0:
             x = self.arr[self.top1]
             self.top1 -= 1
             return x
         return None  # Empty
 
-    def pop2(self) -> int:
+    def pop2(self) -> Optional[int]:
         if self.top2 < len(self.arr):
             x = self.arr[self.top2]
             self.top2 += 1
@@ -377,24 +384,26 @@ class TwoStacks:
 ### 3. Stack Using Linked List
 
 ```python
+from typing import Optional, Any
+
 class ListNode:
-    def __init__(self, val=0, next=None):
+    def __init__(self, val: Any = 0, next: Optional['ListNode'] = None):
         self.val = val
         self.next = next
 
 class LinkedStack:
-    """Stack using linked list - O(1) guaranteed (no resizing)."""
+    """Stack using linked list - $\mathcal{O}(1)$ guaranteed (no resizing)."""
 
     def __init__(self):
-        self.head = None
+        self.head: Optional[ListNode] = None
         self._size = 0
 
-    def push(self, val: int) -> None:
+    def push(self, val: Any) -> None:
         new_node = ListNode(val, self.head)
         self.head = new_node
         self._size += 1
 
-    def pop(self) -> int:
+    def pop(self) -> Any:
         if not self.head:
             raise IndexError("pop from empty stack")
         val = self.head.val
@@ -402,7 +411,7 @@ class LinkedStack:
         self._size -= 1
         return val
 
-    def peek(self) -> int:
+    def peek(self) -> Any:
         if not self.head:
             raise IndexError("peek from empty stack")
         return self.head.val
@@ -420,21 +429,21 @@ class LinkedStack:
 
 ```python
 # 1. Empty stack
-stack = []
+stack: list[int] = []
 # → Check before pop/peek to avoid IndexError
 
 # 2. Single element
 stack = [1]
 stack.pop()  # Now empty
-# → Check if empty after operation
+# → Check if empty before next operation
 
 # 3. Pop from empty
-stack = []
+stack: list[int] = []
 if stack:  # Always check first
     stack.pop()
 
 # 4. Peek from empty
-stack = []
+stack: list[int] = []
 top = stack[-1] if stack else None  # Safe peek
 ```
 
@@ -466,7 +475,7 @@ top = stack[-1] if stack else None  # Safe peek
 ## Key Takeaways
 
 1. **LIFO**: Last-In-First-Out principle is fundamental
-2. **O(1) operations**: push, pop, peek all constant time
+2. **$\mathcal{O}(1)$ operations**: push, pop, peek all constant time
 3. **Python list**: Use `append()` and `pop()` - simple and efficient
 4. **Check before access**: Always verify stack is not empty
 5. **Recognize patterns**: Matching, reversal, history, DFS all use stacks

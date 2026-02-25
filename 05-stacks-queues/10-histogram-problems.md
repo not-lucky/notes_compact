@@ -10,7 +10,7 @@ Histogram problems ask you to find the largest rectangle that can be inscribed i
 
 **Why is finding the largest rectangle hard?**
 
-The brute force approach: For each bar, expand left and right until you hit a shorter bar. This is O(n) per bar = O(n²) total.
+The brute force approach: For each bar, expand left and right until you hit a shorter bar. This is $\Theta(n)$ per bar = $\Theta(n^2)$ total.
 
 **The Key Insight**:
 
@@ -99,7 +99,7 @@ The histogram rectangle pattern is wrong when:
 Histogram problems are **classic hard problems** at FANG+ companies because:
 
 1. **Monotonic stack mastery**: Tests deep understanding of the pattern
-2. **Non-obvious optimization**: Brute force is O(n²), optimal is O(n)
+2. **Non-obvious optimization**: Brute force is $\Theta(n^2)$, optimal is $\Theta(n)$
 3. **Building block**: Foundation for maximal rectangle in matrix
 4. **Pattern recognition**: Similar approach applies to trapping water problems
 
@@ -136,9 +136,9 @@ Largest rectangle: 5 × 2 = 10 (bars at index 2 and 3)
 
 | Approach           | Time       | Space    | Notes                           |
 | ------------------ | ---------- | -------- | ------------------------------- |
-| Brute force        | O(n²)      | O(1)     | For each bar, expand left/right |
-| Divide and conquer | O(n log n) | O(log n) | Segment tree or recursion       |
-| Monotonic stack    | O(n)       | O(n)     | Optimal solution                |
+| Brute force        | $\Theta(n^2)$      | $\Theta(1)$     | For each bar, expand left/right |
+| Divide and conquer | $\Theta(n \log n)$ | $\Theta(\log n)$ | Segment tree or recursion       |
+| Monotonic stack    | $\Theta(n)$       | $\Theta(n)$     | Optimal solution                |
 
 ---
 
@@ -149,8 +149,8 @@ def largest_rectangle_brute(heights: list[int]) -> int:
     """
     For each bar, find how far it can extend left and right.
 
-    Time: O(n²)
-    Space: O(1)
+    Time Complexity: $\Theta(n^2)$
+    Space Complexity: $\Theta(1)$
     """
     max_area = 0
 
@@ -187,8 +187,8 @@ def largest_rectangle_in_histogram(heights: list[int]) -> int:
     Key insight: For each bar, find the first smaller bar on left and right.
     The rectangle with that bar as height extends from left+1 to right-1.
 
-    Time: O(n) - each bar pushed and popped once
-    Space: O(n) - for stack
+    Time Complexity: $\Theta(n)$ - each bar pushed and popped once
+    Space Complexity: $\Theta(n)$ - for stack
     """
     stack = []  # Monotonic increasing stack of indices
     max_area = 0
@@ -304,8 +304,8 @@ def largest_rectangle_v2(heights: list[int]) -> int:
     """
     Precompute left and right boundaries separately.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     n = len(heights)
     if n == 0:
@@ -352,8 +352,8 @@ def maximal_rectangle(matrix: list[list[str]]) -> int:
 
     Idea: Build histogram for each row, apply histogram algorithm.
 
-    Time: O(rows × cols)
-    Space: O(cols)
+    Time Complexity: $\Theta(r \times c)$ where $r$ is rows and $c$ is cols
+    Space Complexity: $\Theta(c)$ for the heights array
     """
     if not matrix or not matrix[0]:
         return 0
@@ -415,8 +415,8 @@ def trap_water(height: list[int]) -> int:
 
     LeetCode 42: Trapping Rain Water
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(n)$
     """
     stack = []  # Monotonic decreasing stack of indices
     water = 0
@@ -448,10 +448,10 @@ print(trap_water(height))  # 6
 ```python
 def trap_water_two_pointers(height: list[int]) -> int:
     """
-    Two-pointer approach for O(1) space.
+    Two-pointer approach for $\Theta(1)$ space.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not height:
         return 0
@@ -488,8 +488,8 @@ def max_area_container(height: list[int]) -> int:
 
     LeetCode 11: Container With Most Water
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     left, right = 0, len(height) - 1
     max_area = 0
@@ -531,10 +531,10 @@ print(max_area_container(height))  # 49
 
 | Problem              | Time     | Space                  |
 | -------------------- | -------- | ---------------------- |
-| Largest Rectangle    | O(n)     | O(n)                   |
-| Maximal Rectangle    | O(r × c) | O(c)                   |
-| Trapping Rain Water  | O(n)     | O(1) with two pointers |
-| Container With Water | O(n)     | O(1)                   |
+| Largest Rectangle    | $\Theta(n)$     | $\Theta(n)$                   |
+| Maximal Rectangle    | $\Theta(r \times c)$ | $\Theta(c)$                   |
+| Trapping Rain Water  | $\Theta(n)$     | $\Theta(1)$ with two pointers |
+| Container With Water | $\Theta(n)$     | $\Theta(1)$                   |
 
 ---
 
@@ -566,7 +566,7 @@ print(max_area_container(height))  # 49
 2. **Width = right - left - 1**: Distance between boundaries (exclusive)
 3. **Sentinel value**: Append 0 to pop remaining elements
 4. **Build histograms**: Convert 2D matrix problem to 1D
-5. **O(n) is achievable**: Each element pushed and popped once
+5. **$\Theta(n)$ is achievable**: Each element pushed and popped once
 
 ---
 
@@ -578,7 +578,7 @@ This chapter covered the essential stack and queue patterns for interviews:
 2. **Valid parentheses**: Classic stack matching
 3. **Monotonic stack**: Next greater/smaller element problems
 4. **Monotonic deque**: Sliding window maximum
-5. **Min Stack**: O(1) getMin with auxiliary stack
+5. **Min Stack**: $\Theta(1)$ getMin with auxiliary stack
 6. **Stack ↔ Queue conversions**: Design problems
 7. **Expression evaluation**: Parsing with operator precedence
 8. **Histogram problems**: Geometric applications

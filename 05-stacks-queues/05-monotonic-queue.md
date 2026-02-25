@@ -88,7 +88,7 @@ Monotonic deques are the wrong choice when:
 
 The sliding window maximum problem is a **classic hard problem** at FANG+ companies because:
 
-1. **Non-obvious optimization**: Brute force is O(nk), optimal is O(n)
+1. **Non-obvious optimization**: Brute force is $\mathcal{O}(n \cdot k)$, optimal is $\Theta(n)$
 2. **Deque mastery**: Tests understanding of double-ended queue operations
 3. **Monotonic property**: Combines queue structure with monotonic invariant
 4. **Real-world applications**: Rate limiting, time-series analysis, streaming data
@@ -123,9 +123,9 @@ Output: [3, 3, 5, 5, 6, 7]
 
 | Approach        | Time       | Space | Notes                                |
 | --------------- | ---------- | ----- | ------------------------------------ |
-| Brute force     | O(n·k)     | O(1)  | Check all k elements for each window |
-| Heap            | O(n log k) | O(k)  | Max heap with lazy deletion          |
-| Monotonic Deque | O(n)       | O(k)  | Optimal solution                     |
+| Brute force     | $\mathcal{O}(n \cdot k)$ | $\Theta(1)$  | Check all k elements for each window |
+| Heap            | $\mathcal{O}(n \log k)$ | $\mathcal{O}(k)$  | Max heap with lazy deletion          |
+| Monotonic Deque | $\Theta(n)$       | $\mathcal{O}(k)$  | Optimal solution                     |
 
 ---
 
@@ -162,15 +162,16 @@ i=4: pop 3 (-3 < 5)
 
 ```python
 from collections import deque
+from typing import List
 
-def max_sliding_window(nums: list[int], k: int) -> list[int]:
+def max_sliding_window(nums: List[int], k: int) -> List[int]:
     """
     Find maximum in each sliding window of size k.
 
     LeetCode 239: Sliding Window Maximum
 
-    Time: O(n) - each element added and removed at most once
-    Space: O(k) - deque stores at most k indices
+    Time: $\Theta(n)$ - each element added and removed at most once
+    Space: $\mathcal{O}(k)$ - deque stores at most k indices
     """
     if not nums or k == 0:
         return []
@@ -256,13 +257,14 @@ Just flip the comparison - remove larger elements instead.
 
 ```python
 from collections import deque
+from typing import List
 
-def min_sliding_window(nums: list[int], k: int) -> list[int]:
+def min_sliding_window(nums: List[int], k: int) -> List[int]:
     """
     Find minimum in each sliding window of size k.
 
-    Time: O(n)
-    Space: O(k)
+    Time: $\Theta(n)$
+    Space: $\mathcal{O}(k)$
     """
     if not nums or k == 0:
         return []
@@ -298,13 +300,14 @@ print(min_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3))
 
 ```python
 import heapq
+from typing import List
 
-def max_sliding_window_heap(nums: list[int], k: int) -> list[int]:
+def max_sliding_window_heap(nums: List[int], k: int) -> List[int]:
     """
     Sliding window max using heap with lazy deletion.
 
-    Time: O(n log n) worst case, O(n log k) average
-    Space: O(n) worst case for heap
+    Time: $\mathcal{O}(n \log n)$ worst case, $\mathcal{O}(n \log k)$ average
+    Space: $\mathcal{O}(n)$ worst case for heap
     """
     if not nums or k == 0:
         return []
@@ -331,15 +334,16 @@ def max_sliding_window_heap(nums: list[int], k: int) -> list[int]:
 
 ```python
 from collections import deque
+from typing import List
 
-def shortest_subarray(nums: list[int], k: int) -> int:
+def shortest_subarray(nums: List[int], k: int) -> int:
     """
     Find shortest subarray with sum >= k (can have negatives).
 
     LeetCode 862: Shortest Subarray with Sum at Least K
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\Theta(n)$
+    Space: $\Theta(n)$
     """
     n = len(nums)
 
@@ -377,15 +381,16 @@ print(shortest_subarray([1, 2], 4))       # -1
 
 ```python
 from collections import deque
+from typing import List
 
-def max_result(nums: list[int], k: int) -> int:
+def max_result(nums: List[int], k: int) -> int:
     """
     Max sum path where you can jump at most k steps.
 
     LeetCode 1696: Jump Game VI
 
-    Time: O(n)
-    Space: O(k)
+    Time: $\Theta(n)$
+    Space: $\mathcal{O}(k)$
     """
     n = len(nums)
     dp = [0] * n
@@ -420,15 +425,16 @@ print(max_result([1, -1, -2, 4, -7, 3], 2))  # 7
 
 ```python
 from collections import deque
+from typing import List
 
-def constrained_subset_sum(nums: list[int], k: int) -> int:
+def constrained_subset_sum(nums: List[int], k: int) -> int:
     """
     Max sum of subsequence where adjacent elements are at most k apart.
 
     LeetCode 1425: Constrained Subsequence Sum
 
-    Time: O(n)
-    Space: O(k)
+    Time: $\Theta(n)$
+    Space: $\mathcal{O}(k)$
     """
     n = len(nums)
     dp = nums[:]  # dp[i] = max sum ending at i
@@ -463,8 +469,9 @@ print(constrained_subset_sum([10, 2, -10, 5, 20], 2))  # 37
 
 ```python
 from collections import deque
+from typing import List
 
-def monotonic_deque_template(nums: list[int], k: int) -> list[int]:
+def monotonic_deque_template(nums: List[int], k: int) -> List[int]:
     """
     Generic monotonic deque template for sliding window problems.
     """
@@ -498,11 +505,11 @@ def monotonic_deque_template(nums: list[int], k: int) -> list[int]:
 
 | Operation          | Time           | Notes                           |
 | ------------------ | -------------- | ------------------------------- |
-| Process n elements | O(n)           | Each element added/removed once |
-| Per element        | O(1) amortized | Constant work on average        |
-| Space              | O(k)           | Deque stores at most k indices  |
+| Process n elements | $\Theta(n)$           | Each element added/removed once |
+| Per element        | $\mathcal{O}(1)$ amortized | Constant work on average        |
+| Space              | $\mathcal{O}(k)$           | Deque stores at most k indices  |
 
-**Why O(n)?** Each index is added to deque exactly once and removed at most once (either from front when out of window, or from back when a larger element arrives). Total operations = 2n = O(n).
+**Why $\Theta(n)$?** Each index is added to deque exactly once and removed at most once (either from front when out of window, or from back when a larger element arrives). Total operations = $2n = \Theta(n)$.
 
 ---
 
@@ -556,14 +563,14 @@ nums = [5, 4, 3, 2, 1], k = 3
 
 ## Key Takeaways
 
-1. **O(n) sliding window max/min**: Monotonic deque is the optimal approach
+1. **$\Theta(n)$ sliding window max/min**: Monotonic deque is the optimal approach
 2. **Store indices**: Allows checking if element is within window
 3. **Two removals**: Front for window expiry, back for monotonic property
-4. **Deque operations**: `popleft()` and `pop()` both O(1)
+4. **Deque operations**: `popleft()` and `pop()` both $\mathcal{O}(1)$
 5. **DP optimization**: Many DP problems with range constraints use this pattern
 
 ---
 
 ## Next: [06-min-stack.md](./06-min-stack.md)
 
-Learn how to design a stack with O(1) getMin operation.
+Learn how to design a stack with $\mathcal{O}(1)$ getMin operation.
