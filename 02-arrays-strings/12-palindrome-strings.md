@@ -12,11 +12,9 @@ Palindrome problems exploit the symmetry of strings that read the same forwards 
 
 The key insight is **symmetry enables comparison reduction**:
 
-1. **Two-Pointer Symmetry Check**: A palindrome is symmetric around its center. If outer characters match, the inner substring determines palindrome-ness. We only need n/2 comparisons, not n² substring comparisons.
-
-2. **Expand From Center**: There are only 2n-1 possible centers (n odd centers at characters, n-1 even centers between characters). From each center, expand outward while characters match. This is O(n²) but with small constant factor.
-
-3. **DP for Substrings**: If s[i:j] is a palindrome and s[i-1] == s[j+1], then s[i-1:j+2] is also a palindrome. This "if inner is palindrome AND outer chars match" pattern creates overlapping subproblems—perfect for DP.
+1. **Two-Pointer Symmetry Check**: A palindrome is symmetric around its center. If outer characters match, the inner substring determines palindrome-ness. We only need $O(n)$ comparisons, not $O(n^2)$ substring comparisons.
+2. **Expand From Center**: There are only $2n-1$ possible centers ($n$ odd centers at characters, $n-1$ even centers between characters). From each center, expand outward while characters match. This is $O(n^2)$ but with a small constant factor.
+3. **DP for Substrings**: If `s[i:j]` is a palindrome and `s[i-1] == s[j+1]`, then `s[i-1:j+2]` is also a palindrome. This "if inner is palindrome AND outer chars match" pattern creates overlapping subproblems—perfect for DP.
 
 **Mental Model - Expand From Center**: Imagine dropping a pebble into still water. The ripples expand outward symmetrically. At each position, let the palindrome "ripple" outward as far as the symmetry allows.
 
@@ -48,13 +46,9 @@ Maximum length: 3, palindromes: "bab" or "aba"
 These techniques have specific scopes:
 
 1. **Longest Palindromic Subsequence (not Substring)**: Subsequence allows gaps—"bbbab" has LPS "bbbb" (skipping 'a'). This is DP on two indices, not expand-from-center.
-
-2. **Count All Palindromes in Massive String**: O(n²) expand-from-center may be too slow for n > 10⁶. Manacher's algorithm achieves O(n) but is rarely expected in interviews.
-
+2. **Count All Palindromes in Massive String**: $O(n^2)$ expand-from-center may be too slow for $n > 10^6$. Manacher's algorithm achieves $O(n)$ but is rarely expected in interviews.
 3. **Construct Palindrome by Modification**: "Minimum insertions to make palindrome" is LCS-based DP, not direct palindrome checking.
-
-4. **Numeric Palindromes**: Integer palindromes (121, 1221) should be checked by reversing the number or comparing digits—string conversion works but is slower.
-
+4. **Numeric Palindromes**: Integer palindromes (121, 1221) should be checked by reversing the number mathematically (e.g., using modulo and division) or comparing digits—string conversion works but uses extra space and is typically frowned upon as a "shortcut".
 5. **Palindrome Partitioning**: "Partition into minimum palindromes" or "all palindrome partitions" needs DP or backtracking, not just checking.
 
 **Red Flags:**
@@ -62,7 +56,7 @@ These techniques have specific scopes:
 - "Subsequence" (not substring) → 2D DP
 - "Minimum insertions/deletions" → LCS-related DP
 - "Partition into palindromes" → Backtracking or interval DP
-- Constraints n > 10⁵ for all palindromic substrings → Manacher's algorithm
+- Constraints $n > 10^5$ for all palindromic substrings → Manacher's algorithm
 
 ---
 
@@ -108,8 +102,8 @@ def is_palindrome(s: str) -> bool:
     """
     Check if string is a palindrome.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) - We check at most n/2 characters, so tight bound is Θ(n).
+    Space: O(1) - Only two integer pointers.
     """
     left, right = 0, len(s) - 1
 
@@ -128,7 +122,7 @@ def is_palindrome(s: str) -> bool:
 def is_palindrome_slice(s: str) -> bool:
     """
     Time: O(n)
-    Space: O(n) - creates reversed copy
+    Space: O(n) - Creates reversed copy of the string in memory.
     """
     return s == s[::-1]
 ```
@@ -144,15 +138,15 @@ def is_palindrome_slice(s: str) -> bool:
 This is the same logic as the basic check but with a "filtering" step.
 1. We move pointers as usual but skip any character that isn't `isalnum()`.
 2. We use `lower()` to ensure case-insensitive comparison.
-This avoids the need for a separate pre-processing step that would require O(n) extra space.
+This avoids the need for a separate pre-processing step (like creating a new filtered string) that would require $O(n)$ extra space.
 
 ```python
 def is_palindrome_alphanum(s: str) -> bool:
     """
     Check palindrome ignoring non-alphanumeric characters and case.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) - Single pass through the string.
+    Space: O(1) - Constant extra space used for pointers.
 
     Example:
     "A man, a plan, a canal: Panama" → True
@@ -183,21 +177,21 @@ def is_palindrome_alphanum(s: str) -> bool:
 ## Template: Valid Palindrome II (Remove at Most One)
 
 ### Problem: Valid Palindrome II
-**Problem Statement:** Given a string `s`, return `true` if the `s` can be a palindrome after deleting at most one character from it.
+**Problem Statement:** Given a string `s`, return `True` if `s` can be a palindrome after deleting at most one character from it.
 
 **Why it works:**
 1. We start a normal palindrome check from both ends.
 2. When we encounter a mismatch `s[left] != s[right]`, we have two options to fix it: remove the `left` character or remove the `right` character.
 3. We check if the remaining substring `s[left+1 : right+1]` OR `s[left : right]` is a palindrome.
-Since we only get one "skip", this remains an O(n) solution.
+Since we only get one "skip", this remains an $O(n)$ time complexity solution.
 
 ```python
 def valid_palindrome_ii(s: str) -> bool:
     """
     Check if string can be palindrome by removing at most one character.
 
-    Time: O(n)
-    Space: O(1)
+    Time: O(n) - The helper is called at most twice, checking remaining characters.
+    Space: O(1) - Slices are avoided by passing bounds to helper; if slices were used, it would be O(n) space.
 
     Example:
     "aba" → True
@@ -237,15 +231,15 @@ A palindrome can be centered at a single character (odd length) or between two c
 1. There are `2n-1` such centers. 
 2. For each center, we expand outward as long as the characters match.
 3. We keep track of the maximum length palindrome found.
-This approach is O(n²) but uses O(1) extra space, making it better than a O(n²) DP solution that uses O(n²) space.
+This approach is $O(n^2)$ but uses $O(1)$ extra space, making it better than a $O(n^2)$ DP solution that uses $O(n^2)$ space.
 
 ```python
 def longest_palindrome(s: str) -> str:
     """
     Find the longest palindromic substring.
 
-    Time: O(n²)
-    Space: O(1)
+    Time: O(n²) - Expanding from each of the 2n-1 centers takes up to O(n) time.
+    Space: O(1) - Only keeping track of pointers and indices, ignoring the output string space.
 
     Example:
     "babad" → "bab" or "aba"
@@ -254,29 +248,30 @@ def longest_palindrome(s: str) -> str:
     if not s:
         return ""
 
-    def expand_from_center(left: int, right: int) -> str:
-        """Expand as long as we have a palindrome."""
+    def expand_from_center(left: int, right: int) -> tuple[int, int]:
+        """Expand as long as we have a palindrome and return the boundaries."""
         while left >= 0 and right < len(s) and s[left] == s[right]:
             left -= 1
             right += 1
-        # Return the palindrome (left+1 to right-1, exclusive right)
-        return s[left + 1:right]
+        # Return bounds (left+1 to right-1)
+        return left + 1, right - 1
 
-    longest = ""
+    start, end = 0, 0
 
     for i in range(len(s)):
         # Odd length palindrome (single center)
-        odd = expand_from_center(i, i)
-        if len(odd) > len(longest):
-            longest = odd
+        left1, right1 = expand_from_center(i, i)
+        if right1 - left1 > end - start:
+            start, end = left1, right1
 
         # Even length palindrome (two centers)
-        even = expand_from_center(i, i + 1)
-        if len(even) > len(longest):
-            longest = even
+        left2, right2 = expand_from_center(i, i + 1)
+        if right2 - left2 > end - start:
+            start, end = left2, right2
 
-    return longest
+    return s[start:end + 1]
 ```
+*(Note: Returning indices from the helper avoids creating $O(n^2)$ substring slices during the process, strictly maintaining $O(1)$ auxiliary space).*
 
 ### Visual: Expand from Center
 
@@ -302,8 +297,10 @@ def longest_palindrome_dp(s: str) -> str:
     """
     DP approach: dp[i][j] = True if s[i:j+1] is palindrome.
 
-    Time: O(n²)
-    Space: O(n²)
+    Time: O(n²) - We fill an n x n grid.
+    Space: O(n²) - Storing the n x n grid.
+
+    Note: This is generally considered inferior to Expand from Center due to space usage.
     """
     n = len(s)
     if n < 2:
@@ -356,8 +353,8 @@ def count_substrings(s: str) -> int:
     """
     Count all palindromic substrings.
 
-    Time: O(n²)
-    Space: O(1)
+    Time: O(n²) - Expand around 2n-1 centers, taking O(n) time each.
+    Space: O(1) - Only scalar variables.
 
     Example:
     "abc" → 3 ("a", "b", "c")
@@ -401,8 +398,8 @@ def longest_palindrome_subseq(s: str) -> int:
     Find length of longest palindromic SUBSEQUENCE (not substring).
     Subsequence doesn't need to be contiguous.
 
-    Time: O(n²)
-    Space: O(n²) or O(n) with optimization
+    Time: O(n²) - Fill an n x n table.
+    Space: O(n²) - 2D DP array. Can be optimized to O(n) space using 2 rows.
 
     Example:
     "bbbab" → 4 ("bbbb")
@@ -449,8 +446,8 @@ def partition(s: str) -> list[list[str]]:
     Partition s such that every substring is a palindrome.
     Return all possible partitions.
 
-    Time: O(n × 2^n) - 2^n partitions, O(n) to check each
-    Space: O(n) for recursion
+    Time: O(n * 2^n) - In the worst case ("aaaa"), there are 2^(n-1) partitions, and it takes O(n) to construct each path.
+    Space: O(n) - Recursive call stack depth is at most n. The output space is O(n * 2^n) which we usually evaluate separately.
 
     Example:
     "aab" → [["a", "a", "b"], ["aa", "b"]]
@@ -489,8 +486,8 @@ def min_cut(s: str) -> int:
     """
     Minimum cuts needed to partition into palindromes.
 
-    Time: O(n²)
-    Space: O(n²)
+    Time: O(n²) - Two passes of O(n²); one to build palindrome table, one to calculate min cuts.
+    Space: O(n²) - For the is_palindrome table. (DP array takes O(n)).
 
     Example:
     "aab" → 1 (cut: "aa" | "b")
@@ -531,15 +528,29 @@ def min_insertions(s: str) -> int:
 
     Key insight: n - LPS (Longest Palindromic Subsequence)
 
-    Time: O(n²)
-    Space: O(n²)
+    Time: O(n²) - Building the LPS table.
+    Space: O(n²) - DP table for LPS. Can be optimized to O(n) using 2 rows.
 
     Example:
     "zzazz" → 0 (already palindrome)
     "mbadm" → 2 (insert 'b' and 'a' → "mbdadbm")
     """
     n = len(s)
-    lps = longest_palindrome_subseq(s)
+    # Re-using the logic from Longest Palindromic Subsequence
+    dp = [[0] * n for _ in range(n)]
+
+    for i in range(n):
+        dp[i][i] = 1
+
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1] + 2
+            else:
+                dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
+
+    lps = dp[0][n - 1]
     return n - lps
 ```
 

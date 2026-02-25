@@ -8,22 +8,22 @@
 
 Imagine your algorithm is doing paperwork at a desk:
 
-- **Input papers**: The data you're given (doesn't count as "extra" space)
-- **Scratch paper**: Any extra notes you make (THIS is what we measure)
-- **Stack of pending work**: Recursive calls waiting to be processed
+- **Input papers**: The data you're given to process.
+- **Scratch paper**: Extra notes you make to solve the problem (THIS is what we measure).
+- **Stack of pending work**: Recursive calls waiting to be processed.
 
 Space complexity asks: "How much scratch paper do I need?"
 
-```
+```text
 Finding max in array:  Just one sticky note for "current max" → O(1)
-Making a copy:         Photocopy every page → O(n)
+Making a copy:         Photocopy every page of the input → O(n)
 Building a matrix:     n×n grid of sticky notes → O(n²)
 Recursive factorial:   Stack of n pending calculations → O(n)
 ```
 
 **The Forgotten Cost: Recursion Stack**
 
-Every recursive call is like putting a bookmark in a book and starting a new chapter. You need to remember where you were:
+Every recursive call is like putting a bookmark in a book and starting a new chapter. You need to remember where you were so you can return to it.
 
 ```python
 factorial(5)      # Bookmark 1: "Return to multiply by 5"
@@ -34,7 +34,7 @@ factorial(5)      # Bookmark 1: "Return to multiply by 5"
 
 **Key Insight**
 
-The recursive solution that "looks" like O(1) space often uses O(n) stack space. Always ask: "How deep can the recursion go?"
+A recursive solution that "looks" like it uses O(1) space often uses O(n) stack space under the hood. Always ask: "How deep can the recursion go?"
 
 ---
 
@@ -42,11 +42,11 @@ The recursive solution that "looks" like O(1) space often uses O(n) stack space.
 
 Space complexity is the **most commonly forgotten** aspect of complexity analysis. Interviewers frequently ask:
 
-- "What's the space complexity?" (after you only mentioned time)
-- "Can you do this in-place?"
-- "What's the space usage of your recursive solution?"
+- "What's the space complexity?" (often asked if you only mentioned time)
+- "Can you do this in-place?" (a hint to reduce space complexity to O(1))
+- "What's the space usage of your recursive solution?" (testing if you understand the call stack)
 
-Missing space analysis can cost you a hire decision. Always mention both time AND space.
+Missing space analysis is a red flag. Build the habit: always mention **both** time AND space upfront.
 
 ---
 
@@ -54,16 +54,16 @@ Missing space analysis can cost you a hire decision. Always mention both time AN
 
 ### Auxiliary Space vs Total Space
 
-- **Auxiliary space**: Extra space your algorithm uses (not counting input)
-- **Total space**: Auxiliary space + input space
+- **Auxiliary space**: The *extra* space your algorithm uses (excluding the input space).
+- **Total space**: Auxiliary space + Input space.
 
-In interviews, when asked about space complexity, they usually mean **auxiliary space**.
+In interviews, when asked about "space complexity", they almost always mean **auxiliary space**.
 
 ```python
 def sum_array(arr: list[int]) -> int:
     """
-    Space: O(1) auxiliary - only using 'total' variable
-    Total space: O(n) - but input doesn't count
+    Auxiliary Space: O(1) - only using a single 'total' variable.
+    Total space: O(n) - because the input array is size n.
 
     We report: O(1) space
     """
@@ -75,13 +75,13 @@ def sum_array(arr: list[int]) -> int:
 
 ### What Counts
 
-| Category             | Counts                 | Example                          |
-| -------------------- | ---------------------- | -------------------------------- |
-| New data structures  | Yes                    | `result = []`, `seen = set()`    |
-| Primitive variables  | Yes (but usually O(1)) | `count = 0`, `i = 0`             |
-| Recursion call stack | Yes                    | Each recursive call adds a frame |
-| Input data           | Usually no             | The array passed in              |
-| Output data          | Depends                | Sometimes counted, sometimes not |
+| Category             | Counts in Auxiliary Space? | Example                          |
+| -------------------- | -------------------------- | -------------------------------- |
+| New data structures  | Yes                        | `result = []`, `seen = set()`    |
+| Primitive variables  | Yes (but usually O(1))     | `count = 0`, `i = 0`             |
+| Recursion call stack | Yes                        | Each recursive call adds a frame |
+| Input data           | No                         | The `arr` passed into the function |
+| Output data          | Usually No                 | Space allocated strictly to return the answer is often ignored, unless specifically requested to count it. |
 
 ---
 
@@ -89,26 +89,25 @@ def sum_array(arr: list[int]) -> int:
 
 ### O(1) - Constant Space
 
+Uses a fixed amount of memory regardless of input size. Often associated with "in-place" algorithms.
+
 ```python
 def find_max(arr: list[int]) -> int:
     """
-    Space: O(1) - only storing a single value
+    Space: O(1) - only storing a single value.
     """
+    if not arr:
+        return float('-inf')
+
     max_val = arr[0]
     for num in arr:
         if num > max_val:
             max_val = num
     return max_val
 
-def swap_in_place(arr: list[int], i: int, j: int) -> None:
-    """
-    Space: O(1) - modifying in-place
-    """
-    arr[i], arr[j] = arr[j], arr[i]
-
 def reverse_in_place(arr: list[int]) -> None:
     """
-    Space: O(1) - in-place modification
+    Space: O(1) - modifying the input array in-place.
     """
     left, right = 0, len(arr) - 1
     while left < right:
@@ -119,41 +118,40 @@ def reverse_in_place(arr: list[int]) -> None:
 
 ### O(n) - Linear Space
 
+Space scales directly with the input size.
+
 ```python
 def duplicate_array(arr: list[int]) -> list[int]:
     """
-    Space: O(n) - creating new array of same size
+    Space: O(n) - creating a new array of the same size.
     """
     return arr[:]
 
 def frequency_count(arr: list[int]) -> dict[int, int]:
     """
-    Space: O(n) - in worst case, all elements unique
+    Space: O(n) - in the worst case (all elements unique),
+    the dictionary stores n key-value pairs.
     """
     freq = {}
     for num in arr:
         freq[num] = freq.get(num, 0) + 1
     return freq
-
-def filter_positive(arr: list[int]) -> list[int]:
-    """
-    Space: O(n) - in worst case, all elements positive
-    """
-    return [x for x in arr if x > 0]
 ```
 
 ### O(n²) - Quadratic Space
 
+Space scales with the square of the input size. Often seen with 2D matrices or finding all pairs.
+
 ```python
 def create_matrix(n: int) -> list[list[int]]:
     """
-    Space: O(n²) - n×n grid
+    Space: O(n²) - allocating an n×n grid.
     """
     return [[0] * n for _ in range(n)]
 
 def all_pairs(arr: list[int]) -> list[tuple[int, int]]:
     """
-    Space: O(n²) - storing all pairs
+    Space: O(n²) - storing all n*(n-1)/2 pairs in a new list.
     """
     pairs = []
     for i in range(len(arr)):
@@ -168,7 +166,7 @@ def all_pairs(arr: list[int]) -> list[tuple[int, int]]:
 
 **This is where most candidates make mistakes.**
 
-Every recursive call adds a **stack frame** to memory. The stack depth determines additional space.
+Every recursive call adds a **stack frame** to memory. The maximum stack depth determines the space complexity.
 
 ### Linear Recursion - O(n) Stack Space
 
@@ -176,9 +174,9 @@ Every recursive call adds a **stack frame** to memory. The stack depth determine
 def factorial(n: int) -> int:
     """
     Time: O(n)
-    Space: O(n) - recursion stack depth is n
+    Space: O(n) - recursion stack depth is n.
 
-    Stack at n=5:
+    Stack trace at n=5:
     factorial(5)
       factorial(4)
         factorial(3)
@@ -188,31 +186,19 @@ def factorial(n: int) -> int:
     if n <= 1:
         return 1
     return n * factorial(n - 1)
-
-def reverse_linked_list_recursive(head):
-    """
-    Time: O(n)
-    Space: O(n) - recursion stack
-
-    Many candidates say "O(1)" but forget the call stack!
-    """
-    if not head or not head.next:
-        return head
-    new_head = reverse_linked_list_recursive(head.next)
-    head.next.next = head
-    head.next = None
-    return new_head
 ```
 
 ### Logarithmic Recursion - O(log n) Stack Space
 
 ```python
-def binary_search_recursive(arr, target, left=0, right=None):
+from typing import Optional
+
+def binary_search_recursive(arr: list[int], target: int, left: int = 0, right: Optional[int] = None) -> int:
     """
     Time: O(log n)
-    Space: O(log n) - recursion stack depth is log n
+    Space: O(log n) - recursion stack depth is log n.
 
-    Stack for n=16:
+    Stack depth halves each time:
     search(16 elements)
       search(8 elements)
         search(4 elements)
@@ -222,6 +208,7 @@ def binary_search_recursive(arr, target, left=0, right=None):
         right = len(arr) - 1
     if left > right:
         return -1
+
     mid = (left + right) // 2
     if arr[mid] == target:
         return mid
@@ -234,20 +221,26 @@ def binary_search_recursive(arr, target, left=0, right=None):
 ### Tree Recursion - Depends on Depth
 
 ```python
-def tree_height(root) -> int:
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def tree_height(root: Optional[TreeNode]) -> int:
     """
-    Time: O(n) - visit every node
-    Space: O(h) where h = height of tree
+    Time: O(n) - visit every node.
+    Space: O(h) - where h is the height of the tree.
 
     Balanced tree: h = log n → O(log n) space
-    Skewed tree: h = n → O(n) space
+    Skewed tree (linked list): h = n → O(n) space
     """
     if not root:
         return 0
     return 1 + max(tree_height(root.left), tree_height(root.right))
 ```
 
-### Exponential Recursion - Space Can Vary
+### Exponential Time, but Linear Space
 
 ```python
 def fibonacci_naive(n: int) -> int:
@@ -255,55 +248,27 @@ def fibonacci_naive(n: int) -> int:
     Time: O(2^n)
     Space: O(n) - NOT O(2^n)!
 
-    Why? At any point, only one path from root to leaf is active.
-    Max stack depth = n (the longest path).
+    Why? The execution is a depth-first traversal of the recursion tree.
+    At any given moment, the call stack only holds the current path
+    from the root down to a leaf. The longest path is length n.
     """
     if n <= 1:
         return n
     return fibonacci_naive(n - 1) + fibonacci_naive(n - 2)
 ```
 
-**Key insight**: For recursion space, think about **maximum depth at any point**, not total number of calls.
-
----
-
-## Tail Recursion (Optimization)
-
-Some languages optimize tail recursion to O(1) space. Python does NOT.
-
-```python
-# NOT tail-recursive (Python doesn't optimize anyway)
-def factorial(n: int) -> int:
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)  # Must wait for recursive call
-
-# Tail-recursive version (still O(n) in Python)
-def factorial_tail(n: int, acc: int = 1) -> int:
-    if n <= 1:
-        return acc
-    return factorial_tail(n - 1, n * acc)  # Last operation is recursive call
-
-# Iterative version - truly O(1) space
-def factorial_iterative(n: int) -> int:
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-    return result
-```
-
-In interviews, if asked about space optimization for recursion in Python, convert to iterative.
+**Key insight**: For recursion space, always think about the **maximum depth of the call stack at any single point in time**, not the total number of calls made.
 
 ---
 
 ## Space-Time Trade-offs
 
-Often you can trade space for time or vice versa.
+A fundamental concept in computer science: you can often use extra memory to make an algorithm run faster, or accept a slower runtime to save memory.
 
 ### Example: Two Sum
 
 ```python
-# Approach 1: O(1) space, O(n²) time
+# Approach 1: Optimize for Space
 def two_sum_brute(nums: list[int], target: int) -> list[int]:
     """
     Time: O(n²)
@@ -315,15 +280,15 @@ def two_sum_brute(nums: list[int], target: int) -> list[int]:
                 return [i, j]
     return []
 
-# Approach 2: O(n) space, O(n) time
+# Approach 2: Optimize for Time
 def two_sum_hash(nums: list[int], target: int) -> list[int]:
     """
     Time: O(n)
     Space: O(n)
 
-    Trade-off: Use extra memory to gain speed.
+    Trade-off: We allocate an O(n) hash map to achieve O(n) time.
     """
-    seen = {}  # O(n) space
+    seen = {}
     for i, num in enumerate(nums):
         complement = target - num
         if complement in seen:
@@ -332,63 +297,30 @@ def two_sum_hash(nums: list[int], target: int) -> list[int]:
     return []
 ```
 
-### Example: Check Duplicate
-
-```python
-# O(1) space, O(n log n) time - sort in-place
-def has_duplicate_sort(nums: list[int]) -> bool:
-    """
-    Time: O(n log n)
-    Space: O(1) - if sort is in-place
-    """
-    nums.sort()  # Modifies input
-    for i in range(len(nums) - 1):
-        if nums[i] == nums[i + 1]:
-            return True
-    return False
-
-# O(n) space, O(n) time - use set
-def has_duplicate_set(nums: list[int]) -> bool:
-    """
-    Time: O(n)
-    Space: O(n)
-    """
-    return len(nums) != len(set(nums))
-```
-
 ---
 
 ## In-Place Algorithms
 
-"In-place" means O(1) auxiliary space (not counting input/output).
+"In-place" means the algorithm transforms input using no auxiliary data structures. However, a small amount of extra storage space is allowed for variables. This results in **O(1) auxiliary space**.
 
 ### Common In-Place Operations
 
 ```python
-def reverse_array(arr: list[int]) -> None:
-    """
-    Space: O(1) - in-place
-    """
-    left, right = 0, len(arr) - 1
-    while left < right:
-        arr[left], arr[right] = arr[right], arr[left]
-        left += 1
-        right -= 1
-
 def remove_duplicates_sorted(arr: list[int]) -> int:
     """
-    Space: O(1) - in-place modification
-    Returns new length.
+    Space: O(1) - in-place modification.
+    Returns the new logical length of the array.
     """
     if not arr:
         return 0
 
-    write = 1
-    for read in range(1, len(arr)):
-        if arr[read] != arr[read - 1]:
-            arr[write] = arr[read]
-            write += 1
-    return write
+    write_idx = 1
+    for read_idx in range(1, len(arr)):
+        if arr[read_idx] != arr[read_idx - 1]:
+            arr[write_idx] = arr[read_idx]
+            write_idx += 1
+
+    return write_idx
 ```
 
 ### Dutch National Flag (In-Place Partition)
@@ -397,7 +329,6 @@ def remove_duplicates_sorted(arr: list[int]) -> int:
 def sort_colors(nums: list[int]) -> None:
     """
     Sort array of 0s, 1s, 2s in-place.
-
     Time: O(n)
     Space: O(1)
     """
@@ -411,6 +342,8 @@ def sort_colors(nums: list[int]) -> None:
         elif nums[mid] == 1:
             mid += 1
         else:  # nums[mid] == 2
+            # Notice we don't increment mid here, because the element
+            # swapped from 'high' still needs to be evaluated.
             nums[mid], nums[high] = nums[high], nums[mid]
             high -= 1
 ```
@@ -419,31 +352,39 @@ def sort_colors(nums: list[int]) -> None:
 
 ## Hidden Space Usage
 
+Certain operations in high-level languages like Python hide space complexities.
+
 ### String Operations in Python
+
+Strings in Python are **immutable**. You cannot modify them in place.
 
 ```python
 # O(n) space - strings are immutable
 def add_char(s: str, c: str) -> str:
     """
-    Space: O(n) - creates new string
+    Space: O(n) - allocating a brand new string of length n+1.
     """
-    return s + c  # Creates entirely new string
+    return s + c
 
 # Building string character by character
 def build_string_bad(n: int) -> str:
     """
-    Space: O(n) at any time
-    But creates O(n²) total memory due to copying
+    Peak Auxiliary Space: O(n) at the end.
+    Time Complexity: Technically O(n²) because each `+=` creates a new
+    string, leading to 1 + 2 + 3 + ... + n operations and total memory churn.
+    (Note: CPython has an optimization that sometimes makes this O(n) time,
+    but architecturally it is O(n²) and considered bad practice).
     """
     s = ""
     for i in range(n):
-        s += str(i)  # Each += creates new string
+        s += str(i)
     return s
 
-# Better: use list
+# Best Practice: Use a list buffer
 def build_string_good(n: int) -> str:
     """
-    Space: O(n)
+    Time: O(n)
+    Space: O(n) - using a list to buffer characters, then joining once.
     """
     chars = []
     for i in range(n):
@@ -456,67 +397,39 @@ def build_string_good(n: int) -> str:
 ```python
 def process_half(arr: list[int]) -> list[int]:
     """
-    Space: O(n) - slice creates copy!
+    Space: O(n) - slicing a list creates a shallow copy!
     """
     mid = len(arr) // 2
-    first_half = arr[:mid]  # O(n/2) = O(n) copy
+    first_half = arr[:mid]  # This operation takes O(n) time and O(n) space
     return first_half
+
+# Better approach to avoid copying: pass indices instead of slicing.
 ```
 
 ---
 
 ## Space Complexity Summary Table
 
-| Pattern                       | Auxiliary Space |
-| ----------------------------- | --------------- |
-| Few variables                 | O(1)            |
-| Fixed-size array              | O(1)            |
-| Hash map with up to n entries | O(n)            |
-| Result list of size n         | O(n)            |
-| n×n matrix                    | O(n²)           |
-| Linear recursion depth        | O(n)            |
-| Binary recursion depth        | O(n) (max path) |
-| Divide-and-conquer depth      | O(log n)        |
-
----
-
-## Practice Problems
-
-| #   | Problem                                          | Difficulty | Focus                |
-| --- | ------------------------------------------------ | ---------- | -------------------- |
-| 1   | Analyze space of iterative vs recursive solution | Easy       | Call stack           |
-| 2   | Identify in-place modifications                  | Easy       | O(1) space           |
-| 3   | Space-time trade-off comparison                  | Medium     | Trade-offs           |
-| 4   | Hidden space in string operations                | Medium     | Language specifics   |
-| 5   | Optimize recursive solution space                | Medium     | Convert to iterative |
+| Pattern                       | Auxiliary Space | Example |
+| ----------------------------- | --------------- | ------- |
+| Primitive variables           | O(1)            | Pointers, counters |
+| Modifying input directly      | O(1)            | Two pointers, in-place swaps |
+| Hash map / Set                | O(n)            | Frequency maps, seen sets |
+| Copying a list / array        | O(n)            | `arr[:]`, `.copy()` |
+| 2D Matrix                     | O(n²)           | Dynamic programming grids |
+| Linear recursion depth        | O(n)            | Traversing a linked list recursively |
+| Binary tree max depth         | O(h) or O(n)    | Tree traversals (worst case skewed = O(n)) |
+| Divide-and-conquer depth      | O(log n)        | Binary search, Merge sort call stack |
 
 ---
 
 ## Key Takeaways
 
-1. **Always mention space complexity** alongside time
-2. **Recursion uses stack space** proportional to max depth
-3. **"In-place" means O(1) auxiliary space**
-4. **Strings in Python create copies** on concatenation
-5. **List slicing creates copies**
-6. **Trade space for time** is a common optimization
-
----
-
-## When NOT to Optimize Space
-
-1. **Readability over cleverness**: An O(n) space solution that's clear beats a confusing O(1) solution
-2. **Memory is cheap**: For most applications, O(n) space is fine
-3. **Don't destroy input**: Modifying input to save space is often a bad practice
-4. **Small n**: For n ≤ 1000, space is almost never an issue
-5. **One-off scripts**: Don't optimize space for code run once
-
-**When space DOES matter:**
-
-- Embedded systems with limited RAM
-- Processing massive datasets (millions of elements)
-- Long-running servers where memory leaks compound
-- Mobile apps where memory affects battery
+1. **Always mention space complexity**: Make it a reflex alongside time complexity.
+2. **Recursion is not free**: The call stack consumes space proportional to the maximum depth of the recursion tree.
+3. **"In-place" means O(1) auxiliary space**: Modifying the input data structure without creating a new one.
+4. **Beware hidden copies**: String concatenation and array slicing in Python allocate new memory.
+5. **Trade space for time**: The most common optimization technique is using a Hash Map (O(n) extra space) to improve time from O(n²) to O(n).
 
 ---
 

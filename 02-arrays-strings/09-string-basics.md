@@ -4,7 +4,7 @@
 
 ## Overview
 
-Strings in Python are immutable sequences of Unicode characters. This immutability fundamentally affects how we build and modify strings—understanding this is crucial for writing efficient code and avoiding O(n²) pitfalls.
+Strings in Python are immutable sequences of Unicode characters. This immutability fundamentally affects how we build and modify strings—understanding this is crucial for writing efficient code and avoiding $\Theta(n^2)$ pitfalls.
 
 ## Building Intuition
 
@@ -12,35 +12,35 @@ Strings in Python are immutable sequences of Unicode characters. This immutabili
 
 The key insight is **every modification creates a new string**:
 
-1. **The Copy Cost**: When you do `s += char`, Python doesn't append to the existing string. It creates a brand new string, copies all characters from the old string, adds the new character, and discards the old string. For a loop that builds a string character by character, this is O(n²) total work!
+1. **The Copy Cost**: When you do `s += char`, Python typically doesn't append to the existing string. It creates a brand new string, copies all characters from the old string, adds the new character, and discards the old string. *Note: While CPython can sometimes optimize `+=` to $O(n)$ in-place under strict conditions (if there are no other references to the string), standard architectural analysis considers it $\Theta(n^2)$ time due to memory churn and reallocation.*
 
-2. **The Solution - Lists as Buffers**: Build strings using a list of characters (or substrings), then join at the end. `"".join(parts)` is O(total_length) because Python pre-computes the final size and copies everything once.
+2. **The Solution - Lists as Buffers**: Python lists are dynamic arrays, which means they support amortized $O(1)$ appends. Build strings by appending to a list of characters (or substrings), then join at the end. `"".join(parts)` is $\Theta(n)$ because Python pre-computes the final size and allocates exactly the right amount of memory once.
 
 3. **Why Immutability Exists**: Immutable strings can be hashed (used as dict keys), shared safely between variables, and interned for memory efficiency. These benefits come at the cost of modification overhead.
 
-**Mental Model**: Think of immutable strings like printed documents. To change one word, you must reprint the entire document. Lists are like whiteboards—you can erase and rewrite freely. Build on the whiteboard, then print once when done.
+**Mental Model**: Think of immutable strings like a physical printed book. To change one word, you must reprint the entire book. Python lists (dynamic arrays) are like a whiteboard—you can quickly add notes to the end (amortized $O(1)$). Build your draft on the whiteboard, then print the final document once when done (`"".join()`).
 
-**The O(n²) Trap**:
+**The $\Theta(n^2)$ Trap**:
 
 ```python
-# DON'T DO THIS - O(n²)
+# DON'T DO THIS - Often $\Theta(n^2)$
 s = ""
 for char in big_list:
-    s += char  # Creates new string each time!
-    # Copies: 1 + 2 + 3 + ... + n = O(n²)
+    s += char  # Usually creates new string each time!
+    # Copies: 1 + 2 + 3 + ... + n = \Theta(n^2)
 
-# DO THIS INSTEAD - O(n)
+# DO THIS INSTEAD - \Theta(n)
 parts = []
 for char in big_list:
-    parts.append(char)  # O(1) amortized
-s = "".join(parts)  # O(n) single pass
+    parts.append(char)  # Amortized O(1) dynamic array append
+s = "".join(parts)      # \Theta(n) single pass
 ```
 
 ## When NOT to Use Python Strings Directly
 
 Consider alternatives in these cases:
 
-1. **Frequent Character Modifications**: If you're modifying individual characters repeatedly, convert to `list(s)`, modify, then `"".join(list)`. Direct string indexing assignment is impossible.
+1. **Frequent Character Modifications**: If you're modifying individual characters repeatedly, convert to `list(s)`, modify, then `"".join(list)`. Direct string index assignment is impossible.
 
 2. **Very Large Strings with Many Concatenations**: Even with proper join technique, if you're building massive strings in a memory-constrained environment, consider streaming output instead.
 
@@ -77,19 +77,19 @@ Python strings are **immutable** sequences of Unicode characters.
 
 ```python
 s = "hello"
-s[0]         # 'h' - O(1) access
-len(s)       # 5 - O(1)
+s[0]         # 'h' - \Theta(1) access
+len(s)       # 5 - \Theta(1)
 s[0] = 'H'   # ERROR! Strings are immutable
 ```
 
 ### Key Properties
 
-| Property  | Implication                       |
-| --------- | --------------------------------- |
-| Immutable | Can't modify in-place             |
-| Hashable  | Can use as dict keys/set elements |
-| Iterable  | Can loop through characters       |
-| Indexable | O(1) character access             |
+| Property | Implication |
+| --- | --- |
+| Immutable | Can't modify in-place |
+| Hashable | Can use as dict keys/set elements |
+| Iterable | Can loop through characters |
+| Indexable | $\Theta(1)$ character access |
 
 ---
 
@@ -100,21 +100,21 @@ s[0] = 'H'   # ERROR! Strings are immutable
 s = "hello"
 s = 'hello'           # Single or double quotes
 s = """multi
-line"""                # Triple quotes for multiline
+line"""               # Triple quotes for multiline
 s = str(123)          # "123" - convert from other types
 
 # Concatenation
-s1 + s2               # O(n+m) - creates new string
-"".join([s1, s2])     # O(n+m) - more efficient for many strings
+s1 + s2               # \Theta(n+m) - creates new string allocation
+"".join([s1, s2])     # \Theta(n+m) - more efficient for building iteratively
 
 # Repetition
 "ab" * 3              # "ababab"
 
 # Length
-len(s)                # O(1)
+len(s)                # \Theta(1)
 
 # Membership
-'h' in s              # True - O(n)
+'h' in s              # True - O(n) worst case
 'xyz' in s            # False - O(n*m) worst case
 ```
 
@@ -132,7 +132,7 @@ s[0]          # 'h'
 s[-1]         # 'd' (last character)
 s[6]          # 'w'
 
-# Slicing (creates new string - O(k) where k is slice length)
+# Slicing (creates new string - \Theta(k) where k is slice length)
 s[0:5]        # 'hello'
 s[:5]         # 'hello' (same)
 s[6:]         # 'world'
@@ -220,34 +220,34 @@ s.isupper()       # All uppercase?
 
 ## Efficient String Building
 
-### The Problem with +=
+### The Problem with `+=`
 
 ```python
-# WRONG - O(n²) total time
+# WRONG - Generally $\Theta(n^2)$ total time
 s = ""
 for char in chars:
-    s += char  # Creates new string each time!
+    s += char  # Typically creates a new string object!
 ```
 
-Why O(n²)? Each `+=` copies the entire string:
+Why $\Theta(n^2)$? Each `+=` (without CPython optimization) copies the entire string into a new allocation:
 
 - Iteration 1: copy 1 char
 - Iteration 2: copy 2 chars
 - ...
 - Iteration n: copy n chars
-- Total: 1 + 2 + ... + n = O(n²)
+- Total operations: $1 + 2 + \dots + n = \frac{n(n+1)}{2} = \Theta(n^2)$
 
-### The Solution: Join
+### The Solution: `"".join()`
 
 ```python
-# RIGHT - O(n) total time
+# RIGHT - \Theta(n) total time
 s = "".join(chars)
 
 # Or build a list first
 parts = []
 for item in items:
-    parts.append(process(item))
-s = "".join(parts)
+    parts.append(process(item))  # Amortized O(1) dynamic array append
+s = "".join(parts)               # \Theta(n)
 ```
 
 ### Using List as Buffer
@@ -257,10 +257,10 @@ def build_string_efficient(n: int) -> str:
     """
     Build string character by character efficiently.
 
-    Time: O(n)
-    Space: O(n)
+    Time: \Theta(n) because each .append() is amortized O(1) and join is \Theta(n)
+    Space: \Theta(n) to store the list of strings and final result
     """
-    result = []
+    result: list[str] = []
     for i in range(n):
         result.append(str(i))
     return "".join(result)
@@ -296,13 +296,13 @@ s = "".join(chr(v) for v in ascii_vals)  # "hello"
 
 **Why it works:**
 1. **Slicing (`s[::-1]`)**: This is the most idiomatic Python way. It creates a new string by stepping backwards through the entire original string.
-2. **Two Pointers**: If given a list of characters, we swap elements from both ends moving inward. This uses O(1) extra space because we modify the input list directly.
+2. **Two Pointers**: If given a list of characters, we swap elements from both ends moving inward. This uses $\Theta(1)$ extra space because we modify the input dynamic array directly.
 
 ```python
 def reverse_string(s: str) -> str:
     """
-    Time: O(n)
-    Space: O(n)
+    Time: \Theta(n)
+    Space: \Theta(n) for the new string
     """
     return s[::-1]
 
@@ -310,8 +310,8 @@ def reverse_string_inplace(chars: list[str]) -> None:
     """
     For list of characters (in-place).
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n)
+    Space: \Theta(1) auxiliary space
     """
     left, right = 0, len(chars) - 1
     while left < right:
@@ -326,23 +326,23 @@ def reverse_string_inplace(chars: list[str]) -> None:
 **Problem Statement:** Determine if a string is a palindrome, considering only alphanumeric characters and ignoring cases.
 
 **Why it works:**
-1. **Slicing**: Compare the string with its reverse. If they are identical, it's a palindrome.
-2. **Two Pointers**: Compare characters from both ends. This avoids creating a full copy of the string, making it O(1) space if we ignore the space for pre-processing (like filtering non-alphanumeric chars).
+1. **Slicing**: Compare the string with its reversed copy. If they are identical, it's a palindrome.
+2. **Two Pointers**: Compare characters from both ends. This avoids creating a full copy of the string, dropping auxiliary space to $\Theta(1)$ (excluding pre-processing, like filtering non-alphanumeric chars). If implemented recursively, call stack space would be $\Theta(n)$.
 
 ```python
 def is_palindrome(s: str) -> bool:
     """
-    Time: O(n)
-    Space: O(n) for s[::-1], or O(1) with two pointers
+    Time: \Theta(n) string reversal and comparison
+    Space: \Theta(n) auxiliary memory for reversed copy
     """
     return s == s[::-1]
 
 def is_palindrome_two_pointers(s: str) -> bool:
     """
-    Space-efficient version.
+    Space-efficient version using iterative two pointers.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) best-case early return, \Theta(n) overall
+    Space: \Theta(1) auxiliary space (no string copies, no call stack recursion)
     """
     left, right = 0, len(s) - 1
     while left < right:
@@ -359,26 +359,26 @@ def is_palindrome_two_pointers(s: str) -> bool:
 **Problem Statement:** Given a string `s`, find the first non-repeating character in it and return its index. If it does not exist, return `-1`.
 
 **Why it works:**
-1. **Hash Map / Counter**: We first pass through the string to count the frequency of every character.
-2. **Second Pass**: We then iterate through the string again and check our frequency map. The first character with a count of `1` is our answer.
-The frequency map allows us to check "how many times have I seen this?" in O(1).
+1. **Hash Map / Counter**: First, pass through the string to count the frequency of every character. Building this frequency map is amortized $\Theta(n)$ time (average case hash map insertion is amortized $O(1)$, worst-case $O(n)$ if many hash collisions occur).
+2. **Second Pass**: Iterate through the string again checking the frequency map. The first character with a count of `1` is the answer. Lookups are average $O(1)$, worst-case $O(n)$.
 
 ```python
 from collections import Counter
+from typing import Optional
 
-def char_frequency(s: str) -> dict:
+def char_frequency(s: str) -> dict[str, int]:
     """Using Counter (most Pythonic)."""
-    return Counter(s)
+    return dict(Counter(s))
 
-def char_frequency_manual(s: str) -> dict:
+def char_frequency_manual(s: str) -> dict[str, int]:
     """Manual approach."""
-    freq = {}
+    freq: dict[str, int] = {}
     for c in s:
-        freq[c] = freq.get(c, 0) + 1
+        freq[c] = freq.get(c, 0) + 1  # Amortized O(1) hash map ops
     return freq
 
 def char_frequency_array(s: str) -> list[int]:
-    """Using array for lowercase letters only (faster)."""
+    """Using array for lowercase letters only (faster constant factors, \Theta(1) operations)."""
     freq = [0] * 26
     for c in s:
         freq[ord(c) - ord('a')] += 1
@@ -418,17 +418,17 @@ def to_lower(c: str) -> str:
 
 ## Complexity Comparison
 
-| Operation       | Time    | Notes                   |
-| --------------- | ------- | ----------------------- |
-| `s[i]`          | O(1)    | Index access            |
-| `len(s)`        | O(1)    | Stored attribute        |
-| `s + t`         | O(n+m)  | Creates new string      |
-| `s in t`        | O(n\*m) | Substring search        |
-| `s.find(t)`     | O(n\*m) | Substring search        |
-| `s.split()`     | O(n)    | Creates list of strings |
-| `"".join(list)` | O(n)    | Total characters        |
-| `s[::-1]`       | O(n)    | Creates reversed copy   |
-| `s == t`        | O(n)    | Character comparison    |
+| Operation | Time | Notes |
+| --- | --- | --- |
+| `s[i]` | $\Theta(1)$ | Index access |
+| `len(s)` | $\Theta(1)$ | Stored attribute |
+| `s + t` | $\Theta(n+m)$ | Creates new string allocation |
+| `s in t` | $O(n \cdot m)$ | Substring search (worst case, CPython's Boyers-Moore implementation usually $O(n)$) |
+| `s.find(t)`| $O(n \cdot m)$ | Substring search |
+| `s.split()`| $\Theta(n)$ | Allocates list of new substrings |
+| `"".join(L)`| $\Theta(n)$ | Evaluates total characters, single allocation |
+| `s[::-1]` | $\Theta(n)$ | Allocates new reversed copy |
+| `s == t` | $O(\min(n, m))$ | Character comparison, early exit on mismatch |
 
 ---
 
@@ -472,12 +472,12 @@ def to_lower(c: str) -> str:
 
 ## Key Takeaways
 
-1. **Strings are immutable** - use list for modifications
-2. **Use join()** for efficient string building
-3. **Slicing creates copies** - be aware of space complexity
-4. **ord() and chr()** for character arithmetic
-5. **Counter** for frequency counting
-6. **isalnum(), isalpha()** for character classification
+1. **Strings are immutable** - use lists (dynamic arrays) as buffers for modifications.
+2. **Use `"".join()`** for efficient $\Theta(n)$ string building instead of $\Theta(n^2)$ `+=` concatenation.
+3. **Slicing creates copies** - be aware of the $\Theta(k)$ time and space complexity.
+4. **ord() and chr()** for character arithmetic.
+5. **Counter** for frequency counting (amortized $\Theta(n)$ time to build).
+6. **isalnum(), isalpha()** for character classification.
 
 ---
 

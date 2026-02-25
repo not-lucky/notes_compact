@@ -4,7 +4,7 @@
 
 ## Overview
 
-Prefix sum is a preprocessing technique that transforms O(n) range sum queries into O(1) operations. By storing cumulative sums, any range [i, j] can be computed as prefix[j+1] - prefix[i] in constant time.
+Prefix sum is a preprocessing technique that transforms $\Theta(n)$ range sum queries into $\Theta(1)$ operations. By storing cumulative sums, any range `[i, j]` can be computed as `prefix[j+1] - prefix[i]` in constant time.
 
 ## Building Intuition
 
@@ -12,26 +12,26 @@ Prefix sum is a preprocessing technique that transforms O(n) range sum queries i
 
 The key insight is **telescoping cancellation**. A prefix sum is like a running total:
 
-1. **The Running Total Model**: Imagine a bank account where prefix[i] represents your total balance after i deposits. The deposits from day 5 to day 10 equal (balance after day 10) minus (balance after day 4).
+1. **The Running Total Model**: Imagine a bank account where `prefix[i]` represents your total balance after `i` deposits. The deposits from day 5 to day 10 equal (balance after day 10) minus (balance after day 4).
 
 2. **Mathematical Foundation**:
 
-   ```
+   ```text
    prefix[j] = arr[0] + arr[1] + ... + arr[j-1]
    prefix[i] = arr[0] + arr[1] + ... + arr[i-1]
 
    prefix[j] - prefix[i] = arr[i] + arr[i+1] + ... + arr[j-1]
    ```
 
-   The common terms (arr[0] to arr[i-1]) cancel out!
+   The common terms (`arr[0]` to `arr[i-1]`) cancel out!
 
-3. **The Leading Zero Trick**: Adding a 0 at the start (`prefix = [0, ...]`) makes formulas cleaner. Range [i, j] = prefix[j+1] - prefix[i]. No off-by-one gymnastics.
+3. **The Leading Zero Trick**: Adding a 0 at the start (`prefix = [0, ...]`) makes formulas cleaner. Range `[i, j]` = `prefix[j+1] - prefix[i]`. No off-by-one gymnastics.
 
 **Mental Model**: Think of milestones on a highway. Mile marker 50 to mile marker 80 is 30 miles—you subtract the lower marker from the higher one. Prefix sums are just "mile markers" for cumulative values.
 
 **Why Prefix + HashMap Works for "Sum = k"**:
 
-```
+```text
 If prefix[j] - prefix[i] = k, then prefix[i] = prefix[j] - k
 
 At position j, we ask: "Have we seen prefix[j] - k before?"
@@ -43,11 +43,11 @@ The hashmap stores how many times each prefix sum has appeared.
 
 Prefix sums have specific use cases:
 
-1. **Array Modifications Between Queries**: Prefix sum assumes immutable data. If the array changes frequently, updates cost O(n) to rebuild. Use a segment tree (O(log n) update) or Fenwick tree instead.
+1. **Array Modifications Between Queries**: Prefix sum assumes immutable data. If the array changes frequently, updates cost $\Theta(n)$ to rebuild. Use a segment tree ($\Theta(\log n)$ update) or Fenwick tree instead.
 
 2. **Non-Sum Aggregates**: Prefix sum works for sum (and XOR, by extension). For min/max queries, use sparse tables or segment trees. For product, prefix products have overflow issues and division-by-zero pitfalls.
 
-3. **Very Few Queries**: If you only need 1-2 range sums, computing them directly is O(range_size), while building prefix sum is O(n). Prefix sum pays off when queries are many.
+3. **Very Few Queries**: If you only need 1-2 range sums, computing them directly is $\Theta(\text{range\_size})$, while building prefix sum is $\Theta(n)$. Prefix sum pays off when queries are many.
 
 4. **Multi-Dimensional with Updates**: 2D prefix sums exist but are harder to update. For dynamic 2D, consider 2D Fenwick trees.
 
@@ -63,7 +63,7 @@ Prefix sums have specific use cases:
 
 ## Interview Context
 
-Prefix sum is a preprocessing technique that enables O(1) range sum queries. It appears in:
+Prefix sum is a preprocessing technique that enables $\Theta(1)$ range sum queries. It appears in:
 
 - Range sum problems
 - Subarray sum problems (with hashmap)
@@ -78,7 +78,7 @@ Understanding prefix sum unlocks efficient solutions for many medium/hard proble
 
 Prefix sum array stores cumulative sums:
 
-```
+```text
 Original:    [1, 2, 3, 4, 5]
 Prefix sum:  [1, 3, 6, 10, 15]
 
@@ -90,7 +90,7 @@ Range sum [i, j] = prefix[j] - prefix[i-1]
 
 ### With Leading Zero (More Convenient)
 
-```
+```text
 Original:    [1, 2, 3, 4, 5]
 Prefix sum:  [0, 1, 3, 6, 10, 15]
               ↑
@@ -108,14 +108,16 @@ def build_prefix_sum(arr: list[int]) -> list[int]:
     """
     Build prefix sum array with leading zero.
 
-    Time: O(n)
-    Space: O(n)
+    Time: \Theta(n) - We iterate through the array exactly once.
+    Space: \Theta(n) - We allocate a new dynamic array of size n+1.
 
     Example:
     arr = [1, 2, 3, 4, 5]
     → prefix = [0, 1, 3, 6, 10, 15]
     """
     n = len(arr)
+    # Python lists are dynamic arrays, but preallocating the size is more efficient
+    # than calling .append() n times.
     prefix = [0] * (n + 1)
 
     for i in range(n):
@@ -123,10 +125,9 @@ def build_prefix_sum(arr: list[int]) -> list[int]:
 
     return prefix
 
-
 def range_sum(prefix: list[int], left: int, right: int) -> int:
     """
-    Get sum of arr[left:right+1] in O(1).
+    Get sum of arr[left:right+1] in \Theta(1).
 
     Range sum from index left to right (inclusive)
     = prefix[right + 1] - prefix[left]
@@ -136,7 +137,7 @@ def range_sum(prefix: list[int], left: int, right: int) -> int:
 
 ### Visual Explanation
 
-```
+```text
 arr    = [1, 2, 3, 4, 5]
          0  1  2  3  4  (indices)
 
@@ -156,22 +157,24 @@ Range sum [1, 3] (arr[1] + arr[2] + arr[3])
 **Problem Statement:** Given an integer array `nums`, handle multiple queries where each query asks for the sum of the elements of `nums` between indices `left` and `right` inclusive.
 
 **Why it works:**
-By precalculating a prefix sum array where `prefix[i]` is the sum of `nums[0...i-1]`, we can compute any range sum `nums[L...R]` in O(1).
+By precalculating a prefix sum array where `prefix[i]` is the sum of `nums[0...i-1]`, we can compute any range sum `nums[L...R]` in $\Theta(1)$.
 1. `Sum(L, R) = Sum(0, R) - Sum(0, L-1)`.
 2. Using the prefix array, this is `prefix[R+1] - prefix[L]`.
-This shifts the cost from query time (O(n)) to initialization time (O(n)), making it ideal for many sum queries on a static array.
+This shifts the cost from query time ($\Theta(n)$) to initialization time ($\Theta(n)$), making it ideal for many sum queries on a static array.
 
 ```python
 class NumArray:
     """
     LeetCode 303: Range Sum Query - Immutable
 
-    Time: O(n) to build, O(1) per query
-    Space: O(n)
+    Time: \Theta(n) to build, \Theta(1) per query.
+    Space: \Theta(n) for the prefix array. No recursion used, so call stack space is \Theta(1).
     """
     def __init__(self, nums: list[int]):
         self.prefix = [0]
         for num in nums:
+            # Python lists are dynamic arrays, so append is amortized O(1).
+            # Building the array of size n takes \Theta(n) total time.
             self.prefix.append(self.prefix[-1] + num)
 
     def sumRange(self, left: int, right: int) -> int:
@@ -185,12 +188,14 @@ class NumArray:
 ### Problem: Subarray Sum Equals K
 **Problem Statement:** Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.
 
+**Mental Model:** Think of a hiking trail with elevation markers. You want to find a segment of the trail where the net elevation change is exactly `k`. As you walk, you note your current elevation. To see if a valid segment ends here, you check your notebook (hash map) to see if you previously were at an elevation of `current - k`. If you were, the hike from that point to here has an elevation change of exactly `k`.
+
 **Why it works:**
 We use a hash map to store the frequency of all prefix sums seen so far.
 1. As we iterate, we calculate the current `prefix_sum`.
 2. A subarray ending at the current index has sum `k` if there exists a previous prefix sum `P` such that `prefix_sum - P = k`.
 3. This is equivalent to checking if `prefix_sum - k` is in our hash map.
-This converts an O(n²) subarray search into an O(n) hash map lookup.
+This converts an $\Theta(n^2)$ subarray search into an expected $\Theta(n)$ hash map lookup process.
 
 ```python
 def subarray_sum(nums: list[int], k: int) -> int:
@@ -200,8 +205,11 @@ def subarray_sum(nums: list[int], k: int) -> int:
     Key insight: If prefix[j] - prefix[i] = k,
     then subarray [i+1, j] has sum k.
 
-    Time: O(n)
-    Space: O(n)
+    Time: Expected \Theta(n), Worst-case O(n^2).
+          - We iterate through the array once: \Theta(n).
+          - Hash map lookups and insertions are amortized O(1), but O(n) in the worst
+            case due to hash collisions.
+    Space: O(n) - Hash map can store up to n distinct prefix sums.
 
     Example:
     nums = [1, 1, 1], k = 2 → 2
@@ -226,7 +234,7 @@ def subarray_sum(nums: list[int], k: int) -> int:
 
 ### Why This Works
 
-```
+```text
 We want subarray [i, j] where sum = k
 sum[i, j] = prefix[j] - prefix[i-1] = k
 → prefix[j] - k = prefix[i-1]
@@ -258,8 +266,9 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
     Key insight: If prefix[j] % k == prefix[i] % k,
     then (prefix[j] - prefix[i]) % k == 0
 
-    Time: O(n)
-    Space: O(k)
+    Time: Expected \Theta(n), Worst-case O(n^2).
+          Iteration is \Theta(n). Hash map operations are amortized O(1), worst-case O(n).
+    Space: O(k) - Hash map stores up to k distinct remainders.
 
     Example:
     nums = [4, 5, 0, -2, -3, 1], k = 5 → 7
@@ -272,7 +281,9 @@ def subarrays_div_by_k(nums: list[int], k: int) -> int:
         prefix_sum += num
         mod = prefix_sum % k
 
-        # Handle negative mod
+        # Handle negative mod (in Python, % with negative numbers already works as needed,
+        # but in other languages like C++/Java you would need: mod = (mod % k + k) % k)
+        # However, making it explicit helps cross-language understanding:
         if mod < 0:
             mod += k
 
@@ -296,15 +307,15 @@ We precalculate `prefix[i][j]` as the sum of all elements in the rectangle from 
 1. To calculate the sum of any region `(r1, c1)` to `(r2, c2)`, we use the principle of inclusion-exclusion.
 2. `Sum = TotalRectangle - TopRectangle - LeftRectangle + OverlapCorner`.
 3. In terms of prefix sums: `prefix[r2+1][c2+1] - prefix[r1][c2+1] - prefix[r2+1][c1] + prefix[r1][c1]`.
-This provides O(1) query time for any rectangular region.
+This provides $\Theta(1)$ query time for any rectangular region.
 
 ```python
 class NumMatrix:
     """
     LeetCode 304: Range Sum Query 2D - Immutable
 
-    Time: O(m*n) to build, O(1) per query
-    Space: O(m*n)
+    Time: \Theta(m \cdot n) to build, \Theta(1) per query.
+    Space: \Theta(m \cdot n) to store the 2D prefix array.
     """
     def __init__(self, matrix: list[list[int]]):
         if not matrix or not matrix[0]:
@@ -328,6 +339,9 @@ class NumMatrix:
         """
         Sum of rectangle from (r1,c1) to (r2,c2) inclusive.
         """
+        if not self.prefix:
+            return 0
+
         return (
             self.prefix[r2 + 1][c2 + 1]
             - self.prefix[r1][c2 + 1]
@@ -338,7 +352,7 @@ class NumMatrix:
 
 ### Visual: 2D Prefix Sum Query
 
-```
+```text
 Query rectangle: (r1,c1) to (r2,c2)
 
 ┌─────────────────────────┐
@@ -370,7 +384,7 @@ Answer = Total - A - B - C + overlap
 The product of all elements except `nums[i]` is the product of everything to its left multiplied by everything to its right.
 1. We make one pass to calculate "prefix products" (cumulative product of elements before `i`).
 2. We make a second pass (backwards) to multiply these by "suffix products" (cumulative product of elements after `i`).
-This effectively computes the result in O(n) time and O(1) extra space (excluding output).
+This effectively computes the result in $\Theta(n)$ time and $\Theta(1)$ extra space (excluding output).
 
 ```python
 def product_except_self(nums: list[int]) -> list[int]:
@@ -378,8 +392,8 @@ def product_except_self(nums: list[int]) -> list[int]:
     For each index, product of all elements except self.
     Without using division.
 
-    Time: O(n)
-    Space: O(1) excluding output
+    Time: \Theta(n) - Two passes over the array.
+    Space: \Theta(1) extra space (excluding the output array).
 
     Uses prefix and suffix products.
 
@@ -406,7 +420,7 @@ def product_except_self(nums: list[int]) -> list[int]:
 
 ### Visual Trace
 
-```
+```text
 nums = [1, 2, 3, 4]
 
 After prefix pass:
@@ -431,15 +445,15 @@ result = [24, 12, 8, 6]
 The total sum `S` of the array is `left_sum + nums[i] + right_sum`.
 1. If `left_sum == right_sum`, then `S = 2 * left_sum + nums[i]`.
 2. This simplifies to `right_sum = total - left_sum - nums[i]`.
-3. We can track `left_sum` as we iterate and check this condition in O(n) time.
+3. We can track `left_sum` as we iterate and check this condition in $\Theta(n)$ time.
 
 ```python
 def pivot_index(nums: list[int]) -> int:
     """
     Find index where left sum equals right sum.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) - One pass for sum(), one pass to find pivot.
+    Space: \Theta(1) - Only scalar variables used.
 
     Example:
     [1, 7, 3, 6, 5, 6] → 3 (left sum = 11, right sum = 11)
@@ -468,7 +482,7 @@ def pivot_index(nums: list[int]) -> int:
 | Has negative numbers   | ✓ Yes            | ✗ No                  |
 | Exact sum queries      | ✓ Yes            | ✓ Yes (for positives) |
 | Modification needed    | ✗ No (immutable) | N/A                   |
-| Range sum query        | ✓ O(1)           | ✗ O(n)                |
+| Range sum query        | ✓ $\Theta(1)$    | ✗ $O(n)$              |
 | Minimum/maximum window | ✗ Limited        | ✓ Yes                 |
 
 ---
@@ -486,10 +500,11 @@ def pivot_index(nums: list[int]) -> int:
 [0, 0, 0] → all range sums = 0
 
 # All same values
-[k, k, k, k] → range [i,j] = k × (j - i + 1)
+[k, k, k, k] → range [i,j] = k * (j - i + 1)
 
 # Large numbers (overflow)
-Consider using modular arithmetic if needed
+# In Python, integers have arbitrary precision so they won't overflow,
+# but in C++/Java you may need to use long/long long or modular arithmetic.
 ```
 
 ---
@@ -511,10 +526,10 @@ Consider using modular arithmetic if needed
 
 ## Key Takeaways
 
-1. **Prefix sum enables O(1) range queries** after O(n) preprocessing
+1. **Prefix sum enables $\Theta(1)$ range queries** after $\Theta(n)$ preprocessing
 2. **Use leading zero** for cleaner range calculations
 3. **Combine with hashmap** for subarray sum problems
-4. **For 2D**, inclusion-exclusion principle
+4. **For 2D**, use the inclusion-exclusion principle
 5. **Product variant** uses prefix and suffix products
 6. **Works with negative numbers** (unlike sliding window)
 

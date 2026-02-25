@@ -4,13 +4,13 @@
 
 ## Overview
 
-An array is a contiguous block of memory that stores elements of the same type, accessible by index in O(1) time. It's the most fundamental data structure in computer science, serving as the building block for almost every other data structure.
+An array is a contiguous block of memory that stores elements of the same type, accessible by index in $\mathcal{O}(1)$ time. It's the most fundamental data structure in computer science, serving as the building block for almost every other data structure.
 
 ## Building Intuition
 
 **Why are arrays so powerful?**
 
-Think of an array as a row of numbered mailboxes in an apartment building. Each mailbox has an address (index), and you can go directly to any mailbox without checking the others. This is the O(1) random access superpower that makes arrays unique.
+Think of an array as a row of numbered mailboxes in an apartment building. Each mailbox has an address (index), and you can go directly to any mailbox without checking the others. This is the $\mathcal{O}(1)$ random access superpower that makes arrays unique.
 
 **The Memory Model**:
 
@@ -18,9 +18,9 @@ Think of an array as a row of numbered mailboxes in an apartment building. Each 
 
 2. **Cache Friendliness**: Because elements are adjacent in memory, accessing one element often pre-loads nearby elements into the CPU cache. This makes sequential array traversal extremely fast—often 10-100x faster than pointer-chasing through scattered memory (like linked lists).
 
-3. **The Trade-off**: This contiguous layout means insertion/deletion in the middle is expensive (O(n))—you must shift elements to maintain the sequence. Arrays excel at random access and sequential processing, not frequent modifications.
+3. **The Trade-off**: This contiguous layout means insertion/deletion in the middle is expensive ($\mathcal{O}(n)$)—you must shift elements to maintain the sequence. Arrays excel at random access and sequential processing, not frequent modifications.
 
-**Mental Model**: Think of arrays as "printed books" vs linked lists as "choose-your-own-adventure books with page jumps." In a printed book, you can flip directly to page 100 (O(1)), but inserting a new page 50 requires reprinting everything after it (O(n)).
+**Mental Model**: Think of an array as a long shelf of numbered cubbies. Because they are all in a straight line and exactly the same size, you can calculate the exact physical distance to cubby #450 and walk straight to it in $\mathcal{O}(1)$ time. A linked list, by contrast, is like a scavenger hunt where each clue tells you where to find the next one; to find the 450th clue, you must visit the first 449. Inserting a new cubby in the middle of a full shelf requires sliding all subsequent cubbies down one spot ($\mathcal{O}(n)$ time), whereas inserting a new clue in a scavenger hunt just means rewriting one clue's destination ($\mathcal{O}(1)$ time).
 
 ## When NOT to Use Arrays
 
@@ -28,13 +28,13 @@ Arrays aren't always the best choice. Consider alternatives when:
 
 1. **Frequent Insertions/Deletions in Middle**: If you're constantly adding or removing elements at arbitrary positions, linked lists or balanced trees (O(log n) insert) may be better. Arrays require O(n) shifts.
 
-2. **Unknown or Highly Variable Size**: If the size changes dramatically and unpredictably, dynamic arrays (Python lists) handle this, but with occasional O(n) resize costs. If inserts dominate, consider other structures.
+2. **Unknown or Highly Variable Size**: If the size changes dramatically and unpredictably, dynamic arrays (like Python lists) handle this via amortized $\mathcal{O}(1)$ appends, but occasionally hit an $\mathcal{O}(n)$ resize cost. If inserts *in the middle* dominate, consider other structures.
 
-3. **Need Fast Membership Testing**: "Is X in the array?" is O(n) for arrays. Use a hash set (O(1)) or sorted array with binary search (O(log n)) instead.
+3. **Need Fast Membership Testing**: "Is X in the array?" is $\mathcal{O}(n)$ for unsorted arrays. Use a hash set (amortized $\mathcal{O}(1)$) or a sorted array with binary search ($\mathcal{O}(\log n)$) instead.
 
-4. **Sparse Data**: If most elements are empty/zero (e.g., a 1,000,000-element array with only 100 values), use a hash map to store only non-empty entries.
+4. **Sparse Data**: If most elements are empty/zero (e.g., a 1,000,000-element array with only 100 values), use a hash map to store only non-empty entries (amortized $\mathcal{O}(1)$ lookup).
 
-5. **Need Fast Min/Max with Updates**: Finding min/max is O(n). Use a heap (O(log n) insert, O(1) min) if you need repeated min/max operations.
+5. **Need Fast Min/Max with Updates**: Finding min/max is $\mathcal{O}(n)$. Use a heap ($\mathcal{O}(\log n)$ insert, $\mathcal{O}(1)$ min) if you need repeated min/max operations with frequent updates.
 
 **Red Flags in Problem Statements:**
 
@@ -49,14 +49,14 @@ Arrays aren't always the best choice. Consider alternatives when:
 Understanding array fundamentals is essential because:
 
 - Arrays are the building block for almost every other data structure
-- Interviewers expect O(1) access and O(n) traversal to be automatic knowledge
+- Interviewers expect $\mathcal{O}(1)$ access and $\mathcal{O}(n)$ traversal to be automatic knowledge
 - Many "medium" problems are just clever combinations of basic array operations
 
 ---
 
 ## What is an Array?
 
-An array is a contiguous block of memory storing elements of the same type. Each element is accessible by its index in O(1) time.
+An array is a contiguous block of memory storing elements of the same type. Each element is accessible by its index in $\mathcal{O}(1)$ time.
 
 ```
 Memory Layout:
@@ -68,11 +68,11 @@ Memory Layout:
 
 ### Python Lists
 
-In Python, `list` is a dynamic array that can hold any type:
+In Python, `list` is a dynamic array under the hood. It maintains a contiguous array of pointers to objects in memory. Because it handles resizing automatically, `append` takes amortized $\mathcal{O}(1)$ time.
 
 ```python
 # Creation
-arr = [1, 2, 3, 4, 5]
+arr: list[int] = [1, 2, 3, 4, 5]
 arr = [0] * 10           # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 arr = list(range(5))     # [0, 1, 2, 3, 4]
 
@@ -88,18 +88,18 @@ n = len(arr)             # O(1)
 
 ## Core Operations and Complexity
 
-| Operation         | Time     | Space | Notes                                |
-| ----------------- | -------- | ----- | ------------------------------------ |
-| Access by index   | O(1)     | O(1)  | `arr[i]`                             |
-| Update by index   | O(1)     | O(1)  | `arr[i] = x`                         |
-| Append            | O(1)\*   | O(1)  | `arr.append(x)` - amortized          |
-| Insert at index   | O(n)     | O(1)  | `arr.insert(i, x)` - shifts elements |
-| Delete by index   | O(n)     | O(1)  | `arr.pop(i)` - shifts elements       |
-| Delete from end   | O(1)     | O(1)  | `arr.pop()`                          |
-| Search (unsorted) | O(n)     | O(1)  | `x in arr`                           |
-| Search (sorted)   | O(log n) | O(1)  | Binary search                        |
+| Operation         | Time          | Space         | Notes                                |
+| ----------------- | ------------- | ------------- | ------------------------------------ |
+| Access by index   | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | `arr[i]`                             |
+| Update by index   | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | `arr[i] = x`                         |
+| Append            | $\mathcal{O}(1)$* | $\mathcal{O}(1)$ | `arr.append(x)` - amortized          |
+| Insert at index   | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | `arr.insert(i, x)` - shifts elements |
+| Delete by index   | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | `arr.pop(i)` - shifts elements       |
+| Delete from end   | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | `arr.pop()`                          |
+| Search (unsorted) | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | `x in arr`                           |
+| Search (sorted)   | $\mathcal{O}(\log n)$ | $\mathcal{O}(1)$ | Binary search                        |
 
-\*Amortized O(1) due to dynamic resizing
+\*Amortized $\mathcal{O}(1)$ due to dynamic resizing under the hood. In Python, a list is implemented as a dynamic array. When it fills up, it allocates a larger chunk of memory and copies existing elements ($\mathcal{O}(n)$ cost), but this happens infrequently enough that the average cost per append is $\mathcal{O}(1)$.
 
 ---
 
@@ -111,7 +111,7 @@ n = len(arr)             # O(1)
 def forward_traversal(arr: list[int]) -> None:
     """
     Time: O(n) - visit each element once
-    Space: O(1)
+    Space: O(1) - constant extra space (not counting input)
     """
     for num in arr:
         print(num)
@@ -137,7 +137,7 @@ def backward_traversal(arr: list[int]) -> None:
     for i in range(len(arr) - 1, -1, -1):
         print(arr[i])
 
-    # Using reversed()
+    # Using reversed() - returns an iterator, O(1) space
     for num in reversed(arr):
         print(num)
 ```
@@ -147,14 +147,15 @@ def backward_traversal(arr: list[int]) -> None:
 ```python
 def every_other(arr: list[int]) -> list[int]:
     """
-    Time: O(n/2) = O(n)
-    Space: O(n/2) for result
+    Time: O(n)
+    Space: O(n) - creates a new list with n/2 elements
     """
     return arr[::2]  # Elements at even indices
 
 def every_third_backwards(arr: list[int]) -> list[int]:
     """
-    Time: O(n/3) = O(n)
+    Time: O(n)
+    Space: O(n) - creates a new list
     """
     return arr[::-3]  # Every 3rd, backwards
 ```
@@ -167,10 +168,10 @@ def every_third_backwards(arr: list[int]) -> list[int]:
 **Problem Statement:** Given an array, rotate the array to the right or left by `k` steps, where `k` is non-negative.
 
 **Why it works (The Reversal Trick):**
-To rotate an array by `k` steps without extra space, we can use the property that reversing parts of the array and then the whole array can reorder elements. 
+To rotate an array by `k` steps without extra space, we can use the property that reversing parts of the array and then the whole array can reorder elements.
 1. Reversing the segments that will be "moved" and the segment that "stays" reorders them locally.
 2. Reversing the entire array then places these segments into their final rotated positions.
-This is O(n) time and O(1) space.
+This is $\mathcal{O}(n)$ time and $\mathcal{O}(1)$ space.
 
 ### Left Rotation
 
@@ -180,10 +181,11 @@ Rotate array left by k positions: `[1,2,3,4,5]` rotated left by 2 → `[3,4,5,1,
 def rotate_left_naive(arr: list[int], k: int) -> list[int]:
     """
     Time: O(n)
-    Space: O(n) - creates new list
+    Space: O(n) - creates new list due to slicing
     """
+    if not arr: return []
     n = len(arr)
-    k = k % n  # Handle k > n
+    k = k % n  # Handle k >= n
     return arr[k:] + arr[:k]
 
 def rotate_left_inplace(arr: list[int], k: int) -> None:
@@ -204,6 +206,7 @@ def rotate_left_inplace(arr: list[int], k: int) -> None:
             left += 1
             right -= 1
 
+    if not arr: return
     n = len(arr)
     k = k % n
     if k == 0:
@@ -224,8 +227,7 @@ def rotate_right_inplace(arr: list[int], k: int) -> None:
     Time: O(n)
     Space: O(1)
 
-    Trick: right rotation by k = left rotation by (n - k)
-    Or: reverse all, reverse first k, reverse rest
+    Trick: reverse all, reverse first k, reverse rest
 
     [1,2,3,4,5] k=2
     → [5,4,3,2,1] reverse all
@@ -238,6 +240,7 @@ def rotate_right_inplace(arr: list[int], k: int) -> None:
             left += 1
             right -= 1
 
+    if not arr: return
     n = len(arr)
     k = k % n
     if k == 0:
@@ -269,9 +272,9 @@ min_val = min(arr)  # 1
 max_val = max(arr)  # 9
 
 # With index
-min_idx = arr.index(min(arr))  # 3 (O(2n) = O(n))
+min_idx = arr.index(min(arr))  # 3 (O(n) search + O(n) min = O(n))
 
-# More efficient - single pass
+# More efficient - single pass O(n) time
 min_idx = min(range(len(arr)), key=lambda i: arr[i])
 ```
 
@@ -287,7 +290,7 @@ arr[-2:]    # [4, 5] - last 2
 arr[::2]    # [0, 2, 4] - every other
 arr[::-1]   # [5, 4, 3, 2, 1, 0] - reversed
 
-# Slicing creates a COPY
+# Slicing creates a COPY taking O(n) space
 copy = arr[:]
 ```
 
@@ -304,15 +307,43 @@ doubled = [x * 2 for x in arr]
 even_doubled = [x * 2 for x in arr if x % 2 == 0]
 ```
 
+### String Concatenation Nuances
+
+When building strings in Python, avoid using `+=` in a loop. Strings are immutable, so `+=` creates a new string each time, resulting in an $\mathcal{O}(n^2)$ time complexity operation as it continually reallocates and copies memory. Instead, use a list to accumulate substrings and call `.join()` at the end for an $\mathcal{O}(n)$ operation.
+
+```python
+def bad_concat(words: list[str]) -> str:
+    """
+    Time: O(n^2) - reallocates memory on each +=
+    Space: O(n)
+    """
+    result = ""
+    for w in words:
+        result += w  # BAD: string is immutable
+    return result
+
+def good_concat(words: list[str]) -> str:
+    """
+    Time: O(n) - list append is amortized O(1), .join() is O(n)
+    Space: O(n) - holds n strings before joining
+    """
+    result = []
+    for w in words:
+        result.append(w)
+    return "".join(result)
+```
+
 ---
 
 ## Edge Cases to Always Check
 
 ```python
-def robust_function(arr: list[int]) -> int:
+from typing import Any
+
+def robust_function(arr: list[Any]) -> Any:
     # Empty array
     if not arr:
-        return 0  # or -1, or raise exception
+        return 0  # or -1, or raise ValueError("Empty array")
 
     # Single element
     if len(arr) == 1:
@@ -335,11 +366,11 @@ def robust_function(arr: list[int]) -> int:
 ```
                     Array           Linked List
                     ─────           ───────────
-Access by index     O(1) ✓          O(n)
-Insert at start     O(n)            O(1) ✓
-Insert at end       O(1)*           O(1)
-Insert in middle    O(n)            O(1)**
-Delete              O(n)            O(1)**
+Access by index     $\mathcal{O}(1)$ ✓          $\mathcal{O}(n)$
+Insert at start     $\mathcal{O}(n)$            $\mathcal{O}(1)$ ✓
+Insert at end       $\mathcal{O}(1)$*           $\mathcal{O}(1)$
+Insert in middle    $\mathcal{O}(n)$            $\mathcal{O}(1)$**
+Delete              $\mathcal{O}(n)$            $\mathcal{O}(1)$**
 Memory              Contiguous      Scattered
 Cache               Friendly ✓      Unfriendly
 
@@ -364,11 +395,12 @@ Cache               Friendly ✓      Unfriendly
 
 ## Key Takeaways
 
-1. **O(1) access** is the superpower of arrays - use it!
-2. **Slicing creates copies** - be aware of O(n) space
-3. **Rotation uses reversal trick** - memorize the pattern
-4. **Always handle edge cases**: empty, single element, all same
-5. **Python lists are dynamic** - append is amortized O(1)
+1. **$\mathcal{O}(1)$ access** is the superpower of arrays - use it!
+2. **Slicing creates copies** - be aware of $\mathcal{O}(n)$ space.
+3. **Rotation uses reversal trick** - memorize the pattern.
+4. **Always handle edge cases**: empty, single element, all same.
+5. **Python lists are dynamic** - append is amortized $\mathcal{O}(1)$.
+6. **Beware String `+=`** - build a list and `.join()` instead to avoid $\mathcal{O}(n^2)$ time penalties.
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Overview
 
-The same-direction two-pointer technique uses two pointers moving through an array in the same direction at different speeds or with different roles. It's the foundation for in-place array transformations with O(1) space.
+The same-direction two-pointer technique uses two pointers moving through an array in the same direction at different speeds or with different roles. It's the foundation for in-place array transformations with \Theta(1) auxiliary space.
 
 ## Building Intuition
 
@@ -16,9 +16,9 @@ Think of two pointers as a "reader" and a "writer" in a copy-editing process:
 
 2. **The Key Invariant**: Everything before the slow pointer is the "processed, valid" portion of the array. Everything between slow and fast is "garbage" that will be overwritten. This invariant is maintained throughout the algorithm.
 
-3. **Why O(1) Space**: We're reusing the input array as our output buffer. The slow pointer marks the boundary of our result, and we write valid elements there in-place.
+3. **Why \Theta(1) Space**: We're reusing the input array as our output buffer. The slow pointer marks the boundary of our result, and we write valid elements there in-place. Note that python lists are actually dynamic arrays (amortized \Theta(1) append). When we say \Theta(1) space, we mean \Theta(1) *auxiliary* space, as we are overwriting elements within the existing data structure without using additional call stacks or data structures.
 
-**Mental Model**: Imagine you're compacting files on a hard drive. You have a read head scanning through all files and a write head placing kept files at the start. The read head moves faster, skipping deleted files, while the write head only moves when it receives a file to keep.
+**Mental Model**: Imagine you're compacting items on a physical shelf. You have a "reader" hand scanning through all the items and a "writer" hand placing the items you want to keep starting from the left edge. The reading hand moves faster, skipping items you want to throw away, while the writing hand only moves when it receives an item to keep and pack tightly.
 
 **The Fundamental Pattern**:
 
@@ -32,7 +32,7 @@ Think of two pointers as a "reader" and a "writer" in a copy-editing process:
 
 This pattern has limitations:
 
-1. **Need to Preserve Original Array**: This pattern modifies the array in-place. If you need the original data, you must copy first (defeating the O(1) space benefit) or use a different approach.
+1. **Need to Preserve Original Array**: This pattern modifies the array in-place. If you need the original data, you must copy first (defeating the \Theta(1) space benefit) or use a different approach.
 
 2. **Complex Validity Conditions**: If determining "valid" requires looking at future elements (not just past), the reader-writer model breaks down. Consider sliding window or DP.
 
@@ -57,7 +57,7 @@ The same-direction two-pointer technique (also called "fast and slow pointers" o
 - Removing duplicates in-place
 - Partitioning arrays
 - Cycle detection (in linked lists)
-- Processing arrays with O(1) space requirement
+- Processing arrays with \Theta(1) auxiliary space requirement
 
 This pattern appears in 15-20% of array problems at FANG+ companies.
 
@@ -101,8 +101,8 @@ def remove_duplicates(arr: list[int]) -> int:
     Remove duplicates in-place from sorted array.
     Returns new length.
 
-    Time: O(n) - single pass
-    Space: O(1) - in-place
+    Time: \Theta(n) - single pass through the array.
+    Space: \Theta(1) - in-place modification (Python lists are dynamic arrays, but we modify existing elements).
 
     Example:
     [1, 1, 2, 2, 2, 3, 4]
@@ -170,8 +170,8 @@ def move_zeroes(arr: list[int]) -> None:
     Move all zeros to end, maintaining order of non-zeros.
     In-place modification.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) - Single pass to find non-zeros, and filling remaining spaces.
+    Space: \Theta(1) - Only a few integer variables.
 
     Example:
     [0, 1, 0, 3, 12] → [1, 3, 12, 0, 0]
@@ -198,8 +198,8 @@ def move_zeroes_swap(arr: list[int]) -> None:
     Same result, but uses swapping.
     Fewer writes when there are few zeros.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n)
+    Space: \Theta(1)
     """
     slow = 0
 
@@ -229,8 +229,8 @@ def remove_element(arr: list[int], val: int) -> int:
     Remove all occurrences of val in-place.
     Returns new length.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) - One full scan of the array.
+    Space: \Theta(1) - Modifying elements in the existing list.
 
     Example:
     arr = [3, 2, 2, 3], val = 3
@@ -264,8 +264,8 @@ def remove_duplicates_k(arr: list[int], k: int = 2) -> int:
     """
     Remove duplicates so each element appears at most k times.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) - Single pass through array length.
+    Space: \Theta(1) - Constant auxiliary space used.
 
     Example with k=2:
     [1, 1, 1, 2, 2, 3] → [1, 1, 2, 2, 3, _] returns 5
@@ -318,15 +318,15 @@ Since the input is sorted, the largest squares are either at the very beginning 
 1. We use two pointers, `left` and `right`, starting at the ends.
 2. We compare the squares of `arr[left]` and `arr[right]`.
 3. The larger square is placed at the end of the result array, and we move the corresponding pointer inward.
-This allows us to construct the sorted result in O(n) without sorting.
+This allows us to construct the sorted result in \Theta(n) without sorting.
 
 ```python
 def sorted_squares(arr: list[int]) -> list[int]:
     """
     Given sorted array (may have negatives), return sorted squares.
 
-    Time: O(n)
-    Space: O(n) for result
+    Time: \Theta(n) - One pass scanning from both ends.
+    Space: \Theta(n) - A new array of size `n` is instantiated.
 
     Example:
     [-4, -1, 0, 3, 10] → [0, 1, 9, 16, 100]
@@ -374,8 +374,8 @@ def find_length_of_lcis(arr: list[int]) -> int:
     """
     Longest continuous increasing subsequence.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) - One pass over the entire list.
+    Space: \Theta(1) - Only storing primitive trackers.
     """
     if not arr:
         return 0
@@ -399,8 +399,8 @@ def compare_with_gap(arr: list[int], gap: int) -> bool:
     """
     Check if any element equals another element 'gap' positions away.
 
-    Time: O(n)
-    Space: O(1)
+    Time: \Theta(n) in worst case (traverses size - gap), where n is array length.
+    Space: \Theta(1) - Loop variable overhead.
     """
     for i in range(len(arr) - gap):
         if arr[i] == arr[i + gap]:
@@ -472,7 +472,7 @@ Use when: sorted array pair finding, palindromes, reversing
 1. **Slow = write position, fast = read position**
 2. **Slow only advances when finding valid elements**
 3. **Works for sorted arrays** (duplicates) and unsorted (partitioning)
-4. **O(1) space** by modifying in-place
+4. **\Theta(1) Space** by modifying in-place
 5. **Compare carefully**: with previous element? with slow? with gap?
 
 ---

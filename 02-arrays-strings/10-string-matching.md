@@ -4,11 +4,11 @@
 
 ## Overview
 
-String matching (pattern search) finds occurrences of a pattern P in text T. While brute force is O(n×m), techniques like Rabin-Karp (rolling hash) and KMP (prefix function) achieve O(n+m). Understanding when each applies is key to interview success.
+String matching (pattern search) finds occurrences of a pattern P in text T. While brute force is $\Theta(n \cdot m)$, techniques like Rabin-Karp (rolling hash) and KMP (prefix function) achieve $\Theta(n + m)$. Understanding when each applies is key to interview success.
 
 ## Building Intuition
 
-**Why is brute force O(n×m) and how do we beat it?**
+**Why is brute force $\Theta(n \cdot m)$ and how do we beat it?**
 
 The key insight is **avoiding redundant comparisons**:
 
@@ -106,7 +106,7 @@ P = "ABABC"
 **Why it works:**
 The brute force approach checks every possible starting position in the `haystack`.
 1. For each index `i`, we compare the substring `haystack[i:i+len(needle)]` with `needle`.
-2. While simple, its worst-case complexity is O(N*M) where N is haystack length and M is needle length.
+2. While simple, its worst-case complexity is $\Theta(n \cdot m)$ where N is haystack length and M is needle length.
 Modern built-in functions often use more advanced variants, but brute force is the foundational logic.
 
 ```python
@@ -114,8 +114,8 @@ def brute_force_search(text: str, pattern: str) -> list[int]:
     """
     Check pattern at every position in text.
 
-    Time: O((n - m + 1) × m) = O(n × m)
-    Space: O(1)
+    Time: $\Theta((n - m + 1) \cdot m) = \Theta(n \cdot m)$
+    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
     """
     n, m = len(text), len(pattern)
     occurrences = []
@@ -137,7 +137,8 @@ def brute_force_search(text: str, pattern: str) -> list[int]:
 ```python
 def brute_force_pythonic(text: str, pattern: str) -> list[int]:
     """
-    Using slicing (still O(n × m) due to slice comparison).
+    Using list comprehensions (lists are dynamic arrays with amortized $O(1)$ append) (still $\Theta(n \cdot m)$ due to slice comparison).
+    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
     """
     n, m = len(text), len(pattern)
     return [i for i in range(n - m + 1) if text[i:i + m] == pattern]
@@ -152,6 +153,7 @@ idx = text.index(pattern)   # Raises ValueError if not found
 
 # Find all occurrences
 def find_all(text: str, pattern: str) -> list[int]:
+    """Find all occurrences using built-in methods."""
     indices = []
     start = 0
     while True:
@@ -175,7 +177,7 @@ Comparing two strings of length `M` takes O(M). Comparing two numbers takes O(1)
 1. We compute a hash for the pattern and for the first window of the text.
 2. As we slide the window, we update the hash in O(1) by removing the old character and adding the new one (rolling hash).
 3. If hashes match, we perform a character-by-character comparison to confirm (to handle collisions).
-This results in an average time complexity of O(N+M).
+This results in an average time complexity of $\Theta(n + m)$.
 
 Use hashing to quickly compare pattern with text windows.
 
@@ -184,8 +186,8 @@ def rabin_karp(text: str, pattern: str) -> list[int]:
     """
     Use rolling hash for O(1) window comparison.
 
-    Time: O(n + m) average, O(n × m) worst case (hash collisions)
-    Space: O(1)
+    Time: $\Theta(n + m)$ average, O(n \cdot m) worst case (due to hash collisions)
+    Space: $O(n)$ for the output list (or $O(1)$ auxiliary space)
     """
     if len(pattern) > len(text):
         return []
@@ -241,7 +243,7 @@ This is O(1) instead of O(m) to compute!
 ## Approach 3: KMP (Knuth-Morris-Pratt)
 
 ### Problem: Efficient Substring Search
-**Problem Statement:** Find all occurrences of a pattern in a text in guaranteed O(N+M) time.
+**Problem Statement:** Find all occurrences of a pattern in a text in guaranteed $\Theta(n + m)$ time.
 
 **Why it works:**
 KMP avoids backtracking in the text by using a "failure function" (LPS array) precalculated from the pattern.
@@ -256,8 +258,8 @@ def kmp_search(text: str, pattern: str) -> list[int]:
     """
     KMP algorithm using failure function.
 
-    Time: O(n + m)
-    Space: O(m) for failure function
+    Time: $\Theta(n + m)$
+    Space: $O(m)$ for the LPS (failure function) array, plus $O(n)$ for the output list
     """
     if not pattern:
         return [0]
@@ -326,10 +328,10 @@ When mismatch at position j, jump to lps[j-1] instead of 0.
 
 | Algorithm   | Time       | Space | Use When                                      |
 | ----------- | ---------- | ----- | --------------------------------------------- |
-| Brute Force | O(nm)      | O(1)  | Short strings, simple cases                   |
-| Built-in    | O(nm)\*    | O(1)  | Production code, interview shortcuts          |
-| Rabin-Karp  | O(n+m) avg | O(1)  | Multiple pattern search, plagiarism detection |
-| KMP         | O(n+m)     | O(m)  | Guaranteed linear, streaming text             |
+| Brute Force | $\Theta(n \cdot m)$      | O(1)  | Short strings, simple cases                   |
+| Built-in    | $\Theta(n \cdot m)$\*    | O(1)  | Production code, interview shortcuts          |
+| Rabin-Karp  | $\Theta(n + m)$ avg | O(1)  | Multiple pattern search, plagiarism detection |
+| KMP         | $\Theta(n + m)$     | O(m)  | Guaranteed linear, streaming text             |
 
 \*Python's `find()` uses optimized algorithms internally.
 
@@ -342,8 +344,8 @@ def find_replace(text: str, pattern: str, replacement: str) -> str:
     """
     Replace all occurrences of pattern with replacement.
 
-    Time: O(n × m) for finding, O(n) for replacement
-    Space: O(n) for result
+    Time: $\Theta(n \cdot m)$ for finding, $\Theta(n)$ for replacement
+    Space: $O(n)$ for the result list
     """
     # Using built-in (preferred in interviews)
     return text.replace(pattern, replacement)
@@ -362,7 +364,7 @@ def find_replace_manual(text: str, pattern: str, replacement: str) -> str:
             result.append(text[i])
             i += 1
 
-    return "".join(result)
+    return "".join(result)  # O(n) join is efficient compared to += string concatenation (which is often $O(n^2)$ due to memory churn)
 ```
 
 ---
@@ -385,8 +387,8 @@ def is_match(s: str, p: str) -> bool:
     '?' matches any single character
     '*' matches any sequence (including empty)
 
-    Time: O(m × n)
-    Space: O(m × n)
+    Time: $\Theta(m \cdot n)$
+    Space: $\Theta(m \cdot n)$ for the DP table
     """
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -429,8 +431,8 @@ def is_match_regex(s: str, p: str) -> bool:
     '.' matches any single character
     '*' means zero or more of the preceding element
 
-    Time: O(m × n)
-    Space: O(m × n)
+    Time: $\Theta(m \cdot n)$
+    Space: $\Theta(m \cdot n)$ for the DP table
     """
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -498,10 +500,10 @@ One comparison
 
 ## Key Takeaways
 
-1. **Brute force is O(n×m)** - acceptable for interviews if explained
+1. **Brute force is $\Theta(n \cdot m)$** - acceptable for interviews if explained
 2. **Built-in methods are fine** - Python's find() is optimized
 3. **Rabin-Karp** - rolling hash, good for multiple patterns
-4. **KMP** - guaranteed O(n+m), know the concept
+4. **KMP** - guaranteed $\Theta(n + m)$, know the concept
 5. **Wildcard/Regex** - DP approach with careful state transitions
 
 ---

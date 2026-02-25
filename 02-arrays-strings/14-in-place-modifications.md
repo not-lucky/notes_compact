@@ -4,7 +4,9 @@
 
 ## Overview
 
-In-place modification techniques transform arrays without extra space by clever reuse of the input array itself. The key patterns—read/write pointers, swap-based partitioning, and index encoding—achieve O(1) space where naive approaches would need O(n).
+In-place modification techniques transform arrays without extra space by clever reuse of the input array itself. The key patterns—read/write pointers, swap-based partitioning, and index encoding—achieve $\Theta(1)$ auxiliary space where naive approaches would need $\Theta(n)$.
+
+**Python Note:** Python lists are implemented as dynamic arrays. Appending is an amortized $\Theta(1)$ operation, not strictly $\Theta(1)$ in the worst case (when reallocation happens). However, in-place modifications operate on existing indices, so no reallocations occur during the algorithms discussed here.
 
 ## Building Intuition
 
@@ -13,16 +15,17 @@ In-place modification techniques transform arrays without extra space by clever 
 The key insight is **overwritten data is no longer needed**:
 
 1. **Read/Write Pointer Model**: The read pointer (fast) scans ahead, finding elements to keep. The write pointer (slow) marks where to place them. Everything between read and write is "garbage"—we've already decided what to keep from that region.
+   *Mental Model*: Think of a triage nurse (read pointer) sorting patients and sending them to the treatment room (write pointer). Once triaged, the waiting room chair can be given to someone else.
 
 2. **Swap-Based Partitioning**: Instead of copying elements, swap them to their correct region. Dutch National Flag uses three regions (0s, 1s, 2s) managed by three pointers, swapping elements to their destination.
+   *Mental Model*: Sorting a hand of playing cards. You don't get a second hand to hold cards; you just swap them around in your current hand until they're ordered.
 
-3. **Index Encoding**: When values are bounded (1 to n), the array indices themselves become storage. Mark visited by negating: `arr[abs(num)-1] *= -1`. Recover originals later if needed.
-
-**Mental Model - Move Zeroes**: Imagine a deck of cards where you're pulling out all non-joker cards and stacking them at the front. Once you've processed a card and decided it's a joker, you don't need to look at it again—just keep stacking non-jokers at the write position.
+3. **Index Encoding**: When values are bounded ($1$ to $n$), the array indices themselves become storage. Mark visited by negating: `arr[abs(num)-1] *= -1`. Recover originals later if needed.
+   *Mental Model*: A hotel where guests have room keys matching their guest ID. If a guest arrives and their room's light is already off (negative), you know it's a duplicate guest!
 
 **Why Dutch National Flag Works**:
 
-```
+```text
 Three regions: [0s | 1s | unknown | 2s]
               0    low  mid      high   n-1
 
@@ -41,9 +44,9 @@ On each step:
 
 **Index Encoding Trick**:
 
-```
+```text
 Array: [4, 3, 2, 7, 8, 2, 3, 1] (values 1-8, indices 0-7)
-Task: Find duplicates (O(1) space)
+Task: Find duplicates (Θ(1) space)
 
 Idea: For each num, mark index (num-1) as visited by negating.
 If already negative, we've seen this num before → duplicate!
@@ -64,19 +67,16 @@ Trace:
 In-place isn't always appropriate:
 
 1. **Need Original Array Later**: In-place destroys the original. If you need it for verification, debugging, or subsequent operations, copy first.
-
 2. **Complex Ordering Requirements**: If the output ordering is complex (not just partitioning or filtering), in-place may be error-prone. Consider if extra space simplifies the logic.
-
-3. **Immutable Data Structures**: In some languages/contexts (functional programming, string types), in-place modification isn't possible.
-
+3. **Immutable Data Structures**: In some languages/contexts (functional programming, string types in Python/Java), in-place modification isn't possible.
+   *Python Specific*: Python strings are immutable. You cannot do `s[i] = 'a'`. You must convert to a list (`list(s)`), modify, and then `"".join(lst)`. Avoid `+=` in loops for string concatenation, as it can be $\Theta(n^2)$ due to memory churn; always use `.join()`.
 4. **Concurrent Access**: If multiple threads read the array while you modify, you'll have race conditions. Need synchronization or copy-on-write.
-
-5. **When O(n) Space Is Acceptable**: If extra space is cheap and simplifies code significantly, it may be worth it. Correctness > optimization.
+5. **When $\Theta(n)$ Space Is Acceptable**: If extra space is cheap and simplifies code significantly, it may be worth it. Correctness > optimization.
 
 **Red Flags:**
 
 - "Return original and modified" → Need copy
-- "Stable partition" (preserve relative order) → May need extra space or O(n²) time
+- "Stable partition" (preserve relative order) → May need extra space or $\Theta(n^2)$ time
 - "String modification" in Python → Must convert to list first
 
 ---
@@ -85,12 +85,12 @@ In-place isn't always appropriate:
 
 In-place modification problems test your ability to:
 
-- Optimize for O(1) space
+- Optimize for $\Theta(1)$ auxiliary space
 - Handle tricky edge cases
 - Use clever techniques like two-pointers or swapping
 - Work with constraints that prevent extra arrays
 
-Common in phone screens where interviewers want to see clean, efficient code.
+Common in phone screens where interviewers want to see clean, efficient code. Keep in mind that when an interviewer asks for $\Theta(1)$ space, they mean **auxiliary space** (extra space beyond the input). Also, be aware that recursive solutions are *never* $\Theta(1)$ space because the recursive call stack uses memory!
 
 ---
 
@@ -99,7 +99,7 @@ Common in phone screens where interviewers want to see clean, efficient code.
 - Space complexity matters in real systems
 - Shows understanding of memory constraints
 - Often more elegant than brute force
-- Interviewers explicitly ask "can you do it in O(1) space?"
+- Interviewers explicitly ask "can you do it in $O(1)$ space?"
 
 ---
 
@@ -120,8 +120,8 @@ def move_zeroes(arr: list[int]) -> None:
     """
     Move all zeros to end, maintaining order of non-zeros.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [0, 1, 0, 3, 12] → [1, 3, 12, 0, 0]
@@ -167,8 +167,8 @@ def remove_element(arr: list[int], val: int) -> int:
     Remove all occurrences of val in-place.
     Returns new length.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     arr = [3, 2, 2, 3], val = 3
@@ -215,8 +215,8 @@ def remove_duplicates(arr: list[int]) -> int:
     Remove duplicates in-place from sorted array.
     Returns new length.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [1, 1, 2] → [1, 2, _], returns 2
@@ -255,8 +255,8 @@ def sort_colors(arr: list[int]) -> None:
     Sort array containing only 0, 1, 2 in-place.
     Single pass.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [2, 0, 2, 1, 1, 0] → [0, 0, 1, 1, 2, 2]
@@ -280,7 +280,7 @@ def sort_colors(arr: list[int]) -> None:
 
 ### Visual: Dutch National Flag
 
-```
+```text
 [2, 0, 2, 1, 1, 0]
  L
  M
@@ -302,8 +302,8 @@ def reverse(arr: list[int]) -> None:
     """
     Reverse array in-place.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
     """
     left, right = 0, len(arr) - 1
 
@@ -331,14 +331,14 @@ def rotate(arr: list[int], k: int) -> None:
     """
     Rotate array right by k positions in-place.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [1, 2, 3, 4, 5, 6, 7], k = 3
     → [5, 6, 7, 1, 2, 3, 4]
     """
-    def reverse(left: int, right: int) -> None:
+    def reverse_part(left: int, right: int) -> None:
         while left < right:
             arr[left], arr[right] = arr[right], arr[left]
             left += 1
@@ -348,9 +348,9 @@ def rotate(arr: list[int], k: int) -> None:
     k = k % n  # Handle k > n
 
     # Reverse all, then reverse first k, then reverse rest
-    reverse(0, n - 1)
-    reverse(0, k - 1)
-    reverse(k, n - 1)
+    reverse_part(0, n - 1)
+    reverse_part(0, k - 1)
+    reverse_part(k, n - 1)
 ```
 
 ---
@@ -373,8 +373,8 @@ def next_permutation(arr: list[int]) -> None:
     Rearrange to next lexicographically greater permutation.
     If already greatest, rearrange to smallest (sorted).
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [1, 2, 3] → [1, 3, 2]
@@ -415,8 +415,8 @@ def partition(arr: list[int], pivot: int) -> int:
     Elements < pivot go left, >= go right.
     Returns partition index.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
     """
     write_idx = 0
 
@@ -437,8 +437,8 @@ def rearrange_alternating(arr: list[int]) -> None:
     """
     Rearrange so arr[0] < arr[1] > arr[2] < arr[3] > ...
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
 
     Example:
     [3, 5, 2, 1, 6, 4] → [3, 5, 1, 6, 2, 4] or similar
@@ -464,11 +464,11 @@ def segregate_negatives(arr: list[int]) -> None:
     Move all negatives to front, positives to back.
     Maintains relative order (stable).
 
-    Time: O(n²) - due to shifting elements
-    Space: O(1)
+    Time: Θ(n²) - due to shifting elements
+    Space: Θ(1) auxiliary
 
     Note: This is the stable but slower approach.
-    For O(n) without order preservation, see below.
+    For Θ(n) without order preservation, see below.
     """
     write_idx = 0
 
@@ -489,8 +489,8 @@ def segregate_negatives_unordered(arr: list[int]) -> None:
     """
     Move negatives to front (order not preserved).
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
     """
     left, right = 0, len(arr) - 1
 
@@ -530,7 +530,7 @@ Since the numbers are between 1 and `n`, we can use the array itself as a hash t
 1. When we see a number `x`, we go to the index `abs(x) - 1`.
 2. We "mark" that index by negating the value there.
 3. If we encounter a number `x` and the value at `abs(x) - 1` is *already* negative, it means we've seen `x` before.
-This allows us to track visited numbers with O(1) extra space.
+This allows us to track visited numbers with $\Theta(1)$ extra space.
 
 ```python
 def find_duplicates(arr: list[int]) -> list[int]:
@@ -538,8 +538,8 @@ def find_duplicates(arr: list[int]) -> list[int]:
     Find all duplicates in array where 1 <= arr[i] <= n.
     Mark visited by negating.
 
-    Time: O(n)
-    Space: O(1)
+    Time: Θ(n)
+    Space: Θ(1) auxiliary
     """
     result = []
 

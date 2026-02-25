@@ -20,7 +20,7 @@ The key insight is **monotonic progress**. Both pointers only move forward, guar
    - **Maximum valid window**: Shrink when window becomes invalid. We want the largest valid window.
    - **Minimum valid window**: Shrink while window stays valid. We want the smallest valid window.
 
-**Mental Model**: Imagine an accordion. You stretch it open (expand right), and when it gets too wide to handle, you compress the left side (shrink left). You're looking for either the widest manageable stretch or the narrowest sufficient stretch.
+**Mental Model**: Imagine an accordion or a caterpillar. You stretch the caterpillar forward (expand right pointer) until it reaches for food. When it gets too stretched, it pulls its back end forward (shrink left pointer). You're continuously expanding and shrinking to find either the widest stretch (maximum) or the narrowest contraction (minimum) while keeping the insect happy (valid condition).
 
 **The Two Scenarios**:
 
@@ -107,14 +107,17 @@ def length_of_longest_substring(s: str) -> int:
     """
     Find length of longest substring without repeating characters.
 
-    Time: O(n)
-    Space: O(min(n, alphabet_size))
+    Time Complexity: O(n) where n is the length of string s. Each character
+                     is processed at most twice (once by right, once by left pointer).
+    Space Complexity: O(min(n, a)) where 'a' is the alphabet size (e.g., 26 or 128).
+                      Hash map insertion/lookup is amortized O(1), but worst-case
+                      O(n) if hash collisions occur (rare with Python's dict).
 
     Example:
     "abcabcbb" → 3 ("abc")
     "bbbbb" → 1 ("b")
     """
-    char_index = {}  # Last seen index of each character
+    char_index: dict[str, int] = {}  # Last seen index of each character
     left = 0
     max_length = 0
 
@@ -172,8 +175,10 @@ def min_window(s: str, t: str) -> str:
     """
     Find minimum window in s containing all characters of t.
 
-    Time: O(n + m) where n = len(s), m = len(t)
-    Space: O(m) for frequency maps
+    Time Complexity: Θ(n + m) where n = len(s), m = len(t).
+                     Every character is visited at most twice.
+    Space Complexity: O(u) where 'u' is the number of unique characters in t (bounded by alphabet size).
+                      Hash map updates/lookups are amortized O(1).
 
     Example:
     s = "ADOBECODEBANC", t = "ABC"
@@ -184,8 +189,8 @@ def min_window(s: str, t: str) -> str:
 
     from collections import Counter
 
-    need = Counter(t)        # Characters we need
-    have = {}                # Characters we have in window
+    need: dict[str, int] = Counter(t)        # Characters we need
+    have: dict[str, int] = {}                # Characters we have in window
     need_count = len(need)   # Unique chars needed
     have_count = 0           # Unique chars satisfied
 
@@ -252,8 +257,10 @@ def longest_k_distinct(s: str, k: int) -> int:
     """
     Longest substring with at most k distinct characters.
 
-    Time: O(n)
-    Space: O(k)
+    Time Complexity: Θ(n). Right pointer moves n times, left pointer moves
+                     at most n times.
+    Space Complexity: O(k) for the hash map storing character counts.
+                      Note that Counter updates are amortized O(1).
 
     Example:
     s = "eceba", k = 2 → 3 ("ece")
@@ -261,7 +268,7 @@ def longest_k_distinct(s: str, k: int) -> int:
     """
     from collections import Counter
 
-    char_count = Counter()
+    char_count: Counter[str] = Counter()
     left = 0
     max_length = 0
 
@@ -298,13 +305,15 @@ def character_replacement(s: str, k: int) -> int:
     """
     Longest substring with same letter after replacing at most k chars.
 
-    Time: O(n)
-    Space: O(26) = O(1)
+    Time Complexity: Θ(n). Single pass with the right pointer, and left pointer
+                     moves at most n times.
+    Space Complexity: O(1). The hash map stores at most 26 uppercase English letters,
+                      making it O(1) space. Dictionary updates are amortized O(1).
 
     Example:
     s = "AABABBA", k = 1 → 4 ("AABA" → "AAAA")
     """
-    count = {}
+    count: dict[str, int] = {}
     left = 0
     max_count = 0  # Max frequency of any single char in window
     max_length = 0
@@ -358,15 +367,18 @@ def subarray_sum(nums: list[int], k: int) -> int:
     Note: This is NOT sliding window (handles negatives).
     Uses prefix sum with hashmap.
 
-    Time: O(n)
-    Space: O(n)
+    Time Complexity: O(n). A single pass through the array. Note that we rely
+                     on Python's dictionary, which has amortized O(1) lookups
+                     but worst-case O(n) lookups if hash collisions occur.
+    Space Complexity: O(n). The hash map stores at most n + 1 distinct prefix
+                      sums in the worst-case.
 
     Example:
     nums = [1, 1, 1], k = 2 → 2
     """
     count = 0
     prefix_sum = 0
-    prefix_count = {0: 1}  # prefix_sum → count
+    prefix_count: dict[int, int] = {0: 1}  # prefix_sum → count
 
     for num in nums:
         prefix_sum += num
@@ -399,8 +411,10 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
     Minimum length subarray with sum >= target.
     All positive numbers.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: Θ(n). Right pointer moves n times. The inner while loop
+                     moves the left pointer at most n times across all iterations.
+    Space Complexity: O(1). Only scalar variables. Note: `nums` is a Python
+                      list (dynamic array), but no auxiliary data structures are used.
 
     Example:
     target = 7, nums = [2, 3, 1, 2, 4, 3] → 2 ([4, 3])
@@ -426,7 +440,9 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
 ## General Template
 
 ```python
-def sliding_window_variable(arr, condition_func):
+from typing import Callable, Any
+
+def sliding_window_variable(arr: list[Any], condition_func: Callable[[Any], bool]) -> int:
     """
     General template for variable-size sliding window.
 
@@ -440,8 +456,9 @@ def sliding_window_variable(arr, condition_func):
     """
     left = 0
     result = 0  # or float('inf') for minimum
-    window_state = {}  # whatever state you need
+    window_state: dict[Any, Any] = {}  # whatever state you need
 
+    # Note: 'arr' could be a dynamic array (Python list) or a string.
     for right in range(len(arr)):
         # 1. EXPAND: Add arr[right] to window state
         update_window_state(window_state, arr[right])

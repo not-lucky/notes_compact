@@ -18,7 +18,7 @@ The key insight is **elimination by comparison**. At each step, we can definitiv
 
 3. **Symmetry Exploitation**: Palindrome checking works because we only need to verify character pairs from both ends. If outer characters match, the inner substring determines palindrome-ness.
 
-**Mental Model**: Think of two people searching a sorted bookshelf—one from each end. They're looking for a specific total page count by combining two books. If their current sum is too small, the left person moves right (bigger books). If too large, the right person moves left (smaller books). They never miss the answer because they're "squeezing" the search space systematically.
+**Mental Model**: Think of two people searching a sorted bookshelf—one from each end. They're looking for a specific total page count by combining two books. If their current sum is too small, the left person moves right (to bigger books). If too large, the right person moves left (to smaller books). They never miss the answer because they're systematically "squeezing" the search space, discarding books they *know* cannot possibly form the target sum with any remaining book. This guarantees they check the necessary pairs in exactly one pass (tight bound of Big-Theta $\Theta(n)$ for time complexity).
 
 **Why We Don't Miss Solutions**:
 
@@ -36,7 +36,7 @@ If 1 + 8 = 9 < 10:
 
 This pattern requires specific conditions:
 
-1. **Unsorted Array (for pair problems)**: Two Sum with unsorted data needs a hash map (O(n) with O(n) space), not two pointers. Sorting first costs O(n log n).
+1. **Unsorted Array (for pair problems)**: Two Sum with unsorted data needs a hash map (amortized O(1), worst-case O(n) insertions and lookups with O(n) space), not two pointers. Sorting first costs O(n log n).
 
 2. **Need All Pairs, Not Just One**: If you need all pairs summing to target, two pointers work, but tracking duplicates gets tricky. Hash map may be cleaner.
 
@@ -51,6 +51,7 @@ This pattern requires specific conditions:
 - "Array is not sorted" (for sum problems) → Use hash map
 - "Return indices from original unsorted array" → Sorting loses indices; use hash map
 - "Minimize/maximize some function" → May need binary search on answer
+- "String concatenation" in Python → Using `+=` in loops is typically considered $O(n^2)$ time architecture-wise due to memory reallocation. Consider `.join()` if manipulating arrays for string results.
 
 ---
 
@@ -101,7 +102,7 @@ def two_sum_sorted(arr: list[int], target: int) -> list[int]:
     Find indices of two numbers that sum to target.
     Array is sorted.
 
-    Time: O(n)
+    Time: O(n) (specifically $\Theta(n)$)
     Space: O(1)
 
     Example:
@@ -148,7 +149,7 @@ This is an extension of Two Sum.
 1. First, we sort the array to enable two-pointers and handle duplicates easily.
 2. We fix one element `nums[i]` and then look for two other elements that sum to `-nums[i]` using the Two Sum (Sorted) technique.
 3. We skip duplicate values for both the fixed element and the two pointers to ensure the result contains only unique triplets.
-Sorting makes the O(n²) approach much more efficient than a brute-force O(n³).
+Sorting makes the O(n²) approach much more efficient than a brute-force O(n³). Note that Python lists are dynamic arrays, but sorting them in-place with `.sort()` is optimized and amortized fast.
 
 ```python
 def three_sum(nums: list[int]) -> list[list[int]]:
@@ -156,7 +157,9 @@ def three_sum(nums: list[int]) -> list[list[int]]:
     Find all unique triplets that sum to zero.
 
     Time: O(n²) - O(n log n) sort + O(n) × O(n) two-sum
-    Space: O(1) excluding output (O(n) for sort in some languages)
+    Space: O(n) or O(log n) depending on sorting algorithm
+           (Python's Timsort uses up to O(n) extra space).
+           If recursion was used, we'd also track call stack space.
 
     Example:
     [-1, 0, 1, 2, -1, -4] → [[-1, -1, 2], [-1, 0, 1]]
@@ -218,7 +221,7 @@ def max_area(heights: list[int]) -> int:
     """
     Find two lines that form container holding most water.
 
-    Time: O(n)
+    Time: O(n) (specifically $\Theta(n)$)
     Space: O(1)
 
     Visual:
@@ -283,7 +286,7 @@ def is_palindrome(s: str) -> bool:
     """
     Check if string is palindrome (ignore non-alphanumeric).
 
-    Time: O(n)
+    Time: O(n) (specifically $\Theta(n)$)
     Space: O(1)
     """
     left, right = 0, len(s) - 1
@@ -323,7 +326,7 @@ def trap_rain_water(heights: list[int]) -> int:
     """
     Calculate total water trapped between bars.
 
-    Time: O(n)
+    Time: O(n) (specifically $\Theta(n)$)
     Space: O(1)
 
     Concept: At each position, water = min(left_max, right_max) - height
@@ -382,7 +385,7 @@ def reverse(arr: list[int]) -> None:
     """
     Reverse array in-place.
 
-    Time: O(n)
+    Time: O(n) (specifically $\Theta(n)$)
     Space: O(1)
     """
     left, right = 0, len(arr) - 1
@@ -450,8 +453,9 @@ def two_sum_closest(arr: list[int], target: int) -> list[int]:
     """
     Find pair with sum closest to target.
 
-    Time: O(n log n) for sort + O(n) for search
-    Space: O(1)
+    Time: O(n log n) for sort + O(n) (specifically $\Theta(n)$) for search
+    Space: O(n) or O(log n) depending on sorting algorithm
+           (Python's Timsort uses up to O(n) extra space)
     """
     arr.sort()
     left, right = 0, len(arr) - 1
@@ -484,7 +488,8 @@ def count_pairs_less_than(arr: list[int], target: int) -> int:
     Count pairs with sum < target.
 
     Time: O(n log n)
-    Space: O(1)
+    Space: O(n) or O(log n) depending on sorting algorithm
+           (Python's Timsort uses up to O(n) extra space)
     """
     arr.sort()
     left, right = 0, len(arr) - 1

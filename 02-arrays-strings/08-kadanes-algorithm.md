@@ -4,7 +4,7 @@
 
 ## Overview
 
-Kadane's algorithm finds the maximum subarray sum in O(n) time using a simple but powerful insight: at each position, either extend the current subarray or start fresh. This space-optimized dynamic programming solution is a cornerstone of algorithmic problem-solving.
+Kadane's algorithm finds the maximum subarray sum in a tight bound of $\Theta(n)$ time using a simple but powerful insight: at each position, either extend the current subarray or start fresh. This space-optimized dynamic programming solution is a cornerstone of algorithmic problem-solving, operating in strict $\Theta(1)$ auxiliary space.
 
 ## Building Intuition
 
@@ -12,20 +12,20 @@ Kadane's algorithm finds the maximum subarray sum in O(n) time using a simple bu
 
 The key insight is **local optimality leads to global optimality**. At each position, we make the locally optimal choice:
 
-1. **The Core Decision**: At position i, the maximum subarray ending at i either:
+1. **The Core Decision**: At position `i`, the maximum subarray ending at `i` either:
    - Includes the previous maximum subarray (extend): `prev_max + arr[i]`
-   - Starts fresh at i (restart): `arr[i]`
+   - Starts fresh at `i` (restart): `arr[i]`
    - We take whichever is larger: `max(arr[i], prev_max + arr[i])`
 
 2. **Why This Works**: If the previous maximum subarray has a positive sum, extending it can only help (positive + anything increases the anything). If it has a negative sum, extending it hurts—we're better off starting fresh.
 
-3. **Simpler Form**: `current_max = max(arr[i], current_max + arr[i])` simplifies to: "If current_max is negative, reset to arr[i]; otherwise, add arr[i] to it."
+3. **Simpler Form**: `current_max = max(arr[i], current_max + arr[i])` simplifies to: "If `current_max` is negative, reset to `arr[i]`; otherwise, add `arr[i]` to it."
 
-**Mental Model**: Imagine you're collecting coins (positive) and paying tolls (negative) as you walk. At each step, ask: "Is my accumulated wealth helping or hurting me?" If you're in debt (negative sum), declare bankruptcy and start over. If you have savings (positive sum), keep going.
+**Mental Model**: Imagine you're walking down a road collecting coins (positive) and paying tolls (negative). Your pockets are your current subarray. At each step, ask: "Is my accumulated wealth from previous steps helping or hurting me?" If you're in debt (negative sum), empty your pockets, declare bankruptcy, and start over with the current step. If you have savings (positive sum), keep going and add the current step's value.
 
 **Visual Trace**:
 
-```
+```text
 arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
 
 Position 0: current = max(-2, -2) = -2, global = -2
@@ -48,66 +48,35 @@ Answer: 6 (subarray [4, -1, 2, 1])
 Kadane's solves a specific problem:
 
 1. **Non-Contiguous Subsequence**: Kadane's finds contiguous subarrays. For subsequences (non-adjacent elements), use DP with different state.
-
 2. **Product Instead of Sum**: For maximum product, track both max AND min (negative × negative = positive). See Max Product Subarray variation.
-
 3. **Must Include Specific Elements**: If certain elements must be included, Kadane's greedy approach may skip them. Need constrained DP.
-
-4. **Length Constraints**: If subarray must be at least length k or at most length m, standard Kadane's doesn't handle this directly. Need sliding window + Kadane's hybrid.
-
+4. **Length Constraints**: If subarray must be at least length `k` or at most length `m`, standard Kadane's doesn't handle this directly. Need sliding window + Kadane's hybrid.
 5. **Multiple Disjoint Subarrays**: "Find 2 non-overlapping subarrays with maximum sum" needs a different approach (left-max and right-max arrays).
-
-6. **All Elements Are Negative**: Kadane's still works (returns the least negative), but clarify with interviewer: "Is empty subarray allowed?" If yes, answer is 0.
+6. **All Elements Are Negative**: Kadane's still works (returns the least negative), but clarify with interviewer: "Is empty subarray allowed?" If yes, answer is `0`.
 
 **Red Flags:**
 
 - "Subsequence" (not subarray) → Different DP
 - "Product" (not sum) → Track min and max
-- "Exactly k elements" → Sliding window or constrained DP
+- "Exactly `k` elements" → Sliding window or constrained DP
 - "Two disjoint subarrays" → Left/right max arrays
 
 ---
 
-## Interview Context
+## Interview Context & Complexity Precision
 
-Kadane's algorithm solves the Maximum Subarray problem in O(n) time. This is a classic interview problem because:
+Kadane's algorithm solves the Maximum Subarray problem in $\Theta(n)$ time. This is a classic interview problem because:
 
-- It tests dynamic programming intuition
-- Has many variations (product, circular, 2D)
-- Simple but easy to get wrong
-- Foundation for more complex DP problems
+- It tests dynamic programming intuition.
+- Has many variations (product, circular, 2D).
+- Simple but easy to get wrong.
+- Foundation for more complex DP problems.
 
-Maximum Subarray is a top-10 most asked interview question at FANG+.
-
----
-
-## The Problem
-
-Given an array of integers, find the contiguous subarray with the largest sum.
-
-```
-arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-
-Maximum subarray: [4, -1, 2, 1] with sum = 6
-```
-
----
-
-## Core Insight
-
-At each position, we have two choices:
-
-1. **Extend** the current subarray (include this element)
-2. **Start fresh** from this element
-
-We extend if the current sum + element > element alone.
-
-```
-current_sum = max(arr[i], current_sum + arr[i])
-
-If current_sum > 0: extending helps
-If current_sum < 0: start fresh (negative sum only hurts)
-```
+**Python Specifics**:
+- **Dynamic Arrays**: Python lists are dynamic arrays. While appending to them is amortized $\Theta(1)$, building a subarray item-by-item during Kadane's would require memory reallocation and cost $O(n)$ space. By only tracking sums (or indices), we maintain strict $\Theta(1)$ space.
+- **String/List Concatenation**: If the problem asked to return the subarray as a string, avoid string concatenation (`+=`) in a loop, as it results in $O(n^2)$ time due to memory churn. Use `.join()` or track indices instead.
+- **Hash Maps**: If a variation requires tracking seen sums (like in prefix sum approaches to subarray problems), remember that Python dictionary insertions/lookups are amortized $\Theta(1)$ but worst-case $O(n)$ due to hash collisions.
+- **Recursive Call Stack**: None of these standard iterative versions utilize recursion, so there is no hidden $O(n)$ space complexity on the call stack, guaranteeing an exact $\Theta(1)$ space footprint.
 
 ---
 
@@ -128,8 +97,8 @@ def max_subarray(arr: list[int]) -> int:
     """
     Find the maximum sum of any contiguous subarray.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$ - tight bound, single pass.
+    Space Complexity: $\Theta(1)$ - tight bound, strictly uses scalar variables (no recursive call stack).
 
     Example:
     [-2, 1, -3, 4, -1, 2, 1, -5, 4] → 6
@@ -148,35 +117,19 @@ def max_subarray(arr: list[int]) -> int:
     return max_sum
 ```
 
-### Visual Trace
-
-```
-arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-
-i=0: current=-2, max=-2
-i=1: current=max(1, -2+1)=1, max=1
-i=2: current=max(-3, 1-3)=-2, max=1
-i=3: current=max(4, -2+4)=4, max=4
-i=4: current=max(-1, 4-1)=3, max=4
-i=5: current=max(2, 3+2)=5, max=5
-i=6: current=max(1, 5+1)=6, max=6  ← answer!
-i=7: current=max(-5, 6-5)=1, max=6
-i=8: current=max(4, 1+4)=5, max=6
-
-Return 6
-```
-
 ---
 
 ## Template: Maximum Subarray with Indices
+
+If you need the actual subarray, track the indices. *Do not append elements to a new list during the loop or use string concatenation (`+=`), as that wastes memory and can degrade performance.* Python lists are dynamic arrays, so simply track the bounds and slice the array at the end (`arr[start:end+1]`) to get the subarray in $\Theta(k)$ time (where $k$ is the length of the subarray).
 
 ```python
 def max_subarray_with_indices(arr: list[int]) -> tuple[int, int, int]:
     """
     Return (max_sum, start_index, end_index).
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$
     """
     if not arr:
         return (0, -1, -1)
@@ -224,8 +177,8 @@ def max_product(arr: list[int]) -> int:
     Key insight: Track both max and min because
     negative × negative = positive.
 
-    Time: O(n)
-    Space: O(1)
+    Time Complexity: $\Theta(n)$ - tight bound.
+    Space Complexity: $\Theta(1)$ - strict O(1) auxiliary space, no call stack.
 
     Example:
     [2, 3, -2, 4] → 6 (subarray [2, 3])
@@ -253,7 +206,7 @@ def max_product(arr: list[int]) -> int:
 
 ### Why Track Min?
 
-```
+```text
 arr = [2, -3, -4]
 
 i=0: max=2, min=2, result=2
@@ -292,12 +245,8 @@ def max_circular_subarray(arr: list[int]) -> int:
     1. Normal max subarray (middle portion)
     2. Total - min subarray (wrapping around)
 
-    Time: O(n)
-    Space: O(1)
-
-    Example:
-    [5, -3, 5] → 10 (wrap: 5 + 5)
-    [3, -1, 2, -1] → 4 (wrap: 3 + -1 + 2)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$ - helper functions do not add recursive call stack depth.
     """
     total = sum(arr)
 
@@ -335,7 +284,7 @@ def kadane_min(arr: list[int]) -> int:
 
 ### Visual: Why This Works
 
-```
+```text
 Circular array: [5, -3, 5]
 
 Normal: max contiguous = 5
@@ -357,7 +306,7 @@ total - (middle portion we DON'T take)
 ## Variation: Maximum Sum with No Adjacent Elements
 
 ### Problem: House Robber
-**Problem Statement:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+**Problem Statement:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. The only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Find the maximum money you can rob.
 
 **Why it works:**
 At each house `i`, we have two choices:
@@ -365,18 +314,16 @@ At each house `i`, we have two choices:
 2. Don't rob current house: `Total = max_sum_up_to_house_i-1`.
 This is a DP problem where we only need the last two states (`prev1` and `prev2`) to calculate the current maximum, similar to the space-optimized Kadane's.
 
+**Mental Model:** Imagine having to clear items from a conveyor belt, but taking one item triggers a temporary alarm preventing you from taking the immediate next item. You have to evaluate if the current item is worth more than the adjacent one you'd have to skip.
+
 ```python
 def max_sum_no_adjacent(arr: list[int]) -> int:
     """
     Maximum sum where no two elements are adjacent.
     (House Robber problem)
 
-    Time: O(n)
-    Space: O(1)
-
-    Example:
-    [2, 7, 9, 3, 1] → 12 (2 + 9 + 1)
-    [1, 2, 3, 1] → 4 (1 + 3)
+    Time Complexity: $\Theta(n)$
+    Space Complexity: $\Theta(1)$ - DP optimized to two variables.
     """
     if not arr:
         return 0
@@ -406,15 +353,15 @@ We can convert this 2D problem into 1D Kadane's.
 1. We pick a pair of columns `(L, R)`.
 2. We "compress" all columns between `L` and `R` into a single 1D array where each element is the sum of a row between these columns.
 3. We run Kadane's on this 1D array to find the best set of rows for this column pair.
-4. By iterating over all column pairs (O(cols²)), we find the global maximum rectangle.
+4. By iterating over all column pairs ($\Theta(cols^2)$), we find the global maximum rectangle.
 
 ```python
 def max_sum_rectangle(matrix: list[list[int]]) -> int:
     """
     Find rectangle with maximum sum in 2D matrix.
 
-    Time: O(cols² × rows) - for each column pair, run Kadane
-    Space: O(rows)
+    Time Complexity: $\Theta(cols^2 \times rows)$ - for each column pair, run Kadane
+    Space Complexity: $\Theta(rows)$ - temp array to store row sums. No recursion used.
 
     Uses: For each pair of left/right columns,
           compress to 1D array and apply Kadane.
@@ -439,7 +386,7 @@ def max_sum_rectangle(matrix: list[list[int]]) -> int:
             current_max = kadane_max(temp)
             max_sum = max(max_sum, current_max)
 
-    return max_sum
+    return int(max_sum) if max_sum != float('-inf') else 0
 ```
 
 ---
@@ -470,7 +417,7 @@ def max_sum_rectangle(matrix: list[list[int]]) -> int:
 
 Kadane's algorithm is a space-optimized DP:
 
-```
+```text
 dp[i] = maximum subarray sum ending at index i
 
 dp[i] = max(arr[i], dp[i-1] + arr[i])
@@ -499,11 +446,12 @@ Space optimization: only need dp[i-1] → single variable
 
 ## Key Takeaways
 
-1. **At each position**: extend or start fresh
-2. **Track running sum** and reset when it becomes negative
-3. **For products**: track both max and min (negatives flip)
-4. **For circular**: max(normal, total - min)
-5. **Space-optimized DP**: only need previous state
+1. **At each position**: extend or start fresh.
+2. **Track running sum** and reset when it becomes negative.
+3. **For products**: track both max and min (negatives flip).
+4. **For circular**: `max(normal, total - min)`.
+5. **Space-optimized DP**: only need previous state.
+6. **Time/Space**: Always $\Theta(n)$ time and $\Theta(1)$ space for the standard 1D form.
 
 ---
 
