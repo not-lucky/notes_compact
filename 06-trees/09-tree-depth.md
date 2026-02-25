@@ -47,12 +47,12 @@ Balanced (good):          Unbalanced (bad):
   4  5 6  7                        3
                                     \
 Height = 2                           4
-Operations = O(log n)
-                                Height = 3 (approaching n)
-                                Operations = O(n) worst case
+Operations = $\mathcal{O}(\log N)$
+                                Height = 3 (approaching $N$)
+                                Operations = $\mathcal{O}(N)$ worst case
 ```
 
-A balanced tree guarantees O(log n) operations because height is logarithmic in node count.
+A balanced tree guarantees $\mathcal{O}(\log N)$ operations because height is logarithmic in node count.
 
 ---
 
@@ -581,7 +581,7 @@ root = TreeNode(1)
 # → max_depth = 3, min_depth = 3, is_balanced = False
 
 # 4. Perfect binary tree
-# → max_depth = min_depth = log(n+1)
+# → max_depth = min_depth = $\mathcal{O}(\log(N+1))$
 ```
 
 ---
@@ -614,7 +614,7 @@ root = TreeNode(1)
 1. **Max depth = 1 + max(left, right)**: Simple recursion
 2. **Min depth needs leaf check**: Don't count null children
 3. **BFS for min depth**: Stops at first leaf found
-4. **Balanced in O(n)**: Use -1 sentinel or tuple return
+4. **Balanced in $\Theta(N)$**: Use -1 sentinel or tuple return
 5. **Complete tree tricks**: Binary search on last level
 
 ---
