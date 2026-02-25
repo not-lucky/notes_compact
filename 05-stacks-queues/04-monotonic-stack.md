@@ -4,7 +4,7 @@
 
 ## Overview
 
-A monotonic stack is a stack that maintains elements in sorted order (all increasing or all decreasing) from bottom to top. When pushing a new element, we pop all elements that violate the monotonic property. This simple modification transforms a basic stack into a powerful tool for solving "next greater/smaller element" problems in O(n) time.
+A monotonic stack is a stack that maintains elements in sorted order (all increasing or all decreasing) from bottom to top. When pushing a new element, we pop all elements that violate the monotonic property. This simple modification transforms a basic stack into a powerful tool for solving "next greater/smaller element" problems in $\mathcal{O}(n)$ time.
 
 ## Building Intuition
 
@@ -42,7 +42,7 @@ i=5: 3 > 2, pop   stack: [6]        → 2's answer is 3
 Elements left (6, 3) have no next greater.
 ```
 
-**Why O(n)?**: Each element is pushed exactly once and popped at most once. Even though we have nested loops, the total number of operations is bounded by 2n.
+**Why $\mathcal{O}(n)$?**: Each element is pushed exactly once and popped at most once. Even though we have nested loops, the total number of operations is bounded by $2n$.
 
 **Mental Model**: Think of people standing in a line by height (decreasing from left). When a tall person joins at the right, all shorter people in front of them "see" the tall person as their "next taller person to the right" and can leave the line. Only people taller than the new person stay.
 
@@ -70,7 +70,7 @@ Monotonic stacks are the wrong choice when:
 
 Monotonic stacks are a **high-value interview pattern** at FANG+ companies because:
 
-1. **Elegant O(n) solutions**: Solve "next greater/smaller" problems efficiently
+1. **Elegant $\mathcal{O}(n)$ solutions**: Solve "next greater/smaller" problems efficiently
 2. **Common but tricky**: Tests algorithmic thinking beyond basic data structures
 3. **Many variations**: Daily temperatures, stock spans, histogram problems
 4. **Not obvious**: Candidates who know this pattern stand out
@@ -145,8 +145,8 @@ def next_greater_element(nums: list[int]) -> list[int]:
     """
     Find next greater element for each position.
 
-    Time: O(n) - each element pushed and popped at most once
-    Space: O(n) - for stack and result
+    Time: $\mathcal{O}(n)$ - each element pushed and popped at most once
+    Space: $\mathcal{O}(n)$ - for stack and result
 
     Example:
     nums = [2, 1, 2, 4, 3]
@@ -190,8 +190,8 @@ def next_greater_circular(nums: list[int]) -> list[int]:
 
     LeetCode 503: Next Greater Element II
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     n = len(nums)
     result = [-1] * n
@@ -225,8 +225,8 @@ def daily_temperatures(temperatures: list[int]) -> list[int]:
 
     LeetCode 739: Daily Temperatures
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     n = len(temperatures)
     result = [0] * n
@@ -258,8 +258,8 @@ def stock_span(prices: list[int]) -> list[int]:
 
     LeetCode 901: Online Stock Span
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     n = len(prices)
     result = []
@@ -294,7 +294,7 @@ class StockSpanner:
     """
     Online stock span calculator.
 
-    Each price() call is O(1) amortized.
+    Each `price()` call is $\mathcal{O}(1)$ amortized.
     """
     def __init__(self):
         self.stack = []  # (price, span)
@@ -318,8 +318,8 @@ def previous_smaller_element(nums: list[int]) -> list[int]:
 
     Uses monotonic INCREASING stack.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     n = len(nums)
     result = [-1] * n
@@ -358,8 +358,8 @@ def sum_of_subarray_mins(arr: list[int]) -> int:
     For each element, count subarrays where it's the minimum.
     Contribution = arr[i] * left_count * right_count
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(n)$
+    Space: $\mathcal{O}(n)$
     """
     MOD = 10**9 + 7
     n = len(arr)
@@ -462,10 +462,10 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
 
 | Operation               | Time | Space |
 | ----------------------- | ---- | ----- |
-| Build monotonic stack   | O(n) | O(n)  |
-| Per element (amortized) | O(1) | -     |
+| Build monotonic stack   | $\mathcal{O}(n)$ | $\mathcal{O}(n)$  |
+| Per element (amortized) | $\mathcal{O}(1)$ | -     |
 
-**Why O(n)?** Each element is pushed exactly once and popped at most once. Total operations = 2n = O(n).
+**Why $\mathcal{O}(n)$?** Each element is pushed exactly once and popped at most once. Total operations = $2n = \mathcal{O}(n)$.
 
 ---
 
@@ -497,7 +497,7 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
 
 ## Key Takeaways
 
-1. **O(n) magic**: Each element is pushed/popped at most once
+1. **$\mathcal{O}(n)$ magic**: Each element is pushed/popped at most once
 2. **Decreasing for greater**: Monotonic decreasing finds next greater
 3. **Increasing for smaller**: Monotonic increasing finds next smaller
 4. **Store indices**: Usually more useful than values (can compute distances)
