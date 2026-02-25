@@ -4,7 +4,7 @@
 
 ## Overview
 
-A linked list is a fundamental linear data structure where elements are stored in nodes connected by pointers. Unlike arrays, nodes can be scattered throughout memory, making insertions and deletions O(1) at known positions, but requiring O(n) traversal for access.
+A linked list is a fundamental linear data structure where elements are stored in nodes connected by pointers. Unlike arrays, nodes can be scattered throughout memory, making insertions and deletions $\Theta(1)$ at known positions, but requiring $\Theta(n)$ traversal for access.
 
 ## Building Intuition
 
@@ -19,17 +19,17 @@ Think of the difference between a train and a marching band:
 **The Core Trade-off**:
 
 ```
-Arrays:   Fast access (O(1)) | Slow insert/delete at middle (O(n))
-Linked:   Slow access (O(n)) | Fast insert/delete at known position (O(1))
+Arrays:   Fast access ($\Theta(1)$) | Slow insert/delete at middle ($\Theta(n)$)
+Linked:   Slow access ($\Theta(n)$) | Fast insert/delete at known position ($\Theta(1)$)
 ```
 
-**Why O(1) insertion is a big deal**: In arrays, inserting at position i requires shifting all n-i elements. With linked lists, you just update 2 pointers, regardless of list size. This matters enormously for:
+**Why $\Theta(1)$ insertion is a big deal**: In arrays, inserting at position i requires shifting all n-i elements. With linked lists, you just update 2 pointers, regardless of list size. This matters enormously for:
 
 - Implementing stacks/queues (constant-time push/pop)
 - LRU caches (move recently used items to front)
-- Real-time systems where worst-case matters
+- Real-time systems where worst-case matters (predictable latency, unlike array resizing)
 
-**The Hidden Cost**: That O(1) insertion comes with a catch—you need a reference to the insertion point first. Finding that point is O(n), so "insert at position k" is still O(n) overall. The win is when you already have the reference (like maintaining a "current" pointer as you traverse).
+**The Hidden Cost**: That $\Theta(1)$ insertion comes with a catch—you need a reference to the insertion point first. Finding that point is $\Theta(n)$, so "insert at position k" is still $\Theta(n)$ overall. The win is when you already have the reference (like maintaining a "current" pointer as you traverse, or having a hash map that maps keys directly to list nodes, as in an LRU cache).
 
 **Mental Model for Pointers**: Think of `.next` as an arrow drawn on a post-it note. The arrow points to another post-it, not to a position. When you "update a pointer," you're erasing an arrow and drawing a new one. The post-it it used to point to still exists—it just became unreachable if nothing else points to it.
 
@@ -37,11 +37,11 @@ Linked:   Slow access (O(n)) | Fast insert/delete at known position (O(1))
 
 Linked lists are often the wrong choice:
 
-1. **Random Access Needed**: If you frequently access elements by index (`arr[i]`), arrays are O(1) vs linked lists O(n). Example: binary search requires random access.
+1. **Random Access Needed**: If you frequently access elements by index (`arr[i]`), arrays are $\Theta(1)$ vs linked lists $\Theta(n)$. Example: binary search requires random access.
 
-2. **Memory is Constrained**: Each node carries pointer overhead (8 bytes per pointer on 64-bit systems). A list of 1-byte values uses 9x more memory than an array.
+2. **Memory is Constrained**: Each node carries pointer overhead (8 bytes per pointer on 64-bit systems). A list of 1-byte values uses 9x more memory than an array. Worse, nodes allocated individually cause memory fragmentation.
 
-3. **Cache Performance Matters**: Arrays are cache-friendly (sequential memory). Linked lists cause cache misses (scattered memory). In practice, iterating an array is 10-100x faster than an equivalent linked list due to prefetching.
+3. **Cache Performance Matters**: Arrays are cache-friendly (sequential memory). Linked lists cause cache misses (scattered memory). CPU caches load memory in contiguous blocks (cache lines). In practice, iterating an array is 10-100x faster than an equivalent linked list due to hardware prefetching and cache hits.
 
 4. **Parallelism is Required**: Linked lists are hard to parallelize. You can't easily split a linked list into chunks without traversing it first.
 
@@ -139,8 +139,8 @@ def create_linked_list(values: List[int]) -> Optional[ListNode]:
     """
     Create linked list from array of values.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\Theta(n)$
+    Space: $\Theta(n)$
     """
     if not values:
         return None
@@ -167,8 +167,8 @@ def traverse(head: Optional[ListNode]) -> List[int]:
     """
     Traverse and collect all values.
 
-    Time: O(n)
-    Space: O(n) for result, O(1) for traversal itself
+    Time: $\Theta(n)$
+    Space: $\Theta(n)$ for result, $\Theta(1)$ for traversal itself
     """
     result = []
     current = head
@@ -199,8 +199,8 @@ def get_length(head: Optional[ListNode]) -> int:
     """
     Get the length of linked list.
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     length = 0
     current = head
@@ -219,8 +219,8 @@ def search(head: Optional[ListNode], target: int) -> Optional[ListNode]:
     """
     Find node with target value.
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     current = head
 
@@ -243,8 +243,8 @@ def insert_at_head(head: Optional[ListNode], val: int) -> ListNode:
     """
     Insert new node at the beginning.
 
-    Time: O(1)
-    Space: O(1)
+    Time: $\Theta(1)$
+    Space: $\Theta(1)$
     """
     new_node = ListNode(val)
     new_node.next = head
@@ -263,8 +263,8 @@ def insert_at_tail(head: Optional[ListNode], val: int) -> ListNode:
     """
     Insert new node at the end.
 
-    Time: O(n) - must traverse to find tail
-    Space: O(1)
+    Time: $\Theta(n)$ - must traverse to find tail
+    Space: $\Theta(1)$
     """
     new_node = ListNode(val)
 
@@ -286,8 +286,8 @@ def insert_at_position(head: Optional[ListNode], val: int, position: int) -> Lis
     """
     Insert new node at given position (0-indexed).
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     new_node = ListNode(val)
 
@@ -324,8 +324,8 @@ def delete_at_head(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Delete the first node.
 
-    Time: O(1)
-    Space: O(1)
+    Time: $\Theta(1)$
+    Space: $\Theta(1)$
     """
     if not head:
         return None
@@ -340,8 +340,8 @@ def delete_at_tail(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Delete the last node.
 
-    Time: O(n) - must find second-to-last
-    Space: O(1)
+    Time: $\Theta(n)$ - must find second-to-last
+    Space: $\Theta(1)$
     """
     if not head or not head.next:
         return None
@@ -361,8 +361,8 @@ def delete_by_value(head: Optional[ListNode], val: int) -> Optional[ListNode]:
     """
     Delete first node with given value.
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     # Handle head deletion
     if head and head.val == val:
@@ -388,8 +388,8 @@ def delete_node(node: Optional[ListNode]) -> None:
 
     LeetCode 237: Delete Node in a Linked List
 
-    Time: O(1)
-    Space: O(1)
+    Time: $\Theta(1)$
+    Space: $\Theta(1)$
     """
     if not node or not node.next:
         return # Can't delete the tail this way
@@ -405,18 +405,18 @@ def delete_node(node: Optional[ListNode]) -> None:
 
 | Operation          | Time Complexity | Space Complexity |
 | ------------------ | --------------- | ---------------- |
-| Create from array  | O(n)            | O(n)             |
-| Traverse           | O(n)            | O(1)             |
-| Search             | O(n)            | O(1)             |
-| Get length         | O(n)            | O(1)             |
-| Insert at head     | O(1)            | O(1)             |
-| Insert at tail     | O(n)*           | O(1)             |
-| Insert at position | O(n)            | O(1)             |
-| Delete at head     | O(1)            | O(1)             |
-| Delete at tail     | O(n)*           | O(1)             |
-| Delete by value    | O(n)            | O(1)             |
+| Create from array  | $\Theta(n)$            | $\Theta(n)$             |
+| Traverse           | $\Theta(n)$            | $\Theta(1)$             |
+| Search             | $\Theta(n)$            | $\Theta(1)$             |
+| Get length         | $\Theta(n)$            | $\Theta(1)$             |
+| Insert at head     | $\Theta(1)$            | $\Theta(1)$             |
+| Insert at tail     | $\Theta(n)$*           | $\Theta(1)$             |
+| Insert at position | $\Theta(n)$            | $\Theta(1)$             |
+| Delete at head     | $\Theta(1)$            | $\Theta(1)$             |
+| Delete at tail     | $\Theta(n)$*           | $\Theta(1)$             |
+| Delete by value    | $\Theta(n)$            | $\Theta(1)$             |
 
-* O(1) time if you maintain a tail pointer, but O(n) if you only have a head pointer.
+* $\Theta(1)$ time if you maintain a tail pointer, but $\Theta(n)$ if you only have a head pointer.
 
 ---
 
@@ -521,8 +521,8 @@ def debug_list(head: Optional[ListNode], max_nodes: int = 100) -> None:
 ## Key Takeaways
 
 1. **Nodes contain data and pointer(s)** - singly linked has `.next`, doubly has `.prev` and `.next`
-2. **No random access** - must traverse from head, O(n) for access by index
-3. **O(1) insertions at head** - major advantage over arrays
+2. **No random access** - must traverse from head, $\Theta(n)$ for access by index
+3. **$\Theta(1)$ insertions at head** - major advantage over arrays
 4. **Track previous node** for deletions (or use dummy node)
 5. **Always check for None** before accessing `.next`
 6. **Dummy nodes simplify edge cases** (covered in detail later)

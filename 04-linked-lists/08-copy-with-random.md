@@ -173,8 +173,8 @@ def copy_random_list_hashmap(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using HashMap.
 
-    Time: $O(n)$
-    Space: $O(n)$ for the hashmap
+    Time Complexity: $O(n)$
+    Space Complexity: $O(n)$ for the hashmap
     """
     if not head:
         return None
@@ -238,8 +238,8 @@ def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
     Deep copy using HashMap in single pass.
     Uses getOrCreate pattern.
 
-    Time: $O(n)$
-    Space: $O(n)$
+    Time Complexity: $O(n)$
+    Space Complexity: $O(n)$
     """
     if not head:
         return None
@@ -278,8 +278,8 @@ def copy_random_list(head: Optional[Node]) -> Optional[Node]:
 
     LeetCode 138: Copy List with Random Pointer
 
-    Time: $O(n)$
-    Space: $O(1)$ - no hashmap needed
+    Time Complexity: $O(n)$
+    Space Complexity: $O(1)$ - no hashmap needed
     """
     if not head:
         return None
@@ -379,13 +379,13 @@ current = None
 
 ## Complexity Comparison
 
-| Approach              | Time | Space  |
-| --------------------- | ---- | ------ |
-| HashMap (two pass)    | $O(n)$ | $O(n)$   |
-| HashMap (single pass) | $O(n)$ | $O(n)$   |
-| Interleaving          | $O(n)$ | $O(1)$\* |
+| Approach              | Time Complexity | Space Complexity |
+| --------------------- | --------------- | ---------------- |
+| HashMap (two pass)    | $O(n)$            | $O(n)$             |
+| HashMap (single pass) | $O(n)$            | $O(n)$             |
+| Interleaving          | $O(n)$            | $O(1)$*            |
 
-\*$O(1)$ extra space (the copied list itself is $O(n)$ but that's required output)
+\*$O(1)$ extra space (the copied list itself is $O(n)$ but that is required for the output and typically not counted against the space complexity of the algorithm).
 
 ---
 
@@ -505,8 +505,8 @@ def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
     """
     Clone an undirected graph using DFS + HashMap.
 
-    Time: $O(V + E)$
-    Space: $O(V)$
+    Time Complexity: $O(V + E)$ where V is number of vertices and E is number of edges
+    Space Complexity: $O(V)$ for the recursion stack and hashmap
     """
     if not node:
         return None

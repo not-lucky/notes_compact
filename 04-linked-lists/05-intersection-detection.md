@@ -127,8 +127,8 @@ def get_intersection_node_hashset(headA: Optional[ListNode], headB: Optional[Lis
     """
     Find intersection using hash set.
 
-    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
-    Space: $O(n)$ or $O(m)$ - store one list's nodes
+    Time Complexity: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space Complexity: $O(n)$ or $O(m)$ - store one list's nodes
     """
     # Store all nodes from list A
     seen = set()
@@ -160,8 +160,8 @@ def get_intersection_node(headA: Optional[ListNode], headB: Optional[ListNode]) 
 
     LeetCode 160: Intersection of Two Linked Lists
 
-    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
-    Space: $O(1)$ auxiliary
+    Time Complexity: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space Complexity: $O(1)$ auxiliary
     """
     if not headA or not headB:
         return None
@@ -228,8 +228,8 @@ def get_intersection_node_length(headA: Optional[ListNode], headB: Optional[List
     """
     Find intersection by aligning list lengths.
 
-    Time: $O(n + m)$ where $n, m$ are lengths of list A and B
-    Space: $O(1)$ auxiliary
+    Time Complexity: $O(n + m)$ where $n, m$ are lengths of list A and B
+    Space Complexity: $O(1)$ auxiliary
     """
     def get_length(head: Optional[ListNode]) -> int:
         length = 0

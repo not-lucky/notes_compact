@@ -111,10 +111,10 @@ Two dummies let you build two separate lists, then join them seamlessly.
 
 The dummy node (also called sentinel node) technique is a **critical pattern** because:
 
-1. **Eliminates edge cases**: No special handling for head modifications
-2. **Cleaner code**: Fewer conditionals, less room for bugs
-3. **Universal applicability**: Works for insert, delete, merge, partition, etc.
-4. **Interview expectation**: Interviewers expect you to use this when appropriate
+1. **Eliminates Edge Cases**: No special handling for head modifications
+2. **Cleaner Code**: Fewer conditionals, less room for bugs
+3. **Universal Applicability**: Works for insert, delete, merge, partition, etc.
+4. **Interview Expectation**: Interviewers expect you to use this when appropriate
 
 Using dummy nodes shows maturity in handling linked list problems.
 
@@ -149,13 +149,18 @@ With dummy:
 from typing import Optional
 
 # Define ListNode since we use it in the examples
-# class ListNode:
-#     def __init__(self, val=0, next=None):
-#         self.val = val
-#         self.next = next
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 def remove_elements_no_dummy(head: Optional[ListNode], val: int) -> Optional[ListNode]:
-    """Remove all nodes with given value (without dummy)."""
+    """
+    Remove all nodes with given value (without dummy).
+
+    Time: $O(n)$
+    Space: $O(1)$
+    """
     # Handle head deletions separately
     while head and head.val == val:
         head = head.next
@@ -245,6 +250,8 @@ def insert_at_position(head: Optional[ListNode], val: int, position: int) -> Opt
     current = dummy
 
     # Traverse to position
+    # E.g., for position=0, loop won't execute, current stays at dummy.
+    # We will insert immediately after dummy, which is the new head.
     for _ in range(position):
         if not current.next:
             break
@@ -258,7 +265,14 @@ def insert_at_position(head: Optional[ListNode], val: int, position: int) -> Opt
     return dummy.next
 ```
 
-Without dummy, inserting at position 0 would require special handling.
+Without dummy, inserting at position 0 would require special handling:
+```python
+if position == 0:
+    new_node = ListNode(val)
+    new_node.next = head
+    return new_node
+# ... proceed with traversal for position > 0
+```
 
 ---
 
@@ -517,6 +531,15 @@ def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional
 ## Edge Cases
 
 ```python
+# Helper to create lists for examples
+def create_linked_list(vals: list[int]) -> Optional[ListNode]:
+    dummy = ListNode(0)
+    curr = dummy
+    for v in vals:
+        curr.next = ListNode(v)
+        curr = curr.next
+    return dummy.next
+
 # 1. Empty list
 head = None
 dummy = ListNode(0)
@@ -532,7 +555,7 @@ remove_elements(ListNode(1), 1)
 # Returns None via dummy.next
 
 # 4. All nodes deleted
-remove_elements(create_linked_list([1,1,1]), 1)
+remove_elements(create_linked_list([1, 1, 1]), 1)
 # Returns None via dummy.next
 ```
 
@@ -554,8 +577,15 @@ return dummy.next
 # Two dummies for partitioning
 dummy1 = ListNode(0)
 dummy2 = ListNode(0)
+dummy1_tail = dummy1
+dummy2_tail = dummy2
+
 # ... separate nodes into two lists ...
+# dummy1_tail.next = node1
+# dummy2_tail.next = node2
+
 # Connect if needed
+dummy2_tail.next = None # Prevent cycle
 dummy1_tail.next = dummy2.next
 return dummy1.next
 ```

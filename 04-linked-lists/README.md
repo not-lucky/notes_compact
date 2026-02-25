@@ -5,10 +5,10 @@
 Linked lists are a **fundamental interview topic** at FANG+ companies because:
 
 1. **Pointer manipulation**: Tests your ability to handle references and memory
-2. **In-place modifications**: Many problems require $O(1)$ space solutions
+2. **In-place modifications**: Many problems require $\Theta(1)$ space solutions
 3. **Edge case handling**: Empty lists, single nodes, cycles expose coding discipline
 4. **Pattern versatility**: Fast-slow pointers, reversal, and merge patterns appear repeatedly
-5. **Follow-up complexity**: "Can you do it in one pass?" or "with $O(1)$ space?"
+5. **Follow-up complexity**: "Can you do it in one pass?" or "with $\Theta(1)$ space?"
 
 At FANG+ companies, linked list problems are often used as warm-up or to test fundamental CS knowledge.
 
@@ -99,15 +99,15 @@ This is the standard definition used in LeetCode and most interviews.
 
 | Operation          | Singly Linked | Doubly Linked | Array          |
 | ------------------ | ------------- | ------------- | -------------- |
-| Access by index    | $O(n)$          | $O(n)$          | $O(1)$           |
-| Insert at head     | $O(1)$          | $O(1)$          | $O(n)$           |
-| Insert at tail     | $O(n)$*        | $O(1)$**      | $O(1)$ amortized |
-| Insert at position | $O(n)$          | $O(n)$          | $O(n)$           |
-| Delete at head     | $O(1)$          | $O(1)$          | $O(n)$           |
-| Search             | $O(n)$          | $O(n)$          | $O(n)$           |
+| Access by index    | $\Theta(n)$        | $\Theta(n)$        | $\Theta(1)$        |
+| Insert at head     | $\Theta(1)$        | $\Theta(1)$        | $\Theta(n)$        |
+| Insert at tail     | $\Theta(n)$*       | $\Theta(1)$**      | $\Theta(1)$ amortized |
+| Insert at position | $\Theta(n)$        | $\Theta(n)$        | $\Theta(n)$        |
+| Delete at head     | $\Theta(1)$        | $\Theta(1)$        | $\Theta(n)$        |
+| Search             | $\Theta(n)$        | $\Theta(n)$        | $\Theta(n)$        |
 
-\*$O(1)$ if tail pointer maintained
-\*\*$O(1)$ if tail pointer maintained
+\*$\Theta(1)$ if tail pointer maintained
+\*\*$\Theta(1)$ if tail pointer maintained
 
 ---
 

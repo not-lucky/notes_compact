@@ -4,7 +4,7 @@
 
 ## Overview
 
-The fast-slow pointer technique (tortoise and hare) uses two pointers moving at different speeds to solve linked list problems in O(1) space. It's the key to cycle detection, finding midpoints, and locating elements relative to the end—all without knowing the list length upfront.
+The fast-slow pointer technique (tortoise and hare) uses two pointers moving at different speeds to solve linked list problems in $\Theta(1)$ space. It's the key to cycle detection, finding midpoints, and locating elements relative to the end—all without knowing the list length upfront.
 
 ## Building Intuition
 
@@ -18,7 +18,7 @@ The fast-slow pointer technique (tortoise and hare) uses two pointers moving at 
    - For midpoint: fast at end → slow at middle
    - For nth from end: create a gap of n, then move together
 
-**Why O(1) Space?**: We only use two pointers, no matter the list size. Alternatives like "convert to array then analyze" use O(n) space.
+**Why $\Theta(1)$ Space?**: We only use two pointers, no matter the list size. Alternatives like "convert to array then analyze" use $\Theta(n)$ space.
 
 **The Cycle Detection Proof** (simplified):
 
