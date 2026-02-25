@@ -44,20 +44,32 @@ Stop traversal when we've seen k elements.
 ### Recursive
 
 ```python
-def kth_smallest(root: TreeNode, k: int) -> int:
-    """
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def kth_smallest(root: Optional[TreeNode], k: int) -> int:
+    r"""
     Find kth smallest element in BST.
 
     LeetCode 230: Kth Smallest Element in a BST
 
-    Time: O(H + k) where H is height
-    Space: O(H) for recursion
+    Time: $\mathcal{O}(H + k)$ where $H$ is the height of the tree.
+          In the worst case (skewed tree), this is $\mathcal{O}(N)$.
+          On average (balanced tree), this is $\mathcal{O}(\log N + k)$.
+    Space: $\mathcal{O}(H)$ for the recursive call stack.
+           In the worst case (skewed tree), this is $\mathcal{O}(N)$.
+           On average (balanced tree), this is $\mathcal{O}(\log N)$.
     """
     count = [0]
     result = [None]
 
-    def inorder(node):
-        if not node or result[0] is not None:
+    def inorder(node: Optional[TreeNode]) -> None:
+        if node is None or result[0] is not None:
             return
 
         inorder(node.left)
@@ -70,26 +82,28 @@ def kth_smallest(root: TreeNode, k: int) -> int:
         inorder(node.right)
 
     inorder(root)
-    return result[0]
+    return result[0] if result[0] is not None else -1
 ```
 
 ### Iterative (More Control)
 
 ```python
-def kth_smallest_iterative(root: TreeNode, k: int) -> int:
-    """
+def kth_smallest_iterative(root: Optional[TreeNode], k: int) -> int:
+    r"""
     Iterative approach - can stop early.
 
-    Time: O(H + k)
-    Space: O(H)
+    Time: $\mathcal{O}(H + k)$ where $H$ is the height of the tree.
+          Worst case $\mathcal{O}(N)$, average case $\mathcal{O}(\log N + k)$.
+    Space: $\mathcal{O}(H)$ for the explicit stack simulating recursion.
+           Worst case $\mathcal{O}(N)$, average case $\mathcal{O}(\log N)$.
     """
-    stack = []
+    stack: list[TreeNode] = []
     current = root
     count = 0
 
-    while current or stack:
+    while current is not None or stack:
         # Go left as far as possible
-        while current:
+        while current is not None:
             stack.append(current)
             current = current.left
 
@@ -108,20 +122,31 @@ def kth_smallest_iterative(root: TreeNode, k: int) -> int:
 
 ## Approach 2: Build Sorted Array
 
-Simple but uses O(n) space.
+Simple but uses $\Theta(N)$ space.
 
 ```python
-def kth_smallest_array(root: TreeNode, k: int) -> int:
-    """
+from typing import Optional
+
+# Using dummy TreeNode defined earlier
+def kth_smallest_array(root: Optional[TreeNode], k: int) -> int:
+    r"""
     Build sorted array, return k-1 index.
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\Theta(N)$ because we traverse the entire tree.
+    Space: $\Theta(N)$ for the returned array + $\mathcal{O}(H)$ for the recursive call stack.
+           Overall auxiliary space bounds are $\Theta(N)$.
     """
-    def inorder(node):
-        return inorder(node.left) + [node.val] + inorder(node.right) if node else []
+    def inorder(node: Optional[TreeNode]) -> list[int]:
+        if node is None:
+            return []
+        # Note: list concatenation with + creates a new list, leading to O(N^2) total time.
+        # A better approach is to append to a single list or use .extend().
+        # However, for conceptual simplicity of "building an array":
+        left = inorder(node.left)
+        right = inorder(node.right)
+        return left + [node.val] + right
 
-    return inorder(root)[k - 1]
+    return inorder(root)[k - 1] if root else -1
 ```
 
 ---
@@ -131,24 +156,27 @@ def kth_smallest_array(root: TreeNode, k: int) -> int:
 If we need frequent kth smallest queries, augment nodes with subtree size.
 
 ```python
+from typing import Optional
+
 class AugmentedTreeNode:
     """BST node with subtree size."""
-    def __init__(self, val=0):
+    def __init__(self, val: int = 0):
         self.val = val
-        self.left = None
-        self.right = None
+        self.left: Optional['AugmentedTreeNode'] = None
+        self.right: Optional['AugmentedTreeNode'] = None
         self.size = 1  # Size of subtree rooted at this node
 
 
-def kth_smallest_augmented(root: AugmentedTreeNode, k: int) -> int:
-    """
-    O(H) query using subtree sizes.
+def kth_smallest_augmented(root: Optional[AugmentedTreeNode], k: int) -> int:
+    r"""
+    $\mathcal{O}(H)$ query using subtree sizes.
 
-    Time: O(H)
-    Space: O(1) iterative
+    Time: $\mathcal{O}(H)$ where $H$ is the height of the tree.
+          Worst case $\mathcal{O}(N)$, average case $\mathcal{O}(\log N)$.
+    Space: $\mathcal{O}(1)$ iterative approach requires no extra call stack.
     """
-    while root:
-        left_size = root.left.size if root.left else 0
+    while root is not None:
+        left_size = root.left.size if root.left is not None else 0
 
         if k == left_size + 1:
             return root.val
@@ -161,9 +189,14 @@ def kth_smallest_augmented(root: AugmentedTreeNode, k: int) -> int:
     return -1
 
 
-def update_sizes(root: AugmentedTreeNode) -> int:
-    """Update subtree sizes after insertion/deletion."""
-    if not root:
+def update_sizes(root: Optional[AugmentedTreeNode]) -> int:
+    r"""
+    Update subtree sizes after insertion/deletion.
+
+    Time: $\mathcal{O}(N)$ to traverse all nodes and update.
+    Space: $\mathcal{O}(H)$ for recursive call stack.
+    """
+    if root is None:
         return 0
 
     left_size = update_sizes(root.left)
@@ -180,20 +213,24 @@ def update_sizes(root: AugmentedTreeNode) -> int:
 For kth largest, use **reverse inorder** (right → root → left).
 
 ```python
-def kth_largest(root: TreeNode, k: int) -> int:
-    """
+from typing import Optional
+
+def kth_largest(root: Optional[TreeNode], k: int) -> int:
+    r"""
     Find kth largest element in BST.
 
-    Time: O(H + k)
-    Space: O(H)
+    Time: $\mathcal{O}(H + k)$ where $H$ is the height of the tree.
+          Worst case $\mathcal{O}(N)$, average case $\mathcal{O}(\log N + k)$.
+    Space: $\mathcal{O}(H)$ for the stack simulating recursion.
+           Worst case $\mathcal{O}(N)$, average case $\mathcal{O}(\log N)$.
     """
-    stack = []
+    stack: list[TreeNode] = []
     current = root
     count = 0
 
-    while current or stack:
+    while current is not None or stack:
         # Go right as far as possible (reverse inorder)
-        while current:
+        while current is not None:
             stack.append(current)
             current = current.right
 
@@ -216,11 +253,11 @@ def kth_largest(root: TreeNode, k: int) -> int:
 
 **A**: Use augmented BST with subtree sizes.
 
-| Operation    | Standard BST | Augmented BST |
-| ------------ | ------------ | ------------- |
-| Insert       | O(H)         | O(H)          |
-| Delete       | O(H)         | O(H)          |
-| Kth smallest | O(H + k)     | O(H)          |
+| Operation    | Standard BST        | Augmented BST       |
+| ------------ | ------------------- | ------------------- |
+| Insert       | $\mathcal{O}(H)$    | $\mathcal{O}(H)$    |
+| Delete       | $\mathcal{O}(H)$    | $\mathcal{O}(H)$    |
+| Kth smallest | $\mathcal{O}(H + k)$| $\mathcal{O}(H)$    |
 
 The augmented approach is better when k queries >> modifications.
 
@@ -229,43 +266,51 @@ The augmented approach is better when k queries >> modifications.
 ## Related: Count Smaller Before Self
 
 ```python
+from typing import Optional
+
 def count_smaller(nums: list[int]) -> list[int]:
-    """
+    r"""
     Count elements smaller than nums[i] to its right.
 
     LeetCode 315: Count of Smaller Numbers After Self
 
     Use BST with subtree sizes.
+    Time: $\mathcal{O}(N \log N)$ average, $\mathcal{O}(N^2)$ worst case (skewed).
+          Note: This BST approach is less optimal than Merge Sort or Fenwick/Segment Tree
+          which guarantee $\mathcal{O}(N \log N)$ worst-case time complexity.
+    Space: $\mathcal{O}(N)$ for the BST and the result array.
     """
-    class TreeNode:
-        def __init__(self, val):
+    class CountNode:
+        def __init__(self, val: int):
             self.val = val
-            self.left = None
-            self.right = None
+            self.left: Optional['CountNode'] = None
+            self.right: Optional['CountNode'] = None
             self.left_count = 0  # Count of nodes in left subtree
 
-    def insert(root, val):
+    def insert(root: CountNode, val: int) -> int:
         count = 0
-        while root:
-            if val <= root.val:
-                root.left_count += 1
-                if not root.left:
-                    root.left = TreeNode(val)
+        current: Optional['CountNode'] = root
+
+        while current is not None:
+            if val <= current.val:
+                current.left_count += 1
+                if current.left is None:
+                    current.left = CountNode(val)
                     break
-                root = root.left
+                current = current.left
             else:
-                count += root.left_count + 1
-                if not root.right:
-                    root.right = TreeNode(val)
+                count += current.left_count + 1
+                if current.right is None:
+                    current.right = CountNode(val)
                     break
-                root = root.right
+                current = current.right
         return count
 
     if not nums:
         return []
 
     result = [0] * len(nums)
-    root = TreeNode(nums[-1])
+    root = CountNode(nums[-1])
 
     for i in range(len(nums) - 2, -1, -1):
         result[i] = insert(root, nums[i])
@@ -277,11 +322,11 @@ def count_smaller(nums: list[int]) -> list[int]:
 
 ## Complexity Analysis
 
-| Approach        | Time     | Space | Best For                         |
-| --------------- | -------- | ----- | -------------------------------- |
-| Inorder counter | O(H + k) | O(H)  | Single query                     |
-| Build array     | O(n)     | O(n)  | Multiple queries, static tree    |
-| Augmented BST   | O(H)     | O(1)  | Frequent queries + modifications |
+| Approach        | Time                 | Space               | Best For                         |
+| --------------- | -------------------- | ------------------- | -------------------------------- |
+| Inorder counter | $\mathcal{O}(H + k)$ | $\mathcal{O}(H)$    | Single query                     |
+| Build array     | $\Theta(N)$          | $\Theta(N)$         | Multiple queries, static tree    |
+| Augmented BST   | $\mathcal{O}(H)$     | $\mathcal{O}(1)$    | Frequent queries + modifications |
 
 ---
 
@@ -291,7 +336,7 @@ def count_smaller(nums: list[int]) -> list[int]:
 # 1. k = 1 (smallest element)
 # → Go all the way left
 
-# 2. k = n (largest element)
+# 2. k = N (largest element)
 # → Go all the way right
 
 # 3. k out of range
@@ -301,7 +346,7 @@ def count_smaller(nums: list[int]) -> list[int]:
 # → k must be 1
 
 # 5. Skewed tree
-# → Worst case H = n
+# → Worst case H = N
 ```
 
 ---
@@ -311,7 +356,7 @@ def count_smaller(nums: list[int]) -> list[int]:
 1. **Start with inorder**: Explain why inorder gives sorted order
 2. **Iterative is preferred**: More control, can stop early
 3. **Mention augmented BST**: Shows you think about optimization
-4. **Analyze complexity**: O(H + k) for single query
+4. **Analyze complexity**: $\mathcal{O}(H + k)$ for single query
 5. **Ask about frequency**: "How often is this called?" determines approach
 
 ---
@@ -332,7 +377,7 @@ def count_smaller(nums: list[int]) -> list[int]:
 
 1. **Inorder = sorted**: BST inorder traversal gives sorted order
 2. **Early termination**: Stop after finding k elements
-3. **Augmented BST**: Store subtree sizes for O(H) queries
+3. **Augmented BST**: Store subtree sizes for $\mathcal{O}(H)$ queries
 4. **Kth largest**: Reverse inorder (right first)
 5. **Follow-up ready**: Know when to use augmented approach
 

@@ -8,7 +8,7 @@ Tree diameter is important because:
 
 1. **Classic interview problem**: Frequently asked at Google, Meta, Amazon
 2. **Pattern reuse**: Same technique applies to longest path problems
-3. **Tricky optimization**: Naive approach is O(n²), optimal is O(n)
+3. **Tricky optimization**: Naive approach is $\mathcal{O}(N^2)$, optimal is $\mathcal{O}(N)$
 4. **Tests understanding**: Requires grasping how paths combine at nodes
 
 This problem has the same pattern as "Binary Tree Maximum Path Sum".
@@ -55,11 +55,19 @@ The diameter is the maximum of these values across all nodes.
 
 ---
 
-## Solution: O(n) Single Pass
+## Solution: $\mathcal{O}(N)$ Single Pass
 
 ```python
-def diameter_of_binary_tree(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def diameter_of_binary_tree(root: Optional[TreeNode]) -> int:
+    r"""
     Calculate diameter (longest path between any two nodes).
 
     LeetCode 543: Diameter of Binary Tree
@@ -67,12 +75,13 @@ def diameter_of_binary_tree(root: TreeNode) -> int:
     At each node, calculate left_depth + right_depth.
     Track maximum across all nodes.
 
-    Time: O(n) - single DFS
-    Space: O(h) - recursion stack
+    Time Complexity: $\mathcal{O}(N)$ - single DFS traversal of all nodes.
+    Space Complexity: $\mathcal{O}(H)$ - recursion stack depth, where $H$ is the tree height.
+                      This is $\mathcal{O}(\log N)$ for a balanced tree and $\mathcal{O}(N)$ in the worst case (skewed tree).
     """
     diameter = [0]  # Use list for mutable reference in nested function
 
-    def depth(node):
+    def depth(node: Optional[TreeNode]) -> int:
         if not node:
             return 0
 
@@ -113,11 +122,16 @@ Final diameter = 3
 ## Alternative: Return Tuple
 
 ```python
-def diameter_tuple(root: TreeNode) -> int:
-    """
+from typing import Tuple, Optional
+
+def diameter_tuple(root: Optional[TreeNode]) -> int:
+    r"""
     Alternative using tuple return (diameter, depth).
+
+    Time Complexity: $\mathcal{O}(N)$
+    Space Complexity: $\mathcal{O}(H)$ for the recursive call stack.
     """
-    def dfs(node):
+    def dfs(node: Optional[TreeNode]) -> Tuple[int, int]:
         if not node:
             return 0, 0  # (max_diameter_in_subtree, depth)
 
@@ -140,19 +154,22 @@ def diameter_tuple(root: TreeNode) -> int:
 
 ---
 
-## Naive Approach: O(n²)
+## Naive Approach: $\mathcal{O}(N^2)$
 
 For comparison, here's the naive approach (don't use in interviews):
 
 ```python
-def diameter_naive(root: TreeNode) -> int:
-    """
-    Naive O(n²) approach - calculates height at each node.
+def diameter_naive(root: Optional[TreeNode]) -> int:
+    r"""
+    Naive $\mathcal{O}(N^2)$ approach - calculates height at each node.
+
+    Time Complexity: $\mathcal{O}(N^2)$ since `height` explores entire subtrees repeatedly.
+    Space Complexity: $\mathcal{O}(H)$ for the recursive call stack.
     """
     if not root:
         return 0
 
-    def height(node):
+    def height(node: Optional[TreeNode]) -> int:
         if not node:
             return 0
         return 1 + max(height(node.left), height(node.right))
@@ -172,29 +189,46 @@ def diameter_naive(root: TreeNode) -> int:
 ## Diameter of N-ary Tree
 
 ```python
-def diameter_n_ary(root: 'Node') -> int:
-    """
+from typing import List, Optional
+
+class Node:
+    def __init__(self, val: Optional[int] = None, children: Optional[List['Node']] = None):
+        self.val = val
+        self.children = children if children is not None else []
+
+def diameter_n_ary(root: Optional['Node']) -> int:
+    r"""
     Diameter of N-ary tree.
 
-    Find two deepest paths from any node.
+    Find two deepest paths from any node. By only tracking the top two lengths instead
+    of sorting the entire array of child depths, we guarantee optimal time.
+
+    Time Complexity: $\mathcal{O}(N)$ where $N$ is the number of nodes.
+                     Finding the top two items among $K$ children takes $\mathcal{O}(K)$ time.
+    Space Complexity: $\mathcal{O}(H)$ for the recursive call stack.
     """
     diameter = [0]
 
-    def dfs(node):
+    def dfs(node: Optional['Node']) -> int:
         if not node:
             return 0
 
-        # Get depths of all children
-        depths = [dfs(child) for child in node.children]
+        # Track the two longest paths from children
+        max1 = max2 = 0
 
-        if len(depths) >= 2:
-            # Two longest paths
-            depths.sort(reverse=True)
-            diameter[0] = max(diameter[0], depths[0] + depths[1])
-        elif len(depths) == 1:
-            diameter[0] = max(diameter[0], depths[0])
+        for child in node.children:
+            child_depth = dfs(child)
+            if child_depth > max1:
+                max2 = max1
+                max1 = child_depth
+            elif child_depth > max2:
+                max2 = child_depth
 
-        return 1 + (max(depths) if depths else 0)
+        # The diameter passing through this node
+        diameter[0] = max(diameter[0], max1 + max2)
+
+        # Return the longest single path downwards
+        return 1 + max1
 
     dfs(root)
     return diameter[0]
@@ -205,16 +239,22 @@ def diameter_n_ary(root: 'Node') -> int:
 ## Related Problem: Longest Path with Different Adjacent Characters
 
 ```python
-def longest_path(parent: list[int], s: str) -> int:
-    """
+from typing import List
+from collections import defaultdict
+
+def longest_path(parent: List[int], s: str) -> int:
+    r"""
     Longest path where no two adjacent nodes have same character.
 
     LeetCode 2246: Longest Path With Different Adjacent Characters
 
     Build tree from parent array, then find longest valid path.
-    """
-    from collections import defaultdict
+    By keeping track of just the top two lengths instead of sorting,
+    we achieve $\mathcal{O}(N)$ overall time.
 
+    Time Complexity: $\mathcal{O}(N)$ where $N$ is the number of nodes.
+    Space Complexity: $\mathcal{O}(N)$ for the adjacency list `children` and the recursion stack $\mathcal{O}(H)$.
+    """
     n = len(parent)
     children = defaultdict(list)
 
@@ -223,7 +263,7 @@ def longest_path(parent: list[int], s: str) -> int:
 
     longest = [0]
 
-    def dfs(node):
+    def dfs(node: int) -> int:
         # Track two longest valid paths through children
         top_two = [0, 0]
 
@@ -250,11 +290,11 @@ def longest_path(parent: list[int], s: str) -> int:
 
 ## Complexity Analysis
 
-| Approach                | Time       | Space | Notes                      |
-| ----------------------- | ---------- | ----- | -------------------------- |
-| Optimal (single pass)   | O(n)       | O(h)  | Combine diameter and depth |
-| Naive (separate height) | O(n²)      | O(h)  | Height at each node        |
-| N-ary tree              | O(n log k) | O(h)  | Sort children depths       |
+| Approach                | Time               | Space              | Notes                      |
+| ----------------------- | ------------------ | ------------------ | -------------------------- |
+| Optimal (single pass)   | $\mathcal{O}(N)$   | $\mathcal{O}(H)$   | Combine diameter and depth |
+| Naive (separate height) | $\mathcal{O}(N^2)$ | $\mathcal{O}(H)$   | Height at each node        |
+| N-ary tree              | $\mathcal{O}(N)$   | $\mathcal{O}(H)$   | Track top two child depths |
 
 ---
 
@@ -293,7 +333,7 @@ root = TreeNode(1)
 1. **Count edges, not nodes**: Common confusion point - clarify!
 2. **Path may not include root**: Check examples like case 4 above
 3. **Same pattern as max path sum**: "Through this node" vs "to parent"
-4. **Single pass is expected**: O(n²) is usually considered suboptimal
+4. **Single pass is expected**: $\mathcal{O}(N^2)$ is usually considered suboptimal
 5. **Draw examples**: Always verify with the provided examples
 
 ---
@@ -316,7 +356,7 @@ root = TreeNode(1)
 2. **Track global max**: Update during DFS, not just at return
 3. **Return depth, track diameter**: Two different things computed together
 4. **Pattern reuse**: Same logic for max path sum, longest univalue path
-5. **O(n) is achievable**: Don't recalculate heights
+5. **$\mathcal{O}(N)$ is achievable**: Don't recalculate heights
 
 ---
 

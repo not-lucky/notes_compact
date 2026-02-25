@@ -19,12 +19,12 @@ P > M → go left
 Found M!
 ```
 
-**Why BST gives O(log n) - the binary search insight**:
-Each comparison eliminates half the remaining nodes. With n nodes in a balanced tree:
+**Why BST gives $\mathcal{O}(\log N)$ - the binary search insight**:
+Each comparison eliminates half the remaining nodes. With $N$ nodes in a balanced tree:
 
-- After 1 comparison: n/2 candidates
-- After 2 comparisons: n/4 candidates
-- After log₂(n) comparisons: 1 candidate
+- After 1 comparison: $N/2$ candidates
+- After 2 comparisons: $N/4$ candidates
+- After $\log_2(N)$ comparisons: 1 candidate
 
 ```
 Search path for value X:
@@ -56,7 +56,7 @@ Case 1: Leaf node        Case 2: One child       Case 3: Two children
 - **Inorder successor** = smallest value greater than current = leftmost node in right subtree
 - **Inorder predecessor** = largest value smaller than current = rightmost node in left subtree
 
-These are used in deletion (case 3) because they maintain BST property when substituted.
+These are used in deletion (case 3) because they maintain the BST property when substituted.
 
 ---
 
@@ -64,8 +64,8 @@ These are used in deletion (case 3) because they maintain BST property when subs
 
 **Don't use a plain BST when:**
 
-- **Data arrives in sorted order** → Tree becomes a linked list (O(n) operations)
-- **Need O(1) lookups** → Use hash map instead
+- **Data arrives in sorted order** → Tree becomes a linked list ($\mathcal{O}(N)$ operations)
+- **Need $\mathcal{O}(1)$ lookups** → Use hash map instead
 - **Data rarely changes** → Sorted array with binary search may be simpler
 - **Need ordered iteration without tree overhead** → Use sorted array
 
@@ -78,22 +78,25 @@ These are used in deletion (case 3) because they maintain BST property when subs
 **When to use self-balancing trees instead:**
 
 - Production systems → Use AVL or Red-Black tree
-- Insertions in sorted/reverse order → Plain BST degrades to O(n)
-- Guaranteed O(log n) is critical → Balanced tree variants
+- Insertions in sorted/reverse order → Plain BST degrades to $\mathcal{O}(N)$
+- Guaranteed $\mathcal{O}(\log N)$ is critical → Balanced tree variants
 
 **Common mistake scenarios:**
 
-- Not considering tree balance in complexity analysis
+- Not considering tree balance in complexity analysis (assuming $\mathcal{O}(\log N)$ instead of worst-case $\mathcal{O}(N)$)
 - Using BST when hash map would be simpler
 - Forgetting that duplicate handling varies by implementation
 
 **Performance comparison:**
+
 | Structure | Search | Insert | Delete | Space |
 |-----------|--------|--------|--------|-------|
-| BST (balanced) | O(log n) | O(log n) | O(log n) | O(n) |
-| BST (skewed) | O(n) | O(n) | O(n) | O(n) |
-| Hash Map | O(1) avg | O(1) avg | O(1) avg | O(n) |
-| Sorted Array | O(log n) | O(n) | O(n) | O(n) |
+| BST (balanced) | $\mathcal{O}(\log N)$ | $\mathcal{O}(\log N)$ | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$ |
+| BST (skewed) | $\mathcal{O}(N)$ | $\mathcal{O}(N)$ | $\mathcal{O}(N)$ | $\mathcal{O}(N)$ |
+| Hash Map | $\mathcal{O}(1)$ avg | $\mathcal{O}(1)$ avg | $\mathcal{O}(1)$ avg | $\mathcal{O}(N)$ |
+| Sorted Array | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$ | $\mathcal{O}(N)$ | $\mathcal{O}(N)$ |
+
+*Note: Hash map space is total auxiliary space. BST has recursion space bounded by height $\mathcal{O}(H)$, which is $\mathcal{O}(N)$ in the worst case.*
 
 ---
 
@@ -102,7 +105,7 @@ These are used in deletion (case 3) because they maintain BST property when subs
 BST operations are fundamental because:
 
 1. **Core data structure**: BSTs are basis for many advanced structures (AVL, Red-Black trees)
-2. **Efficient search**: O(log n) operations in balanced trees
+2. **Efficient search**: $\mathcal{O}(\log N)$ operations in balanced trees
 3. **High frequency**: Search, insert, delete are common interview problems
 4. **Recursive thinking**: Clean recursive solutions demonstrate mastery
 
@@ -133,14 +136,16 @@ Valid BST:          Invalid BST:
 ### Recursive Search
 
 ```python
-def search_bst(root: TreeNode, val: int) -> TreeNode:
-    """
+from typing import Optional
+
+def search_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    r"""
     Search for value in BST.
 
     LeetCode 700: Search in a Binary Search Tree
 
-    Time: O(h) - h is height, O(log n) balanced, O(n) skewed
-    Space: O(h) - recursion stack
+    Time: $\mathcal{O}(H)$ - $H$ is height, $\mathcal{O}(\log N)$ balanced, $\mathcal{O}(N)$ skewed
+    Space: $\mathcal{O}(H)$ - recursion stack
     """
     if not root or root.val == val:
         return root
@@ -154,12 +159,14 @@ def search_bst(root: TreeNode, val: int) -> TreeNode:
 ### Iterative Search
 
 ```python
-def search_bst_iterative(root: TreeNode, val: int) -> TreeNode:
-    """
-    Iterative BST search - O(1) space.
+from typing import Optional
 
-    Time: O(h)
-    Space: O(1)
+def search_bst_iterative(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    r"""
+    Iterative BST search - $\mathcal{O}(1)$ space.
+
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     while root and root.val != val:
         if val < root.val:
@@ -177,14 +184,16 @@ def search_bst_iterative(root: TreeNode, val: int) -> TreeNode:
 ### Recursive Insert
 
 ```python
-def insert_into_bst(root: TreeNode, val: int) -> TreeNode:
-    """
+from typing import Optional
+
+def insert_into_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    r"""
     Insert value into BST, return root.
 
     LeetCode 701: Insert into a Binary Search Tree
 
-    Time: O(h)
-    Space: O(h)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(H)$ recursion stack
     """
     if not root:
         return TreeNode(val)
@@ -200,12 +209,14 @@ def insert_into_bst(root: TreeNode, val: int) -> TreeNode:
 ### Iterative Insert
 
 ```python
-def insert_into_bst_iterative(root: TreeNode, val: int) -> TreeNode:
-    """
-    Iterative BST insert - O(1) space.
+from typing import Optional
 
-    Time: O(h)
-    Space: O(1)
+def insert_into_bst_iterative(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    r"""
+    Iterative BST insert - $\mathcal{O}(1)$ space.
+
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     new_node = TreeNode(val)
 
@@ -285,14 +296,16 @@ Case 3: Node has two children
 ### Implementation
 
 ```python
-def delete_node(root: TreeNode, key: int) -> TreeNode:
-    """
+from typing import Optional
+
+def delete_node(root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+    r"""
     Delete node with given key from BST.
 
     LeetCode 450: Delete Node in a BST
 
-    Time: O(h)
-    Space: O(h)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(H)$ recursion stack
     """
     if not root:
         return None
@@ -331,7 +344,9 @@ def find_min(node: TreeNode) -> TreeNode:
 ### Alternative: Use Predecessor Instead
 
 ```python
-def delete_node_predecessor(root: TreeNode, key: int) -> TreeNode:
+from typing import Optional
+
+def delete_node_predecessor(root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
     """Delete using inorder predecessor (largest in left subtree)."""
     if not root:
         return None
@@ -362,12 +377,14 @@ def delete_node_predecessor(root: TreeNode, key: int) -> TreeNode:
 ## Find Min and Max
 
 ```python
-def find_minimum(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+def find_minimum(root: Optional[TreeNode]) -> Optional[int]:
+    r"""
     Find minimum value in BST.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     if not root:
         return None
@@ -377,12 +394,12 @@ def find_minimum(root: TreeNode) -> int:
     return root.val
 
 
-def find_maximum(root: TreeNode) -> int:
-    """
+def find_maximum(root: Optional[TreeNode]) -> Optional[int]:
+    r"""
     Find maximum value in BST.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     if not root:
         return None
@@ -397,12 +414,14 @@ def find_maximum(root: TreeNode) -> int:
 ## Find Floor and Ceiling
 
 ```python
-def floor(root: TreeNode, key: int) -> int:
-    """
+from typing import Optional
+
+def floor(root: Optional[TreeNode], key: int) -> Optional[int]:
+    r"""
     Find largest value <= key.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     floor_val = None
 
@@ -418,12 +437,12 @@ def floor(root: TreeNode, key: int) -> int:
     return floor_val
 
 
-def ceiling(root: TreeNode, key: int) -> int:
-    """
+def ceiling(root: Optional[TreeNode], key: int) -> Optional[int]:
+    r"""
     Find smallest value >= key.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     ceil_val = None
 
@@ -444,14 +463,16 @@ def ceiling(root: TreeNode, key: int) -> int:
 ## Inorder Successor and Predecessor
 
 ```python
-def inorder_successor(root: TreeNode, p: TreeNode) -> TreeNode:
-    """
+from typing import Optional
+
+def inorder_successor(root: Optional[TreeNode], p: TreeNode) -> Optional[TreeNode]:
+    r"""
     Find inorder successor of node p.
 
     LeetCode 285: Inorder Successor in BST
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$ auxiliary space
     """
     successor = None
 
@@ -465,7 +486,7 @@ def inorder_successor(root: TreeNode, p: TreeNode) -> TreeNode:
     return successor
 
 
-def inorder_predecessor(root: TreeNode, p: TreeNode) -> TreeNode:
+def inorder_predecessor(root: Optional[TreeNode], p: TreeNode) -> Optional[TreeNode]:
     """Find inorder predecessor of node p."""
     predecessor = None
 
@@ -485,13 +506,13 @@ def inorder_predecessor(root: TreeNode, p: TreeNode) -> TreeNode:
 
 | Operation | Average  | Worst (Skewed) | Space                |
 | --------- | -------- | -------------- | -------------------- |
-| Search    | O(log n) | O(n)           | O(1) iter / O(h) rec |
-| Insert    | O(log n) | O(n)           | O(1) iter / O(h) rec |
-| Delete    | O(log n) | O(n)           | O(h)                 |
-| Min/Max   | O(log n) | O(n)           | O(1)                 |
-| Successor | O(log n) | O(n)           | O(1)                 |
+| Search    | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$           | $\mathcal{O}(1)$ iter / $\mathcal{O}(H)$ rec |
+| Insert    | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$           | $\mathcal{O}(1)$ iter / $\mathcal{O}(H)$ rec |
+| Delete    | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$           | $\mathcal{O}(H)$                 |
+| Min/Max   | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$           | $\mathcal{O}(1)$                 |
+| Successor | $\mathcal{O}(\log N)$ | $\mathcal{O}(N)$           | $\mathcal{O}(1)$                 |
 
-Key insight: Performance degrades to O(n) if tree becomes skewed. Self-balancing trees (AVL, Red-Black) maintain O(log n).
+Key insight: Performance degrades to $\mathcal{O}(N)$ if the tree becomes skewed. Self-balancing trees (AVL, Red-Black) maintain $\mathcal{O}(\log N)$. Ensure you specify that the recursive space complexity is related to the tree height $\mathcal{O}(H)$.
 
 ---
 
@@ -500,8 +521,15 @@ Key insight: Performance degrades to O(n) if tree becomes skewed. Self-balancing
 ### 1. Count Nodes in Range
 
 ```python
-def count_in_range(root: TreeNode, low: int, high: int) -> int:
-    """Count nodes with values in [low, high]."""
+from typing import Optional
+
+def count_in_range(root: Optional[TreeNode], low: int, high: int) -> int:
+    r"""
+    Count nodes with values in [low, high].
+
+    Time: $\mathcal{O}(N)$ worst, $\mathcal{O}(\log N + K)$ average where K is nodes in range
+    Space: $\mathcal{O}(H)$ recursion stack
+    """
     if not root:
         return 0
 
@@ -519,14 +547,16 @@ def count_in_range(root: TreeNode, low: int, high: int) -> int:
 ### 2. Range Sum BST
 
 ```python
-def range_sum_bst(root: TreeNode, low: int, high: int) -> int:
-    """
+from typing import Optional
+
+def range_sum_bst(root: Optional[TreeNode], low: int, high: int) -> int:
+    r"""
     Sum of values in [low, high].
 
     LeetCode 938: Range Sum of BST
 
-    Time: O(n) worst, O(log n + k) average where k is nodes in range
-    Space: O(h)
+    Time: $\mathcal{O}(N)$ worst, $\mathcal{O}(\log N + K)$ average where K is nodes in range
+    Space: $\mathcal{O}(H)$ recursion stack
     """
     if not root:
         return 0
@@ -573,9 +603,9 @@ search_bst(root, 100)  # Returns None
 
 1. **Know all three operations**: Search, insert, delete must be second nature
 2. **Understand delete cases**: Three cases - practice drawing them
-3. **Iterative for space**: Use iterative versions when O(1) space needed
+3. **Iterative for space**: Use iterative versions when $\mathcal{O}(1)$ space needed
 4. **Successor/predecessor**: Common follow-up questions
-5. **Discuss balance**: Mention that balanced trees give O(log n) guarantee
+5. **Discuss balance**: Mention that balanced trees give $\mathcal{O}(\log N)$ guarantee
 
 ---
 
@@ -596,10 +626,10 @@ search_bst(root, 100)  # Returns None
 ## Key Takeaways
 
 1. **BST property**: Left < Root < Right at every node
-2. **O(log n) when balanced**: Operations degrade to O(n) if skewed
+2. **$\mathcal{O}(\log N)$ when balanced**: Operations degrade to $\mathcal{O}(N)$ if skewed
 3. **Delete is hardest**: Three cases based on number of children
 4. **Successor/predecessor**: Key for delete and range queries
-5. **Iterative saves space**: When O(1) space is required
+5. **Iterative saves space**: When $\mathcal{O}(1)$ space is required
 
 ---
 

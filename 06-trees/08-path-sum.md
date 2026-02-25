@@ -144,14 +144,22 @@ Root-to-leaf paths:
 ## Path Sum I: Has Root-to-Leaf Path
 
 ```python
-def has_path_sum(root: TreeNode, target_sum: int) -> bool:
+from typing import Optional, List
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def has_path_sum(root: Optional[TreeNode], target_sum: int) -> bool:
     """
     Check if tree has root-to-leaf path with given sum.
 
     LeetCode 112: Path Sum
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     if not root:
         return False
@@ -169,12 +177,12 @@ def has_path_sum(root: TreeNode, target_sum: int) -> bool:
 ### Iterative Version
 
 ```python
-def has_path_sum_iterative(root: TreeNode, target_sum: int) -> bool:
+def has_path_sum_iterative(root: Optional[TreeNode], target_sum: int) -> bool:
     """
     Iterative path sum check using stack.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     if not root:
         return False
@@ -202,14 +210,14 @@ def has_path_sum_iterative(root: TreeNode, target_sum: int) -> bool:
 ## Path Sum II: Find All Root-to-Leaf Paths
 
 ```python
-def path_sum(root: TreeNode, target_sum: int) -> list[list[int]]:
+def path_sum(root: Optional[TreeNode], target_sum: int) -> List[List[int]]:
     """
     Find all root-to-leaf paths that sum to target.
 
     LeetCode 113: Path Sum II
 
-    Time: O(n²) - O(n) nodes, O(n) to copy each path
-    Space: O(n) - for storing paths
+    Time: $\mathcal{O}(N^2)$ - $\mathcal{O}(N)$ nodes, $\mathcal{O}(N)$ to copy each path
+    Space: $\mathcal{O}(H)$ auxiliary space for recursion stack, plus $\mathcal{O}(N \cdot H)$ space for the result list containing paths (or $\mathcal{O}(N)$ if excluding output, just path list of size H)
     """
     result = []
 
@@ -261,7 +269,7 @@ DFS with path tracking (remaining = target - sum so far):
 ## Path Sum III: Count Paths (Any Start/End Downward)
 
 ```python
-def path_sum_iii(root: TreeNode, target_sum: int) -> int:
+def path_sum_iii(root: Optional[TreeNode], target_sum: int) -> int:
     """
     Count paths summing to target (downward, any start/end).
 
@@ -269,8 +277,8 @@ def path_sum_iii(root: TreeNode, target_sum: int) -> int:
 
     Uses prefix sum technique similar to subarray sum.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     from collections import defaultdict
 
@@ -333,7 +341,7 @@ At node 3 (sum=18): 18-10=8 ✓ means path from after 10 to 3 sums to 8.
 ## Binary Tree Maximum Path Sum
 
 ```python
-def max_path_sum(root: TreeNode) -> int:
+def max_path_sum(root: Optional[TreeNode]) -> int:
     """
     Find maximum path sum (any node to any node).
 
@@ -341,8 +349,8 @@ def max_path_sum(root: TreeNode) -> int:
 
     Path can start and end at any nodes.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     max_sum = [float('-inf')]
 
@@ -397,7 +405,7 @@ At -10: left_gain=9, right_gain=35
 ## Sum Root to Leaf Numbers
 
 ```python
-def sum_numbers(root: TreeNode) -> int:
+def sum_numbers(root: Optional[TreeNode]) -> int:
     """
     Each root-to-leaf path forms a number. Return sum of all.
 
@@ -405,8 +413,8 @@ def sum_numbers(root: TreeNode) -> int:
 
     Example: paths 1→2→3 and 1→3 give 123 + 13 = 136
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     total = [0]
 
@@ -432,14 +440,14 @@ def sum_numbers(root: TreeNode) -> int:
 ## All Root-to-Leaf Paths (as Strings)
 
 ```python
-def binary_tree_paths(root: TreeNode) -> list[str]:
+def binary_tree_paths(root: Optional[TreeNode]) -> List[str]:
     """
     Return all root-to-leaf paths as strings.
 
     LeetCode 257: Binary Tree Paths
 
-    Time: O(n)
-    Space: O(n)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(N)$
     """
     if not root:
         return []
@@ -466,11 +474,11 @@ def binary_tree_paths(root: TreeNode) -> list[str]:
 
 | Problem          | Time  | Space | Notes               |
 | ---------------- | ----- | ----- | ------------------- |
-| Has Path Sum     | O(n)  | O(h)  | Simple DFS          |
-| Path Sum II      | O(n²) | O(n)  | Copying paths       |
-| Path Sum III     | O(n)  | O(h)  | Prefix sum trick    |
-| Max Path Sum     | O(n)  | O(h)  | Track through vs to |
-| Sum Root to Leaf | O(n)  | O(h)  | Build number        |
+| Has Path Sum     | $\mathcal{O}(N)$  | $\mathcal{O}(H)$  | Simple DFS          |
+| Path Sum II      | $\mathcal{O}(N^2)$ | $\mathcal{O}(N)$  | Copying paths       |
+| Path Sum III     | $\mathcal{O}(N)$  | $\mathcal{O}(H)$  | Prefix sum trick    |
+| Max Path Sum     | $\mathcal{O}(N)$  | $\mathcal{O}(H)$  | Track through vs to |
+| Sum Root to Leaf | $\mathcal{O}(N)$  | $\mathcal{O}(H)$  | Build number        |
 
 ---
 
@@ -479,7 +487,7 @@ def binary_tree_paths(root: TreeNode) -> list[str]:
 ### 1. Longest Path with Same Value
 
 ```python
-def longest_univalue_path(root: TreeNode) -> int:
+def longest_univalue_path(root: Optional[TreeNode]) -> int:
     """
     Longest path where all nodes have same value.
 
@@ -512,7 +520,9 @@ def longest_univalue_path(root: TreeNode) -> int:
 ### 2. Path with Maximum Average
 
 ```python
-def max_average_subtree(root: TreeNode) -> float:
+from typing import Tuple
+
+def max_average_subtree(root: Optional[TreeNode]) -> float:
     """
     Find subtree with maximum average value.
     """

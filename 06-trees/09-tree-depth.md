@@ -129,14 +129,23 @@ Very common at all FANG+ companies as warm-up or component problems.
 ### Recursive Solution
 
 ```python
-def max_depth(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def max_depth(root: Optional[TreeNode]) -> int:
+    r"""
     Maximum depth of binary tree.
 
     LeetCode 104: Maximum Depth of Binary Tree
 
-    Time: O(n) - visit every node
-    Space: O(h) - recursion stack
+    Time: $\Theta(N)$ - visit every node exactly once
+    Space: $\mathcal{O}(H)$ - recursion stack, where $H$ is tree height.
+           Worst case $\mathcal{O}(N)$ for skewed tree, best/average case $\mathcal{O}(\log N)$ for balanced.
     """
     if not root:
         return 0
@@ -148,13 +157,15 @@ def max_depth(root: TreeNode) -> int:
 
 ```python
 from collections import deque
+from typing import Optional
 
-def max_depth_bfs(root: TreeNode) -> int:
-    """
-    Max depth using level-order traversal.
+def max_depth_bfs(root: Optional[TreeNode]) -> int:
+    r"""
+    Max depth using level-order traversal (BFS).
 
-    Time: O(n)
-    Space: O(w) - width of tree
+    Time: $\Theta(N)$ - visit every node exactly once
+    Space: $\mathcal{O}(W)$ - where $W$ is the maximum width of the tree.
+           Worst case $\mathcal{O}(N)$ for a perfect binary tree, best case $\mathcal{O}(1)$ for a skewed tree.
     """
     if not root:
         return 0
@@ -177,12 +188,14 @@ def max_depth_bfs(root: TreeNode) -> int:
 ### Iterative DFS
 
 ```python
-def max_depth_dfs_iterative(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+def max_depth_dfs_iterative(root: Optional[TreeNode]) -> int:
+    r"""
     Max depth using DFS with explicit stack.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\Theta(N)$ - visit every node exactly once
+    Space: $\mathcal{O}(H)$ - explicit stack space, up to $\mathcal{O}(N)$ for skewed tree
     """
     if not root:
         return 0
@@ -226,14 +239,17 @@ For min depth, we only count paths to LEAVES, not null children.
 ### Recursive Solution
 
 ```python
-def min_depth(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+def min_depth(root: Optional[TreeNode]) -> int:
+    r"""
     Minimum depth (shortest path to leaf).
 
     LeetCode 111: Minimum Depth of Binary Tree
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$ - worst case visit every node
+    Space: $\mathcal{O}(H)$ - recursion stack space. Worst case $\mathcal{O}(N)$ for skewed tree,
+           best/average $\mathcal{O}(\log N)$ for balanced.
     """
     if not root:
         return 0
@@ -253,14 +269,19 @@ def min_depth(root: TreeNode) -> int:
 ### BFS (More Efficient for Balanced Trees)
 
 ```python
-def min_depth_bfs(root: TreeNode) -> int:
-    """
+from collections import deque
+from typing import Optional
+
+def min_depth_bfs(root: Optional[TreeNode]) -> int:
+    r"""
     Min depth using BFS - returns as soon as leaf found.
 
     More efficient when min depth << max depth.
 
-    Time: O(n) worst case, often less
-    Space: O(w)
+    Time: $\mathcal{O}(N)$ worst case (all nodes at last level),
+          often much less (stops at first leaf).
+    Space: $\mathcal{O}(W)$ - max width of tree queue.
+           Worst case $\mathcal{O}(N)$ for a perfect tree.
     """
     if not root:
         return 0
@@ -288,20 +309,23 @@ def min_depth_bfs(root: TreeNode) -> int:
 
 A binary tree is balanced if the height difference between left and right subtrees of every node is at most 1.
 
-### Naive Approach: O(n²)
+### Naive Approach: $\mathcal{O}(N^2)$
 
 ```python
-def is_balanced_naive(root: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_balanced_naive(root: Optional[TreeNode]) -> bool:
+    r"""
     Check if tree is balanced (naive approach).
 
-    Time: O(n²) - height calculated repeatedly
-    Space: O(h)
+    Time: $\mathcal{O}(N^2)$ - height calculated repeatedly.
+          For a skewed tree, height is $\mathcal{O}(N)$ nodes $\times$ $\mathcal{O}(N)$ depth computations.
+    Space: $\mathcal{O}(H)$ - recursion stack. Worst case $\mathcal{O}(N)$ for skewed.
     """
     if not root:
         return True
 
-    def height(node):
+    def height(node: Optional[TreeNode]) -> int:
         if not node:
             return 0
         return 1 + max(height(node.left), height(node.right))
@@ -314,21 +338,23 @@ def is_balanced_naive(root: TreeNode) -> bool:
             is_balanced_naive(root.right))
 ```
 
-### Optimized Approach: O(n)
+### Optimized Approach: $\mathcal{O}(N)$
 
 ```python
-def is_balanced(root: TreeNode) -> bool:
-    """
+from typing import Optional
+
+def is_balanced(root: Optional[TreeNode]) -> bool:
+    r"""
     Check if tree is balanced (optimized).
 
     LeetCode 110: Balanced Binary Tree
 
     Return height while checking balance. Use -1 to indicate unbalanced.
 
-    Time: O(n) - single pass
-    Space: O(h)
+    Time: $\Theta(N)$ - single pass, each node visited once.
+    Space: $\mathcal{O}(H)$ - recursion stack. Worst case $\mathcal{O}(N)$ for skewed.
     """
-    def check_height(node):
+    def check_height(node: Optional[TreeNode]) -> int:
         if not node:
             return 0
 
@@ -351,11 +377,16 @@ def is_balanced(root: TreeNode) -> bool:
 ### Alternative: Return Tuple
 
 ```python
-def is_balanced_tuple(root: TreeNode) -> bool:
-    """
+from typing import Optional, Tuple
+
+def is_balanced_tuple(root: Optional[TreeNode]) -> bool:
+    r"""
     Return (is_balanced, height) tuple.
+
+    Time: $\Theta(N)$ - single pass.
+    Space: $\mathcal{O}(H)$ - recursion stack.
     """
-    def dfs(node):
+    def dfs(node: Optional[TreeNode]) -> Tuple[bool, int]:
         if not node:
             return True, 0
 
@@ -378,16 +409,20 @@ def is_balanced_tuple(root: TreeNode) -> bool:
 ## Count Nodes at Depth K
 
 ```python
-def nodes_at_depth(root: TreeNode, k: int) -> list[int]:
-    """
+from typing import Optional, List
+
+def nodes_at_depth(root: Optional[TreeNode], k: int) -> List[int]:
+    r"""
     Return all nodes at depth k.
 
-    Time: O(n)
-    Space: O(n) for result
+    Time: $\mathcal{O}(N)$ - worst case if target level $k$ is near leaf,
+          we explore $\mathcal{O}(N)$ nodes.
+    Space: $\mathcal{O}(N)$ - to hold results up to max width
+           and $\mathcal{O}(H)$ for recursion stack.
     """
     result = []
 
-    def dfs(node, depth):
+    def dfs(node: Optional[TreeNode], depth: int) -> None:
         if not node:
             return
 
@@ -407,15 +442,20 @@ def nodes_at_depth(root: TreeNode, k: int) -> list[int]:
 ## Depth of Deepest Odd Level Leaf
 
 ```python
-def deepest_odd_level_leaf(root: TreeNode) -> int:
-    """
+from typing import Optional
+
+def deepest_odd_level_leaf(root: Optional[TreeNode]) -> int:
+    r"""
     Find depth of deepest leaf at an odd level.
 
     Levels are 1-indexed (root is level 1).
+
+    Time: $\Theta(N)$ - visit every node once.
+    Space: $\mathcal{O}(H)$ - recursion stack.
     """
     max_odd_depth = [0]
 
-    def dfs(node, depth):
+    def dfs(node: Optional[TreeNode], depth: int) -> None:
         if not node:
             return
 
@@ -436,16 +476,17 @@ def deepest_odd_level_leaf(root: TreeNode) -> int:
 
 ```python
 from collections import deque
+from typing import Optional
 
-def is_complete_tree(root: TreeNode) -> bool:
-    """
+def is_complete_tree(root: Optional[TreeNode]) -> bool:
+    r"""
     Check if tree is complete (all levels full except last,
     which is filled left to right).
 
     LeetCode 958: Check Completeness of a Binary Tree
 
-    Time: O(n)
-    Space: O(w)
+    Time: $\Theta(N)$ - visit every node
+    Space: $\mathcal{O}(W)$ - queue holds at most one level, where max width $W \approx N/2$
     """
     if not root:
         return True

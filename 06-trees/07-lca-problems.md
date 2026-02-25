@@ -86,9 +86,9 @@ Recursive LCA logic:
 **When to use specialized LCA algorithms:**
 | Scenario | Best Approach |
 |----------|---------------|
-| Single query, BST | O(h) BST traversal |
-| Single query, general BT | O(n) recursive search |
-| Many queries, static tree | Binary lifting O(n log n) preprocess, O(log n) query |
+| Single query, BST | $\mathcal{O}(H)$ BST traversal |
+| Single query, general BT | $\mathcal{O}(N)$ recursive search |
+| Many queries, static tree | Binary lifting $\mathcal{O}(N \log N)$ preprocess, $\mathcal{O}(\log N)$ query |
 | Queries with updates | Link-Cut trees (advanced) |
 | Need all ancestors | Parent pointer + path comparison |
 
@@ -148,14 +148,23 @@ For BST, we can use the BST property to efficiently find LCA.
 ### Recursive Solution
 
 ```python
-def lowest_common_ancestor_bst(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+from typing import Optional, List, Tuple
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None, parent=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.parent = parent
+
+def lowest_common_ancestor_bst(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     LCA in Binary Search Tree.
 
     LeetCode 235: Lowest Common Ancestor of a Binary Search Tree
 
-    Time: O(h) - follows one path down
-    Space: O(h) - recursion stack
+    Time: $\mathcal{O}(H)$ - follows one path down
+    Space: $\mathcal{O}(H)$ - recursion stack
     """
     if p.val < root.val and q.val < root.val:
         # Both in left subtree
@@ -169,15 +178,15 @@ def lowest_common_ancestor_bst(root: TreeNode, p: TreeNode, q: TreeNode) -> Tree
     return root
 ```
 
-### Iterative Solution (O(1) Space)
+### Iterative Solution ($\mathcal{O}(1)$ Space)
 
 ```python
-def lca_bst_iterative(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+def lca_bst_iterative(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     Iterative LCA for BST.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$
     """
     while root:
         if p.val < root.val and q.val < root.val:
@@ -224,8 +233,8 @@ For general binary tree, we can't use BST property. We need different approach.
 ### Recursive Solution
 
 ```python
-def lowest_common_ancestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+def lowest_common_ancestor(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     LCA in Binary Tree (general).
 
     LeetCode 236: Lowest Common Ancestor of a Binary Tree
@@ -233,8 +242,8 @@ def lowest_common_ancestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode
     Key insight: If we find p or q, return it. If both subtrees return
     non-null, current node is LCA. Otherwise, return the non-null child.
 
-    Time: O(n) - may visit all nodes
-    Space: O(h) - recursion stack
+    Time: $\mathcal{O}(N)$ - may visit all nodes
+    Space: $\mathcal{O}(H)$ - recursion stack
     """
     # Base case: reached null or found p/q
     if not root or root == p or root == q:
@@ -288,12 +297,12 @@ The algorithm assumes p and q **exist** in the tree. If they might not exist, we
 ### Handling Non-Existence
 
 ```python
-def lca_with_existence_check(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+def lca_with_existence_check(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     LCA that handles case where p or q might not exist.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(H)$
     """
     result = [None]
     found = [False, False]  # [found_p, found_q]
@@ -331,8 +340,13 @@ def lca_with_existence_check(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNo
     return None
 
 
-def search(root, target):
-    """Check if target exists in subtree rooted at root."""
+def search(root: Optional[TreeNode], target: TreeNode) -> bool:
+    r"""
+    Check if target exists in subtree rooted at root.
+
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(H)$
+    """
     if not root:
         return False
     if root == target:
@@ -347,14 +361,14 @@ def search(root, target):
 If nodes have parent pointers, we can use a different approach.
 
 ```python
-def lca_with_parent(p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+def lca_with_parent(p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     LCA when nodes have parent pointers.
 
     Similar to finding intersection of two linked lists.
 
-    Time: O(h)
-    Space: O(1)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(1)$
     """
     # Get depths
     def get_depth(node):
@@ -387,12 +401,12 @@ def lca_with_parent(p: TreeNode, q: TreeNode) -> TreeNode:
 ### Using Set (Alternative)
 
 ```python
-def lca_with_parent_set(p: TreeNode, q: TreeNode) -> TreeNode:
-    """
+def lca_with_parent_set(p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    r"""
     LCA with parent pointers using set.
 
-    Time: O(h)
-    Space: O(h)
+    Time: $\mathcal{O}(H)$
+    Space: $\mathcal{O}(H)$
     """
     ancestors = set()
 
@@ -418,11 +432,11 @@ def lca_with_parent_set(p: TreeNode, q: TreeNode) -> TreeNode:
 
 | Approach            | Time | Space | Tree Type   |
 | ------------------- | ---- | ----- | ----------- |
-| BST recursive       | O(h) | O(h)  | BST         |
-| BST iterative       | O(h) | O(1)  | BST         |
-| BT recursive        | O(n) | O(h)  | General     |
-| With parent (depth) | O(h) | O(1)  | With parent |
-| With parent (set)   | O(h) | O(h)  | With parent |
+| BST recursive       | $\mathcal{O}(H)$ | $\mathcal{O}(H)$  | BST         |
+| BST iterative       | $\mathcal{O}(H)$ | $\mathcal{O}(1)$  | BST         |
+| BT recursive        | $\mathcal{O}(N)$ | $\mathcal{O}(H)$  | General     |
+| With parent (depth) | $\mathcal{O}(H)$ | $\mathcal{O}(1)$  | With parent |
+| With parent (set)   | $\mathcal{O}(H)$ | $\mathcal{O}(H)$  | With parent |
 
 ---
 
@@ -431,12 +445,12 @@ def lca_with_parent_set(p: TreeNode, q: TreeNode) -> TreeNode:
 ### 1. LCA of Multiple Nodes
 
 ```python
-def lca_multiple(root: TreeNode, nodes: list[TreeNode]) -> TreeNode:
-    """
+def lca_multiple(root: Optional[TreeNode], nodes: List[TreeNode]) -> Optional[TreeNode]:
+    r"""
     LCA of multiple nodes.
 
-    Time: O(n)
-    Space: O(h)
+    Time: $\mathcal{O}(N)$
+    Space: $\mathcal{O}(H)$
     """
     target_set = set(nodes)
 
@@ -459,8 +473,8 @@ def lca_multiple(root: TreeNode, nodes: list[TreeNode]) -> TreeNode:
 ### 2. LCA with Distance
 
 ```python
-def lca_with_distance(root: TreeNode, p: TreeNode, q: TreeNode) -> tuple:
-    """
+def lca_with_distance(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Tuple[Optional[TreeNode], int, int]:
+    r"""
     Return (LCA, distance from LCA to p, distance from LCA to q).
     """
     def find_path(node, target, path):
@@ -495,8 +509,8 @@ def lca_with_distance(root: TreeNode, p: TreeNode, q: TreeNode) -> tuple:
 ### 3. Distance Between Two Nodes
 
 ```python
-def distance_between_nodes(root: TreeNode, p: TreeNode, q: TreeNode) -> int:
-    """
+def distance_between_nodes(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> int:
+    r"""
     Distance between two nodes = dist(LCA, p) + dist(LCA, q).
     """
     lca = lowest_common_ancestor(root, p, q)
@@ -540,7 +554,7 @@ root = TreeNode(1)
 
 ## Interview Tips
 
-1. **Clarify tree type**: BST allows O(h) solution, general BT is O(n)
+1. **Clarify tree type**: BST allows $\mathcal{O}(H)$ solution, general BT is $\mathcal{O}(N)$
 2. **Ask about parent pointers**: Different algorithm if available
 3. **Confirm existence**: Ask if p and q guaranteed to exist
 4. **Know both approaches**: BST split-point vs BT recursive search
@@ -563,7 +577,7 @@ root = TreeNode(1)
 
 ## Key Takeaways
 
-1. **BST uses split point**: O(h) time using BST property
+1. **BST uses split point**: $\mathcal{O}(H)$ time using BST property
 2. **BT uses recursion**: Return p/q when found, check both subtrees
 3. **Both non-null = LCA**: When left and right both return something
 4. **Parent pointers help**: Can use ancestor set or depth alignment
