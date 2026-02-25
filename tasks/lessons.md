@@ -29,3 +29,4 @@
 - **Reference vs. Value Equality:** When checking for list intersections, always use `is` to check for object identity, not `==` to check for value equality. Two different nodes can have the same value.
 - **Edge cases:** Consistently document edge cases across linked list algorithms, specifically: empty lists (`None`), single node lists, entirely duplicate lists, and even vs. odd length considerations for fast/slow pointers.
 - **Math formatting:** Use `$` signs for math formatting in markdown (e.g., $O(n)$) to ensure correct rendering.
+- **Merge Lists Time Complexity:** Emphasize that adding two numbers iteratively creating a new list takes $O(\max(n, m))$ time AND $O(\max(n, m))$ auxiliary space for the result. Mentioning $O(1)$ space is acceptable only if the prompt allows modifying inputs in place, but creating a new list is standard.
