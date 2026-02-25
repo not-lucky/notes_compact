@@ -1,21 +1,12 @@
-# Plan for fixing 06-trees/03-level-order-traversal.md
+# Plan: Refactor 06-tree-construction.md
 
-- [x] Standardize Big-O notations to `$\mathcal{O}(N)$` / `$\Theta(N)$` format.
-- [x] Ensure all Python code blocks have modern type hints (`Optional[TreeNode]`, `deque` typing if needed). Need to add a mock `TreeNode` class definition at the top of the snippets or specify imports.
-- [x] Add `from typing import Optional` to snippets where applicable.
-- [x] Clarify time and space complexities, specifically mentioning call stack depth (`$\mathcal{O}(H)$` space where $H$ is the height of the tree) vs queue space (`$\mathcal{O}(W)$`).
-- [x] Ensure code blocks are runnable Python syntax.
-- [x] Test the python snippets to ensure they compile and run correctly.
-- [x] Update `tasks/todo.md` as items are completed.
+- [x] Add type hints (`from typing import Optional, List` or use `list` if python 3.9+ assumed, but let's standardize with `Optional` and `TreeNode` stubs or classes)
+- [x] Ensure valid python blocks: add dummy `TreeNode` class definition at top so it's runnable in python.
+- [x] Fix Big-O notation format: Convert `O(...)` to `$\mathcal{O}(...)$` or `$\Theta(...)$`
+- [x] Analyze and correct complexity in docstrings and tables (Time/Space analysis: amortized/average vs worst-case, handle call stack depth in space).
+- [x] Clean up `build_tree` code (it lacks `Optional[TreeNode]` return type hint, uses `list` directly, which is fine in 3.9+ but let's be consistent).
+- [x] Fix `insert_level_order` and `build_from_level_order` missing types and logic.
+- [x] Add python runner block to verify the code runs.
 
-# Plan: Update 06-trees/06-tree-construction.md
-- [x] Read `tasks/lessons.md` to ensure all conventions are met.
-- [x] Analyze `06-trees/06-tree-construction.md` to identify areas for improvement.
-- [x] Improve explanations, correctness, and code readability.
-- [x] Standardize Big-O notation using mathcal format (e.g., `$\mathcal{O}(n)$` or `$\Theta(n)$`).
-- [x] Add modern Python type hints to code examples (e.g., `Optional[TreeNode]`, `list[int]`).
-- [x] Ensure time and space complexities are accurately represented, noting amortized or average vs worst-case where appropriate. Account for call stack depth in space complexity (e.g., `$\mathcal{O}(h)$`).
-- [x] Ensure code blocks use valid, runnable Python syntax. Include a `TreeNode` definition at the top if needed for the examples to be runnable, or ensure it's implied by imports.
-- [x] Execute bash tests to verify Python code is runnable.
-- [x] Update `tasks/todo.md` with the completed plan and review.
-- [x] Review lessons and add any new lessons to `tasks/lessons.md`.
+Review:
+The tasks were completed. The markdown file now successfully parses python snippets without errors. The type hints and `Optional` values have been updated to represent real-world code. The `r"""` has been used for docstrings containing `$\mathcal{O}$` so that Python does not trigger an invalid escape sequence warning.
