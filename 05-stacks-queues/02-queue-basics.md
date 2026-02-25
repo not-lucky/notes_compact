@@ -165,13 +165,13 @@ size = len(queue)  # 2
 
 ```python
 # BAD - $\Theta(n)$ dequeue
-queue = [1, 2, 3]
-val = queue.pop(0)  # $\Theta(n)$ - shifts all elements!
+queue_bad = [1, 2, 3]
+val_bad = queue_bad.pop(0)  # $\Theta(n)$ - shifts all elements!
 
 # GOOD - $\Theta(1)$ dequeue
 from collections import deque
-queue = deque([1, 2, 3])
-val = queue.popleft()  # $\Theta(1)$
+queue_good = deque([1, 2, 3])
+val_good = queue_good.popleft()  # $\Theta(1)$
 ```
 
 ### Queue Class Implementation
@@ -583,17 +583,17 @@ class LinkedQueue:
 from collections import deque
 
 # 1. Empty queue
-queue = deque()
+queue_empty = deque()
 # → Check before dequeue/peek
 
 # 2. Single element
-queue = deque([1])
-queue.popleft()  # Now empty
+queue_single = deque([1])
+queue_single.popleft()  # Now empty
 
 # 3. Dequeue from empty
-queue = deque()
-if queue:  # Always check first
-    queue.popleft()
+queue_check = deque()
+if queue_check:  # Always check first
+    queue_check.popleft()
 
 # 4. Circular queue wrap-around
 # → Ensure proper modulo arithmetic

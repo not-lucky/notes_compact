@@ -117,28 +117,28 @@ Stack operations:
 
 ```python
 # Python list as stack - most common in interviews
-stack: list[int] = []
+stack_list: list[int] = []
 
 # Push
-stack.append(1)
-stack.append(2)
-stack.append(3)
-# stack = [1, 2, 3]
+stack_list.append(1)
+stack_list.append(2)
+stack_list.append(3)
+# stack_list = [1, 2, 3]
 
 # Peek (view top without removing)
-if stack:
-    top = stack[-1]  # 3
+if stack_list:
+    top = stack_list[-1]  # 3
 
 # Pop (remove and return top)
-if stack:
-    val = stack.pop()  # 3
-# stack = [1, 2]
+if stack_list:
+    val = stack_list.pop()  # 3
+# stack_list = [1, 2]
 
 # Check if empty
-is_empty = len(stack) == 0  # False
+is_empty = len(stack_list) == 0  # False
 
 # Size
-size = len(stack)  # 2
+size = len(stack_list)  # 2
 ```
 
 ### Stack Class Implementation
@@ -147,7 +147,7 @@ size = len(stack)  # 2
 from typing import Any
 
 class Stack:
-    """
+    r"""
     Stack implementation using Python list.
 
     All operations are $\mathcal{O}(1)$ amortized.
@@ -204,12 +204,12 @@ from typing import Deque
 # deque can also be used as stack (append/pop from right)
 # Unlike lists, deque operations are strictly $\mathcal{O}(1)$ non-amortized,
 # because deque is implemented as a doubly linked list in Python.
-stack: Deque[int] = deque()
+stack_deque: Deque[int] = deque()
 
-stack.append(1)       # Push
-val = stack.pop()     # Pop
-top = stack[-1]       # Peek (if not empty)
-is_empty = len(stack) == 0
+stack_deque.append(1)       # Push
+val = stack_deque.pop()     # Pop
+top = stack_deque[-1]       # Peek (if not empty)
+is_empty = len(stack_deque) == 0
 ```
 
 ---
@@ -220,7 +220,7 @@ is_empty = len(stack) == 0
 
 ```python
 def is_valid_parentheses(s: str) -> bool:
-    """
+    r"""
     Check if parentheses are valid.
 
     Time: $\mathcal{O}(n)$
@@ -246,7 +246,7 @@ def is_valid_parentheses(s: str) -> bool:
 
 ```python
 def reverse_string(s: str) -> str:
-    """
+    r"""
     Reverse string using stack.
 
     Time: $\mathcal{O}(n)$
