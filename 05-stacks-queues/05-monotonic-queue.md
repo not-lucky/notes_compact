@@ -474,7 +474,7 @@ def monotonic_deque_template(nums: List[int], k: int) -> List[int]:
     """
     Generic monotonic deque template for sliding window problems.
     """
-    dq = deque()  # Store indices
+    dq = deque()  # Stores indices
     result = []
 
     for i in range(len(nums)):

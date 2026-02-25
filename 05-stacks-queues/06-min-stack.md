@@ -386,6 +386,11 @@ class MaxStackWithPopMax:
         while self.stack and self.stack[-1][1] in self.deleted:
             self.stack.pop()
 
+    def _clean_max(self) -> None:
+        """Remove deleted items from max values."""
+        while self.sorted_vals and self.sorted_vals[-1][1] in self.deleted:
+            self.sorted_vals.pop()
+
     def pop(self) -> int:
         self._clean_top()
         val, idx = self.stack.pop()
@@ -397,13 +402,11 @@ class MaxStackWithPopMax:
         return self.stack[-1][0]
 
     def peekMax(self) -> int:
-        while self.sorted_vals and self.sorted_vals[-1][1] in self.deleted:
-            self.sorted_vals.pop()
+        self._clean_max()
         return self.sorted_vals[-1][0]
 
     def popMax(self) -> int:
-        while self.sorted_vals[-1][1] in self.deleted:
-            self.sorted_vals.pop()
+        self._clean_max()
         val, idx = self.sorted_vals.pop()  # Pop the maximum element (at the end)
         self.deleted.add(idx)
         return val
@@ -427,11 +430,11 @@ class MinQueue:
     """
     def __init__(self):
         self.queue: deque[int] = deque()
-        self.min_deque: deque[int] = deque()  # Monotonic increasing
+        self.min_deque: deque[int] = deque()  # Monotonic non-decreasing
 
     def enqueue(self, val: int) -> None:
         self.queue.append(val)
-        # Maintain monotonic increasing
+        # Maintain monotonic non-decreasing (allow duplicates)
         while self.min_deque and self.min_deque[-1] > val:
             self.min_deque.pop()
         self.min_deque.append(val)
