@@ -1,19 +1,20 @@
-# README Improvements Plan
+# Time Complexity Analysis Improvements Plan
 
-- [x] Review and improve `01-complexity-analysis/README.md`
-- [x] Review and improve `A-python-cheatsheet/README.md`
-- [x] Review and improve `B-problem-patterns/README.md`
-- [x] Review and improve `C-company-specific/README.md`
-- [x] Review and improve the main `README.md`
-- [x] Commit changes for each file/batch.
-
-## Review
-
-All README.md files listed have been reviewed and improved:
-1. `01-complexity-analysis/README.md`: Added core patterns and guidelines for amortized analysis and hidden costs. Fixed inaccuracies.
-2. `A-python-cheatsheet/README.md`: Improved explanations, added examples for `defaultdict(int)`, `deque` operations, clarified time complexity table, and added more interview tips.
-3. `B-problem-patterns/README.md`: Made the pattern list more descriptive, refined Time/Space complexity bounds, expanded the pattern keywords list.
-4. `C-company-specific/README.md`: Detailed the 4 Interview Philosophies, reformatted 'What to Emphasize' to be more actionable, updated the common mistakes table.
-5. `README.md`: Improved readability, added manual tracing to the do's/don'ts table, and discouraged competitive-programming topics.
-
-Each change was committed separately with descriptive commit messages.
+- [x] Review 02-time-complexity.md for technical accuracy and fix errors.
+  - Fix `two_pointer_pattern` condition which uses `some_condition` (undefined) and is weird. Better to show a concrete example like two sum on sorted array.
+  - Fix the Master Theorem table. `d < log_b(a)` should be `O(n^(log_b(a)))`. Wait, `T(n) = aT(n/b) + O(n^d)`.
+    - If `d > log_b(a)`, it's `O(n^d)`.
+    - If `d = log_b(a)`, it's `O(n^d log n)`.
+    - If `d < log_b(a)`, it's `O(n^(log_b(a)))`.
+    - Let's double check standard Master Theorem. `log_b(a)` is correct.
+  - Fix the Fibonacci naive recurrence. The time complexity is exactly O(phi^n) where phi ≈ 1.618, usually upper bounded by O(2^n). Let's specify that `O(2^n)` is a loose upper bound and `O(1.618^n)` is tight.
+  - Review recursive binary search: `right: int = None` is un-pythonic, should use `Optional[int] = None`. Also `binary_search_recursive` doesn't do a full mid check before halving properly? Wait, `arr[mid] == target:` is there.
+  - Review `mystery1` problem in "Practice: Analyze These". `for j in range(n)` inner loop actually runs `n` times, outer runs `log n` times. The answer says `O(n log n)`, which is correct.
+- [x] Improve explanations.
+  - Expand on the "Work Counter" mental model.
+  - Add more clarity to nested loops dependent on the outer loop.
+- [x] Improve code readability.
+  - Add type hints completely and correctly.
+  - Use better docstrings.
+  - Make sure variable names are descriptive.
+- [x] Review structure and flow of the document.

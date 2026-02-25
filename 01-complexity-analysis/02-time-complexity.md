@@ -6,7 +6,7 @@
 
 **The "Work Counter" Mental Model**
 
-Imagine you have a clicker counter in your hand. Every time your code does a "unit of work" (comparison, addition, assignment), you click. Time complexity answers: "How many clicks for n items?"
+Imagine you have a clicker counter in your hand. Every time your code does a "unit of work" (comparison, addition, assignment, checking a condition), you click. Time complexity answers: "How many clicks for n items?" It's not about seconds or milliseconds, but about how the number of "clicks" scales as the input gets larger.
 
 ```
 Linear scan:     Click once per item → n clicks → O(n)
@@ -112,7 +112,7 @@ def nested_example(n: int) -> int:
 
 ### Dependent Nested Loops
 
-When the inner loop depends on the outer loop's variable:
+When the inner loop depends on the outer loop's variable, the number of iterations isn't just `outer * inner`. Instead, you sum the series of iterations.
 
 ```python
 def triangular(n: int) -> int:
@@ -155,22 +155,26 @@ def log_nested(n: int) -> int:
             j *= 2              # log n iterations
     return count                # Total: n × log n
 
-def two_pointer_pattern(arr: list[int]) -> int:
+def two_sum_sorted(arr: list[int], target: int) -> bool:
     """
     Time: O(n), NOT O(n²)!
 
-    Even though there are two nested constructs,
-    left and right together traverse n elements total.
+    Even though there is a while loop, left and right pointers
+    together traverse at most n elements total. Each element is
+    looked at a constant number of times.
     """
     left, right = 0, len(arr) - 1
-    count = 0
+
     while left < right:
-        if some_condition(arr[left], arr[right]):
-            left += 1
+        current_sum = arr[left] + arr[right]
+        if current_sum == target:
+            return True
+        elif current_sum < target:
+            left += 1   # Move left pointer up to increase sum
         else:
-            right -= 1
-        count += 1
-    return count  # At most n iterations total
+            right -= 1  # Move right pointer down to decrease sum
+
+    return False        # Traversed array once, O(n)
 ```
 
 ---
@@ -260,7 +264,7 @@ def sum_array(arr: list[int], i: int = 0) -> int:
 ```python
 def fibonacci_naive(n: int) -> int:
     """
-    Time: O(2^n) - each call spawns two more
+    Time: O(2^n) upper bound - each call spawns two more
 
     Call tree for n=5:
               fib(5)
@@ -270,7 +274,9 @@ def fibonacci_naive(n: int) -> int:
     fib(3)  fib(2) fib(2) fib(1)
        ...
 
-    Tree has 2^n nodes in worst case.
+    Tree has ~2^n nodes in the worst case.
+    More precisely, the time complexity is O(φ^n) where
+    φ (Golden Ratio) ≈ 1.618.
     """
     if n <= 1:
         return n
@@ -280,8 +286,10 @@ def fibonacci_naive(n: int) -> int:
 ### Divide and Conquer (Logarithmic Recursion)
 
 ```python
+from typing import Optional
+
 def binary_search_recursive(arr: list[int], target: int,
-                             left: int = 0, right: int = None) -> int:
+                            left: int = 0, right: Optional[int] = None) -> int:
     """
     Time: O(log n) - problem halves each level
 
@@ -348,9 +356,9 @@ For recurrences of the form: T(n) = aT(n/b) + O(n^d)
 
 | Condition    | Complexity      |
 | ------------ | --------------- |
-| d > log_b(a) | O(n^d)          |
-| d = log_b(a) | O(n^d log n)    |
-| d < log_b(a) | O(n^(log_b(a))) |
+| d > log_b(a) | O(n^d)            |
+| d = log_b(a) | O(n^d log n)      |
+| d < log_b(a) | O(n^(log_b(a)))   |
 
 ### Common Examples
 
@@ -380,20 +388,20 @@ class DynamicArray:
     Over n appends: total work = n + n/2 + n/4 + ... ≈ 2n
     Average per append: 2n/n = O(1) amortized
     """
-    def __init__(self):
-        self.data = [None] * 4
+    def __init__(self) -> None:
+        self.data: list[Optional[int]] = [None] * 4
         self.size = 0
         self.capacity = 4
 
-    def append(self, val):
+    def append(self, val: int) -> None:
         if self.size == self.capacity:
             self._resize()
         self.data[self.size] = val
         self.size += 1
 
-    def _resize(self):
+    def _resize(self) -> None:
         self.capacity *= 2
-        new_data = [None] * self.capacity
+        new_data: list[Optional[int]] = [None] * self.capacity
         for i in range(self.size):
             new_data[i] = self.data[i]
         self.data = new_data
@@ -419,7 +427,7 @@ class DynamicArray:
 
 ```python
 # Problem 1: What's the complexity?
-def mystery1(n):
+def mystery1(n: int) -> None:
     i = 1
     while i < n:
         for j in range(n):
@@ -430,13 +438,13 @@ def mystery1(n):
 <details>
 <summary>Answer 1</summary>
 
-O(n log n). Outer loop runs log n times (i doubles), inner loop runs n times each.
+O(n log n). Outer loop runs log n times (since `i` doubles each step), inner loop runs exactly n times for each outer loop iteration.
 
 </details>
 
 ```python
 # Problem 2: What's the complexity?
-def mystery2(arr):
+def mystery2(arr: list[int]) -> None:
     n = len(arr)
     for i in range(n):
         for j in range(i, n):
@@ -453,7 +461,7 @@ O(n³). Three nested loops. More precisely, it's n(n+1)(n+2)/6 ≈ n³/6, but co
 
 ```python
 # Problem 3: What's the complexity?
-def mystery3(arr):
+def mystery3(arr: list[int]) -> list[int]:
     n = len(arr)
     result = []
     for i in range(n):
