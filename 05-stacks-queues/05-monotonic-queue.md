@@ -13,8 +13,7 @@ A monotonic queue (or monotonic deque) is a double-ended queue that maintains el
 The key insight is recognizing which elements can never be the answer:
 
 1. **Dominance principle**: In a window, if element A comes before element B and A ≤ B, then A can never be the maximum of any window containing B. Why? Because any window containing A also contains B (since B comes after A), and B ≥ A.
-
-2. **Expiration principle**: Elements outside the current window are irrelevant. We need to efficiently remove them.
+2. **Expiration principle**: Elements outside the current window are irrelevant. We need to efficiently remove them as the window slides.
 
 **The Core Insight**:
 
@@ -52,15 +51,15 @@ i=4: 5 > -3, pop 3   deque: [1,2]
 
 **Why We Need a Deque (Not Just Stack)**:
 
-- **Pop from back**: Remove elements smaller than the new element (maintaining monotonic property)
-- **Pop from front**: Remove elements outside the window (maintaining window constraint)
+- **Pop from back**: Remove elements smaller than the new element (maintaining the monotonic property)
+- **Pop from front**: Remove elements outside the window (enforcing the window constraint)
 - A stack only allows pop from one end, but we need both!
 
 **Mental Model**: Imagine a "hall of champions" where only potential winners stay. When a new contender arrives:
 
-1. Anyone weaker (to the right of the door) is kicked out—they'll never win
-2. Anyone whose time has passed (too old) leaves through the other door
-3. The current champion (front) is the window maximum
+1. Anyone weaker (to the right of the door) is kicked out—they will never win.
+2. Anyone whose time has passed (too old) leaves through the other door.
+3. The current champion (front) is the window maximum.
 
 ## When NOT to Use Monotonic Deques
 
@@ -88,10 +87,10 @@ Monotonic deques are the wrong choice when:
 
 The sliding window maximum problem is a **classic hard problem** at FANG+ companies because:
 
-1. **Non-obvious optimization**: Brute force is $\mathcal{O}(n \cdot k)$, optimal is $\Theta(n)$
-2. **Deque mastery**: Tests understanding of double-ended queue operations
-3. **Monotonic property**: Combines queue structure with monotonic invariant
-4. **Real-world applications**: Rate limiting, time-series analysis, streaming data
+1. **Non-obvious optimization**: Brute force is $\mathcal{O}(n \cdot k)$, optimal is $\Theta(n)$.
+2. **Deque mastery**: Tests understanding of double-ended queue operations.
+3. **Monotonic property**: Combines a queue structure with a monotonic invariant.
+4. **Real-world applications**: Rate limiting, time-series analysis, streaming data.
 
 Interviewers use this to assess your ability to optimize beyond the naive approach.
 
@@ -131,7 +130,7 @@ Output: [3, 3, 5, 5, 6, 7]
 
 ## Core Concept: Monotonic Deque
 
-A monotonic deque maintains elements in decreasing order (front to back). The front always holds the current maximum.
+A monotonic deque maintains elements in decreasing order (front to back). The front always holds the index of the current maximum value.
 
 ```
 Key insight: If nums[i] >= nums[j] and i > j, then nums[j] can never be
@@ -176,7 +175,7 @@ def max_sliding_window(nums: List[int], k: int) -> List[int]:
     if not nums or k == 0:
         return []
 
-    dq = deque()  # Store indices, values are monotonic decreasing
+    dq = deque()  # Stores indices of elements, values are monotonically decreasing
     result = []
 
     for i in range(len(nums)):
@@ -269,7 +268,7 @@ def min_sliding_window(nums: List[int], k: int) -> List[int]:
     if not nums or k == 0:
         return []
 
-    dq = deque()  # Store indices, values are monotonic increasing
+    dq = deque()  # Stores indices of elements, values are monotonically increasing
     result = []
 
     for i in range(len(nums)):
@@ -353,7 +352,7 @@ def shortest_subarray(nums: List[int], k: int) -> int:
         prefix[i + 1] = prefix[i] + nums[i]
 
     result = float('inf')
-    dq = deque()  # Monotonic increasing of prefix values
+    dq = deque()  # Monotonically increasing order of prefix sums
 
     for i in range(n + 1):
         # Check if we found a valid subarray
@@ -395,7 +394,7 @@ def max_result(nums: List[int], k: int) -> int:
     n = len(nums)
     dp = [0] * n
     dp[0] = nums[0]
-    dq = deque([0])  # Monotonic decreasing of dp values
+    dq = deque([0])  # Stores indices, DP values are monotonically decreasing
 
     for i in range(1, n):
         # Remove indices outside jump range
@@ -438,7 +437,7 @@ def constrained_subset_sum(nums: List[int], k: int) -> int:
     """
     n = len(nums)
     dp = nums[:]  # dp[i] = max sum ending at i
-    dq = deque()  # Monotonic decreasing of dp values
+    dq = deque()  # Stores indices, DP values are monotonically decreasing
 
     for i in range(n):
         # Remove indices outside range
@@ -509,7 +508,7 @@ def monotonic_deque_template(nums: List[int], k: int) -> List[int]:
 | Per element        | $\mathcal{O}(1)$ amortized | Constant work on average        |
 | Space              | $\mathcal{O}(k)$           | Deque stores at most k indices  |
 
-**Why $\Theta(n)$?** Each index is added to deque exactly once and removed at most once (either from front when out of window, or from back when a larger element arrives). Total operations = $2n = \Theta(n)$.
+**Why $\Theta(n)$?** Each index is added to the deque exactly once and removed at most once (either from the front when it falls out of the window, or from the back when a larger/smaller element arrives). The total number of operations is proportional to the number of elements, resulting in a strictly linear runtime bound.
 
 ---
 
@@ -541,10 +540,10 @@ nums = [5, 4, 3, 2, 1], k = 3
 
 ## Common Mistakes
 
-1. **Using wrong end**: `popleft()` for window expiry, `pop()` for monotonic property
-2. **Off-by-one**: Window starts recording at `i >= k - 1`, not `i >= k`
-3. **Storing values vs indices**: Store indices to check window bounds
-4. **Wrong comparison**: `<` for max, `>` for min
+1. **Using wrong end**: `popleft()` for window expiry, `pop()` for the monotonic property.
+2. **Off-by-one**: Window starts recording at `i >= k - 1`, not `i >= k`.
+3. **Storing values vs indices**: Store indices to check window bounds.
+4. **Wrong comparison**: `<` for max, `>` for min.
 
 ---
 
@@ -563,11 +562,11 @@ nums = [5, 4, 3, 2, 1], k = 3
 
 ## Key Takeaways
 
-1. **$\Theta(n)$ sliding window max/min**: Monotonic deque is the optimal approach
-2. **Store indices**: Allows checking if element is within window
-3. **Two removals**: Front for window expiry, back for monotonic property
-4. **Deque operations**: `popleft()` and `pop()` both $\mathcal{O}(1)$
-5. **DP optimization**: Many DP problems with range constraints use this pattern
+1. **$\Theta(n)$ sliding window max/min**: Monotonic deque is the optimal approach.
+2. **Store indices**: Allows checking if an element is within the window.
+3. **Two removals**: Front for window expiry, back for the monotonic property.
+4. **Deque operations**: `popleft()` and `pop()` are both $\mathcal{O}(1)$.
+5. **DP optimization**: Many DP problems with range constraints use this pattern.
 
 ---
 

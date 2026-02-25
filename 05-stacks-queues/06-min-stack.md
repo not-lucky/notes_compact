@@ -4,13 +4,13 @@
 
 ## Overview
 
-The Min Stack problem asks you to design a stack that supports push, pop, top, and retrieving the minimum element—all in $\Theta(1)$ time. The key insight is that we can trade space for time by tracking the minimum at each "level" of the stack, since the minimum only changes when we push or pop.
+The Min Stack problem asks you to design a stack that supports push, pop, top, and retrieving the minimum element—all in $\mathcal{O}(1)$ time. The key insight is that we can trade space for time by tracking the minimum at each "level" of the stack, since the minimum only changes when we push or pop.
 
 ## Building Intuition
 
 **Why is tracking the minimum hard?**
 
-In a normal stack, finding the minimum requires scanning all elements—$\Theta(n)$. The challenge is maintaining $\Theta(1)$ access to the minimum as elements come and go.
+In a normal stack, finding the minimum requires scanning all elements—$\mathcal{O}(n)$. The challenge is maintaining $\mathcal{O}(1)$ access to the minimum as elements come and go.
 
 **The Key Insight**:
 
@@ -66,7 +66,7 @@ The auxiliary stack pattern is wrong when:
 
 1. **Need Other Statistics**: If you need median, mode, or percentiles (not just min/max), you need different structures like balanced BSTs or multiple heaps.
 
-2. **Memory is Critical**: The auxiliary stack doubles memory usage. In memory-constrained environments, the mathematical encoding trick (storing differences) uses $\Theta(1)$ extra space.
+2. **Memory is Critical**: The auxiliary stack doubles memory usage. In memory-constrained environments, the mathematical encoding trick (storing differences) uses $\mathcal{O}(1)$ extra space.
 
 3. **Need to Pop Specific Values**: If you need `popMin()` or `popMax()` (remove the min/max element wherever it is), you need sorted structures like balanced BSTs with lazy deletion.
 
@@ -105,7 +105,7 @@ Design a stack that supports:
 - `top()` — Get top element
 - `getMin()` — Retrieve minimum element
 
-**Constraint**: All operations must be $\Theta(1)$ time complexity.
+**Constraint**: All operations must be $\mathcal{O}(1)$ time complexity.
 
 ```
 Example:
@@ -125,10 +125,10 @@ minStack.top();      // Returns 0
 
 | Approach                | push | pop  | getMin  | Space  |
 | ----------------------- | ---- | ---- | ------- | ------ |
-| Brute force (scan)      | $\Theta(1)$ | $\Theta(1)$ | $\Theta(n)$ ❌ | $\Theta(n)$   |
-| Two stacks              | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ ✓  | $\Theta(n)$   |
-| Single stack with pairs | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ ✓  | $\Theta(n)$   |
-| Single stack optimized  | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ ✓  | $\Theta(n)$* |
+| Brute force (scan)      | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(n)$ ❌ | $\mathcal{O}(n)$   |
+| Two stacks              | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ ✓  | $\mathcal{O}(n)$   |
+| Single stack with pairs | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ ✓  | $\mathcal{O}(n)$   |
+| Single stack optimized  | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ ✓  | $\mathcal{O}(n)$* |
 
 *Better space in practice for many duplicates
 
@@ -141,8 +141,8 @@ class MinStack:
     """
     Min stack using auxiliary stack to track minimums.
 
-    Time: $\Theta(1)$ for all operations
-    Space: $\Theta(n)$ for main stack + $\Theta(n)$ for min stack
+    Time: $\mathcal{O}(1)$ for all operations
+    Space: $\mathcal{O}(n)$ for main stack + $\mathcal{O}(n)$ for min stack
     """
     def __init__(self):
         self.stack: list[int] = []
@@ -186,8 +186,8 @@ class MinStack:
     """
     Store (value, current_min) pairs in single stack.
 
-    Time: $\Theta(1)$ for all operations
-    Space: $\Theta(n)$ - 2 values per element
+    Time: $\mathcal{O}(1)$ for all operations
+    Space: $\mathcal{O}(n)$ - 2 values per element
     """
     def __init__(self):
         self.stack: list[tuple[int, int]] = []  # List of (value, min_at_this_level)
@@ -219,8 +219,8 @@ class MinStack:
     """
     Only push to min_stack when min changes.
 
-    Time: $\Theta(1)$ for all operations
-    Space: $\Theta(n)$ worst case, but often better
+    Time: $\mathcal{O}(1)$ for all operations
+    Space: $\mathcal{O}(n)$ worst case, but often better
     """
     def __init__(self):
         self.stack: list[int] = []
@@ -262,12 +262,12 @@ from typing import Optional
 
 class MinStack:
     """
-    $\Theta(1)$ extra space using mathematical encoding.
+    $\mathcal{O}(1)$ extra space using mathematical encoding.
 
     Stores difference between value and min.
 
-    Time: $\Theta(1)$ for all operations
-    Space: $\Theta(n)$ for stack, $\Theta(1)$ extra
+    Time: $\mathcal{O}(1)$ for all operations
+    Space: $\mathcal{O}(n)$ for stack, $\mathcal{O}(1)$ extra
     """
     def __init__(self):
         self.stack: list[int] = []
@@ -327,7 +327,7 @@ Same idea, just track maximum instead.
 ```python
 class MaxStack:
     """
-    Stack with $\Theta(1)$ getMax.
+    Stack with $\mathcal{O}(1)$ getMax.
     """
     def __init__(self):
         self.stack: list[int] = []
@@ -367,8 +367,8 @@ class MaxStackWithPopMax:
     Uses doubly linked list + sorted structure (SortedList is from sortedcontainers).
     The SortedList acts like a balanced BST, maintaining sorted order.
 
-    Time: $\Theta(\log n)$ for push, pop, popMax
-    Space: $\Theta(n)$
+    Time: $\mathcal{O}(\log n)$ for push, pop, popMax
+    Space: $\mathcal{O}(n)$
     """
     def __init__(self):
         self.stack: list[tuple[int, int]] = []  # List of (value, id)
@@ -420,10 +420,10 @@ from collections import deque
 
 class MinQueue:
     """
-    Queue with $\Theta(1)$ getMin using monotonic deque.
+    Queue with $\mathcal{O}(1)$ getMin using monotonic deque.
 
-    Time: $\Theta(1)$ amortized for all operations
-    Space: $\Theta(n)$
+    Time: $\mathcal{O}(1)$ amortized for all operations
+    Space: $\mathcal{O}(n)$
     """
     def __init__(self):
         self.queue: deque[int] = deque()
@@ -455,11 +455,11 @@ class MinQueue:
 
 | Operation | Two Stacks  | Pairs       | Optimized   | Math Trick      |
 | --------- | ----------- | ----------- | ----------- | --------------- |
-| push      | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$     |
-| pop       | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$     |
-| top       | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$     |
-| getMin    | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(1)$     |
-| Space     | $2n$        | $2n$        | $n$ to $2n$ | $n + \Theta(1)$ |
+| push      | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$     |
+| pop       | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$     |
+| top       | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$     |
+| getMin    | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$     |
+| Space     | $\mathcal{O}(n)$        | $\mathcal{O}(n)$        | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ extra |
 
 ---
 
@@ -524,7 +524,7 @@ ms.push(3)  # min = 1
 1. **Start with two stacks**: Clearest to explain and implement
 2. **Mention optimization**: Shows awareness of space-time tradeoffs
 3. **Handle duplicates**: Critical for the optimized version (use `<=` instead of `<`)
-4. **Discuss the math trick**: Shows deep understanding (if asked about $\Theta(1)$ auxiliary space)
+4. **Discuss the math trick**: Shows deep understanding (if asked about $\mathcal{O}(1)$ auxiliary space)
 
 ---
 
@@ -542,10 +542,10 @@ ms.push(3)  # min = 1
 
 ## Key Takeaways
 
-1. **Auxiliary stack**: Track min at each level for $\Theta(1)$ getMin
+1. **Auxiliary stack**: Track min at each level for $\mathcal{O}(1)$ getMin
 2. **Space optimization**: Only store when min changes
 3. **Handle duplicates**: Use `<=` not `<` in optimized version
-4. **Math trick**: Encode information in differences for $\Theta(1)$ extra space
+4. **Math trick**: Encode information in differences for $\mathcal{O}(1)$ extra space
 5. **Same pattern for max**: Just flip the comparisons
 
 ---

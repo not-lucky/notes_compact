@@ -119,11 +119,11 @@ returns 1   returns 2
 
 | Operation            | Description                           | Time Complexity |
 | -------------------- | ------------------------------------- | --------------- |
-| `enqueue(x)`         | Add element to rear                   | $\Theta(1)$            |
-| `dequeue()`          | Remove and return front element       | $\Theta(1)$*          |
-| `front()` / `peek()` | Return front element without removing | $\Theta(1)$            |
-| `isEmpty()`          | Check if queue is empty               | $\Theta(1)$            |
-| `size()`             | Return number of elements             | $\Theta(1)$            |
+| `enqueue(x)`         | Add element to rear                   | $\Theta(1)$      |
+| `dequeue()`          | Remove and return front element       | $\Theta(1)$*     |
+| `front()` / `peek()` | Return front element without removing | $\Theta(1)$      |
+| `isEmpty()`          | Check if queue is empty               | $\Theta(1)$      |
+| `size()`             | Return number of elements             | $\Theta(1)$      |
 
 *$\Theta(1)$ with deque, $\Theta(n)$ with list
 
@@ -348,8 +348,8 @@ def bfs(graph: dict[str, list[str]], start: str) -> list[str]:
     """
     Breadth-first search using queue.
 
-    Time Complexity: $\mathcal{O}(V + E)$
-    Space Complexity: $\mathcal{O}(V)$
+    Time Complexity: $\Theta(V + E)$
+    Space Complexity: $\Theta(V)$
     """
     visited = {start}
     result = []
@@ -455,8 +455,8 @@ class RecentCounter:
     """
     Count requests in the last 3000 milliseconds.
 
-    Time Complexity: $\mathcal{O}(1)$ amortized
-    Space Complexity: $\mathcal{O}(w)$ where w is the number of requests in window
+    Time Complexity: $\Theta(1)$ amortized
+    Space Complexity: $\Theta(w)$ where w is the number of requests in window
     """
     def __init__(self):
         self.requests = deque()
@@ -515,12 +515,12 @@ if dq:
 
 ## Complexity Summary
 
-| Implementation | enqueue | dequeue | front | Space |
-| -------------- | ------- | ------- | ----- | ----- |
-| List (bad)     | $\Theta(1)$    | $\Theta(n)$ ⚠️ | $\Theta(1)$  | $\Theta(n)$  |
-| deque          | $\Theta(1)$    | $\Theta(1)$    | $\Theta(1)$  | $\Theta(n)$  |
-| Circular array | $\Theta(1)$    | $\Theta(1)$    | $\Theta(1)$  | $\Theta(k)$  |
-| Linked list    | $\Theta(1)$*  | $\Theta(1)$    | $\Theta(1)$  | $\Theta(n)$  |
+| Implementation | enqueue      | dequeue        | front       | Space       |
+| -------------- | ------------ | -------------- | ----------- | ----------- |
+| List (bad)     | $\Theta(1)$  | $\Theta(n)$ ⚠️ | $\Theta(1)$ | $\Theta(n)$ |
+| deque          | $\Theta(1)$  | $\Theta(1)$    | $\Theta(1)$ | $\Theta(n)$ |
+| Circular array | $\Theta(1)$  | $\Theta(1)$    | $\Theta(1)$ | $\Theta(k)$ |
+| Linked list    | $\Theta(1)$* | $\Theta(1)$    | $\Theta(1)$ | $\Theta(n)$ |
 
 *With tail pointer
 

@@ -301,6 +301,7 @@ class StockSpanner:
 
     def next(self, price: int) -> int:
         span = 1
+        # Pop prices smaller or equal to current price, adding their span
         while self.stack and self.stack[-1][0] <= price:
             span += self.stack.pop()[1]
         self.stack.append((price, span))
@@ -377,9 +378,10 @@ def sum_of_subarray_mins(arr: list[int]) -> int:
         left[i] = i - stack[-1] if stack else i + 1
         stack.append(i)
 
-    stack = []
+    # Clear stack for the second pass
+    stack.clear()
 
-    # Find next smaller (or equal to handle duplicates)
+    # Find next smaller (or equal to handle duplicates properly)
     for i in range(n - 1, -1, -1):
         while stack and arr[stack[-1]] > arr[i]:
             stack.pop()
@@ -441,7 +443,8 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
     Modify the comparison for different problems.
     """
     n = len(nums)
-    result = [default_value] * n
+    # Result array initialized with a default value (e.g., -1 for not found)
+    result = [-1] * n
     stack = []  # Stack of indices
 
     for i in range(n):
@@ -450,7 +453,8 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
         # <= or >= to handle duplicates
         while stack and nums[stack[-1]] < nums[i]:
             idx = stack.pop()
-            result[idx] = some_computation(i, idx, nums)
+            # Compute result logic depending on problem (e.g., store index, value, or distance)
+            result[idx] = nums[i]
         stack.append(i)
 
     return result
@@ -462,8 +466,8 @@ def monotonic_stack_template(nums: list[int]) -> list[int]:
 
 | Operation               | Time | Space |
 | ----------------------- | ---- | ----- |
-| Build monotonic stack   | $\mathcal{O}(n)$ | $\mathcal{O}(n)$  |
-| Per element (amortized) | $\mathcal{O}(1)$ | -     |
+| Build monotonic stack   | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ |
+| Per element (amortized) | $\mathcal{O}(1)$ | -                |
 
 **Why $\mathcal{O}(n)$?** Each element is pushed exactly once and popped at most once. Total operations = $2n = \mathcal{O}(n)$.
 

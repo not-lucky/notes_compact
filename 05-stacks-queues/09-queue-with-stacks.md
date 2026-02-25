@@ -4,7 +4,7 @@
 
 ## Overview
 
-This problem asks you to implement a queue (FIFO) using only stack (LIFO) operations. Unlike stack-with-queues, this problem has an elegant $\Theta(1)$ amortized solution! The key insight is that two stacks can simulate a queue: reversing LIFO ordering twice gives FIFO ordering.
+This problem asks you to implement a queue (FIFO) using only stack (LIFO) operations. Unlike stack-with-queues, this problem has an elegant $\mathcal{O}(1)$ amortized solution! The key insight is that two stacks can simulate a queue: reversing LIFO ordering twice gives FIFO ordering.
 
 ## Building Intuition
 
@@ -50,25 +50,25 @@ pop():   output empty → transfer!
          return 3
 ```
 
-**Why $\Theta(1)$ Amortized?**
+**Why $\mathcal{O}(1)$ Amortized?**
 
 The clever part: we only transfer when output is empty.
 
 ```text
 Trace for n pushes followed by n pops:
-- Push phase: n × $\Theta(1)$ = $\Theta(n)$
-- First pop: Transfer n elements $\Theta(n)$ + pop $\Theta(1)$
-- Next n-1 pops: (n-1) × $\Theta(1)$ = $\Theta(n-1)$
+- Push phase: n × $\mathcal{O}(1)$ = $\mathcal{O}(n)$
+- First pop: Transfer n elements $\mathcal{O}(n)$ + pop $\mathcal{O}(1)$
+- Next n-1 pops: (n-1) × $\mathcal{O}(1)$ = $\mathcal{O}(n-1)$
 
-Total: $\Theta(n)$ + $\Theta(n)$ + $\Theta(n)$ = $\Theta(3n)$
-Average per operation: $\Theta(3n)$ / 2n = $\Theta(1)$ amortized!
+Total: $\mathcal{O}(n)$ + $\mathcal{O}(n)$ + $\mathcal{O}(n)$ = $\mathcal{O}(3n)$
+Average per operation: $\mathcal{O}(3n)$ / 2n = $\mathcal{O}(1)$ amortized!
 ```
 
 Each element moves at most 3 times total:
 
-1. Push to input: $\Theta(1)$
-2. Transfer to output: $\Theta(1)$ per element
-3. Pop from output: $\Theta(1)$
+1. Push to input: $\mathcal{O}(1)$
+2. Transfer to output: $\mathcal{O}(1)$ per element
+3. Pop from output: $\mathcal{O}(1)$
 
 **Mental Model**: Think of two buckets connected by a pipe. New balls go in the left bucket (input stack). When you need a ball from the right bucket (output stack) and it's empty, you flip the left bucket over into the right bucket. Now the balls are in FIFO order in the right bucket!
 
@@ -78,7 +78,7 @@ The two-stack queue is wrong when:
 
 1. **You Have a Queue Available**: Like stack-with-queues, this is educational. Use `collections.deque` in production.
 
-2. **Worst-Case $\mathcal{O}(1)$ is Required**: While amortized $\Theta(1)$, individual operations can be $\mathcal{O}(n)$ during transfer. For real-time systems, use a linked-list queue.
+2. **Worst-Case $\mathcal{O}(1)$ is Required**: While amortized $\mathcal{O}(1)$, individual operations can be $\mathcal{O}(n)$ during transfer. For real-time systems, use a linked-list queue.
 
 3. **Memory Locality Matters**: Two stacks = two arrays = poor cache performance compared to a single circular buffer.
 
@@ -93,7 +93,7 @@ The two-stack queue is wrong when:
 **Comparison with Stack-with-Queues**:
 | Aspect | Queue with Stacks | Stack with Queues |
 |--------|-------------------|-------------------|
-| Best amortized | $\Theta(1)$ ✓ | $\Theta(n)$ ✗ |
+| Best amortized | $\mathcal{O}(1)$ ✓ | $\mathcal{O}(n)$ ✗ |
 | Key insight | Lazy transfer | Must rotate |
 | Practicality | More elegant | Less elegant |
 
@@ -101,7 +101,7 @@ The two-stack queue is wrong when:
 
 This problem is a **classic design question** at FANG+ companies because:
 
-1. **Amortized analysis**: The optimal solution has $\Theta(1)$ amortized operations
+1. **Amortized analysis**: The optimal solution has $\mathcal{O}(1)$ amortized operations
 2. **Lazy evaluation**: Demonstrates deferred computation pattern
 3. **Real-world relevance**: Many systems use this pattern (e.g., message queues)
 4. **Follow-up rich**: Leads to discussions about worst-case vs amortized complexity
@@ -127,11 +127,11 @@ Implement a queue using only stack operations:
 
 | Approach                 | push | pop    | peek   | Space |
 | ------------------------ | ---- | ------ | ------ | ----- |
-| Two stacks (push costly) | $\Theta(n)$ | $\Theta(1)$   | $\Theta(1)$   | $\Theta(n)$  |
-| Two stacks (pop costly)  | $\Theta(1)$ | $\Theta(n)$   | $\Theta(n)$   | $\Theta(n)$  |
-| Two stacks (amortized)   | $\Theta(1)$ | $\Theta(1)$* | $\Theta(1)$* | $\Theta(n)$  |
+| Two stacks (push costly) | $\mathcal{O}(n)$ | $\mathcal{O}(1)$   | $\mathcal{O}(1)$   | $\mathcal{O}(n)$  |
+| Two stacks (pop costly)  | $\mathcal{O}(1)$ | $\mathcal{O}(n)$   | $\mathcal{O}(n)$   | $\mathcal{O}(n)$  |
+| Two stacks (amortized)   | $\mathcal{O}(1)$ | $\mathcal{O}(1)$* | $\mathcal{O}(1)$* | $\mathcal{O}(n)$  |
 
-\*Amortized $\Theta(1)$
+\*Amortized $\mathcal{O}(1)$
 
 ---
 
@@ -140,13 +140,13 @@ Implement a queue using only stack operations:
 ```python
 class MyQueue:
     """
-    Queue using two stacks with $\Theta(1)$ amortized operations.
+    Queue using two stacks with $\mathcal{O}(1)$ amortized operations.
 
     Idea: Use input stack for push, output stack for pop.
     Only transfer when output is empty.
 
-    Time Complexity: push $\Theta(1)$, pop/peek $\Theta(1)$ amortized
-    Space Complexity: $\Theta(n)$
+    Time Complexity: push $\mathcal{O}(1)$, pop/peek $\mathcal{O}(1)$ amortized
+    Space Complexity: $\mathcal{O}(n)$
     """
     def __init__(self):
         self.input_stack = []   # For push operations
@@ -229,27 +229,27 @@ push(4), then pop():
 
 ## Amortized Analysis
 
-Why is pop/peek $\Theta(1)$ amortized?
+Why is pop/peek $\mathcal{O}(1)$ amortized?
 
 ```text
 Consider n push operations followed by n pop operations:
 
 Push phase (n operations):
-- Each push is $\Theta(1)$
-- Total: $\Theta(n)$
+- Each push is $\mathcal{O}(1)$
+- Total: $\mathcal{O}(n)$
 
 Pop phase (n operations):
-- First pop: Transfer n elements $\Theta(n)$ + pop $\Theta(1)$
-- Remaining n-1 pops: Each is $\Theta(1)$
-- Total: $\Theta(n)$ + $\Theta(n-1)$ = $\Theta(n)$
+- First pop: Transfer n elements $\mathcal{O}(n)$ + pop $\mathcal{O}(1)$
+- Remaining n-1 pops: Each is $\mathcal{O}(1)$
+- Total: $\mathcal{O}(n)$ + $\mathcal{O}(n-1)$ = $\mathcal{O}(n)$
 
-Total for 2n operations: $\Theta(n)$ + $\Theta(n)$ = $\Theta(2n)$
-Amortized per operation: $\Theta(1)$
+Total for 2n operations: $\mathcal{O}(n)$ + $\mathcal{O}(n)$ = $\mathcal{O}(2n)$
+Amortized per operation: $\mathcal{O}(1)$
 
-Key insight: Each element is pushed to input_stack once ($\Theta(1)$),
-transferred to output_stack once ($\Theta(1)$ per element),
-and popped from output_stack once ($\Theta(1)$).
-Total: $\Theta(3)$ per element = $\Theta(1)$ amortized.
+Key insight: Each element is pushed to input_stack once ($\mathcal{O}(1)$),
+transferred to output_stack once ($\mathcal{O}(1)$ per element),
+and popped from output_stack once ($\mathcal{O}(1)$).
+Total: $\mathcal{O}(3)$ per element = $\mathcal{O}(1)$ amortized.
 ```
 
 ---
@@ -261,8 +261,8 @@ class MyQueue:
     """
     Queue using two stacks, costly push.
 
-    Time Complexity: push $\Theta(n)$, pop $\Theta(1)$, peek $\Theta(1)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: push $\mathcal{O}(n)$, pop $\mathcal{O}(1)$, peek $\mathcal{O}(1)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     def __init__(self):
         self.s1 = []  # Main stack (newest at bottom)
@@ -299,8 +299,8 @@ class MyQueue:
     """
     Queue using two stacks, costly pop/peek.
 
-    Time Complexity: push $\Theta(1)$, pop $\Theta(n)$, peek $\Theta(n)$
-    Space Complexity: $\Theta(n)$
+    Time Complexity: push $\mathcal{O}(1)$, pop $\mathcal{O}(n)$, peek $\mathcal{O}(n)$
+    Space Complexity: $\mathcal{O}(n)$
     """
     def __init__(self):
         self.s1 = []  # For push
@@ -346,9 +346,9 @@ Scenario: n push, then n pop (interleaved or sequential)
 
 Approach           | Total Operations | Amortized per op
 -------------------|------------------|------------------
-Push costly        | $\Theta(n^2)$    | $\Theta(n)$ push, $\Theta(1)$ pop
-Pop costly         | $\Theta(n^2)$    | $\Theta(1)$ push, $\Theta(n)$ pop
-Amortized (lazy)   | $\Theta(n)$      | $\Theta(1)$ push, $\Theta(1)$ pop*
+Push costly        | $\mathcal{O}(n^2)$    | $\mathcal{O}(n)$ push, $\mathcal{O}(1)$ pop
+Pop costly         | $\mathcal{O}(n^2)$    | $\mathcal{O}(1)$ push, $\mathcal{O}(n)$ pop
+Amortized (lazy)   | $\mathcal{O}(n)$      | $\mathcal{O}(1)$ push, $\mathcal{O}(1)$ pop*
 
 *amortized
 
@@ -404,7 +404,7 @@ for i in range(1000):
 
 ### Q: What's the worst-case for a single pop?
 
-A: $\mathcal{O}(n)$ when output stack is empty and we need to transfer. But amortized is $\Theta(1)$.
+A: $\mathcal{O}(n)$ when output stack is empty and we need to transfer. But amortized is $\mathcal{O}(1)$.
 
 ### Q: Can we guarantee $\mathcal{O}(1)$ worst-case?
 
@@ -420,9 +420,9 @@ A: `collections.deque` is $\mathcal{O}(1)$ worst-case for both ends. This is use
 
 | Aspect                      | Queue using Stacks  | Stack using Queues |
 | --------------------------- | ------------------- | ------------------ |
-| Best solution               | Amortized $\Theta(1)$ both | $\mathcal{O}(n)$ push or pop   |
+| Best solution               | Amortized $\mathcal{O}(1)$ both | $\mathcal{O}(n)$ push or pop   |
 | Key insight                 | Lazy transfer       | Must rotate        |
-| Can achieve $\Theta(1)$ amortized? | Yes                 | No                 |
+| Can achieve $\mathcal{O}(1)$ amortized? | Yes                 | No                 |
 
 The queue using stacks has a better solution because:
 
@@ -444,11 +444,11 @@ The queue using stacks has a better solution because:
 
 ## Key Takeaways
 
-1. **Amortized $\Theta(1)$**: The lazy transfer approach achieves optimal performance
+1. **Amortized $\mathcal{O}(1)$**: The lazy transfer approach achieves optimal performance
 2. **Two stacks reverse order**: LIFO + LIFO = FIFO (stack reversal)
 3. **Lazy evaluation wins**: Only transfer when output is empty
 4. **Each element moves 3 times**: Push to input (1), transfer to output (2), pop from output (3)
-5. **Worst-case vs amortized**: Single pop can be $\mathcal{O}(n)$, but amortized is $\Theta(1)$
+5. **Worst-case vs amortized**: Single pop can be $\mathcal{O}(n)$, but amortized is $\mathcal{O}(1)$
 
 ---
 

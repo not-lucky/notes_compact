@@ -32,7 +32,7 @@ incomplete item must be resolved before returning to earlier items.
 - **Undo systems**: The most recent action is undone first
 - **DFS traversal**: The most recently discovered path is explored first
 
-**Mental Model**: Imagine a narrow pipe where you can only add or remove balls from one end. This constraint forces LIFO ordering. The "cost" of this constraint is that you can't access middle elements. The "benefit" is that push/pop are $\mathcal{O}(1)$ and you automatically get LIFO ordering without any bookkeeping.
+**Mental Model**: Imagine a narrow pipe where you can only add or remove balls from one end. This constraint forces LIFO ordering. The "cost" of this constraint is that you can't access middle elements. The "benefit" is that push/pop are $\Theta(1)$ and you automatically get LIFO ordering without any bookkeeping.
 
 ## When NOT to Use Stacks
 
@@ -101,11 +101,11 @@ Stack operations:
 
 | Operation          | Description                         | Time Complexity |
 | ------------------ | ----------------------------------- | --------------- |
-| `push(x)`          | Add element to top                  | $\mathcal{O}(1)$*       |
-| `pop()`            | Remove and return top element       | $\mathcal{O}(1)$        |
-| `peek()` / `top()` | Return top element without removing | $\mathcal{O}(1)$        |
-| `isEmpty()`        | Check if stack is empty             | $\mathcal{O}(1)$        |
-| `size()`           | Return number of elements           | $\mathcal{O}(1)$        |
+| `push(x)`          | Add element to top                  | $\Theta(1)$*       |
+| `pop()`            | Remove and return top element       | $\Theta(1)$        |
+| `peek()` / `top()` | Return top element without removing | $\Theta(1)$        |
+| `isEmpty()`        | Check if stack is empty             | $\Theta(1)$        |
+| `size()`           | Return number of elements           | $\Theta(1)$        |
 
 \*Amortized for dynamic arrays
 
@@ -150,7 +150,7 @@ class Stack:
     r"""
     Stack implementation using Python list.
 
-    All operations are $\mathcal{O}(1)$ amortized.
+    All operations are $\Theta(1)$ amortized.
     """
     def __init__(self):
         self._items: list[Any] = []
@@ -202,7 +202,7 @@ from collections import deque
 from typing import Deque
 
 # deque can also be used as stack (append/pop from right)
-# Unlike lists, deque operations are strictly $\mathcal{O}(1)$ non-amortized,
+# Unlike lists, deque operations are strictly $\Theta(1)$ non-amortized,
 # because deque is implemented as a doubly linked list in Python.
 stack_deque: Deque[int] = deque()
 
@@ -223,8 +223,8 @@ def is_valid_parentheses(s: str) -> bool:
     r"""
     Check if parentheses are valid.
 
-    Time: $\mathcal{O}(n)$
-    Space: $\mathcal{O}(n)$
+    Time: $\Theta(n)$
+    Space: $\Theta(n)$
     """
     stack: list[str] = []
     mapping = {")": "(", "}": "{", "]": "["}
@@ -249,8 +249,8 @@ def reverse_string(s: str) -> str:
     r"""
     Reverse string using stack.
 
-    Time: $\mathcal{O}(n)$
-    Space: $\mathcal{O}(n)$
+    Time: $\Theta(n)$
+    Space: $\Theta(n)$
     """
     stack = list(s)  # Push all characters
     result: list[str] = []
@@ -273,7 +273,7 @@ class TextEditor:
 
     def write(self, chars: str) -> None:
         self.history.append(self.text)  # Save current state
-        self.text += chars  # Note: string concatenation is O(n). A real editor uses more complex structures.
+        self.text += chars  # Note: string concatenation is $\Theta(n)$. A real editor uses more complex structures.
 
     def delete(self, k: int) -> None:
         self.history.append(self.text)
@@ -291,8 +291,8 @@ def dfs_iterative(graph: dict[str, list[str]], start: str) -> list[str]:
     r"""
     Iterative DFS using explicit stack.
 
-    Time: $\mathcal{O}(V + E)$
-    Space: $\mathcal{O}(V)$
+    Time: $\Theta(V + E)$
+    Space: $\Theta(V)$
     """
     visited = set()
     result = []
@@ -317,17 +317,17 @@ def dfs_iterative(graph: dict[str, list[str]], start: str) -> list[str]:
 
 | Operation | List-based | Linked List-based |
 | --------- | ---------- | ----------------- |
-| push      | $\mathcal{O}(1)$* | $\mathcal{O}(1)$         |
-| pop       | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
-| peek      | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
-| isEmpty   | $\mathcal{O}(1)$  | $\mathcal{O}(1)$         |
-| Space     | $\mathcal{O}(n)$  | $\mathcal{O}(n)$         |
+| push      | $\Theta(1)$* | $\Theta(1)$         |
+| pop       | $\Theta(1)$  | $\Theta(1)$         |
+| peek      | $\Theta(1)$  | $\Theta(1)$         |
+| isEmpty   | $\Theta(1)$  | $\Theta(1)$         |
+| Space     | $\Theta(n)$  | $\Theta(n)$         |
 
-\*Amortized - occasional $\mathcal{O}(n)$ when resizing
+\*Amortized - occasional $\Theta(n)$ when resizing
 
 ### Why Python List Works Well
 
-- `append()` and `pop()` operate at the end - $\mathcal{O}(1)$ amortized
+- `append()` and `pop()` operate at the end - $\Theta(1)$ amortized
 - Dynamic resizing handled automatically
 - Simple and clean syntax
 
@@ -392,7 +392,7 @@ class ListNode:
         self.next = next
 
 class LinkedStack:
-    r"""Stack using linked list - $\mathcal{O}(1)$ guaranteed (no resizing)."""
+    r"""Stack using linked list - $\Theta(1)$ guaranteed (no resizing)."""
 
     def __init__(self):
         self.head: Optional[ListNode] = None
@@ -475,7 +475,7 @@ top = stack_peek[-1] if stack_peek else None  # Safe peek
 ## Key Takeaways
 
 1. **LIFO**: Last-In-First-Out principle is fundamental
-2. **$\mathcal{O}(1)$ operations**: push, pop, peek all constant time
+2. **$\Theta(1)$ operations**: push, pop, peek all constant time
 3. **Python list**: Use `append()` and `pop()` - simple and efficient
 4. **Check before access**: Always verify stack is not empty
 5. **Recognize patterns**: Matching, reversal, history, DFS all use stacks

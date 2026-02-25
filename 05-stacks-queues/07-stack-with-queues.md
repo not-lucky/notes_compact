@@ -46,14 +46,14 @@ Pop:
 
 ```
 Push-costly approach:
-- Push: $\mathcal{O}(n)$ - rotate after adding
-- Pop: $\mathcal{O}(1)$ - just dequeue
+- Push: $\Theta(n)$ - rotate after adding
+- Pop: $\Theta(1)$ - just dequeue
 
 Pop-costly approach:
-- Push: $\mathcal{O}(1)$ - just enqueue
-- Pop: $\mathcal{O}(n)$ - rotate before removing
+- Push: $\Theta(1)$ - just enqueue
+- Pop: $\Theta(n)$ - rotate before removing
 
-You can't avoid $\mathcal{O}(n)$ somewhere—you're converting FIFO to LIFO.
+You can't avoid $\Theta(n)$ somewhere—you're converting FIFO to LIFO.
 ```
 
 **Mental Model**: Imagine a circular conveyor belt (the queue). When you add a new package (push), you rotate the belt until your package is at the pickup point (front). Now whenever someone picks up (pop), they always get the most recently added package.
@@ -64,9 +64,9 @@ Implementing stack with queues is wrong when:
 
 1. **You Have a Stack Available**: This is an interview exercise, not a real-world pattern. If you have a stack, just use it.
 
-2. **Performance Matters**: Both approaches have $\mathcal{O}(n)$ for one operation. If you need $\mathcal{O}(1)$ for all operations, use a real stack.
+2. **Performance Matters**: Both approaches have $\Theta(n)$ for one operation. If you need $\Theta(1)$ for all operations, use a real stack.
 
-3. **Memory is Constrained**: The rotation approach doesn't save memory—it uses $\mathcal{O}(n)$ either way.
+3. **Memory is Constrained**: The rotation approach doesn't save memory—it uses $\Theta(n)$ either way.
 
 4. **Two-Queue Approach Wastes Space**: The two-queue solution uses twice the memory of a single-queue approach with no performance benefit.
 
@@ -79,9 +79,9 @@ Implementing stack with queues is wrong when:
 **Important Limitation**:
 
 ```
-Unlike Queue-with-Stacks (which achieves $\mathcal{O}(1)$ amortized),
-Stack-with-Queues cannot achieve $\mathcal{O}(1)$ amortized for all operations.
-The best you can do is $\mathcal{O}(n)$ for push OR pop.
+Unlike Queue-with-Stacks (which achieves $\Theta(1)$ amortized),
+Stack-with-Queues cannot achieve $\Theta(1)$ amortized for all operations.
+The best you can do is $\Theta(n)$ for push OR pop.
 ```
 
 ## Interview Context
@@ -114,9 +114,9 @@ Implement a stack using only queue operations:
 
 | Approach                 | push | pop  | top  | Space |
 | ------------------------ | ---- | ---- | ---- | ----- |
-| Two queues (push costly) | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(n)$  |
-| Two queues (pop costly)  | $\mathcal{O}(1)$ | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ | $\mathcal{O}(n)$  |
-| One queue                | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(n)$  |
+| Two queues (push costly) | $\Theta(n)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(n)$  |
+| Two queues (pop costly)  | $\Theta(1)$ | $\Theta(n)$ | $\Theta(n)$ | $\Theta(n)$  |
+| One queue                | $\Theta(n)$ | $\Theta(1)$ | $\Theta(1)$ | $\Theta(n)$  |
 
 ---
 
@@ -131,8 +131,8 @@ class MyStack:
 
     Idea: After push, rotate elements so new element is at front.
 
-    Time: push $\mathcal{O}(n)$, pop $\mathcal{O}(1)$, top $\mathcal{O}(1)$
-    Space: $\mathcal{O}(n)$
+    Time: push $\Theta(n)$, pop $\Theta(1)$, top $\Theta(1)$
+    Space: $\Theta(n)$
     """
     def __init__(self):
         self.q1 = deque()  # Main queue
@@ -200,10 +200,10 @@ class MyStack:
     """
     Stack using two queues, costly pop.
 
-    Idea: Push is $\mathcal{O}(1)$. For pop, move n-1 elements, dequeue last.
+    Idea: Push is $\Theta(1)$. For pop, move n-1 elements, dequeue last.
 
-    Time: push $\mathcal{O}(1)$, pop $\mathcal{O}(n)$, top $\mathcal{O}(n)$
-    Space: $\mathcal{O}(n)$
+    Time: push $\Theta(1)$, pop $\Theta(n)$, top $\Theta(n)$
+    Space: $\Theta(n)$
     """
     def __init__(self):
         self.q1 = deque()
@@ -265,8 +265,8 @@ class MyStack:
 
     Idea: After push, rotate queue so new element is at front.
 
-    Time: push $\mathcal{O}(n)$, pop $\mathcal{O}(1)$, top $\mathcal{O}(1)$
-    Space: $\mathcal{O}(n)$
+    Time: push $\Theta(n)$, pop $\Theta(1)$, top $\Theta(1)$
+    Space: $\Theta(n)$
     """
     def __init__(self):
         self.queue = deque()
@@ -333,8 +333,8 @@ class MyStack:
     """
     Single queue, pop-costly version.
 
-    Time: push $\mathcal{O}(1)$, pop $\mathcal{O}(n)$, top $\mathcal{O}(n)$
-    Space: $\mathcal{O}(n)$
+    Time: push $\Theta(1)$, pop $\Theta(n)$, top $\Theta(n)$
+    Space: $\Theta(n)$
     """
     def __init__(self):
         self.queue = deque()
@@ -384,10 +384,10 @@ Total: 1+2+3+1+1+1 = 9 operations for 6 calls
 Average: 1.5 operations per call
 
 For n push followed by n pop:
-Push cost: 1+2+3+...+n = $\mathcal{O}(n^2)$
-Pop cost: n × $\mathcal{O}(1)$ = $\mathcal{O}(n)$
-Total: $\mathcal{O}(n^2)$ for 2n operations
-Amortized: $\mathcal{O}(n)$ per push, $\mathcal{O}(1)$ per pop
+Push cost: 1+2+3+...+n = $\Theta(n^2)$
+Pop cost: n × $\Theta(1)$ = $\Theta(n)$
+Total: $\Theta(n^2)$ for 2n operations
+Amortized: $\Theta(n)$ per push, $\Theta(1)$ per pop
 ```
 
 ---
@@ -430,15 +430,15 @@ s.pop()           # 1
 
 ## Follow-up Questions
 
-### Q: Can you do better than $\mathcal{O}(n)$?
+### Q: Can you do better than $\Theta(n)$?
 
-A: No, without additional data structures. We need $\mathcal{O}(n)$ to reverse FIFO to LIFO ordering at some point.
+A: No, without additional data structures. We need $\Theta(n)$ to reverse FIFO to LIFO ordering at some point.
 
 ### Q: What if you have limited queue size?
 
 A: Use circular queue implementation to prevent overflow.
 
-### Q: How about making top() $\mathcal{O}(1)$ in pop-costly version?
+### Q: How about making top() $\Theta(1)$ in pop-costly version?
 
 A: Cache the last pushed element:
 
@@ -477,10 +477,10 @@ class MyStack:
 
 ## Key Takeaways
 
-1. **Single queue is cleanest**: Rotation after push gives $\mathcal{O}(n)$ push, $\mathcal{O}(1)$ pop
+1. **Single queue is cleanest**: Rotation after push gives $\Theta(n)$ push, $\Theta(1)$ pop
 2. **Tradeoff exists**: Push-costly vs pop-costly depends on usage pattern
 3. **Rotation is key**: Moving n-1 elements reverses the order
-4. **Cache for optimization**: Store top element for $\mathcal{O}(1)$ top() in pop-costly
+4. **Cache for optimization**: Store top element for $\Theta(1)$ top() in pop-costly
 
 ---
 
