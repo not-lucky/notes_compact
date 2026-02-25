@@ -357,11 +357,11 @@ a, b, intersection = create_intersecting_lists([1, 2], [3, 4, 5], [6, 7, 8])
 
 ## Complexity Comparison
 
-| Approach          | Time       | Space    | Notes                       |
-| ----------------- | ---------- | -------- | --------------------------- |
-| Hash Set          | $O(n + m)$ | $O(n)$   | Simple but uses extra space |
-| Two Pointers      | $O(n + m)$ | $O(1)$   | Elegant, optimal            |
-| Length Difference | $O(n + m)$ | $O(1)$   | Two passes but intuitive    |
+| Approach          | Time Complexity | Space Complexity | Notes                       |
+| ----------------- | --------------- | ---------------- | --------------------------- |
+| Hash Set          | $O(n + m)$        | $O(n)$             | Simple but uses extra space |
+| Two Pointers      | $O(n + m)$        | $O(1)$             | Elegant, optimal            |
+| Length Difference | $O(n + m)$        | $O(1)$             | Two passes but intuitive    |
 
 ---
 

@@ -44,9 +44,9 @@ None ← [A] ← [B] ← [C]       [D] → [E]
 Key: At each step, `curr` points BACK to `prev`, then everyone moves forward one spot.
 ```
 
-**Why Does Recursive Reversal Use O(n) Space?**
+**Why Does Recursive Reversal Use $\Theta(n)$ Space?**
 
-The call stack holds n frames (one per node). Each frame remembers "where to return" and the local variables. Iterative reversal uses O(1) space because we explicitly manage the pointers ourselves.
+The call stack holds n frames (one per node). Each frame remembers "where to return" and the local variables. Iterative reversal uses $\Theta(1)$ space because we explicitly manage the pointers ourselves.
 
 **Partial Reversal Insight**: When reversing positions left to right, the trick is:
 
@@ -62,7 +62,7 @@ The call stack holds n frames (one per node). Each frame remembers "where to ret
 
 3. **When Random Access Exists**: For arrays, `arr[::-1]` or index arithmetic is simpler than explicit reversal.
 
-4. **When You Need the Original List**: Reversal modifies the list in-place. If you need both versions, you must copy first (O(n) space anyway).
+4. **When You Need the Original List**: Reversal modifies the list in-place. If you need both versions, you must copy first ($\Theta(n)$ space anyway).
 
 5. **For Doubly-Linked Lists**: Just traverse backwards using `.prev` instead of reversing.
 

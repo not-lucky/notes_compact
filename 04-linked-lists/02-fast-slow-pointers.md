@@ -37,13 +37,13 @@ The key insight: once both are on the cycle, the "gap" shrinks every iteration.
 
 This pattern isn't always the answer:
 
-1. **Need to Preserve Positions**: Fast-slow for palindrome check reverses half the list. If you can't modify the list, use a stack or recursion instead (O(n) space).
+1. **Need to Preserve Positions**: Fast-slow for palindrome check reverses half the list. If you can't modify the list, use a stack or recursion instead ($\Theta(n)$ space).
 
 2. **Need All Elements, Not Just Relative Positions**: If you need to process every element (not just find a special one), a simple traversal is clearer.
 
-3. **Array Problems with Random Access**: For arrays, using indices is usually cleaner. Fast-slow shines when you can't use indices (linked lists) or want O(1) space (Floyd's cycle in arrays).
+3. **Array Problems with Random Access**: For arrays, using indices is usually cleaner. Fast-slow shines when you can't use indices (linked lists) or want $\Theta(1)$ space (Floyd's cycle in arrays).
 
-4. **When a Hash Set is Simpler**: Cycle detection can also use a hash set—O(n) space but conceptually simpler. Choose based on constraints.
+4. **When a Hash Set is Simpler**: Cycle detection can also use a hash set—$\Theta(n)$ space but conceptually simpler. Choose based on constraints.
 
 5. **When Length is Readily Available**: If you already know the list length, direct calculation is cleaner than fast-slow for midpoint/nth-from-end.
 
@@ -57,7 +57,7 @@ This pattern isn't always the answer:
 
 The fast-slow pointer technique (also called the "tortoise and hare" algorithm) is one of the **most important patterns** in linked list problems because:
 
-1. **O(1) space**: Solves problems without extra data structures
+1. **$\Theta(1)$ space**: Solves problems without extra data structures
 2. **One-pass solutions**: Often achieves optimal time complexity
 3. **Versatility**: Cycle detection, finding middle, nth from end, and more
 4. **Interview favorite**: Appears in ~30% of linked list interview questions
@@ -111,8 +111,8 @@ def find_middle(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 876: Middle of the Linked List
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     slow = fast = head
 
@@ -172,8 +172,8 @@ def has_cycle(head: Optional[ListNode]) -> bool:
 
     LeetCode 141: Linked List Cycle
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     if not head or not head.next:
         return False
@@ -232,8 +232,8 @@ def detect_cycle_start(head: Optional[ListNode]) -> Optional[ListNode]:
 
     LeetCode 142: Linked List Cycle II
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     if not head or not head.next:
         return None
@@ -294,8 +294,8 @@ def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
 
     LeetCode 19: Remove Nth Node From End of List
 
-    Time: O(n) - one pass
-    Space: O(1)
+    Time: $\Theta(n)$ - one pass
+    Space: $\Theta(1)$
     """
     dummy = ListNode(0)
     dummy.next = head
@@ -347,8 +347,8 @@ def get_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     Get the nth node from the end (1-indexed).
     Returns None if n is out of bounds.
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     slow = fast = head
 
@@ -378,8 +378,8 @@ def is_palindrome(head: Optional[ListNode]) -> bool:
 
     LeetCode 234: Palindrome Linked List
 
-    Time: O(n)
-    Space: O(1)
+    Time: $\Theta(n)$
+    Space: $\Theta(1)$
     """
     if not head or not head.next:
         return True
@@ -432,11 +432,11 @@ def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
 
 | Problem             | Time | Space |
 | ------------------- | ---- | ----- |
-| Find middle         | O(n) | O(1)  |
-| Detect cycle        | O(n) | O(1)  |
-| Find cycle start    | O(n) | O(1)  |
-| Remove nth from end | O(n) | O(1)  |
-| Palindrome check    | O(n) | O(1)  |
+| Find middle         | $\Theta(n)$ | $\Theta(1)$  |
+| Detect cycle        | $\Theta(n)$ | $\Theta(1)$  |
+| Find cycle start    | $\Theta(n)$ | $\Theta(1)$  |
+| Remove nth from end | $\Theta(n)$ | $\Theta(1)$  |
+| Palindrome check    | $\Theta(n)$ | $\Theta(1)$  |
 
 ---
 
@@ -540,7 +540,7 @@ node2.next = node1  # Full cycle
 3. **If they meet, there's a cycle** - no other way to meet in a finite list
 4. **Cycle start = reset slow to head, move both at 1x** - mathematical property
 5. **Gap technique for nth from end** - move fast n steps first
-6. **O(1) space** - major advantage over using extra data structures
+6. **$\Theta(1)$ space** - major advantage over using extra data structures
 
 ---
 

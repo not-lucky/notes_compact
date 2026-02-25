@@ -94,8 +94,8 @@ def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[
 
     LeetCode 21: Merge Two Sorted Lists
 
-    Time: $O(n + m)$
-    Space: $O(1)$ - only rearranging pointers
+    Time Complexity: $O(n + m)$
+    Space Complexity: $O(1)$ - only rearranging pointers
     """
     dummy = ListNode(0)
     current = dummy
@@ -158,8 +158,8 @@ def merge_two_lists_recursive(l1: Optional[ListNode], l2: Optional[ListNode]) ->
     """
     Merge two sorted lists recursively.
 
-    Time: $O(n + m)$
-    Space: $O(n + m)$ - call stack
+    Time Complexity: $O(n + m)$
+    Space Complexity: $O(n + m)$ - call stack
     """
     if not l1:
         return l2
@@ -187,8 +187,8 @@ def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
 
     LeetCode 23: Merge k Sorted Lists
 
-    Time: $O(N \log k)$ where $N$ = total nodes, $k$ = number of lists
-    Space: $O(\log k)$ for recursion
+    Time Complexity: $O(N \log k)$ where $N$ = total nodes, $k$ = number of lists
+    Space Complexity: $O(\log k)$ for recursion
     """
     if not lists:
         return None
