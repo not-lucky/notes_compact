@@ -121,7 +121,14 @@ Empty:          None  ✓ (by convention)
 ## Approach 1: Array Comparison
 
 ```python
-def is_palindrome_array(head: ListNode) -> bool:
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def is_palindrome_array(head: Optional[ListNode]) -> bool:
     """
     Convert to array and check palindrome.
 
@@ -145,7 +152,7 @@ Simple but uses O(n) extra space.
 ## Approach 2: Reverse and Compare (O(1) Space)
 
 ```python
-def is_palindrome(head: ListNode) -> bool:
+def is_palindrome(head: Optional[ListNode]) -> bool:
     """
     Check palindrome with O(1) space.
     Strategy: Find middle, reverse second half, compare, restore.
@@ -153,7 +160,7 @@ def is_palindrome(head: ListNode) -> bool:
     LeetCode 234: Palindrome Linked List
 
     Time: O(n)
-    Space: O(1)
+    Space: O(1) auxiliary
     """
     if not head or not head.next:
         return True
@@ -176,12 +183,12 @@ def is_palindrome(head: ListNode) -> bool:
     second = second_half_start
     result = True
 
-    while second:  # Second half is shorter or equal
+    while result and second:  # Second half is shorter or equal
         if first.val != second.val:
             result = False
-            break
-        first = first.next
-        second = second.next
+        else:
+            first = first.next
+            second = second.next
 
     # Step 4: Restore the list (optional but recommended)
     slow.next = reverse_list(second_half_start)
@@ -189,7 +196,7 @@ def is_palindrome(head: ListNode) -> bool:
     return result
 
 
-def reverse_list(head: ListNode) -> ListNode:
+def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
     """Reverse a linked list."""
     prev = None
     current = head
@@ -265,7 +272,7 @@ Result: True (palindrome)
 ## Approach 3: Recursive
 
 ```python
-def is_palindrome_recursive(head: ListNode) -> bool:
+def is_palindrome_recursive(head: Optional[ListNode]) -> bool:
     """
     Check palindrome recursively using implicit stack.
 
@@ -274,7 +281,7 @@ def is_palindrome_recursive(head: ListNode) -> bool:
     """
     front = [head]  # Use list to maintain reference
 
-    def check(node: ListNode) -> bool:
+    def check(node: Optional[ListNode]) -> bool:
         if not node:
             return True
 
@@ -322,7 +329,7 @@ All True → Palindrome!
 ## Approach 4: Stack (First Half)
 
 ```python
-def is_palindrome_stack(head: ListNode) -> bool:
+def is_palindrome_stack(head: Optional[ListNode]) -> bool:
     """
     Use stack to store first half, compare with second half.
 
@@ -402,7 +409,7 @@ head = create_linked_list([1, 1, 1, 1, 1])  # → True
 If the problem requires not modifying the original list (or it's good practice to restore it):
 
 ```python
-def is_palindrome_restore(head: ListNode) -> bool:
+def is_palindrome_restore(head: Optional[ListNode]) -> bool:
     """Version that restores the original list."""
     if not head or not head.next:
         return True
@@ -439,13 +446,13 @@ def is_palindrome_restore(head: ListNode) -> bool:
 ## Variation: Palindrome Linked List with Odd Node
 
 ```python
-def is_palindrome_allow_one_removal(head: ListNode) -> bool:
+def is_palindrome_allow_one_removal(head: Optional[ListNode]) -> bool:
     """
     Check if list can become palindrome by removing at most one node.
 
     Similar to "Valid Palindrome II" for strings.
     """
-    def check_palindrome(left: ListNode, right: ListNode) -> bool:
+    def check_palindrome(left: Optional[ListNode], right: Optional[ListNode]) -> bool:
         # Convert to array for easier checking
         values = []
         current = left

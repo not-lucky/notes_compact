@@ -116,11 +116,18 @@ Important notes:
 ## Approach 1: Hash Set
 
 ```python
-def get_intersection_node_hashset(headA: ListNode, headB: ListNode) -> ListNode:
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def get_intersection_node_hashset(headA: Optional[ListNode], headB: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find intersection using hash set.
 
-    Time: O(n + m)
+    Time: O(n + m) where n, m are lengths of list A and B
     Space: O(n) or O(m) - store one list's nodes
     """
     # Store all nodes from list A
@@ -146,15 +153,15 @@ def get_intersection_node_hashset(headA: ListNode, headB: ListNode) -> ListNode:
 ## Approach 2: Two Pointers (Optimal)
 
 ```python
-def get_intersection_node(headA: ListNode, headB: ListNode) -> ListNode:
+def get_intersection_node(headA: Optional[ListNode], headB: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find intersection using two pointers.
     The elegant O(1) space solution.
 
     LeetCode 160: Intersection of Two Linked Lists
 
-    Time: O(n + m)
-    Space: O(1)
+    Time: O(n + m) where n, m are lengths of list A and B
+    Space: O(1) auxiliary
     """
     if not headA or not headB:
         return None
@@ -217,14 +224,14 @@ Return c1
 ## Approach 3: Length Difference
 
 ```python
-def get_intersection_node_length(headA: ListNode, headB: ListNode) -> ListNode:
+def get_intersection_node_length(headA: Optional[ListNode], headB: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find intersection by aligning list lengths.
 
-    Time: O(n + m)
-    Space: O(1)
+    Time: O(n + m) where n, m are lengths of list A and B
+    Space: O(1) auxiliary
     """
-    def get_length(head: ListNode) -> int:
+    def get_length(head: Optional[ListNode]) -> int:
         length = 0
         while head:
             length += 1
@@ -239,15 +246,19 @@ def get_intersection_node_length(headA: ListNode, headB: ListNode) -> ListNode:
 
     if lenA > lenB:
         for _ in range(lenA - lenB):
-            pA = pA.next
+            if pA:
+                pA = pA.next
     else:
         for _ in range(lenB - lenA):
-            pB = pB.next
+            if pB:
+                pB = pB.next
 
     # Now both pointers are same distance from intersection
     while pA != pB:
-        pA = pA.next
-        pB = pB.next
+        if pA:
+            pA = pA.next
+        if pB:
+            pB = pB.next
 
     return pA
 ```
@@ -277,28 +288,28 @@ They'll meet at c1!
 
 ```python
 # 1. No intersection (lists are completely separate)
-A: [1] → [2] → [3] → None
-B: [4] → [5] → None
+# A: [1] → [2] → [3] → None
+# B: [4] → [5] → None
 # Return None
 
 # 2. One or both lists are empty
-A: None
-B: [1] → [2]
+# A: None
+# B: [1] → [2]
 # Return None
 
 # 3. Intersection at head
-A: [1] → [2] → [3]
-B: same list (B = A)
+# A: [1] → [2] → [3]
+# B: same list (B = A)
 # Return head (node with value 1)
 
 # 4. Lists of very different lengths
-A: [1] → [2] → [3] → [4] → [5] → [6] → [7] → [8] → [9] → [10]
-B: [100] → [8] → [9] → [10]  (intersects at 8)
+# A: [1] → [2] → [3] → [4] → [5] → [6] → [7] → [8] → [9] → [10]
+# B: [100] → [8] → [9] → [10]  (intersects at 8)
 # Algorithm handles this via length alignment
 
 # 5. Intersection at last node
-A: [1] → [2] → [3] → [4]
-B: [5] → [6] → [4]  (only last node shared)
+# A: [1] → [2] → [3] → [4]
+# B: [5] → [6] → [4]  (only last node shared)
 # Return node 4
 ```
 
@@ -307,7 +318,7 @@ B: [5] → [6] → [4]  (only last node shared)
 ## Testing for Intersection
 
 ```python
-def create_intersecting_lists(a_vals: list, b_vals: list, common_vals: list):
+def create_intersecting_lists(a_vals: list[int], b_vals: list[int], common_vals: list[int]) -> tuple[Optional[ListNode], Optional[ListNode], Optional[ListNode]]:
     """
     Helper to create two intersecting lists for testing.
     """
@@ -359,7 +370,7 @@ a, b, intersection = create_intersecting_lists([1, 2], [3, 4, 5], [6, 7, 8])
 ### Find If Two Lists Intersect (Just Boolean)
 
 ```python
-def lists_intersect(headA: ListNode, headB: ListNode) -> bool:
+def lists_intersect(headA: Optional[ListNode], headB: Optional[ListNode]) -> bool:
     """Check if two lists share any common node."""
     if not headA or not headB:
         return False

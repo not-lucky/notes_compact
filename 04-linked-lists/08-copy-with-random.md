@@ -167,7 +167,9 @@ Deep copy must replicate exact structure with NEW nodes.
 ## Approach 1: HashMap (Two Pass)
 
 ```python
-def copy_random_list_hashmap(head: Node) -> Node:
+from typing import Optional
+
+def copy_random_list_hashmap(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using HashMap.
 
@@ -231,7 +233,7 @@ Result: [1'] → [2'] → [3'] → None
 ## Approach 2: HashMap (Single Pass)
 
 ```python
-def copy_random_list_single_pass(head: Node) -> Node:
+def copy_random_list_single_pass(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using HashMap in single pass.
     Uses getOrCreate pattern.
@@ -244,7 +246,7 @@ def copy_random_list_single_pass(head: Node) -> Node:
 
     old_to_new = {}
 
-    def get_or_create(node: Node) -> Node:
+    def get_or_create(node: Optional[Node]) -> Optional[Node]:
         """Get existing copy or create new one."""
         if not node:
             return None
@@ -270,7 +272,7 @@ def copy_random_list_single_pass(head: Node) -> Node:
 This clever approach avoids using a hashmap by interleaving copied nodes with original nodes.
 
 ```python
-def copy_random_list(head: Node) -> Node:
+def copy_random_list(head: Optional[Node]) -> Optional[Node]:
     """
     Deep copy using interleaving technique.
 
@@ -422,7 +424,7 @@ node.random = None
 ## Testing Helper
 
 ```python
-def create_test_list(vals_and_random_indices: list) -> Node:
+def create_test_list(vals_and_random_indices: list[tuple[int, Optional[int]]]) -> Optional[Node]:
     """
     Create test list from values and random pointer indices.
     Format: [(val, random_index), ...]
@@ -446,7 +448,7 @@ def create_test_list(vals_and_random_indices: list) -> Node:
     return nodes[0]
 
 
-def verify_deep_copy(original: Node, copy: Node) -> bool:
+def verify_deep_copy(original: Optional['Node'], copy: Optional['Node']) -> bool:
     """Verify that copy is a valid deep copy."""
     if not original and not copy:
         return True
@@ -505,7 +507,7 @@ assert verify_deep_copy(original, copy)
 The same concepts apply to cloning a graph (LeetCode 133):
 
 ```python
-def clone_graph(node):
+def clone_graph(node: 'Optional[Node]') -> 'Optional[Node]':
     """
     Clone an undirected graph using DFS + HashMap.
 
@@ -517,7 +519,7 @@ def clone_graph(node):
 
     old_to_new = {}
 
-    def dfs(node):
+    def dfs(node: 'Node') -> 'Node':
         if node in old_to_new:
             return old_to_new[node]
 

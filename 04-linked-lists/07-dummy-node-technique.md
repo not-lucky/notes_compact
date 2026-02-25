@@ -146,7 +146,9 @@ With dummy:
 ### Without Dummy Node (Complex)
 
 ```python
-def remove_elements_no_dummy(head: ListNode, val: int) -> ListNode:
+from typing import Optional
+
+def remove_elements_no_dummy(head: Optional[ListNode], val: int) -> Optional[ListNode]:
     """Remove all nodes with given value (without dummy)."""
     # Handle head deletions separately
     while head and head.val == val:
@@ -169,7 +171,7 @@ def remove_elements_no_dummy(head: ListNode, val: int) -> ListNode:
 ### With Dummy Node (Clean)
 
 ```python
-def remove_elements(head: ListNode, val: int) -> ListNode:
+def remove_elements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
     """
     Remove all nodes with given value.
 
@@ -225,7 +227,7 @@ With dummy:
 ## Pattern 2: Insert Operations
 
 ```python
-def insert_at_position(head: ListNode, val: int, position: int) -> ListNode:
+def insert_at_position(head: Optional[ListNode], val: int, position: int) -> Optional[ListNode]:
     """
     Insert new node at given position (0-indexed).
 
@@ -257,7 +259,7 @@ Without dummy, inserting at position 0 would require special handling.
 ## Pattern 3: Partition List
 
 ```python
-def partition(head: ListNode, x: int) -> ListNode:
+def partition(head: Optional[ListNode], x: int) -> Optional[ListNode]:
     """
     Partition list so nodes < x come before nodes >= x.
 
@@ -317,7 +319,7 @@ Result: [1, 2, 2, 4, 3, 5]
 ## Pattern 4: Merge Operations
 
 ```python
-def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
+def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Merge two sorted lists.
 
@@ -346,7 +348,7 @@ def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
 ## Pattern 5: Remove Nth from End
 
 ```python
-def remove_nth_from_end(head: ListNode, n: int) -> ListNode:
+def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     """
     Remove nth node from end.
 
@@ -383,7 +385,7 @@ Without dummy: Special handling needed when removing the first node (n equals li
 ### Remove All Duplicates (Keep None)
 
 ```python
-def delete_duplicates_all(head: ListNode) -> ListNode:
+def delete_duplicates_all(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Remove all nodes that have duplicates (keep only distinct values).
 
@@ -415,7 +417,7 @@ def delete_duplicates_all(head: ListNode) -> ListNode:
 ### Remove Duplicates (Keep One)
 
 ```python
-def delete_duplicates_keep_one(head: ListNode) -> ListNode:
+def delete_duplicates_keep_one(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Remove duplicates, keeping first occurrence.
 
@@ -441,7 +443,7 @@ def delete_duplicates_keep_one(head: ListNode) -> ListNode:
 ## Pattern 7: Reverse Between
 
 ```python
-def reverse_between(head: ListNode, left: int, right: int) -> ListNode:
+def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
     """
     Reverse nodes from position left to right.
 

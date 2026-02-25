@@ -4,7 +4,7 @@
 
 ## Overview
 
-Merge operations combine two or more sorted linked lists into one sorted list by comparing heads and stitching nodes together. The two-pointer merge is O(n+m) with O(1) extra space, and extends to merge sort and k-way merges using divide-and-conquer or heaps.
+Merge operations combine two or more sorted linked lists into one sorted list by comparing heads and stitching nodes together. The two-pointer merge is $O(n+m)$ with $O(1)$ extra space, and extends to merge sort and $k$-way merges using divide-and-conquer or heaps.
 
 ## Building Intuition
 
@@ -81,7 +81,14 @@ Mastering merge operations demonstrates solid understanding of pointer manipulat
 ## Pattern 1: Merge Two Sorted Lists
 
 ```python
-def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Merge two sorted linked lists into one sorted list.
 
@@ -103,7 +110,10 @@ def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
         current = current.next
 
     # Attach remaining nodes
-    current.next = l1 if l1 else l2
+    if l1:
+        current.next = l1
+    else:
+        current.next = l2
 
     return dummy.next
 ```
@@ -144,7 +154,7 @@ Result: [1] → [2] → [3] → [4] → [5] → [6]
 ## Recursive Merge Two Lists
 
 ```python
-def merge_two_lists_recursive(l1: ListNode, l2: ListNode) -> ListNode:
+def merge_two_lists_recursive(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Merge two sorted lists recursively.
 
@@ -171,7 +181,7 @@ def merge_two_lists_recursive(l1: ListNode, l2: ListNode) -> ListNode:
 ### Approach 1: Divide and Conquer
 
 ```python
-def merge_k_lists(lists: list[ListNode]) -> ListNode:
+def merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
     Merge k sorted linked lists using divide and conquer.
 
@@ -183,7 +193,7 @@ def merge_k_lists(lists: list[ListNode]) -> ListNode:
     if not lists:
         return None
 
-    def merge_two(l1: ListNode, l2: ListNode) -> ListNode:
+    def merge_two(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
         dummy = ListNode(0)
         current = dummy
 
@@ -196,7 +206,10 @@ def merge_k_lists(lists: list[ListNode]) -> ListNode:
                 l2 = l2.next
             current = current.next
 
-        current.next = l1 if l1 else l2
+        if l1:
+            current.next = l1
+        else:
+            current.next = l2
         return dummy.next
 
     while len(lists) > 1:
@@ -236,8 +249,9 @@ Complexity: log k rounds, each round processes N total nodes
 
 ```python
 import heapq
+from typing import Optional, List
 
-def merge_k_lists_heap(lists: list[ListNode]) -> ListNode:
+def merge_k_lists_heap(lists: list[Optional[ListNode]]) -> Optional[ListNode]:
     """
     Merge k sorted linked lists using min-heap.
 
@@ -250,6 +264,9 @@ def merge_k_lists_heap(lists: list[ListNode]) -> ListNode:
 
     for i, node in enumerate(lists):
         if node:
+            # i serves as a tie-breaker. Because we only have 1 node per list
+            # in the heap at any given time, `i` is guaranteed to be unique
+            # among all elements currently in the heap.
             heapq.heappush(heap, (node.val, i, node))
 
     dummy = ListNode(0)
@@ -261,6 +278,7 @@ def merge_k_lists_heap(lists: list[ListNode]) -> ListNode:
         current = current.next
 
         if node.next:
+            # We keep passing `i` to maintain uniqueness in the heap
             heapq.heappush(heap, (node.next.val, i, node.next))
 
     return dummy.next
@@ -285,7 +303,7 @@ def merge_k_lists_heap(lists: list[ListNode]) -> ListNode:
 ## Pattern 3: Merge Sort for Linked List
 
 ```python
-def sort_list(head: ListNode) -> ListNode:
+def sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Sort linked list using merge sort.
 
@@ -309,7 +327,7 @@ def sort_list(head: ListNode) -> ListNode:
     return merge_two_lists(left_sorted, right_sorted)
 
 
-def split_list(head: ListNode) -> tuple:
+def split_list(head: Optional[ListNode]) -> tuple[Optional[ListNode], Optional[ListNode]]:
     """Split list into two halves using fast-slow pointers."""
     slow = head
     fast = head.next  # Start fast one ahead for even split
@@ -324,7 +342,7 @@ def split_list(head: ListNode) -> tuple:
     return head, second
 
 
-def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
+def merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """Merge two sorted lists."""
     dummy = ListNode(0)
     current = dummy
@@ -345,7 +363,7 @@ def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
 ### Bottom-Up Merge Sort (O(1) Space)
 
 ```python
-def sort_list_bottom_up(head: ListNode) -> ListNode:
+def sort_list_bottom_up(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Sort linked list using bottom-up merge sort.
     O(1) space (no recursion).
@@ -382,7 +400,7 @@ def sort_list_bottom_up(head: ListNode) -> ListNode:
     return dummy.next
 
 
-def split(head: ListNode, size: int) -> ListNode:
+def split(head: Optional[ListNode], size: int) -> Optional[ListNode]:
     """Split off 'size' nodes and return the remaining list."""
     for _ in range(size - 1):
         if not head:
@@ -397,7 +415,7 @@ def split(head: ListNode, size: int) -> ListNode:
     return next_list
 
 
-def merge(l1: ListNode, l2: ListNode, tail: ListNode) -> ListNode:
+def merge(l1: Optional[ListNode], l2: Optional[ListNode], tail: ListNode) -> ListNode:
     """Merge two lists and attach to tail. Return new tail."""
     while l1 and l2:
         if l1.val <= l2.val:
@@ -408,7 +426,10 @@ def merge(l1: ListNode, l2: ListNode, tail: ListNode) -> ListNode:
             l2 = l2.next
         tail = tail.next
 
-    tail.next = l1 if l1 else l2
+    if l1:
+        tail.next = l1
+    else:
+        tail.next = l2
 
     while tail.next:
         tail = tail.next
@@ -421,7 +442,7 @@ def merge(l1: ListNode, l2: ListNode, tail: ListNode) -> ListNode:
 ## Pattern 4: Add Two Numbers (Merge with Carry)
 
 ```python
-def add_two_numbers(l1: ListNode, l2: ListNode) -> ListNode:
+def add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Add two numbers represented as linked lists (reverse order).
 
@@ -456,7 +477,7 @@ def add_two_numbers(l1: ListNode, l2: ListNode) -> ListNode:
 ### Add Two Numbers II (Forward Order)
 
 ```python
-def add_two_numbers_ii(l1: ListNode, l2: ListNode) -> ListNode:
+def add_two_numbers_ii(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Add two numbers (forward order - most significant first).
 
@@ -466,7 +487,7 @@ def add_two_numbers_ii(l1: ListNode, l2: ListNode) -> ListNode:
     Time: O(n + m)
     Space: O(1) extra (modify in place)
     """
-    def reverse(head: ListNode) -> ListNode:
+    def reverse(head: Optional[ListNode]) -> Optional[ListNode]:
         prev = None
         while head:
             next_temp = head.next
@@ -499,7 +520,7 @@ def add_two_numbers_ii(l1: ListNode, l2: ListNode) -> ListNode:
         if l2:
             l2 = l2.next
 
-    # Reverse result
+    # Reverse result back to forward order
     return reverse(dummy.next)
 ```
 
@@ -514,7 +535,9 @@ def add_two_numbers_ii(l1: ListNode, l2: ListNode) -> ListNode:
 | Merge k sorted (heap)             | O(N log k)   | O(k)         |
 | Merge sort (recursive)            | O(n log n)   | O(log n)     |
 | Merge sort (bottom-up)            | O(n log n)   | O(1)         |
-| Add two numbers                   | O(max(n, m)) | O(max(n, m)) |
+| Add two numbers                   | O(max(n, m)) | O(max(n, m))* |
+
+\* *Space complexity is $O(\max(n, m))$ because we construct a new linked list. If in-place modification is permitted, it can be $O(1)$ auxiliary space.*
 
 ---
 
@@ -555,7 +578,7 @@ lists = [[1, 2], None, [3, 4], None]
 ### Merge Sorted Array (In-Place)
 
 ```python
-def merge_lists_in_place(l1: ListNode, l2: ListNode) -> ListNode:
+def merge_lists_in_place(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     """
     Merge two sorted lists by modifying pointers only.
     No new nodes created.
@@ -572,14 +595,17 @@ def merge_lists_in_place(l1: ListNode, l2: ListNode) -> ListNode:
             l2 = l2.next
         tail = tail.next
 
-    tail.next = l1 or l2
+    if l1:
+        tail.next = l1
+    else:
+        tail.next = l2
     return dummy.next
 ```
 
 ### Insertion Sort List
 
 ```python
-def insertion_sort_list(head: ListNode) -> ListNode:
+def insertion_sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Sort using insertion sort.
 
@@ -588,6 +614,9 @@ def insertion_sort_list(head: ListNode) -> ListNode:
     Time: O(n²)
     Space: O(1)
     """
+    if not head:
+        return None
+
     dummy = ListNode(0)
     current = head
 
@@ -626,10 +655,10 @@ def insertion_sort_list(head: ListNode) -> ListNode:
 
 ## Key Takeaways
 
-1. **Two-pointer merge** is O(n + m) time, O(1) space
-2. **Merge K lists** with divide & conquer or heap: O(N log k)
+1. **Two-pointer merge** is $O(n + m)$ time, $O(1)$ space
+2. **Merge K lists** with divide & conquer or heap: $O(N \log k)$
 3. **Merge sort on linked lists** is efficient: no random access needed
-4. **Bottom-up merge sort** achieves O(1) space
+4. **Bottom-up merge sort** achieves $O(1)$ space
 5. **Add two numbers** is merge with carry logic
 6. **Always use dummy node** to simplify head handling
 

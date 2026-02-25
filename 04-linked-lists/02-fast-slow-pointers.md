@@ -102,7 +102,9 @@ When fast reaches the end, slow is at the middle!
 ## Pattern 1: Find Middle of Linked List
 
 ```python
-def find_middle(head: ListNode) -> ListNode:
+from typing import Optional
+
+def find_middle(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find the middle node of linked list.
     For even-length lists, returns the second middle node.
@@ -144,7 +146,7 @@ For even length (n=6):
 ### Variation: First Middle for Even-Length Lists
 
 ```python
-def find_first_middle(head: ListNode) -> ListNode:
+def find_first_middle(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     For even-length lists, returns the first middle node.
     [1, 2, 3, 4] → returns node 2 (not 3)
@@ -164,7 +166,7 @@ def find_first_middle(head: ListNode) -> ListNode:
 ## Pattern 2: Detect Cycle (Floyd's Cycle Detection)
 
 ```python
-def has_cycle(head: ListNode) -> bool:
+def has_cycle(head: Optional[ListNode]) -> bool:
     """
     Detect if linked list has a cycle.
 
@@ -191,7 +193,7 @@ def has_cycle(head: ListNode) -> bool:
 ### Alternative Implementation (Both Start at Head)
 
 ```python
-def has_cycle_v2(head: ListNode) -> bool:
+def has_cycle_v2(head: Optional[ListNode]) -> bool:
     """Alternative: both start at head."""
     slow = fast = head
 
@@ -223,7 +225,7 @@ They meet at some point inside the cycle!
 ## Pattern 3: Find Cycle Start
 
 ```python
-def detect_cycle_start(head: ListNode) -> ListNode:
+def detect_cycle_start(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Find the node where the cycle begins.
     Returns None if no cycle.
@@ -286,7 +288,7 @@ they'll meet at the cycle start!
 ## Pattern 4: Remove Nth Node From End
 
 ```python
-def remove_nth_from_end(head: ListNode, n: int) -> ListNode:
+def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     """
     Remove the nth node from the end of the list.
 
@@ -299,17 +301,20 @@ def remove_nth_from_end(head: ListNode, n: int) -> ListNode:
     dummy.next = head
     slow = fast = dummy
 
-    # Move fast n+1 steps ahead
+    # Move fast n+1 steps ahead to maintain a gap of n between slow and fast
     for _ in range(n + 1):
+        if not fast:
+            return head # Handle edge case where n is larger than list length
         fast = fast.next
 
-    # Move both until fast reaches end
+    # Move both until fast reaches the end
     while fast:
         slow = slow.next
         fast = fast.next
 
-    # slow.next is the node to remove
-    slow.next = slow.next.next
+    # slow is now just before the node to remove
+    if slow.next:
+        slow.next = slow.next.next
 
     return dummy.next
 ```
@@ -337,7 +342,7 @@ slow.next = [4] is the node to remove!
 ## Pattern 5: Find List Length and Nth From End
 
 ```python
-def get_nth_from_end(head: ListNode, n: int) -> ListNode:
+def get_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     """
     Get the nth node from the end (1-indexed).
     Returns None if n is out of bounds.
@@ -366,7 +371,7 @@ def get_nth_from_end(head: ListNode, n: int) -> ListNode:
 ## Pattern 6: Check if Linked List is Palindrome
 
 ```python
-def is_palindrome(head: ListNode) -> bool:
+def is_palindrome(head: Optional[ListNode]) -> bool:
     """
     Check if linked list is a palindrome.
     Combines fast-slow with reversal.
@@ -381,32 +386,33 @@ def is_palindrome(head: ListNode) -> bool:
 
     # Step 1: Find middle using fast-slow
     slow = fast = head
-    while fast.next and fast.next.next:
+    while fast and fast.next:
         slow = slow.next
         fast = fast.next.next
 
     # Step 2: Reverse second half
-    second_half = reverse_list(slow.next)
+    second_half = reverse_list(slow)
 
     # Step 3: Compare first and second half
     first = head
     second = second_half
 
     result = True
-    while second:
+    # Only need to check until second reaches the end
+    while result and second:
         if first.val != second.val:
             result = False
-            break
         first = first.next
         second = second.next
 
-    # Step 4: Restore the list (optional but good practice)
-    slow.next = reverse_list(second_half)
+    # Step 4: Restore the list (optional but highly recommended)
+    # Re-reverse the second half back to its original state
+    reverse_list(second_half)
 
     return result
 
 
-def reverse_list(head: ListNode) -> ListNode:
+def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
     """Helper: reverse linked list."""
     prev = None
     current = head
@@ -439,7 +445,7 @@ def reverse_list(head: ListNode) -> ListNode:
 ### Split List in Half
 
 ```python
-def split_list(head: ListNode) -> tuple:
+def split_list(head: Optional[ListNode]) -> tuple[Optional[ListNode], Optional[ListNode]]:
     """Split list into two halves."""
     if not head or not head.next:
         return head, None
@@ -460,7 +466,7 @@ def split_list(head: ListNode) -> tuple:
 ### Find Length of Cycle
 
 ```python
-def cycle_length(head: ListNode) -> int:
+def cycle_length(head: Optional[ListNode]) -> int:
     """
     Find the length of the cycle.
     Returns 0 if no cycle.

@@ -133,7 +133,9 @@ class DoublyListNode:
 ### Creating a Linked List
 
 ```python
-def create_linked_list(values: list) -> ListNode:
+from typing import Optional, List
+
+def create_linked_list(values: List[int]) -> Optional[ListNode]:
     """
     Create linked list from array of values.
 
@@ -161,7 +163,7 @@ head = create_linked_list([1, 2, 3, 4, 5])
 ### Traversal
 
 ```python
-def traverse(head: ListNode) -> list:
+def traverse(head: Optional[ListNode]) -> List[int]:
     """
     Traverse and collect all values.
 
@@ -178,7 +180,7 @@ def traverse(head: ListNode) -> list:
     return result
 
 
-def print_list(head: ListNode) -> None:
+def print_list(head: Optional[ListNode]) -> None:
     """Print linked list for debugging."""
     values = []
     current = head
@@ -193,7 +195,7 @@ def print_list(head: ListNode) -> None:
 ### Finding Length
 
 ```python
-def get_length(head: ListNode) -> int:
+def get_length(head: Optional[ListNode]) -> int:
     """
     Get the length of linked list.
 
@@ -213,7 +215,7 @@ def get_length(head: ListNode) -> int:
 ### Search
 
 ```python
-def search(head: ListNode, target: int) -> ListNode:
+def search(head: Optional[ListNode], target: int) -> Optional[ListNode]:
     """
     Find node with target value.
 
@@ -237,7 +239,7 @@ def search(head: ListNode, target: int) -> ListNode:
 ### Insert at Head (Prepend)
 
 ```python
-def insert_at_head(head: ListNode, val: int) -> ListNode:
+def insert_at_head(head: Optional[ListNode], val: int) -> ListNode:
     """
     Insert new node at the beginning.
 
@@ -257,7 +259,7 @@ head = insert_at_head(head, 1)         # 1 → 2 → 3 → 4
 ### Insert at Tail (Append)
 
 ```python
-def insert_at_tail(head: ListNode, val: int) -> ListNode:
+def insert_at_tail(head: Optional[ListNode], val: int) -> ListNode:
     """
     Insert new node at the end.
 
@@ -280,7 +282,7 @@ def insert_at_tail(head: ListNode, val: int) -> ListNode:
 ### Insert at Position
 
 ```python
-def insert_at_position(head: ListNode, val: int, position: int) -> ListNode:
+def insert_at_position(head: Optional[ListNode], val: int, position: int) -> ListNode:
     """
     Insert new node at given position (0-indexed).
 
@@ -318,7 +320,7 @@ def insert_at_position(head: ListNode, val: int, position: int) -> ListNode:
 ### Delete at Head
 
 ```python
-def delete_at_head(head: ListNode) -> ListNode:
+def delete_at_head(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Delete the first node.
 
@@ -334,7 +336,7 @@ def delete_at_head(head: ListNode) -> ListNode:
 ### Delete at Tail
 
 ```python
-def delete_at_tail(head: ListNode) -> ListNode:
+def delete_at_tail(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Delete the last node.
 
@@ -355,7 +357,7 @@ def delete_at_tail(head: ListNode) -> ListNode:
 ### Delete by Value
 
 ```python
-def delete_by_value(head: ListNode, val: int) -> ListNode:
+def delete_by_value(head: Optional[ListNode], val: int) -> Optional[ListNode]:
     """
     Delete first node with given value.
 
@@ -379,7 +381,7 @@ def delete_by_value(head: ListNode, val: int) -> ListNode:
 ### Delete Node (Given Access to Node Only)
 
 ```python
-def delete_node(node: ListNode) -> None:
+def delete_node(node: Optional[ListNode]) -> None:
     """
     Delete node when you only have access to that node.
     Cannot delete tail node with this approach.
@@ -389,6 +391,9 @@ def delete_node(node: ListNode) -> None:
     Time: O(1)
     Space: O(1)
     """
+    if not node or not node.next:
+        return # Can't delete the tail this way
+
     # Copy next node's value, then skip next node
     node.val = node.next.val
     node.next = node.next.next
@@ -405,13 +410,13 @@ def delete_node(node: ListNode) -> None:
 | Search             | O(n)            | O(1)             |
 | Get length         | O(n)            | O(1)             |
 | Insert at head     | O(1)            | O(1)             |
-| Insert at tail     | O(n)\*          | O(1)             |
+| Insert at tail     | O(n)*           | O(1)             |
 | Insert at position | O(n)            | O(1)             |
 | Delete at head     | O(1)            | O(1)             |
-| Delete at tail     | O(n)            | O(1)             |
+| Delete at tail     | O(n)*           | O(1)             |
 | Delete by value    | O(n)            | O(1)             |
 
-\*O(1) with tail pointer
+* O(1) time if you maintain a tail pointer, but O(n) if you only have a head pointer.
 
 ---
 
@@ -421,7 +426,7 @@ def delete_node(node: ListNode) -> None:
 
 ```python
 # Two-pass: First count length, then traverse to position
-def get_nth_from_start(head: ListNode, n: int) -> ListNode:
+def get_nth_from_start(head: Optional[ListNode], n: int) -> Optional[ListNode]:
     current = head
     for _ in range(n):
         if not current:
@@ -435,7 +440,7 @@ def get_nth_from_start(head: ListNode, n: int) -> ListNode:
 ### Pattern: Previous Pointer Tracking
 
 ```python
-def delete_all_occurrences(head: ListNode, val: int) -> ListNode:
+def delete_all_occurrences(head: Optional[ListNode], val: int) -> Optional[ListNode]:
     """Delete all nodes with given value."""
     # Dummy node handles edge case of deleting head
     dummy = ListNode(0)
@@ -483,7 +488,7 @@ head = create_linked_list([1, 1, 1, 1])
 ## Debugging Tips
 
 ```python
-def debug_list(head: ListNode, max_nodes: int = 100) -> None:
+def debug_list(head: Optional[ListNode], max_nodes: int = 100) -> None:
     """
     Safe print that handles cycles.
     """

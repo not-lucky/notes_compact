@@ -84,7 +84,9 @@ Being able to reverse a linked list confidently and quickly is essential.
 ## Pattern 1: Reverse Entire List (Iterative)
 
 ```python
-def reverse_list(head: ListNode) -> ListNode:
+from typing import Optional
+
+def reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Reverse entire linked list iteratively.
 
@@ -154,7 +156,7 @@ Result: 4 → 3 → 2 → 1 → None
 ## Pattern 2: Reverse Entire List (Recursive)
 
 ```python
-def reverse_list_recursive(head: ListNode) -> ListNode:
+def reverse_list_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Reverse entire linked list recursively.
 
@@ -205,7 +207,7 @@ Result: 3 → 2 → 1 → None
 ## Pattern 3: Reverse Between Positions (Reverse Sublist)
 
 ```python
-def reverse_between(head: ListNode, left: int, right: int) -> ListNode:
+def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
     """
     Reverse nodes from position left to right (1-indexed).
 
@@ -264,7 +266,7 @@ Result: 1 → 4 → 3 → 2 → 5
 ## Pattern 4: Reverse in K-Groups
 
 ```python
-def reverse_k_group(head: ListNode, k: int) -> ListNode:
+def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
     """
     Reverse nodes in k-group. Leftover nodes remain as is.
 
@@ -331,7 +333,7 @@ Result: [3] → [2] → [1] → [6] → [5] → [4] → [7] → [8]
 ## Pattern 5: Reverse Alternating K-Groups
 
 ```python
-def reverse_alternate_k_group(head: ListNode, k: int) -> ListNode:
+def reverse_alternate_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
     """
     Reverse nodes in alternating k-groups.
     Reverse first k, skip next k, reverse next k, etc.
@@ -388,7 +390,7 @@ def reverse_alternate_k_group(head: ListNode, k: int) -> ListNode:
 ## Pattern 6: Reverse Pairs (Swap Nodes in Pairs)
 
 ```python
-def swap_pairs(head: ListNode) -> ListNode:
+def swap_pairs(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Swap every two adjacent nodes.
 
@@ -440,7 +442,7 @@ Result: [2] → [1] → [4] → [3]
 ## Recursive Swap Pairs
 
 ```python
-def swap_pairs_recursive(head: ListNode) -> ListNode:
+def swap_pairs_recursive(head: Optional[ListNode]) -> Optional[ListNode]:
     """
     Swap every two adjacent nodes recursively.
 
@@ -478,8 +480,10 @@ def swap_pairs_recursive(head: ListNode) -> ListNode:
 
 ### Rotate List
 
+While not strictly a reversal problem, rotating a list is often grouped with reversal patterns because it involves reconnecting the list. Note that this problem does *not* require reversing pointers, but rather breaking the list and forming a circle, then breaking it again at the right spot.
+
 ```python
-def rotate_right(head: ListNode, k: int) -> ListNode:
+def rotate_right(head: Optional[ListNode], k: int) -> Optional[ListNode]:
     """
     Rotate list to the right by k places.
 
@@ -507,6 +511,7 @@ def rotate_right(head: ListNode, k: int) -> ListNode:
     tail.next = head
 
     # Find new tail (length - k steps from head)
+    # The new tail will be at position length - k - 1 (0-indexed)
     steps_to_new_tail = length - k
     new_tail = head
     for _ in range(steps_to_new_tail - 1):

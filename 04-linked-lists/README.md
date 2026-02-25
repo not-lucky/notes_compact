@@ -83,8 +83,10 @@ At FANG+ companies, linked list problems are often used as warm-up or to test fu
 ## Linked List Node Definition
 
 ```python
+from typing import Optional
+
 class ListNode:
-    def __init__(self, val=0, next=None):
+    def __init__(self, val: int = 0, next: Optional['ListNode'] = None):
         self.val = val
         self.next = next
 ```
