@@ -76,6 +76,46 @@ At each house, two choices:
 1. **Rob it**: Add value + best from 2 houses back
 2. **Skip it**: Take best from previous house
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+nums[0] & \text{if } i = 0 \\
+\max(nums[0], nums[1]) & \text{if } i = 1 \\
+\max(dp[i-1], dp[i-2] + nums[i]) & \text{if } i \ge 2
+\end{cases}
+$$
+
+**Base Cases Explained:**
+- `dp[0] = nums[0]`: If there is only one house, you must rob it to maximize profit.
+- `dp[1] = \max(nums[0], nums[1])`: If there are two houses, you can only rob one. Choose the one with the highest value.
+
+**Space Optimization Logic:**
+Just like Fibonacci, `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. Instead of keeping an entire array `dp`, we can just maintain two variables: `prev_max` (which represents `dp[i-2]`) and `curr_max` (which represents `dp[i-1]`). At each step, we calculate the new maximum, and shift our variables forward.
+
+### Top-Down (Memoization)
+
+```python
+def rob_memo(nums: list[int]) -> int:
+    """
+    Top-Down approach.
+    Time: O(n), Space: O(n)
+    """
+    memo = {}
+
+    def dp(i: int) -> int:
+        if i == 0: return nums[0]
+        if i == 1: return max(nums[0], nums[1])
+        if i in memo: return memo[i]
+
+        # Rob current + best from i-2, OR skip current and take best from i-1
+        memo[i] = max(dp(i-1), dp(i-2) + nums[i])
+        return memo[i]
+
+    return dp(len(nums) - 1) if nums else 0
+```
+
+### Bottom-Up (Space Optimized)
+
 ```python
 def rob(nums: list[int]) -> int:
     """
@@ -92,15 +132,15 @@ def rob(nums: list[int]) -> int:
     if len(nums) == 1:
         return nums[0]
 
-    prev2 = nums[0]
-    prev1 = max(nums[0], nums[1])
+    prev_max = nums[0]
+    curr_max = max(nums[0], nums[1])
 
     for i in range(2, len(nums)):
-        curr = max(prev1, prev2 + nums[i])
-        prev2 = prev1
-        prev1 = curr
+        new_max = max(curr_max, prev_max + nums[i])
+        prev_max = curr_max
+        curr_max = new_max
 
-    return prev1
+    return curr_max
 ```
 
 ### Visual Walkthrough
@@ -147,12 +187,12 @@ def rob_circular(nums: list[int]) -> int:
         return max(nums)
 
     def rob_linear(houses: list[int]) -> int:
-        prev2, prev1 = 0, 0
+        prev_max, curr_max = 0, 0
         for money in houses:
-            curr = max(prev1, prev2 + money)
-            prev2 = prev1
-            prev1 = curr
-        return prev1
+            new_max = max(curr_max, prev_max + money)
+            prev_max = curr_max
+            curr_max = new_max
+        return curr_max
 
     # Case 1: Rob houses 0 to n-2
     case1 = rob_linear(nums[:-1])
@@ -260,14 +300,14 @@ def delete_and_earn(nums: list[int]) -> int:
         points[num] += num
 
     # House Robber on points array
-    prev2, prev1 = 0, 0
+    prev_max, curr_max = 0, 0
 
     for i in range(max_num + 1):
-        curr = max(prev1, prev2 + points[i])
-        prev2 = prev1
-        prev1 = curr
+        new_max = max(curr_max, prev_max + points[i])
+        prev_max = curr_max
+        curr_max = new_max
 
-    return prev1
+    return curr_max
 ```
 
 ### Why It Works

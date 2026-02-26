@@ -33,21 +33,26 @@ Dynamic Programming is tested heavily because:
 
 DP is powerful but not always appropriate. Avoid DP when:
 
-1. **No Overlapping Subproblems**: If each subproblem is unique (like in merge sort or binary search), use Divide & Conquer instead. DP's memoization provides no benefit.
+1. **No Overlapping Subproblems**: If each subproblem is unique, use Divide & Conquer.
+   - *Example*: Merge Sort splits an array into two halves, but sorting the left half shares no work with sorting the right half. DP's memoization provides no benefit.
 
-2. **Greedy Works**: If locally optimal choices lead to globally optimal solutions (like in activity selection or Huffman coding), greedy is simpler and often faster. DP is overkill.
+2. **Greedy Works**: If locally optimal choices lead to globally optimal solutions, greedy is simpler and often faster ($O(N)$ or $O(N \log N)$ vs $O(N^2)$). DP is overkill.
+   - *Example (Coin Change with US Coins)*: To make 36¢ with [1, 5, 10, 25], always picking the largest possible coin (25 + 10 + 1) works perfectly. You don't need DP.
+   - *Counter-Example (When you NEED DP)*: To make 6¢ with [1, 3, 4], greedy picks 4 + 1 + 1 (3 coins). DP correctly explores and finds 3 + 3 (2 coins).
 
-3. **State Space Explodes**: If the number of unique states is exponential (e.g., tracking subsets or permutations), even memoized DP may be too slow. Consider approximation algorithms or heuristics.
+3. **State Space Explodes**: If the number of unique states is exponential (e.g., tracking subsets or permutations), even memoized DP may be too slow or run out of memory. Consider approximation algorithms or branch and bound.
+   - *Example*: Traveling Salesperson Problem (TSP) exactly on 50 cities. The state requires tracking the set of visited cities, which is $2^{50}$. DP is unfeasible.
 
-4. **No Optimal Substructure**: If the optimal solution doesn't contain optimal solutions to subproblems, DP won't work. Example: Longest simple path in a graph (taking the longest path to an intermediate node may block the remaining path).
+4. **No Optimal Substructure**: If the optimal solution doesn't contain optimal solutions to subproblems, DP won't work.
+   - *Example*: Longest Simple Path in a graph. Taking the longest path to an intermediate node may use up vertices needed for the remaining path, preventing you from completing the journey.
 
-5. **Problem Asks for "Any" Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
+5. **Problem Asks for "Any" Valid Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
 
 **Red Flags That DP Won't Help:**
 
-- The problem involves graphs with cycles (except shortest path problems)
-- You need to track the actual path/sequence, not just the count/optimal value (reconstruction requires extra space)
-- The constraints are tiny (n ≤ 10)—brute force may be cleaner
+- The problem involves graphs with cycles (except shortest path algorithms like Bellman-Ford/Floyd-Warshall which are technically DP).
+- You need to track the actual path/sequence, not just the count/optimal value (reconstruction requires extra space, though DP can still find the optimal *value*).
+- The constraints are tiny ($n \le 10$)—brute force/backtracking may be expected.
 
 ---
 
@@ -204,7 +209,9 @@ How does current state depend on previous states?
 
 ### Step 3: Define Base Cases
 
-What are the initial values?
+What are the initial values? Base cases represent the smallest subproblems where the answer is known without further breakdown.
+
+- *Example*: Why is `dp[0] = 1` for Climbing Stairs? There is exactly 1 way to be at the ground floor (by doing nothing). Why is `dp[0] = 0` for Fibonacci? Because the $0^{th}$ Fibonacci number is defined as $0$.
 
 ```python
 # dp[0] = 0, dp[1] = 1

@@ -58,6 +58,17 @@ Coin Change is a must-know problem because:
 
 Find minimum number of coins to make amount. Return -1 if impossible.
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+0 & \text{if } i = 0 \\
+\min_{c \in coins, c \le i} (dp[i - c] + 1) & \text{if } i > 0
+\end{cases}
+$$
+
+**Base Case Explained:**
+`dp[0] = 0`: It takes exactly 0 coins to make the amount 0. All other amounts are initialized to infinity (`float('inf')`), because initially, we don't know if they can be made at all.
+
 ### Bottom-Up Solution
 
 ```python
@@ -112,21 +123,18 @@ def coin_change_memo(coins: list[int], amount: int) -> int:
 
 ### Visual Walkthrough
 
-```
-coins = [1, 2, 5], amount = 11
+**Coin Change DP Table:**
+`coins = [1, 2, 5]`, `amount = 5`
 
-dp[0] = 0  (base case)
-dp[1] = dp[0] + 1 = 1  (use coin 1)
-dp[2] = min(dp[1]+1, dp[0]+1) = min(2, 1) = 1  (use coin 2)
-dp[3] = min(dp[2]+1, dp[1]+1) = min(2, 2) = 2
-dp[4] = min(dp[3]+1, dp[2]+1) = min(3, 2) = 2
-dp[5] = min(dp[4]+1, dp[3]+1, dp[0]+1) = 1  (use coin 5)
-dp[6] = min(dp[5]+1, dp[4]+1, dp[1]+1) = min(2, 3, 2) = 2
-...
-dp[11] = 3  (5 + 5 + 1)
+| i | 0 | 1 | 2 | 3 | 4 | 5 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `dp[i]` | 0 | 1 | 1 | 2 | 2 | 1 |
 
-Answer: 3
-```
+*Explanation for `dp[5]`*:
+- From coin `1`: `dp[5-1] + 1` = `dp[4] + 1` = `2 + 1 = 3`
+- From coin `2`: `dp[5-2] + 1` = `dp[3] + 1` = `2 + 1 = 3`
+- From coin `5`: `dp[5-5] + 1` = `dp[0] + 1` = `0 + 1 = 1`
+- `dp[5] = \min(3, 3, 1) = 1`
 
 ---
 
@@ -134,7 +142,22 @@ Answer: 3
 
 Count number of ways to make amount using coins.
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+1 & \text{if } i = 0 \\
+\sum_{c \in coins, c \le i} dp[i - c] & \text{if } i > 0
+\end{cases}
+$$
+
+**Base Case Explained:**
+`dp[0] = 1`: There is exactly 1 way to make the amount 0 (by using no coins). This is the foundation of the counting DP; if this was 0, multiplying/adding from it would yield 0 for all states.
+
 ### Order Doesn't Matter (Combinations)
+
+**Forward Iteration vs Backward Iteration**
+In unbounded knapsack problems like Coin Change, we can reuse the same coin multiple times. To achieve this, we iterate **forward** through the amounts. When computing `dp[i]`, we rely on `dp[i - coin]`, which may have *already* been updated using the same coin in the current iteration.
+In contrast, 0/1 Knapsack uses **backward** iteration to ensure each item is only used once, because `dp[i]` relies on the *un-updated* previous state of the array.
 
 ```python
 def change(amount: int, coins: list[int]) -> int:

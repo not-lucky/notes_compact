@@ -109,6 +109,19 @@ def solve_memo(params):
 
 ### Example: Fibonacci
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+0 & \text{if } i = 0 \\
+1 & \text{if } i = 1 \\
+dp[i-1] + dp[i-2] & \text{if } i \ge 2
+\end{cases}
+$$
+
+**Base Cases Explained:**
+- `dp[0] = 0`: The 0th Fibonacci number is 0 by definition.
+- `dp[1] = 1`: The 1st Fibonacci number is 1 by definition.
+
 ```python
 def fib_memo(n: int) -> int:
     """
@@ -185,6 +198,19 @@ def solve_tab(params):
 ```
 
 ### Example: Fibonacci
+
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+0 & \text{if } i = 0 \\
+1 & \text{if } i = 1 \\
+dp[i-1] + dp[i-2] & \text{if } i \ge 2
+\end{cases}
+$$
+
+**Base Cases Explained:**
+- `dp[0] = 0`: The 0th Fibonacci number is 0 by definition.
+- `dp[1] = 1`: The 1st Fibonacci number is 1 by definition.
 
 ```python
 def fib_tab(n: int) -> int:

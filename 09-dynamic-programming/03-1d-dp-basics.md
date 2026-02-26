@@ -78,6 +78,18 @@ def fibonacci_pattern(n: int) -> int:
 
 ### Climbing Stairs
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+1 & \text{if } i = 0 \text{ (1 way to do nothing)} \\
+1 & \text{if } i = 1 \text{ (1 step)} \\
+dp[i-1] + dp[i-2] & \text{if } i \ge 2
+\end{cases}
+$$
+
+**Space Optimization Logic:**
+Notice that to compute `dp[i]`, we only ever need the results of `dp[i-1]` and `dp[i-2]`. The values for `dp[i-3]`, `dp[i-4]`, etc., are completely irrelevant for the current step. Instead of storing an array of size $N$, we can just maintain two variables (`prev1` representing $dp[i-1]$ and `prev2` representing $dp[i-2]$) and update them at each step, dropping space complexity from $O(N)$ to $O(1)$.
+
 ```python
 def climb_stairs(n: int) -> int:
     """
@@ -379,26 +391,23 @@ def jump(nums: list[int]) -> int:
 
 ## Visual: 1D DP State Transitions
 
-```
-Climbing Stairs:
-dp[i] = dp[i-1] + dp[i-2]
+**Climbing Stairs DP Table:**
 
-    dp[0]  dp[1]  dp[2]  dp[3]  dp[4]  dp[5]
-      1      1      2      3      5      8
-             ↘    ↗  ↘    ↗  ↘    ↗  ↘    ↗
-              ↘  ↗    ↘  ↗    ↘  ↗    ↘  ↗
-               ↘↗      ↘↗      ↘↗      ↘↗
+| i | 0 | 1 | 2 | 3 | 4 | 5 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `dp[i]` | 1 | 1 | 2 | 3 | 5 | 8 |
 
+*Explanation:* To compute `dp[2]`, add `dp[0]` and `dp[1]`.
 
-House Robber:
-dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+**House Robber DP Table:**
+`nums = [2, 7, 9, 3, 1]`
 
-    nums:  2    7    9    3    1
-    dp[i]: 2    7   11   11   12
-              skip→  ↗    ↗    ↗
-                 ↘  rob  skip  rob
-                   ↘  ↗
-```
+| i | 0 | 1 | 2 | 3 | 4 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `nums[i]` | 2 | 7 | 9 | 3 | 1 |
+| `dp[i]` | 2 | 7 | 11 | 11 | 12 |
+
+*Explanation:* `dp[2]` is $\max(dp[1], dp[0] + nums[2]) = \max(7, 2 + 9) = 11$.
 
 ---
 
