@@ -39,12 +39,14 @@ DP is powerful but not always appropriate. Avoid DP when:
 2. **Greedy Works**: If locally optimal choices lead to globally optimal solutions, greedy is simpler and often faster ($O(N)$ or $O(N \log N)$ vs $O(N^2)$). DP is overkill.
    - *Example (Coin Change with US Coins)*: To make 36¢ with [1, 5, 10, 25], always picking the largest possible coin (25 + 10 + 1) works perfectly. You don't need DP.
    - *Counter-Example (When you NEED DP)*: To make 6¢ with [1, 3, 4], greedy picks 4 + 1 + 1 (3 coins). DP correctly explores and finds 3 + 3 (2 coins).
+   - *Example (Activity Selection)*: Finding the maximum number of non-overlapping intervals. Sorting by end time and greedily picking the next compatible interval is $O(N \log N)$ and optimal. DP would be $O(N^2)$.
 
 3. **State Space Explodes**: If the number of unique states is exponential (e.g., tracking subsets or permutations), even memoized DP may be too slow or run out of memory. Consider approximation algorithms or branch and bound.
    - *Example*: Traveling Salesperson Problem (TSP) exactly on 50 cities. The state requires tracking the set of visited cities, which is $2^{50}$. DP is unfeasible.
 
 4. **No Optimal Substructure**: If the optimal solution doesn't contain optimal solutions to subproblems, DP won't work.
    - *Example*: Longest Simple Path in a graph. Taking the longest path to an intermediate node may use up vertices needed for the remaining path, preventing you from completing the journey.
+   - *Example*: Maximum difference between two elements where the larger comes after the smaller. You can't just combine the maximum difference of the left half and right half. You also need the max of the right minus the min of the left.
 
 5. **Problem Asks for "Any" Valid Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
 
@@ -269,6 +271,15 @@ dp[i][state] = # solution at index i in given state
 ---
 
 ## Example: Climbing Stairs
+
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+1 & \text{if } i = 0 \text{ (1 way to do nothing)} \\
+1 & \text{if } i = 1 \text{ (1 step)} \\
+dp[i-1] + dp[i-2] & \text{if } i \ge 2
+\end{cases}
+$$
 
 ```python
 def climb_stairs(n: int) -> int:

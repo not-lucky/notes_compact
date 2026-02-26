@@ -151,13 +151,35 @@ dp[i] = \begin{cases}
 $$
 
 **Base Case Explained:**
-`dp[0] = 1`: There is exactly 1 way to make the amount 0 (by using no coins). This is the foundation of the counting DP; if this was 0, multiplying/adding from it would yield 0 for all states.
+`dp[0] = 1`: There is exactly 1 way to make the amount 0 (by using no coins). This is the foundation of the counting DP; if this was 0, multiplying/adding from it would yield 0 for all states. All other states are initialized to 0.
 
-### Order Doesn't Matter (Combinations)
+### Visual Walkthrough
+
+**Coin Change II DP Table:**
+`coins = [1, 2]`, `amount = 3`
+
+| i (amount) | 0 | 1 | 2 | 3 |
+| :--- | :--- | :--- | :--- | :--- |
+| Initial `dp` | 1 | 0 | 0 | 0 |
+| After coin `1` | 1 | 1 | 1 | 1 |
+| After coin `2` | 1 | 1 | 2 | 2 |
+
+*Explanation*:
+- Initial: `dp[0] = 1` (1 way to make 0), rest are 0.
+- Coin `1`: Updates `dp[1]`, `dp[2]`, `dp[3]`. `dp[i] += dp[i-1]`.
+  - `dp[1] += dp[0]` → 1
+  - `dp[2] += dp[1]` → 1
+  - `dp[3] += dp[2]` → 1
+- Coin `2`: Updates `dp[2]`, `dp[3]`. `dp[i] += dp[i-2]`.
+  - `dp[2] += dp[0]` → `1 + 1 = 2` ways (`{1,1}`, `{2}`)
+  - `dp[3] += dp[1]` → `1 + 1 = 2` ways (`{1,1,1}`, `{1,2}`)
+
+### Bottom-Up Solution (Combinations)
 
 **Forward Iteration vs Backward Iteration**
-In unbounded knapsack problems like Coin Change, we can reuse the same coin multiple times. To achieve this, we iterate **forward** through the amounts. When computing `dp[i]`, we rely on `dp[i - coin]`, which may have *already* been updated using the same coin in the current iteration.
-In contrast, 0/1 Knapsack uses **backward** iteration to ensure each item is only used once, because `dp[i]` relies on the *un-updated* previous state of the array.
+In unbounded knapsack problems like Coin Change, we can reuse the same coin multiple times. To achieve this, we iterate **forward** through the amounts (`for i in range(coin, amount + 1)`). When computing `dp[i]`, we rely on `dp[i - coin]`, which may have *already* been updated using the same coin in the current iteration. This allows the coin to be used multiple times.
+
+In contrast, 0/1 Knapsack uses **backward** iteration (`for i in range(amount, coin - 1, -1)`) to ensure each item is only used once, because `dp[i]` then relies on the *un-updated* previous state of the array from the previous item's iteration.
 
 ```python
 def change(amount: int, coins: list[int]) -> int:
@@ -180,6 +202,40 @@ def change(amount: int, coins: list[int]) -> int:
     return dp[amount]
 ```
 
+### Top-Down Solution (Combinations)
+
+```python
+def change_memo(amount: int, coins: list[int]) -> int:
+    """
+    Memoized recursive solution for counting combinations.
+
+    State requires both the current amount and coin index to avoid
+    duplicate combinations (e.g., treating {1,2} and {2,1} as the same).
+
+    Time: O(amount × len(coins))
+    Space: O(amount × len(coins)) for the memoization cache
+    """
+    from functools import lru_cache
+
+    @lru_cache(maxsize=None)
+    def dp(idx: int, remaining: int) -> int:
+        # Base cases
+        if remaining == 0:
+            return 1
+        if remaining < 0 or idx == len(coins):
+            return 0
+
+        # Option 1: Use the current coin (stay at same idx since unbounded)
+        include = dp(idx, remaining - coins[idx])
+
+        # Option 2: Skip the current coin, move to next
+        skip = dp(idx + 1, remaining)
+
+        return include + skip
+
+    return dp(0, amount)
+```
+
 ### Why Outer Coin Loop?
 
 ```
@@ -197,6 +253,16 @@ dp[3] = 3 (1+1+1, 1+2, 2+1)  ← Counts 1+2 and 2+1 separately!
 ```
 
 ### Order Matters (Permutations)
+
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+1 & \text{if } i = 0 \\
+\sum_{c \in coins, c \le i} dp[i - c] & \text{if } i > 0
+\end{cases}
+$$
+
+*(Note: The recurrence looks mathematically identical to combinations, but the state evaluation order changes the result. Here we build the sum by iterating $i$ first, treating $1+2$ and $2+1$ as distinct paths to reach $i$.)*
 
 ```python
 def num_ways_permutations(amount: int, coins: list[int]) -> int:
@@ -234,6 +300,8 @@ def num_ways_permutations(amount: int, coins: list[int]) -> int:
 
 ## Variation: Fewest Coins with Path
 
+By storing the last coin added in `parent[i]`, we can reconstruct the optimal path backwards from `amount` down to `0`.
+
 ```python
 def coin_change_with_path(coins: list[int], amount: int) -> tuple:
     """
@@ -268,6 +336,14 @@ def coin_change_with_path(coins: list[int], amount: int) -> tuple:
 
 Minimum perfect squares that sum to n.
 
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+0 & \text{if } i = 0 \\
+\min_{1 \le j^2 \le i} (dp[i - j^2] + 1) & \text{if } i > 0
+\end{cases}
+$$
+
 ```python
 def num_squares(n: int) -> int:
     """
@@ -291,6 +367,16 @@ def num_squares(n: int) -> int:
 ---
 
 ## Related: Combination Sum IV
+
+Count permutations of nums that sum to target.
+
+**Mathematical Recurrence:**
+$$
+dp[i] = \begin{cases}
+1 & \text{if } i = 0 \\
+\sum_{num \in nums, num \le i} dp[i - num] & \text{if } i > 0
+\end{cases}
+$$
 
 ```python
 def combination_sum_4(nums: list[int], target: int) -> int:

@@ -38,12 +38,15 @@ LCS is a classic because:
 ## When NOT to Use LCS
 
 1. **Need Contiguous Match (Substring)**: LCS finds subsequences (with gaps). For longest common SUBSTRING, reset dp[i][j] = 0 when characters don't match.
+   *Counter-example:* "Longest Common Substring." If strings are "abXYZ" and "cdXYZ", subsequence is 3, substring is 3. But for "abXcdY" and "abZcdY", substring resets when characters break the chain.
 
 2. **Three or More Strings**: LCS of 3 strings needs 3D DP. It's O(l×m×n), which can be prohibitive. Consider pairwise LCS heuristics.
 
 3. **Very Long Strings with Small Alphabet**: For DNA sequences (alphabet = 4), specialized algorithms like suffix arrays or Hunt-Szymanski may be faster.
+   *Counter-example:* Genome alignment spanning millions of base pairs. Standard $O(M \times N)$ DP will hit Memory Limit Exceeded (MLE) and Time Limit Exceeded (TLE). You must use specialized bioinformatics tools (BLAST) or Hirschberg's algorithm (for $O(N)$ space).
 
 4. **Edit Distance Needed**: LCS tells you commonality; Edit Distance tells you difference. They're related (Edit Distance = m + n - 2×LCS for delete-only), but don't confuse them.
+   *Counter-example:* "Minimum Edit Distance." If you need substitution cost, LCS isn't enough because LCS only inherently covers insert/delete.
 
 5. **Need All LCS, Not Just One**: Finding all longest common subsequences is exponential. Only the length or one example is polynomial.
 
@@ -67,38 +70,64 @@ Explanation: LCS is "ace"
 
 ---
 
+## Formal Recurrence Relation
+
+Let $dp[i][j]$ be the length of the Longest Common Subsequence of the prefixes `text1[0...i-1]` and `text2[0...j-1]`.
+
+**Base Case:**
+$dp[i][0] = 0$ for all $i \in [0, m]$ (LCS with an empty string is 0)
+$dp[0][j] = 0$ for all $j \in [0, n]$ (LCS with an empty string is 0)
+
+**Recursive Step:**
+For given indices $i > 0$ and $j > 0$:
+
+If the characters match (`text1[i-1] == text2[j-1]`):
+$$dp[i][j] = 1 + dp[i-1][j-1]$$
+
+If the characters DO NOT match (`text1[i-1] != text2[j-1]`):
+$$dp[i][j] = \max(dp[i-1][j], dp[i][j-1])$$
+
+**Result:**
+$$dp[m][n]$$ where $m$ and $n$ are the lengths of `text1` and `text2`.
+
+---
+
 ## Solution
 
-```python
-def longest_common_subsequence(text1: str, text2: str) -> int:
-    """
-    Find length of longest common subsequence.
+### Top-Down (Memoization)
 
-    State: dp[i][j] = LCS of text1[0..i-1] and text2[0..j-1]
-    Recurrence:
-        If match: dp[i][j] = dp[i-1][j-1] + 1
-        Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+```python
+def longest_common_subsequence_memo(text1: str, text2: str) -> int:
+    """
+    Top-Down Memoization approach.
 
     Time: O(m × n)
-    Space: O(n)
+    Space: O(m × n) for memo array and recursion stack
     """
     m, n = len(text1), len(text2)
-    dp = [0] * (n + 1)
+    memo = {}
 
-    for i in range(1, m + 1):
-        prev = 0  # dp[i-1][j-1]
-        for j in range(1, n + 1):
-            temp = dp[j]  # Save for next iteration
-            if text1[i - 1] == text2[j - 1]:
-                dp[j] = prev + 1
-            else:
-                dp[j] = max(dp[j], dp[j - 1])
-            prev = temp
+    def helper(i: int, j: int) -> int:
+        # Base case: if either string is empty, LCS is 0
+        if i == 0 or j == 0:
+            return 0
 
-    return dp[n]
+        if (i, j) in memo:
+            return memo[(i, j)]
+
+        # If characters match, add 1 and move both pointers back
+        if text1[i - 1] == text2[j - 1]:
+            memo[(i, j)] = 1 + helper(i - 1, j - 1)
+        else:
+            # If no match, try skipping one char from either string and take max
+            memo[(i, j)] = max(helper(i - 1, j), helper(i, j - 1))
+
+        return memo[(i, j)]
+
+    return helper(m, n)
 ```
 
-### 2D Version (Clearer)
+### Bottom-Up 2D DP (Clearer)
 
 ```python
 def lcs_2d(text1: str, text2: str) -> int:
@@ -121,27 +150,59 @@ def lcs_2d(text1: str, text2: str) -> int:
     return dp[m][n]
 ```
 
+### Bottom-Up with Space Optimization
+
+**Space Optimization Logic:** To compute $dp[i][j]$, we only look at $dp[i-1][j-1]$ (diagonal), $dp[i-1][j]$ (above), and $dp[i][j-1]$ (left). Thus, we only need the *current row* and the *previous row*. We can optimize further to a single 1D array by storing the diagonal value in a `prev_diagonal` variable before it gets overwritten.
+
+```python
+def longest_common_subsequence(text1: str, text2: str) -> int:
+    """
+    Space-optimized bottom-up DP.
+
+    Time: O(m × n)
+    Space: O(n)
+    """
+    m, n = len(text1), len(text2)
+    dp_row = [0] * (n + 1)
+
+    for i in range(1, m + 1):
+        prev_diagonal = 0  # Represents dp[i-1][j-1] (initially dp[i-1][0] which is 0)
+        for j in range(1, n + 1):
+            temp = dp_row[j]  # Save current value (which is dp[i-1][j]) before overwriting it
+
+            if text1[i - 1] == text2[j - 1]:
+                dp_row[j] = prev_diagonal + 1
+            else:
+                # max(dp[i-1][j] (temp), dp[i][j-1] (dp_row[j-1]))
+                dp_row[j] = max(temp, dp_row[j - 1])
+
+            prev_diagonal = temp  # The old dp[i-1][j] becomes the new diagonal for j+1
+
+    return dp_row[n]
+```
+
 ---
 
 ## Visual Walkthrough
 
+**LCS Grid for `text1="abcde"`, `text2="ace"`:**
+
+```markdown
+|     | ""  | a   | c   | e   |
+|-----|-----|-----|-----|-----|
+| ""  | [0] | [0] | [0] | [0] |
+| a   | [0] | [1] | [1] | [1] |
+| b   | [0] | [1] | [1] | [1] |
+| c   | [0] | [1] | [2] | [2] |
+| d   | [0] | [1] | [2] | [2] |
+| e   | [0] | [1] | [2] | [3] |
 ```
-text1 = "abcde", text2 = "ace"
 
-    ""  a  c  e
-""   0  0  0  0
-a    0  1  1  1
-b    0  1  1  1
-c    0  1  2  2
-d    0  1  2  2
-e    0  1  2  3
-
-Match at (a,a): dp[1][1] = dp[0][0] + 1 = 1
-Match at (c,c): dp[3][2] = dp[2][1] + 1 = 2
-Match at (e,e): dp[5][3] = dp[4][2] + 1 = 3
+- Match at (a,a): $dp[1][1] = dp[0][0] + 1 = 1$
+- Match at (c,c): $dp[3][2] = dp[2][1] + 1 = 2$
+- Match at (e,e): $dp[5][3] = dp[4][2] + 1 = 3$
 
 Answer: 3
-```
 
 ---
 

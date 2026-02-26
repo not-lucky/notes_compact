@@ -148,19 +148,21 @@ def max_profit_2_dp(prices: list[int]) -> int:
     """
     State machine DP version.
     """
-    max_profit_holding_stock = float('-inf')  # Profit if holding stock
-    max_profit_empty_handed = 0               # Profit if not holding
+    hold = float('-inf')  # Profit if holding stock
+    cash = 0              # Profit if not holding
 
     for price in prices:
         # Buy stock: decrease cash by price
         # Keep stock: profit doesn't change
-        max_profit_holding_stock = max(max_profit_holding_stock, max_profit_empty_handed - price)
+        new_hold = max(hold, cash - price)
 
         # Sell stock: increase cash by price
         # Keep empty hands: profit doesn't change
-        max_profit_empty_handed = max(max_profit_empty_handed, max_profit_holding_stock + price)
+        new_cash = max(cash, hold + price)
 
-    return max_profit_empty_handed
+        hold, cash = new_hold, new_cash
+
+    return cash
 ```
 
 #### Top-Down (Memoization)
@@ -228,19 +230,19 @@ def max_profit_3(prices: list[int]) -> int:
     Time: O(n)
     Space: O(1)
     """
-    max_profit_after_buy1 = float('-inf')
-    max_profit_after_sell1 = 0
-    max_profit_after_buy2 = float('-inf')
-    max_profit_after_sell2 = 0
+    buy1 = float('-inf')
+    sell1 = 0
+    buy2 = float('-inf')
+    sell2 = 0
 
     for price in prices:
         # Think backwards:
-        max_profit_after_sell2 = max(max_profit_after_sell2, max_profit_after_buy2 + price)
-        max_profit_after_buy2 = max(max_profit_after_buy2, max_profit_after_sell1 - price)
-        max_profit_after_sell1 = max(max_profit_after_sell1, max_profit_after_buy1 + price)
-        max_profit_after_buy1 = max(max_profit_after_buy1, -price)
+        sell2 = max(sell2, buy2 + price)
+        buy2 = max(buy2, sell1 - price)
+        sell1 = max(sell1, buy1 + price)
+        buy1 = max(buy1, -price)
 
-    return max_profit_after_sell2
+    return sell2
 ```
 
 ---
@@ -307,25 +309,25 @@ def max_profit_cooldown(prices: list[int]) -> int:
     """
     Unlimited transactions with 1-day cooldown after selling.
     """
-    max_profit_holding_stock = float('-inf')
-    max_profit_just_sold = 0
-    max_profit_resting = 0
+    hold = float('-inf')
+    sold = 0
+    rest = 0
 
     for price in prices:
         # Cache previous day's sold state
-        prev_sold = max_profit_just_sold
+        prev_sold = sold
 
         # 1. Sell stock today
-        max_profit_just_sold = max_profit_holding_stock + price
+        sold = hold + price
 
         # 2. Buy today (must come from resting, can't buy right after sell)
         # OR Hold from yesterday
-        max_profit_holding_stock = max(max_profit_holding_stock, max_profit_resting - price)
+        hold = max(hold, rest - price)
 
         # 3. Rest today (came from sold yesterday, or rested yesterday)
-        max_profit_resting = max(max_profit_resting, prev_sold)
+        rest = max(rest, prev_sold)
 
-    return max(max_profit_just_sold, max_profit_resting)
+    return max(sold, rest)
 ```
 
 ### State Machine Diagram
@@ -449,14 +451,14 @@ k >= len(prices) // 2
 ```python
 # WRONG: Updating in wrong order
 for price in prices:
-    sell = max(sell, buy + price)
-    buy = max(buy, -price)  # Uses updated sell!
+    cash = max(cash, hold + price)
+    hold = max(hold, -price)  # Uses updated sell!
 
 # CORRECT: Use previous values
 for price in prices:
-    new_buy = max(buy, sell_prev - price)
-    new_sell = max(sell, buy + price)
-    buy, sell = new_buy, new_sell
+    new_hold = max(hold, cash_prev - price)
+    new_cash = max(cash, hold + price)
+    hold, cash = new_hold, new_cash
 
 
 # WRONG: Not handling k >= n/2

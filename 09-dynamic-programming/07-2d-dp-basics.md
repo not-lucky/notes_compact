@@ -46,6 +46,7 @@
 4. **Sparse State Space**: If only a few (i, j) pairs are valid, use memoization with a dictionary instead of a 2D array to save space.
 
 5. **Dependencies Aren't Local**: If dp[i][j] depends on all dp[k][l] for k < i and l < j (not just neighbors), you may still get O(n²) per cell, giving O(n⁴) total. Consider optimization techniques.
+   *Counter-example:* When finding the maximum sum submatrix in a 2D grid, 2D Kadane's algorithm (O(n³)) is better than pure 2D DP checking all bounds.
 
 **Signs 2D DP is Appropriate:**
 
@@ -61,6 +62,45 @@
 ### Unique Paths
 
 Count paths from top-left to bottom-right (only right/down moves).
+
+**Formal Recurrence Relation:**
+Let $dp[i][j]$ be the number of unique paths to reach cell $(i, j)$.
+
+**Base Case:**
+$dp[i][0] = 1$ for all $i$ (only one way to go straight down the left edge)
+$dp[0][j] = 1$ for all $j$ (only one way to go straight right along the top edge)
+
+**Recursive Step:**
+$dp[i][j] = dp[i-1][j] \text{ (paths from above)} + dp[i][j-1] \text{ (paths from left)}$
+
+#### Top-Down (Memoization)
+
+```python
+def unique_paths_memo(m: int, n: int) -> int:
+    """
+    Top-Down Memoization approach.
+
+    Time: O(m × n)
+    Space: O(m × n) for memo and recursion stack
+    """
+    memo = {}
+
+    def helper(r, c):
+        # Base case: if we reach the top or left edge, there's 1 path
+        if r == 0 or c == 0:
+            return 1
+
+        if (r, c) in memo:
+            return memo[(r, c)]
+
+        # Recurrence: paths from cell above + paths from cell left
+        memo[(r, c)] = helper(r - 1, c) + helper(r, c - 1)
+        return memo[(r, c)]
+
+    return helper(m - 1, n - 1)
+```
+
+#### Bottom-Up (Tabulation) with Space Optimization
 
 ```python
 def unique_paths(m: int, n: int) -> int:
@@ -281,7 +321,13 @@ def cherry_pickup(grid: list[list[int]]) -> int:
 
 ## Space Optimization Techniques
 
-### 2D → 1D Reduction
+### 2D → 1D Reduction (Logic Explanation)
+
+Why does Space Optimization work in Grid Path / 2D problems?
+If we carefully analyze the recurrence relation: $dp[i][j] = dp[i-1][j] + dp[i][j-1]$.
+To compute the current row $i$, we ONLY need values from the *immediately preceding row* $i-1$. Any rows before $i-1$ (like $i-2$, $i-3$) are completely obsolete and safe to discard. By tracking just `current_row` and `previous_row`, we drop space from $O(M \times N)$ to $O(N)$.
+
+Even better, we can often do this with *one* 1D array by overwriting values in-place as we iterate left-to-right. When we update `dp[j]`, the old value represents `dp[i-1][j]` (directly above), and `dp[j-1]` represents the already-updated value in the current row (directly to the left).
 
 When dp[i][j] depends only on dp[i-1][...] and dp[i][j-1]:
 
@@ -293,23 +339,27 @@ for i in range(m):
         dp[i][j] = f(dp[i-1][j], dp[i][j-1])
 
 # Optimized O(n) space
-dp = [0] * n
+dp_row = [0] * n  # Represents the current row's DP values
 for i in range(m):
     for j in range(n):
-        dp[j] = f(dp[j], dp[j-1])  # dp[j] is previous row's value
+        # dp_row[j] before assignment is dp[i-1][j] (the cell above)
+        # dp_row[j-1] is the cell to the left, already updated for current row
+        dp_row[j] = f(dp_row[j], dp_row[j-1])
 ```
 
-### When We Need dp[i-1][j-1]
+### When We Need dp[i-1][j-1] (The Diagonal Element)
+
+For problems like Maximum Square or String Matching (LCS/Edit Distance), the recurrence relies on the diagonal element ($i-1$, $j-1$). If we overwrite `dp_row[j]`, we lose the diagonal value for the *next* calculation at `j+1`. We must cache it before overwriting.
 
 ```python
 # Need to save dp[i-1][j-1] before overwriting
-dp = [0] * n
+dp_row = [0] * n
 for i in range(m):
-    prev = 0  # dp[i-1][j-1]
+    prev_diagonal = 0  # dp[i-1][j-1]
     for j in range(n):
-        temp = dp[j]  # Save before overwriting
-        dp[j] = f(dp[j], dp[j-1], prev)
-        prev = temp
+        temp = dp_row[j]  # Save the current value before it gets overwritten (becomes the diagonal for next step)
+        dp_row[j] = f(dp_row[j], dp_row[j-1], prev_diagonal)
+        prev_diagonal = temp  # Pass it to the next iteration
 ```
 
 ---
@@ -346,25 +396,33 @@ else:
 
 ## Visual: 2D DP State Transitions
 
+**Unique Paths:**
+```markdown
+|     | c=0 | c=1 | c=2 | c=3 |
+|-----|-----|-----|-----|-----|
+| r=0 | [1] | [1] | [1] | [1] |
+| r=1 | [1] | [2] | [3] | [4] |
+| r=2 | [1] | [3] | [6] | [10]|
 ```
-Unique Paths:
-  0   1   2   3
-0 [1] [1] [1] [1]
-1 [1] [2] [3] [4]
-2 [1] [3] [6] [10]
 
-dp[i][j] = dp[i-1][j] + dp[i][j-1]
-         =    ↑      +    ←
+$dp[i][j] = dp[i-1][j] + dp[i][j-1]$
+This is the sum of the cell above (↑) and the cell to the left (←).
 
+**Minimum Path Sum:**
+Grid:
+```markdown
+| 1 | 3 | 1 |
+| 1 | 5 | 1 |
+| 4 | 2 | 1 |
+```
 
-Minimum Path Sum:
-  1   3   1
-  1   5   1
-  4   2   1
-
-  1   4   5
-  2   7   6
-  6   8   7  ← Answer
+DP Table:
+```markdown
+|   | c=0 | c=1 | c=2 |
+|---|-----|-----|-----|
+|r=0| [1] | [4] | [5] |
+|r=1| [2] | [7] | [6] |
+|r=2| [6] | [8] | [7] |  ← Answer: 7
 ```
 
 ---

@@ -6,64 +6,54 @@
 
 0/1 Knapsack is a fundamental optimization problem where you select items (each usable at most once) to maximize value while staying within a weight capacity.
 
+## Formal Recurrence
+
+Let $dp[i][w]$ be the maximum value we can achieve using a subset of the first $i$ items with a total weight limit of $w$.
+
+For item $i$ (with weight $wt[i]$ and value $val[i]$), we have two choices:
+1. **Exclude it:** The max value is what we could get with the first $i-1$ items.
+   $dp[i][w] = dp[i-1][w]$
+2. **Include it:** If $wt[i] \leq w$, we gain $val[i]$ but use $wt[i]$ capacity. We add this to the best we could do with the remaining capacity using the first $i-1$ items.
+   $dp[i][w] = dp[i-1][w - wt[i]] + val[i]$
+
+Combining these:
+$$
+dp[i][w] =
+\begin{cases}
+dp[i-1][w] & \text{if } wt[i] > w \\
+\max(dp[i-1][w], dp[i-1][w - wt[i]] + val[i]) & \text{if } wt[i] \leq w
+\end{cases}
+$$
+
+**Base Cases:**
+- $dp[0][w] = 0$ for all $w$ (0 value with 0 items)
+- $dp[i][0] = 0$ for all $i$ (0 value with 0 capacity)
+
 ## Building Intuition
 
 **Why is 0/1 Knapsack solved with DP?**
 
-1. **Exponential Choices, Polynomial States**: With n items, there are 2^n possible subsets. But the answer only depends on (current item index, remaining capacity)—just n × W states.
+1. **Exponential Choices, Polynomial States**: With $n$ items, there are $2^n$ possible subsets. But the answer only depends on (current item index, remaining capacity)—just $n \times W$ states.
 
-2. **The Include/Exclude Decision**: For each item, we have two choices:
-   - **Exclude item i**: Best value is same as with items 0..i-1 and same capacity.
-   - **Include item i**: Best value is value[i] + best value for remaining capacity (capacity - weight[i]) using items 0..i-1.
+2. **The Include/Exclude Decision**: At each step we make a binary choice. By taking the `max()` of both valid choices, we explore all $2^n$ possibilities efficiently without redundant work.
 
-   We take the max. This captures all 2^n possibilities efficiently.
+3. **Pseudo-Polynomial Complexity**: $O(n \times W)$ looks polynomial, but $W$ is a VALUE (number of possible weights), not the INPUT SIZE (which takes $\log W$ bits to represent). If $W = 10^9$, this approach is infeasible.
 
-3. **Why Backward Iteration (1D DP)**: In the space-optimized version, we iterate capacity backward. Why? If we go forward, dp[w - weight[i]] has already been updated in this iteration—we'd be using the same item twice! Backward ensures we use values from the "previous item" row.
-
-4. **Pseudo-Polynomial Complexity**: O(n × W) looks polynomial, but W is a VALUE (number of possible weights), not the INPUT SIZE (log W bits). If W = 10^9, this is infeasible.
-
-5. **Mental Model**: Imagine packing a backpack before a hike. You consider items one by one. For each item, you ask: "If I take this, is the value gained worth the capacity I lose?" You can only decide based on what you COULD fit before considering this item.
-
-## Interview Context
-
-0/1 Knapsack is a foundational pattern because:
-
-1. **Classic optimization**: Maximum value with constraints
-2. **Include/exclude decision**: Binary choice at each step
-3. **Many variations**: Subset sum, partition, target sum
-4. **Space optimization**: 2D → 1D reduction
-
----
+4. **Mental Model**: Imagine packing a backpack before a hike. You consider items one by one. For each item, you ask: "If I take this, is the value gained worth the capacity I lose?" You decide based on the optimal packing of the *remaining* capacity using *previously considered* items.
 
 ## When NOT to Use 0/1 Knapsack
 
-1. **Unlimited Item Usage**: If items can be reused, use Unbounded Knapsack (forward iteration, not backward).
-
-2. **Very Large Capacity**: If W = 10^9, O(n × W) is infeasible. Consider:
-   - Meeting in the middle (O(2^(n/2)) for small n)
-   - Approximation algorithms
-   - Greedy if items are divisible (fractional knapsack)
-
-3. **Greedy Works (Fractional Knapsack)**: If you can take fractions of items, sort by value/weight ratio and take greedily. DP is unnecessary.
-
-4. **Multiple Knapsacks**: For bin packing or multiple knapsack problems, standard 0/1 DP doesn't apply directly. Use more complex formulations.
-
-5. **Non-Additive Objectives**: If total value isn't the sum of individual values (e.g., discounts for combinations), the standard recurrence breaks.
-
-**Recognize 0/1 Knapsack Pattern When:**
-
-- Each item has weight and value
-- Capacity constraint
-- Each item used at most once
-- Maximize/minimize sum
-- Reduction: Subset Sum, Partition, Target Sum
-
----
+1. **Unlimited Item Usage**: If items can be reused, use Unbounded Knapsack.
+   *Example: Coin Change (you have unlimited 1¢, 5¢, 10¢ coins).*
+2. **Very Large Capacity**: If $W = 10^9$, $O(n \times W)$ will TLE (Time Limit Exceeded) and MLE (Memory Limit Exceeded). Consider:
+   - Meeting in the middle ($O(2^{n/2})$ for small $n$, e.g., $n \leq 40$)
+   - Branch and Bound (A* Search)
+3. **Fractions Allowed (Fractional Knapsack)**: If you can take 50% of an item for 50% of its value, use a Greedy approach. Sort items by value/weight ratio and take as much of the highest ratio items as possible. DP is overkill and slower.
+4. **Non-Additive Objectives**: If items have synergies (e.g., "Item A and B together give +10 bonus value"), the standard subproblem structure breaks down because choices are no longer independent.
 
 ## Problem Statement
 
-Given weights and values of n items, find maximum value that fits in capacity W.
-Each item can be used at most once (0/1 = take or don't take).
+Given weights and values of $n$ items, find maximum value that fits in capacity $W$. Each item can be used at most once (0/1 = take or don't take).
 
 ```
 Input:
@@ -75,156 +65,178 @@ Output: 9
 Explanation: Take items with weights 3 and 4 (values 4 + 5 = 9)
 ```
 
----
+## Implementations
 
-## Solution
+### 1. Top-Down (Memoization)
+
+Good for sparse capacities where not all states are visited.
 
 ```python
-def knapsack(weights: list[int], values: list[int], capacity: int) -> int:
+def knapsack_memo(weights: list[int], values: list[int], capacity: int) -> int:
     """
-    0/1 Knapsack - maximum value within capacity.
+    Top-Down DP (Memoization)
+    Time: O(n * W)
+    Space: O(n * W) for memoization table + O(n) call stack
+    """
+    memo = {}
 
-    State: dp[i][w] = max value using items 0..i-1 with capacity w
-    Recurrence:
-        If weight[i-1] > w: dp[i][w] = dp[i-1][w]
-        Else: dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight[i-1]] + value[i-1])
+    def dfs(i: int, w: int) -> int:
+        # Base case: no items left or no capacity left
+        if i < 0 or w == 0:
+            return 0
 
-    Time: O(n × W)
+        if (i, w) in memo:
+            return memo[(i, w)]
+
+        # Choice 1: Exclude item i
+        res = dfs(i - 1, w)
+
+        # Choice 2: Include item i (if it fits)
+        if weights[i] <= w:
+            res = max(res, values[i] + dfs(i - 1, w - weights[i]))
+
+        memo[(i, w)] = res
+        return res
+
+    return dfs(len(weights) - 1, capacity)
+```
+
+### 2. Bottom-Up 2D (Tabulation)
+
+Clearest mapping to the recurrence relation.
+
+```python
+def knapsack_2d(weights: list[int], values: list[int], capacity: int) -> int:
+    """
+    Bottom-Up DP (Tabulation)
+    Time: O(n * W)
+    Space: O(n * W)
+    """
+    n = len(weights)
+    # dp[i][w] = max value using first i items with capacity w
+    # Size is (n+1) x (capacity+1) to handle base cases (0 items, 0 capacity)
+    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        wt = weights[i - 1]
+        val = values[i - 1]
+
+        for w in range(capacity + 1):
+            # Default: don't take the item
+            dp[i][w] = dp[i - 1][w]
+
+            # If it fits, see if taking it is better
+            if wt <= w:
+                dp[i][w] = max(
+                    dp[i][w],
+                    dp[i - 1][w - wt] + val
+                )
+
+    return dp[n][capacity]
+```
+
+### 3. Space-Optimized 1D (Best Practice)
+
+Notice in the 2D version, `dp[i][w]` only depends on the *previous row* `dp[i-1]`. We can optimize space from $O(n \times W)$ to $O(W)$ by keeping only one row.
+
+```python
+def knapsack_1d(weights: list[int], values: list[int], capacity: int) -> int:
+    """
+    Space-Optimized Bottom-Up DP
+    Time: O(n * W)
     Space: O(W)
     """
     n = len(weights)
     dp = [0] * (capacity + 1)
 
     for i in range(n):
-        # Iterate backwards to avoid using same item twice
-        for w in range(capacity, weights[i] - 1, -1):
-            dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+        wt = weights[i]
+        val = values[i]
+
+        # CRITICAL: Iterate backwards!
+        for w in range(capacity, wt - 1, -1):
+            dp[w] = max(dp[w], dp[w - wt] + val)
 
     return dp[capacity]
 ```
 
-### 2D Version (Clearer)
+## Why Iterate Backwards in 1D DP?
 
-```python
-def knapsack_2d(weights: list[int], values: list[int], capacity: int) -> int:
-    """
-    2D DP version for clarity.
+When compressing from 2D to 1D, we drop the item index `i`.
+`dp[w]` represents the current row `i` being built, while trying to read values from the previous row `i-1`.
 
-    Time: O(n × W)
-    Space: O(n × W)
-    """
-    n = len(weights)
-    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+The recurrence is: `new_dp[w] = max(old_dp[w], old_dp[w - wt] + val)`
 
-    for i in range(1, n + 1):
-        for w in range(capacity + 1):
-            dp[i][w] = dp[i - 1][w]  # Don't take item
+Because `w - wt < w`, the value we need to read (`w - wt`) is always to the *left* of the current capacity `w`.
 
-            if weights[i - 1] <= w:
-                dp[i][w] = max(
-                    dp[i][w],
-                    dp[i - 1][w - weights[i - 1]] + values[i - 1]
-                )
-
-    return dp[n][capacity]
+**If we iterate forward (Left to Right):**
 ```
+Item weight = 2, value = 3
+w=2: dp[2] = max(dp[2], dp[0] + 3) = 3  (Uses the item once)
+w=4: dp[4] = max(dp[4], dp[2] + 3) = 6  (Uses dp[2] which ALREADY includes the item!)
+```
+Forward iteration effectively allows an item to be selected multiple times. This solves the *Unbounded* Knapsack problem.
+
+**If we iterate backward (Right to Left):**
+```
+Item weight = 2, value = 3
+w=4: dp[4] = max(dp[4], dp[2] + 3) = 3  (Reads dp[2] from the PREVIOUS item iteration)
+w=2: dp[2] = max(dp[2], dp[0] + 3) = 3  (Reads dp[0] from the PREVIOUS item iteration)
+```
+Backward iteration guarantees that when evaluating `dp[w]`, all values to its left (`dp[w - wt]`) have *not yet been updated* in the current loop. Therefore, they still hold the values from the previous item (`i-1`), perfectly matching the 2D recurrence.
 
 ---
 
-## Why Iterate Backwards?
+## DP Table Visualization
 
-```
-Forward iteration (WRONG for 0/1):
-weights = [2], values = [3], capacity = 4
+For `weights = [1, 3, 4]`, `values = [15, 20, 30]`, `capacity = 4`:
 
-w=2: dp[2] = max(dp[2], dp[0] + 3) = 3
-w=3: dp[3] = max(dp[3], dp[1] + 3) = 3
-w=4: dp[4] = max(dp[4], dp[2] + 3) = 6  ← Uses item TWICE!
+| Item (wt, val) \ Cap | 0 | 1 | 2 | 3 | 4 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** (0, 0) | 0 | 0 | 0 | 0 | 0 |
+| **1** (1, 15) | 0 | 15 | 15 | 15 | 15 |
+| **2** (3, 20) | 0 | 15 | 15 | 20 | 35 |
+| **3** (4, 30) | 0 | 15 | 15 | 20 | 35 |
 
-Backward iteration (CORRECT):
-w=4: dp[4] = max(dp[4], dp[2] + 3) = 3
-w=3: dp[3] = max(dp[3], dp[1] + 3) = 3
-w=2: dp[2] = max(dp[2], dp[0] + 3) = 3  ✓ Each item used once
-```
+*At `dp[2][4]`: max(exclude item 2 `dp[1][4]=15`, include item 2 `dp[1][4-3] + 20 = dp[1][1] + 20 = 15 + 20 = 35`)*
 
 ---
 
-## Related: Subset Sum
+## Related Patterns
 
+Many problems are 0/1 Knapsack in disguise. The trick is identifying the "capacity" and "items".
+
+### Subset Sum (Can we sum to target?)
+Items = numbers, Capacity = target, Value = N/A (boolean state).
 ```python
 def can_partition(nums: list[int], target: int) -> bool:
-    """
-    Can we select subset that sums to target?
-
-    Time: O(n × target)
-    Space: O(target)
-    """
     dp = [False] * (target + 1)
-    dp[0] = True
+    dp[0] = True  # Base case: sum of 0 is always possible with empty subset
 
     for num in nums:
-        for t in range(target, num - 1, -1):
+        for t in range(target, num - 1, -1): # Backward!
             dp[t] = dp[t] or dp[t - num]
 
     return dp[target]
 ```
 
----
+### Partition Equal Subset Sum
+Target is exactly `sum(nums) / 2`. Reduces directly to Subset Sum.
 
-## Related: Partition Equal Subset Sum
-
-```python
-def can_partition_equal(nums: list[int]) -> bool:
-    """
-    Can partition into two subsets with equal sum?
-
-    Time: O(n × sum/2)
-    Space: O(sum/2)
-    """
-    total = sum(nums)
-
-    if total % 2 != 0:
-        return False
-
-    target = total // 2
-    dp = [False] * (target + 1)
-    dp[0] = True
-
-    for num in nums:
-        for t in range(target, num - 1, -1):
-            dp[t] = dp[t] or dp[t - num]
-
-    return dp[target]
-```
-
----
-
-## Related: Target Sum
+### Target Sum (Assign +/- to sum to target)
+Let $P$ be subset of positive numbers, $N$ be negative.
+$P - N = target$ and $P + N = \sum nums$
+$\Rightarrow 2P = target + \sum nums \Rightarrow P = (target + \sum nums) / 2$
+Reduces to finding count of subsets that sum to $P$.
 
 ```python
 def find_target_sum_ways(nums: list[int], target: int) -> int:
-    """
-    Count ways to assign +/- to nums to get target.
-
-    Transform: Let P = positive subset, N = negative subset
-    P - N = target
-    P + N = sum(nums)
-    2P = target + sum(nums)
-    P = (target + sum(nums)) / 2
-
-    So count subsets summing to P.
-
-    Time: O(n × P)
-    Space: O(P)
-    """
     total = sum(nums)
-
-    if (total + target) % 2 != 0 or total + target < 0:
-        return 0
+    if (total + target) % 2 != 0 or total < abs(target): return 0
 
     p = (total + target) // 2
     dp = [0] * (p + 1)
-    dp[0] = 1
+    dp[0] = 1 # 1 way to make sum 0
 
     for num in nums:
         for t in range(p, num - 1, -1):
@@ -233,188 +245,17 @@ def find_target_sum_ways(nums: list[int], target: int) -> int:
     return dp[p]
 ```
 
----
-
-## Related: Count Subsets with Sum
-
-```python
-def count_subsets_with_sum(nums: list[int], target: int) -> int:
-    """
-    Count subsets that sum to target.
-
-    Time: O(n × target)
-    Space: O(target)
-    """
-    dp = [0] * (target + 1)
-    dp[0] = 1  # Empty subset
-
-    for num in nums:
-        for t in range(target, num - 1, -1):
-            dp[t] += dp[t - num]
-
-    return dp[target]
-```
+### Last Stone Weight II (Minimize difference between two partitions)
+Find a subset sum closest to $\lfloor \text{total} / 2 \rfloor$. The remaining stones form the other subset.
 
 ---
 
-## Related: Last Stone Weight II
+## Complexity Recap
 
-```python
-def last_stone_weight_ii(stones: list[int]) -> int:
-    """
-    Minimize remaining stone weight after optimal smashing.
+| Approach | Time | Space | Notes |
+| :--- | :--- | :--- | :--- |
+| Top-Down Memoization | $O(n \times W)$ | $O(n \times W)$ | Best when capacity space is sparse |
+| Bottom-Up 2D | $O(n \times W)$ | $O(n \times W)$ | Easiest to debug |
+| Bottom-Up 1D | $O(n \times W)$ | $O(W)$ | Standard interview answer |
 
-    Key insight: Partition into two groups, minimize difference.
-    Same as: find subset sum closest to total/2.
-
-    Time: O(n × sum/2)
-    Space: O(sum/2)
-    """
-    total = sum(stones)
-    target = total // 2
-    dp = [False] * (target + 1)
-    dp[0] = True
-
-    for stone in stones:
-        for t in range(target, stone - 1, -1):
-            dp[t] = dp[t] or dp[t - stone]
-
-    # Find largest achievable sum <= target
-    for t in range(target, -1, -1):
-        if dp[t]:
-            return total - 2 * t
-
-    return 0
-```
-
----
-
-## Reconstructing the Solution
-
-```python
-def knapsack_with_items(weights: list[int], values: list[int],
-                        capacity: int) -> tuple[int, list[int]]:
-    """
-    Return max value and indices of items taken.
-    """
-    n = len(weights)
-    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
-
-    for i in range(1, n + 1):
-        for w in range(capacity + 1):
-            dp[i][w] = dp[i - 1][w]
-            if weights[i - 1] <= w:
-                dp[i][w] = max(dp[i][w],
-                               dp[i - 1][w - weights[i - 1]] + values[i - 1])
-
-    # Backtrack
-    items = []
-    w = capacity
-    for i in range(n, 0, -1):
-        if dp[i][w] != dp[i - 1][w]:
-            items.append(i - 1)
-            w -= weights[i - 1]
-
-    return dp[n][capacity], items[::-1]
-```
-
----
-
-## Edge Cases
-
-```python
-# 1. Empty items
-weights, values = [], []
-capacity = 10
-# Return 0
-
-# 2. Zero capacity
-weights = [1, 2, 3]
-values = [10, 20, 30]
-capacity = 0
-# Return 0
-
-# 3. All items fit
-weights = [1, 1, 1]
-values = [10, 20, 30]
-capacity = 10
-# Return 60 (take all)
-
-# 4. Single item
-weights = [5]
-values = [10]
-capacity = 5
-# Return 10
-```
-
----
-
-## Common Mistakes
-
-```python
-# WRONG: Forward iteration for 0/1 knapsack
-for num in nums:
-    for t in range(num, target + 1):  # Forward!
-        dp[t] = dp[t] or dp[t - num]  # Uses same item multiple times!
-
-# CORRECT: Backward iteration
-for t in range(target, num - 1, -1):  # Backward!
-
-
-# WRONG: Wrong loop bounds
-for w in range(capacity, weights[i], -1):  # Misses weights[i]
-
-# CORRECT:
-for w in range(capacity, weights[i] - 1, -1):  # Include weights[i]
-```
-
----
-
-## Complexity
-
-| Problem         | Time          | Space     |
-| --------------- | ------------- | --------- |
-| 0/1 Knapsack    | O(n × W)      | O(W)      |
-| Subset Sum      | O(n × target) | O(target) |
-| Partition Equal | O(n × sum/2)  | O(sum/2)  |
-| Target Sum      | O(n × P)      | O(P)      |
-
-Note: These are **pseudo-polynomial** time (polynomial in numeric value, not input size).
-
----
-
-## Interview Tips
-
-1. **Identify knapsack pattern**: Include/exclude decision with capacity
-2. **Transform the problem**: Target Sum → Subset Sum
-3. **Know iteration direction**: Backward for 0/1, forward for unbounded
-4. **Handle edge cases**: Empty, zero capacity, overflow
-5. **Mention complexity**: Pseudo-polynomial, not truly polynomial
-
----
-
-## Practice Problems
-
-| #   | Problem                    | Difficulty | Variant            |
-| --- | -------------------------- | ---------- | ------------------ |
-| 1   | 0/1 Knapsack               | Medium     | Classic            |
-| 2   | Partition Equal Subset Sum | Medium     | Boolean subset     |
-| 3   | Target Sum                 | Medium     | Count with +/-     |
-| 4   | Last Stone Weight II       | Medium     | Min partition diff |
-| 5   | Ones and Zeroes            | Medium     | 2D knapsack        |
-
----
-
-## Key Takeaways
-
-1. **Binary choice**: Take or don't take each item
-2. **Backward iteration**: Ensures each item used once
-3. **Transform problems**: Many reduce to subset sum
-4. **Space optimization**: 1D array sufficient
-5. **Pseudo-polynomial**: Depends on capacity value
-
----
-
-## Next: [11-knapsack-unbounded.md](./11-knapsack-unbounded.md)
-
-Learn unbounded knapsack where items can be used multiple times.
+*Note: These are **pseudo-polynomial** time (polynomial relative to the numeric value of W, but exponential relative to the number of bits needed to represent W).*

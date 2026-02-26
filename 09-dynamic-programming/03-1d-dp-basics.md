@@ -116,6 +116,19 @@ def climb_stairs(n: int) -> int:
 
 ### Min Cost Climbing Stairs
 
+**Mathematical Recurrence:**
+$$
+dp[i] = cost[i] + \min(dp[i-1], dp[i-2])
+$$
+*Base cases:*
+$$
+dp[0] = cost[0]
+$$
+$$
+dp[1] = cost[1]
+$$
+*(Note: Final answer is $\min(dp[n-1], dp[n-2])$ because we can step off from the last or second-to-last step).*
+
 ```python
 def min_cost_climbing_stairs(cost: list[int]) -> int:
     """
@@ -165,14 +178,14 @@ def rob(nums: list[int]) -> int:
     if len(nums) == 1:
         return nums[0]
 
-    prev2, prev1 = nums[0], max(nums[0], nums[1])
+    skip_prev, take_prev = nums[0], max(nums[0], nums[1])
 
     for i in range(2, len(nums)):
-        curr = max(prev1, prev2 + nums[i])
-        prev2 = prev1
-        prev1 = curr
+        take_curr = max(take_prev, skip_prev + nums[i])
+        skip_prev = take_prev
+        take_prev = take_curr
 
-    return prev1
+    return take_prev
 ```
 
 ### Delete and Earn
@@ -197,14 +210,14 @@ def delete_and_earn(nums: list[int]) -> int:
         points[num] += num
 
     # Now it's House Robber on points array
-    prev2, prev1 = 0, 0
+    skip_prev, take_prev = 0, 0
 
     for i in range(max_num + 1):
-        curr = max(prev1, prev2 + points[i])
-        prev2 = prev1
-        prev1 = curr
+        take_curr = max(take_prev, skip_prev + points[i])
+        skip_prev = take_prev
+        take_prev = take_curr
 
-    return prev1
+    return take_prev
 ```
 
 ---

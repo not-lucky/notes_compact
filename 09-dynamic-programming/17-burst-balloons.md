@@ -41,16 +41,19 @@ Burst Balloons is a FANG+ hard problem because:
 ## When NOT to Use Burst Balloons Pattern
 
 1. **Order Doesn't Affect Outcome**: If the result is the same regardless of burst order (like simple sum), DP is unnecessary.
+   - *Example*: Finding the sum of an array where removing an element doesn't change anything else.
 
 2. **No Range Structure**: If removing an element doesn't affect only its range (e.g., global effects), interval DP doesn't apply.
+   - *Example*: A game where bursting a balloon doubles the score of all remaining balloons globally.
 
 3. **Forward Thinking Works**: Some problems are naturally solved by considering "first" rather than "last." Only use "last" thinking when "first" creates dependency chaos.
    - *Example*: Coin Change. Taking a coin first doesn't change the properties of the remaining coins, so we don't need "last taken" logic.
 
-4. **Small n (Brute Force)**: For n ≤ 10, brute force all permutations (O(n!)) might be acceptable and simpler to implement.
+4. **Small n (Brute Force)**: For $n \le 10$, brute force all permutations ($O(n!)$) might be acceptable and simpler to implement.
    - *Example*: A game board with 8 tiles where you want to find the exact optimal sequence of removals.
 
 5. **Different Cost Function**: If bursting depends on more than just immediate neighbors (e.g., global state, history, or parity of elements remaining), the standard recurrence breaks.
+   - *Example*: Cost is based on how many balloons have already been burst. You'd need an extra state dimension for the count, complicating the recurrence.
 
 **Recognize This Pattern When:**
 
@@ -105,6 +108,10 @@ dp[i][j] =
 \max\limits_{i < k < j} \left\{ dp[i][k] + dp[k][j] + nums[i] \cdot nums[k] \cdot nums[j] \right\} & \text{if } i+1 < j
 \end{cases}
 $$
+
+**Space & Time Complexity Analysis:**
+Because $dp$ is an $O(n) \times O(n)$ table and computing each $dp[i][j]$ requires iterating over all possible split points $k$ where $i < k < j$ (taking $O(n)$ time), the total time complexity is $O(n^3)$.
+Space is $O(n^2)$ for the table. It cannot be reduced to $O(n)$ because we need to query results of all $O(n^2)$ sub-intervals.
 
 ### Bottom-Up (Tabulation)
 
@@ -180,6 +187,8 @@ dp[0][5]: Check all k from 1 to 4
 
 ## Memoization Version
 
+Many people find the top-down memoization approach more intuitive for interval DP because you don't have to worry about the complex loop ordering (iterating by length).
+
 ```python
 from functools import lru_cache
 
@@ -192,11 +201,12 @@ def max_coins_memo(nums: list[int]) -> int:
 
     @lru_cache(maxsize=None)
     def dp(left: int, right: int) -> int:
-        # No balloons between left and right
+        # Base case: No balloons between left and right
         if left + 1 == right:
             return 0
 
         max_coins = 0
+        # Try bursting every balloon k LAST
         for k in range(left + 1, right):
             coins = nums[left] * nums[k] * nums[right]
             total = dp(left, k) + dp(k, right) + coins
@@ -255,6 +265,20 @@ def min_cost_burst(nums: list[int]) -> int:
 ---
 
 ## Related: Minimum Score Triangulation
+
+Given a convex polygon with $n$ vertices, find the minimum score to triangulate it. The score of a triangle is the product of its 3 vertices.
+
+### Recurrence Relation
+
+Let $v$ be the array of vertex values. Let $dp[i][j]$ be the minimum score to triangulate the polygon formed by vertices $i, i+1, \dots, j$.
+
+$$
+dp[i][j] =
+\begin{cases}
+0 & \text{if } i+1 = j \quad \text{(a line, not a polygon)} \\
+\min\limits_{i < k < j} \left\{ dp[i][k] + dp[k][j] + v[i] \cdot v[k] \cdot v[j] \right\} & \text{if } i+1 < j
+\end{cases}
+$$
 
 ```python
 def min_score_triangulation(values: list[int]) -> int:

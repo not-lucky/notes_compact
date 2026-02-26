@@ -37,6 +37,15 @@ Understanding both approaches is essential because:
 
 ## When NOT to Use Each
 
+### When NOT to use DP at all
+
+Before choosing memoization or tabulation, confirm DP is the right tool:
+
+1. **When Greedy works (Overlapping Subproblems missing):** If making a locally optimal choice always leads to a globally optimal solution, DP is overkill.
+   *   **Counter-example:** Finding minimum coins for standard US denominations (1, 5, 10, 25). Greedy works perfectly ($O(1)$ per coin type). DP ($O(n \cdot C)$) is unnecessary.
+2. **When there are no overlapping subproblems:** If subproblems are independent, use Divide and Conquer.
+   *   **Counter-example:** Merge Sort breaks an array into halves and sorts them. Sorting the left half doesn't share computations with sorting the right half.
+
 ### When NOT to Use Memoization
 
 1. **Deep Recursion Risk**: Python has a default recursion limit of ~1000. For n = 10,000, memoization will stack overflow. Use `sys.setrecursionlimit()` cautiously or switch to tabulation.
@@ -237,9 +246,11 @@ def fib_tab(n: int) -> int:
 
 ## Space Optimization
 
-Tabulation often allows space reduction when only recent states are needed.
+Tabulation often allows space reduction when only recent states are needed. **The core logic:** If calculating `dp[i]` only requires looking back `k` steps (e.g., `dp[i-1]`, `dp[i-2]`), you only need to store those `k` previous values, not the entire array of size `n`.
 
 ### Fibonacci: O(n) → O(1) Space
+
+**Logic:** Computing `fib(i)` only requires `fib(i-1)` and `fib(i-2)`. Once `fib(i)` is computed, `fib(i-2)` is never needed again. We can maintain just two variables instead of an array.
 
 ```python
 def fib_optimized(n: int) -> int:
@@ -264,6 +275,8 @@ def fib_optimized(n: int) -> int:
 
 ### 2D to 1D: Row-by-Row Processing
 
+**Logic:** If computing `dp[i][j]` only requires values from the current row `dp[i]` and the immediate previous row `dp[i-1]`, we don't need to store all `n` rows. We only need an array representing the previous row (and sometimes a temporary array for the current row, which can often be optimized into a single array updated in place).
+
 ```python
 # Original: O(n × m) space
 dp = [[0] * m for _ in range(n)]
@@ -275,7 +288,9 @@ for i in range(n):
 dp = [0] * m
 for i in range(n):
     for j in range(m):
-        dp[j] = dp[j] + dp[j-1]  # dp[j] is previous row's value
+        # dp[j] on right side is previous row's value dp[i-1][j]
+        # dp[j-1] on right side is current row's newly updated value dp[i][j-1]
+        dp[j] = dp[j] + dp[j-1]  # Overwrites dp[j] with new value for current row
 ```
 
 ---
@@ -303,6 +318,26 @@ for i in range(n):
 ### Problem
 
 Count paths from top-left to bottom-right in m×n grid, moving only right or down.
+
+**Mathematical Recurrence:**
+$$
+dp[i][j] = \begin{cases}
+1 & \text{if } i = 0 \text{ or } j = 0 \\
+dp[i-1][j] + dp[i][j-1] & \text{if } i > 0 \text{ and } j > 0
+\end{cases}
+$$
+
+**Base Cases Explained:**
+- `dp[0][j] = 1`: There is only 1 way to reach any cell in the top row (by continually moving right).
+- `dp[i][0] = 1`: There is only 1 way to reach any cell in the left column (by continually moving down).
+
+**DP Table Visualization (3x3 grid):**
+|   | 0 | 1 | 2 |
+|---|---|---|---|
+| **0** | 1 | 1 | 1 |
+| **1** | 1 | 2 | 3 |
+| **2** | 1 | 3 | 6 |
+*Cell `dp[i][j]` is the sum of the cell above `dp[i-1][j]` and the cell to the left `dp[i][j-1]`.*
 
 ### Memoization
 

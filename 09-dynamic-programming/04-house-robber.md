@@ -132,15 +132,15 @@ def rob(nums: list[int]) -> int:
     if len(nums) == 1:
         return nums[0]
 
-    prev_max = nums[0]
-    curr_max = max(nums[0], nums[1])
+    skip_prev = nums[0]
+    take_prev = max(nums[0], nums[1])
 
     for i in range(2, len(nums)):
-        new_max = max(curr_max, prev_max + nums[i])
-        prev_max = curr_max
-        curr_max = new_max
+        take_curr = max(take_prev, skip_prev + nums[i])
+        skip_prev = take_prev
+        take_prev = take_curr
 
-    return curr_max
+    return take_prev
 ```
 
 ### Visual Walkthrough
@@ -187,12 +187,12 @@ def rob_circular(nums: list[int]) -> int:
         return max(nums)
 
     def rob_linear(houses: list[int]) -> int:
-        prev_max, curr_max = 0, 0
+        skip_prev, take_prev = 0, 0
         for money in houses:
-            new_max = max(curr_max, prev_max + money)
-            prev_max = curr_max
-            curr_max = new_max
-        return curr_max
+            take_curr = max(take_prev, skip_prev + money)
+            skip_prev = take_prev
+            take_prev = take_curr
+        return take_prev
 
     # Case 1: Rob houses 0 to n-2
     case1 = rob_linear(nums[:-1])
@@ -300,14 +300,14 @@ def delete_and_earn(nums: list[int]) -> int:
         points[num] += num
 
     # House Robber on points array
-    prev_max, curr_max = 0, 0
+    skip_prev, take_prev = 0, 0
 
     for i in range(max_num + 1):
-        new_max = max(curr_max, prev_max + points[i])
-        prev_max = curr_max
-        curr_max = new_max
+        take_curr = max(take_prev, skip_prev + points[i])
+        skip_prev = take_prev
+        take_prev = take_curr
 
-    return curr_max
+    return take_prev
 ```
 
 ### Why It Works
@@ -442,8 +442,8 @@ nums = [10, 5, 3, 1]
 ```python
 # WRONG: Not handling single element
 def rob(nums):
-    prev2 = nums[0]
-    prev1 = max(nums[0], nums[1])  # IndexError if len=1
+    prev_max = nums[0]
+    curr_max = max(nums[0], nums[1])  # IndexError if len=1
     ...
 
 # CORRECT:
@@ -453,14 +453,14 @@ if len(nums) == 1:
 
 # WRONG: Wrong update order
 for i in range(2, n):
-    prev2 = prev1
-    prev1 = max(prev1, prev2 + nums[i])  # prev2 already updated!
+    prev_max = curr_max
+    curr_max = max(curr_max, prev_max + nums[i])  # prev_max already updated!
 
 # CORRECT:
 for i in range(2, n):
-    curr = max(prev1, prev2 + nums[i])
-    prev2 = prev1
-    prev1 = curr
+    new_max = max(curr_max, prev_max + nums[i])
+    prev_max = curr_max
+    curr_max = new_max
 
 
 # WRONG: Circular - not excluding endpoints correctly

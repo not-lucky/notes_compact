@@ -6,60 +6,52 @@
 
 Unbounded Knapsack allows each item to be used multiple times (unlike 0/1 where each is used at most once).
 
+## Formal Recurrence
+
+Let $dp[w]$ be the maximum value we can achieve with a total weight limit of $w$.
+
+Since we have an unlimited supply of items, for a given capacity $w$, we can try adding *any* item $i$. If we pick item $i$, the value is $val[i]$ plus the best value we can get with the *remaining* capacity $w - wt[i]$.
+
+$$
+dp[w] = \max_{i \text{ where } wt[i] \leq w} (dp[w], dp[w - wt[i]] + val[i])
+$$
+
+**Base Case:**
+- $dp[0] = 0$ (0 value with 0 capacity)
+
+Alternatively, expressed as a 2D relation $dp[i][w]$ (using first $i$ items, capacity $w$):
+$$
+dp[i][w] = \max(dp[i-1][w], dp[i][w - wt[i]] + val[i])
+$$
+*Notice the second term uses $dp[i]$ instead of $dp[i-1]$, reflecting that we can pick item $i$ again.*
+
 ## Building Intuition
 
 **Why does forward iteration allow reuse?**
 
-1. **The Key Difference**: In 0/1 knapsack, backward iteration ensures dp[w - weight[i]] reflects "before considering item i." Forward iteration means dp[w - weight[i]] may already include item i—allowing reuse.
-
-2. **Why This Works**: For unbounded, we WANT to reuse items. When computing dp[10] with a coin of 3, if dp[7] already used that coin, great! We can use it again.
-
+1. **The Key Difference**: In 0/1 knapsack, backward iteration ensures `dp[w - wt[i]]` reflects the state "before considering item $i$." Forward iteration means `dp[w - wt[i]]` may already include item $i$—allowing reuse.
+2. **Why This Works**: For unbounded, we WANT to reuse items. When computing `dp[10]` with a coin of 3, if `dp[7]` already optimally used that coin twice, great! We can use it a third time by doing `dp[7] + val`.
 3. **Iteration Order Matters**:
-   - Forward (0/1): Uses updated values → item can appear multiple times → WRONG for 0/1
-   - Forward (Unbounded): Uses updated values → item can appear multiple times → CORRECT for unbounded
-   - Backward (0/1): Uses previous-row values → item appears at most once → CORRECT for 0/1
-   - Backward (Unbounded): Uses previous-row values → item appears at most once → WRONG for unbounded
-
-4. **Combinations vs Permutations**: Loop order matters for counting:
-   - Items outer, capacity inner → combinations (coin 1+2 = coin 2+1 counted once)
-   - Capacity outer, items inner → permutations (1+2 ≠ 2+1)
-
-5. **Mental Model**: Imagine a vending machine with infinite stock. When filling capacity W, you can pick any item that fits and immediately consider the same item again for remaining capacity.
-
-## Interview Context
-
-Unbounded Knapsack is important because:
-
-1. **Unlimited item usage**: Each item can be used multiple times
-2. **Different iteration**: Forward instead of backward
-3. **Common applications**: Coin change, rod cutting
-4. **Contrast with 0/1**: Tests understanding of both patterns
-
----
+   - Backward (0/1): Uses previous-row values $\rightarrow$ item appears at most once $\rightarrow$ CORRECT for 0/1.
+   - Forward (Unbounded): Uses current-row values $\rightarrow$ item can appear multiple times $\rightarrow$ CORRECT for unbounded.
+4. **Combinations vs Permutations (Order Matters for Counting)**:
+   - Items outer, capacity inner $\rightarrow$ combinations (coin 1+2 is same as 2+1, counted once).
+   - Capacity outer, items inner $\rightarrow$ permutations (1+2 and 2+1 counted separately).
+5. **Mental Model**: Imagine a vending machine with infinite stock. When filling capacity $W$, you can pick any item that fits and immediately consider the same item again for the remaining capacity.
 
 ## When NOT to Use Unbounded Knapsack
 
-1. **Limited Item Quantities**: If each item has a maximum count (not unlimited), use bounded knapsack or split into multiple "virtual" items.
-
+1. **Limited Item Quantities**: If each item has a specific maximum count (e.g., "you have three 5¢ coins"), use Bounded Knapsack or split into multiple "virtual" items (0/1 Knapsack).
 2. **Single Use Required**: If items can only be used once, use 0/1 Knapsack (backward iteration).
-
-3. **Very Large Capacity**: Same as 0/1—if W = 10^9, O(n × W) is infeasible.
-
-4. **Order-Dependent Problems**: If the sequence of items matters (not just which items), this is a different problem class (sequences, not combinations).
-
-5. **Negative Values**: Unbounded with negative values can lead to infinite loops. Ensure all values are non-negative.
-
-**Distinguish 0/1 vs Unbounded:**
-
-- "Each item can be used once" → 0/1 (backward)
-- "Unlimited supply" → Unbounded (forward)
-- "At most k of each" → Bounded (or k copies as separate items)
+3. **Very Large Capacity**: If $W = 10^9$, $O(n \times W)$ is infeasible. If item values are proportional to weights, use Greedy.
+4. **Order-Dependent Sequence Construction**: If the sequence of items matters (not just combinations), like finding the longest valid parentheses sequence, this is a different problem class.
+5. **Negative Values**: Unbounded with negative values and weights can lead to infinite loops. Ensure all weights are positive.
 
 ---
 
 ## Problem Statement
 
-Given weights and values of n items with unlimited supply, find maximum value that fits in capacity W.
+Given weights and values of $n$ items with unlimited supply, find maximum value that fits in capacity $W$.
 
 ```
 Input:
@@ -68,32 +60,80 @@ Input:
   capacity = 8
 
 Output: 110
-Explanation: Take weight-1 item 3 times + weight-5 item once
-            (3×10 + 1×70 = 100) or other combinations
-            Actually: two weight-4 items (2×50 = 100) or
-            weight-3 twice + weight-1 twice = 80 + 20 = 100
-            Best: 8 items of weight 1 = 80... let me recalculate
-            weight-3 + weight-5 = 40 + 70 = 110 ✓
+Explanation:
+- Two weight-4 items: 2 * 50 = 100
+- weight-3 + weight-5 = 40 + 70 = 110 ✓
 ```
 
 ---
 
-## Solution
+## Implementations
+
+### 1. Top-Down (Memoization)
 
 ```python
-def unbounded_knapsack(weights: list[int], values: list[int],
-                        capacity: int) -> int:
+def unbounded_knapsack_memo(weights: list[int], values: list[int], capacity: int) -> int:
+    """
+    Top-Down DP (Memoization)
+    Time: O(n * W)
+    Space: O(W) for memo + call stack
+    """
+    memo = {}
+
+    def dfs(w: int) -> int:
+        if w == 0:
+            return 0
+        if w in memo:
+            return memo[w]
+
+        max_val = 0
+        # Try taking each item
+        for i in range(len(weights)):
+            if weights[i] <= w:
+                # Add item value, and recurse with remaining capacity
+                max_val = max(max_val, values[i] + dfs(w - weights[i]))
+
+        memo[w] = max_val
+        return max_val
+
+    return dfs(capacity)
+```
+
+### 2. Space-Optimized 1D (Best Practice)
+
+Notice we don't even need a 2D table. We just iterate capacities forward.
+
+```python
+def unbounded_knapsack(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Unbounded knapsack - items can be used unlimited times.
-
-    Key difference from 0/1: Iterate FORWARD through capacity.
-
-    Time: O(n × W)
+    Time: O(n * W)
     Space: O(W)
     """
     dp = [0] * (capacity + 1)
 
+    # For each item...
+    for i in range(len(weights)):
+        wt = weights[i]
+        val = values[i]
+        # Iterate FORWARD through capacity!
+        for w in range(wt, capacity + 1):
+            dp[w] = max(dp[w], dp[w - wt] + val)
+
+    return dp[capacity]
+```
+
+### 3. Alternative 1D: Capacity Outer Loop
+
+For pure optimization (max/min), the loop order doesn't matter.
+
+```python
+def unbounded_knapsack_alt(weights: list[int], values: list[int], capacity: int) -> int:
+    dp = [0] * (capacity + 1)
+
+    # For each capacity...
     for w in range(1, capacity + 1):
+        # Try every item
         for i in range(len(weights)):
             if weights[i] <= w:
                 dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
@@ -101,155 +141,80 @@ def unbounded_knapsack(weights: list[int], values: list[int],
     return dp[capacity]
 ```
 
-### Alternative: Item-First Iteration
+---
 
-```python
-def unbounded_knapsack_alt(weights: list[int], values: list[int],
-                            capacity: int) -> int:
-    """
-    Alternative: Process each item, forward through capacity.
-    """
-    n = len(weights)
-    dp = [0] * (capacity + 1)
+## DP Table Visualization
 
-    for i in range(n):
-        for w in range(weights[i], capacity + 1):  # Forward!
-            dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+`weights = [2, 3]`, `values = [15, 20]`, `capacity = 6`:
 
-    return dp[capacity]
-```
+| Item \ Cap | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** (0,0) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **1** (2,15)| 0 | 0 | 15| 15| 30| 30| 45|
+| **2** (3,20)| 0 | 0 | 15| 20| 30| 35| 45|
+
+*Notice at row 1, cap 4: `dp[4] = max(dp_prev[4], dp[4-2] + 15) = dp[2] + 15 = 15 + 15 = 30` (Used item 1 twice!)*
 
 ---
 
-## Why Forward Iteration Works
+## Related Patterns
 
-```
-For unbounded, we WANT to use same item multiple times.
-
-weights = [2], values = [3], capacity = 6
-
-Forward iteration:
-w=2: dp[2] = max(0, dp[0] + 3) = 3   (1 item)
-w=4: dp[4] = max(0, dp[2] + 3) = 6   (2 items)
-w=6: dp[6] = max(0, dp[4] + 3) = 9   (3 items) ✓
-```
-
----
-
-## Related: Coin Change (Min Coins)
-
+### Coin Change (Min Coins)
+Target amount, unlimited coins. Objective: Min count.
 ```python
 def coin_change(coins: list[int], amount: int) -> int:
-    """
-    Minimum coins to make amount.
-
-    Time: O(amount × len(coins))
-    Space: O(amount)
-    """
     dp = [float('inf')] * (amount + 1)
     dp[0] = 0
 
-    for a in range(1, amount + 1):
-        for coin in coins:
-            if coin <= a and dp[a - coin] != float('inf'):
-                dp[a] = min(dp[a], dp[a - coin] + 1)
+    for coin in coins: # Outer or inner loop works for MIN/MAX
+        for a in range(coin, amount + 1):
+            dp[a] = min(dp[a], dp[a - coin] + 1)
 
     return dp[amount] if dp[amount] != float('inf') else -1
 ```
 
----
-
-## Related: Coin Change II (Count Ways)
-
+### Coin Change II (Count Ways - Combinations)
+Target amount, unlimited coins. Objective: Count combinations.
+**CRITICAL**: Items MUST be the outer loop to prevent duplicate counting of permutations (like `1+2` and `2+1`).
 ```python
 def change(amount: int, coins: list[int]) -> int:
-    """
-    Count combinations to make amount.
-
-    Key: Process coins in outer loop to avoid counting permutations.
-
-    Time: O(amount × len(coins))
-    Space: O(amount)
-    """
     dp = [0] * (amount + 1)
-    dp[0] = 1
+    dp[0] = 1 # 1 way to make 0
 
-    for coin in coins:  # Coin outer loop
+    for coin in coins:  # Coin MUST be outer loop for combinations
         for a in range(coin, amount + 1):
             dp[a] += dp[a - coin]
 
     return dp[amount]
 ```
 
----
-
-## Related: Rod Cutting
-
+### Combination Sum IV (Count Ways - Permutations)
+Target amount, unlimited items. Objective: Count permutations (`1+2` $\neq$ `2+1`).
+**CRITICAL**: Capacity MUST be the outer loop.
 ```python
-def rod_cutting(prices: list[int], n: int) -> int:
-    """
-    Maximum revenue from cutting rod of length n.
-    prices[i] = price of rod of length i+1.
+def combinationSum4(nums: list[int], target: int) -> int:
+    dp = [0] * (target + 1)
+    dp[0] = 1
 
-    Time: O(n²)
-    Space: O(n)
-    """
-    dp = [0] * (n + 1)
+    for a in range(1, target + 1): # Capacity MUST be outer loop for permutations
+        for num in nums:
+            if num <= a:
+                dp[a] += dp[a - num]
 
-    for length in range(1, n + 1):
-        for cut in range(1, length + 1):
-            dp[length] = max(dp[length],
-                            prices[cut - 1] + dp[length - cut])
-
-    return dp[n]
+    return dp[target]
 ```
 
----
-
-## Related: Integer Break
-
-```python
-def integer_break(n: int) -> int:
-    """
-    Break n into sum of integers, maximize product.
-
-    Time: O(n²)
-    Space: O(n)
-    """
-    if n <= 3:
-        return n - 1
-
-    dp = [0] * (n + 1)
-    dp[1] = 1
-    dp[2] = 1
-
-    for i in range(3, n + 1):
-        for j in range(1, i):
-            # j * (i-j): don't break further
-            # j * dp[i-j]: break (i-j) further
-            dp[i] = max(dp[i], j * (i - j), j * dp[i - j])
-
-    return dp[n]
-```
-
----
-
-## Related: Perfect Squares
-
+### Perfect Squares (Min elements)
+Find min perfect squares summing to $n$.
+Items are implicitly squares `1, 4, 9, 16...`. Capacity is $n$.
 ```python
 def num_squares(n: int) -> int:
-    """
-    Minimum perfect squares that sum to n.
-
-    Time: O(n√n)
-    Space: O(n)
-    """
     dp = [float('inf')] * (n + 1)
     dp[0] = 0
 
-    for i in range(1, n + 1):
+    for i in range(1, n + 1): # Capacity
         j = 1
-        while j * j <= i:
+        while j * j <= i:     # Items
             dp[i] = min(dp[i], dp[i - j * j] + 1)
             j += 1
 
@@ -258,143 +223,13 @@ def num_squares(n: int) -> int:
 
 ---
 
-## 0/1 vs Unbounded Comparison
+## 0/1 vs Unbounded Recap
 
-| Aspect      | 0/1 Knapsack       | Unbounded Knapsack |
-| ----------- | ------------------ | ------------------ |
-| Item usage  | Once               | Unlimited          |
-| Iteration   | Backward           | Forward            |
-| Example     | Subset sum         | Coin change        |
-| Key insight | Use dp[i-1] values | Use dp[i] values   |
+| Aspect | 0/1 Knapsack | Unbounded Knapsack |
+| :--- | :--- | :--- |
+| **Item usage** | At most once | Unlimited |
+| **1D Iteration** | Backward | Forward |
+| **Count Ways** | Combinations only | Combinations (Item outer) OR Permutations (Cap outer) |
+| **Common Problem** | Subset Sum | Coin Change |
 
-### Side-by-Side Code
-
-```python
-# 0/1 Knapsack - Backward
-for i in range(n):
-    for w in range(capacity, weights[i] - 1, -1):  # Backward
-        dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
-
-# Unbounded Knapsack - Forward
-for i in range(n):
-    for w in range(weights[i], capacity + 1):  # Forward
-        dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
-```
-
----
-
-## Combinations vs Permutations
-
-```python
-# Combinations (order doesn't matter): Coin outer loop
-for coin in coins:
-    for amount in range(coin, target + 1):
-        dp[amount] += dp[amount - coin]
-# [1,2] and [2,1] counted once
-
-# Permutations (order matters): Amount outer loop
-for amount in range(1, target + 1):
-    for coin in coins:
-        if coin <= amount:
-            dp[amount] += dp[amount - coin]
-# [1,2] and [2,1] counted separately
-```
-
----
-
-## Edge Cases
-
-```python
-# 1. Zero capacity
-capacity = 0
-# Return 0
-
-# 2. Single item larger than capacity
-weights = [10]
-values = [100]
-capacity = 5
-# Return 0
-
-# 3. Capacity exactly fits one item
-weights = [5]
-values = [10]
-capacity = 5
-# Return 10
-
-# 4. Large capacity, small weights
-weights = [1]
-values = [1]
-capacity = 1000
-# Return 1000
-```
-
----
-
-## Common Mistakes
-
-```python
-# WRONG: Using backward iteration for unbounded
-for w in range(capacity, weights[i] - 1, -1):  # Wrong!
-    dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
-# Only uses each item once!
-
-# CORRECT: Forward iteration
-for w in range(weights[i], capacity + 1):
-    dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
-
-
-# WRONG: Wrong loop order for counting combinations
-for amount in range(1, target + 1):  # Amount first
-    for coin in coins:
-        dp[amount] += dp[amount - coin]
-# This counts permutations, not combinations!
-```
-
----
-
-## Complexity
-
-| Problem            | Time              | Space     |
-| ------------------ | ----------------- | --------- |
-| Unbounded Knapsack | O(n × W)          | O(W)      |
-| Coin Change        | O(amount × coins) | O(amount) |
-| Rod Cutting        | O(n²)             | O(n)      |
-| Perfect Squares    | O(n√n)            | O(n)      |
-
----
-
-## Interview Tips
-
-1. **Identify unbounded**: "Unlimited supply" or "each item multiple times"
-2. **Know iteration direction**: Forward for unbounded
-3. **Combinations vs permutations**: Loop order matters
-4. **Compare with 0/1**: Show understanding of both
-5. **Common problems**: Coin change, rod cutting
-
----
-
-## Practice Problems
-
-| #   | Problem         | Difficulty | Type        |
-| --- | --------------- | ---------- | ----------- |
-| 1   | Coin Change     | Medium     | Min coins   |
-| 2   | Coin Change II  | Medium     | Count ways  |
-| 3   | Perfect Squares | Medium     | Min squares |
-| 4   | Integer Break   | Medium     | Max product |
-| 5   | Cutting a Rod   | Medium     | Max value   |
-
----
-
-## Key Takeaways
-
-1. **Forward iteration**: Allows reusing items
-2. **Same item multiple times**: Key difference from 0/1
-3. **Loop order for counting**: Coins first = combinations
-4. **Common applications**: Coin change, rod cutting
-5. **Compare with 0/1**: Essential interview knowledge
-
----
-
-## Next: [12-palindrome-dp.md](./12-palindrome-dp.md)
-
-Learn palindrome-related DP problems.
+*If you accidentally iterate Unbounded backward, you solve 0/1. If you accidentally iterate 0/1 forward, you solve Unbounded.*

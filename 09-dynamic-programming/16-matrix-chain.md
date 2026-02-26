@@ -35,19 +35,20 @@ Matrix Chain Multiplication introduces **interval DP**:
 
 ## When NOT to Use Interval DP
 
-1. **Linear Dependencies**: If dp[i] only depends on dp[i-1] and dp[i-2], use 1D DP. Interval DP is for range-based dependencies.
+1. **Linear Dependencies**: If `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`, use 1D DP. Interval DP is for range-based dependencies.
    - *Example*: Finding the longest increasing subsequence. You only need to look back linearly, not consider arbitrary combinations of left and right subsegments.
 
-2. **O(n³) Is Too Slow**: For n > 500, O(n³) may time out. Some problems have Knuth's optimization reducing to O(n²).
-   - *Example*: Finding optimal BST for 1000 nodes will TLE with standard O(n³) interval DP.
+2. **O(n³) Is Too Slow**: For $n > 500$, $O(n^3)$ may time out. Some problems have Knuth's optimization reducing to $O(n^2)$.
+   - *Example*: Finding optimal BST for 1000 nodes will TLE with standard $O(n^3)$ interval DP.
 
-3. **Non-Associative Operations**: Interval DP assumes combining (i..k) and (k+1..j) gives (i..j). If merging isn't associative or has side effects, the model breaks.
-   - *Example*: A game where combining two items changes the value of items *outside* the interval.
+3. **Non-Associative Operations**: Interval DP assumes combining `(i..k)` and `(k+1..j)` gives `(i..j)`. If merging isn't associative or has side effects, the model breaks.
+   - *Example*: A game where combining two items changes the value of items *outside* the interval. Or an operation where `(A + B) + C != A + (B + C)`.
 
 4. **Greedy Works**: Some parenthesization problems have greedy solutions (e.g., Huffman coding for optimal merge). Check before using DP.
-   - *Example*: Merging ropes/files to minimize total cost (where you can pick *any* two to merge, not just adjacent ones) is solved with a Priority Queue in $O(n \log n)$, not Interval DP.
+   - *Example*: Merging ropes/files to minimize total cost (where you can pick *any* two to merge, not just adjacent ones) is solved with a Priority Queue in $O(n \log n)$, not Interval DP. Because any two elements can be merged, there is no "interval" constraint.
 
 5. **Graph Structure, Not Interval**: If the problem involves graphs rather than linear sequences, interval DP doesn't apply.
+   - *Example*: Shortest path or traveling salesperson problem. While order matters, the topology is a graph, not a sequence of elements that can be split into intervals.
 
 **Recognize Interval DP When:**
 
@@ -90,6 +91,10 @@ dp[i][j] =
 \end{cases}
 $$
 
+**Space & Time Complexity Analysis:**
+Because $dp$ is an $O(n) \times O(n)$ table and computing each $dp[i][j]$ requires iterating over all possible split points $k$ where $i \le k < j$ (taking $O(n)$ time), the total time complexity is $O(n^3)$.
+Space is $O(n^2)$ for the table. It is possible to optimize space with Knuth's Optimization to $O(n^2)$ time, but the space remains $O(n^2)$ because we must store answers to all $O(n^2)$ subproblems.
+
 ### Bottom-Up (Tabulation)
 
 ```python
@@ -128,6 +133,8 @@ def matrix_chain_order(p: list[int]) -> int:
 ---
 
 ## With Parenthesization
+
+If you need to reconstruct the actual parenthesization, keep an additional `split` table.
 
 ```python
 def matrix_chain_with_solution(p: list[int]) -> tuple[int, str]:
@@ -188,6 +195,8 @@ Answer: 4500, ((A1 × A2) × A3)
 
 ## Memoization Version
 
+Many people find the top-down memoization approach more intuitive for interval DP because you don't have to worry about the complex loop ordering (iterating by length).
+
 ```python
 from functools import lru_cache
 
@@ -199,10 +208,12 @@ def matrix_chain_memo(p: list[int]) -> int:
 
     @lru_cache(maxsize=None)
     def dp(i: int, j: int) -> int:
+        # Base case: A single matrix costs 0 to multiply
         if i == j:
             return 0
 
         min_cost = float('inf')
+        # Try all possible split points k
         for k in range(i, j):
             cost = dp(i, k) + dp(k + 1, j) + p[i - 1] * p[k] * p[j]
             min_cost = min(min_cost, cost)

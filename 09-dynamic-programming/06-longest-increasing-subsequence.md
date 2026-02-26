@@ -36,14 +36,18 @@ LIS is a FANG+ essential because:
 ## When NOT to Use LIS Pattern
 
 1. **Contiguous Required**: If you need longest increasing SUBARRAY (contiguous), not subsequence, use a simpler single-pass O(n) approach.
+   *Counter-example:* "Longest Continuous Increasing Subsequence." Don't use DP or Binary Search, just iterate once, keeping a running count that resets when `nums[i] <= nums[i-1]`.
 
 2. **Multiple Dimensions**: For problems like Russian Dolls (width AND height must increase), sort by one dimension first, then apply LIS on the other.
+   *Counter-example:* "Box Stacking." This is actually a 3D LIS problem where sorting all possible rotations of boxes and then applying standard 1D LIS works best.
 
 3. **Non-Strict Increase**: For non-decreasing sequences (≤ instead of <), use `bisect_right` instead of `bisect_left` in the O(n log n) solution.
+   *Counter-example:* "Longest Non-Decreasing Subsequence." If inputs are `[2, 2, 2]`, strict LIS length is 1, non-decreasing LIS length is 3.
 
 4. **Need Actual Sequence**: The O(n log n) solution gives LENGTH only. Getting the actual subsequence requires extra bookkeeping (parent pointers).
 
 5. **Counting All LIS**: If you need to count how many LIS exist (not just find one), you need additional DP arrays for counting.
+   *Counter-example:* "Number of Longest Increasing Subsequences." A single DP array tracking length is insufficient; you need a second array tracking the frequency of each length.
 
 **Recognize LIS Pattern When:**
 
@@ -65,7 +69,64 @@ Explanation: [2, 3, 7, 101] or [2, 3, 7, 18] or [2, 5, 7, 101]
 
 ---
 
+## Formal Recurrence Relation
+
+Let $dp[i]$ be the length of the Longest Increasing Subsequence ending exactly at index $i$.
+
+**Base Case:**
+$$dp[i] = 1 \text{ for all } i \in [0, n-1]$$
+*(Every single element is an increasing subsequence of length 1)*
+
+**Recursive Step:**
+For a given index $i$, we look at all previous indices $j$ (where $0 \le j < i$). We can append $nums[i]$ to the subsequence ending at $j$ if and only if $nums[i] > nums[j]$.
+
+$$dp[i] = \max(dp[i], 1 + \max_{0 \le j < i}\{dp[j] \mid nums[j] < nums[i]\})$$
+
+**Result:**
+The length of the overall LIS is the maximum value in the $dp$ array, because the true LIS could end at any index.
+
+$$\text{LIS Length} = \max_{0 \le i < n}(dp[i])$$
+
+---
+
 ## Solution 1: O(n²) DP
+
+### Top-Down (Memoization)
+
+While Tabulation (Bottom-Up) is more common for this specific problem, Memoization helps build intuition by directly translating the recurrence relation.
+
+```python
+def length_of_lis_memo(nums: list[int]) -> int:
+    """
+    Top-Down Memoization approach.
+
+    Time: O(n²)
+    Space: O(n) for recursion stack and memo array
+    """
+    if not nums:
+        return 0
+
+    memo = {}
+
+    # helper(i) returns the length of LIS ending exactly at index i
+    def helper(i: int) -> int:
+        if i in memo:
+            return memo[i]
+
+        max_len = 1
+        # Check all previous elements
+        for j in range(i):
+            if nums[j] < nums[i]:
+                max_len = max(max_len, 1 + helper(j))
+
+        memo[i] = max_len
+        return max_len
+
+    # The overall LIS could end at any index, so we check all possibilities
+    return max(helper(i) for i in range(len(nums)))
+```
+
+### Bottom-Up (Tabulation)
 
 ```python
 def length_of_lis(nums: list[int]) -> int:

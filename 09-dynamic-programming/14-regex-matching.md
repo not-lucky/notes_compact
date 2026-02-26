@@ -43,19 +43,20 @@ Pattern matching DP is challenging because:
 
 ## When NOT to Use Regex DP
 
-1. **Simple Patterns (No `*`)**: If pattern has only literal characters and `.`, simple O(n) two-pointer matching works.
-   - *Example*: Checking if "abc" matches "a.c". Just loop through and compare `s[i] == p[i]` or `p[i] == '.'`.
+1. **Simple Patterns (No `*`)**: If pattern has only literal characters and `.`, simple $O(n)$ two-pointer matching works.
+   - *Example*: Checking if `"abc"` matches `"a.c"`. Just loop through and compare `s[i] == p[i]` or `p[i] == '.'`.
 
 2. **Full Regex Features**: DP handles `*` and `.`, but not `+`, `?`, `{n,m}`, `|`, `()`, etc. For full regex, use proper regex engines (NFA/DFA).
+   - *Example*: Validating an email address with `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`.
 
-3. **Very Long Strings/Patterns**: O(m×n) can be slow for m, n = 10^5. Specialized algorithms or compiled regex engines are faster.
-   - *Example*: Grepping a 10MB log file with a 100-character regex. DP would take $10^9$ operations.
+3. **Very Long Strings/Patterns**: $O(m \times n)$ can be slow for $m, n = 10^5$. Specialized algorithms or compiled regex engines are faster.
+   - *Example*: Grepping a 10MB log file with a 100-character regex. DP would take $10^9$ operations, which is too slow for real-time processing.
 
 4. **Multiple Patterns**: For matching against many patterns, build a combined automaton (Aho-Corasick for literals, NFA for regex).
-   - *Example*: A WAF (Web Application Firewall) matching incoming requests against 1000 known malicious signatures. Running DP 1000 times is too slow.
+   - *Example*: A WAF (Web Application Firewall) matching incoming requests against 1000 known malicious signatures. Running DP 1000 times for every request is unscalable.
 
-5. **Streaming Input**: DP assumes you have the full string. For streaming regex matching, use DFA simulation.
-   - *Example*: Matching network packets on the fly where you don't have the whole string in memory at once.
+5. **Streaming Input**: DP assumes you have the full string in memory. For streaming regex matching, use DFA simulation.
+   - *Example*: Matching network packets on the fly where you don't have the whole string in memory at once and need to maintain state across packet boundaries.
 
 **Distinguish Wildcard vs Regex:**
 
@@ -70,6 +71,13 @@ Pattern matching DP is challenging because:
 Pattern with:
 - `?` matches any single character
 - `*` matches any sequence (including empty)
+
+### Base Cases
+Proper base cases are crucial for correctly initializing the DP state:
+- **`dp[0][0] = True`**: Empty string matches empty pattern.
+- **`dp[i][0] = False` (for $i > 0$)**: Non-empty string cannot match an empty pattern.
+- **`dp[0][j]`**: An empty string can match a non-empty pattern **only if** the pattern consists entirely of wildcards (`*`). E.g. `s=""`, `p="***"`.
+
 
 ### Recurrence Relation
 
@@ -123,6 +131,8 @@ def isMatchWildcardMemo(s: str, p: str) -> bool:
 ```
 
 ### Bottom-Up (Tabulation)
+
+```python
 def is_match_wildcard(s: str, p: str) -> bool:
     """
     Wildcard pattern matching.
@@ -199,6 +209,12 @@ Pattern with:
 - `.` matches any single character
 - `*` matches zero or more of the preceding element
 
+### Base Cases
+Proper base cases are crucial here as well:
+- **`dp[0][0] = True`**: Empty string matches empty pattern.
+- **`dp[i][0] = False` (for $i > 0$)**: Non-empty string cannot match an empty pattern.
+- **`dp[0][j]`**: An empty string can match a non-empty pattern **only if** the pattern consists of characters followed by `*` (which can match 0 occurrences). E.g., `s=""`, `p="a*b*c*"`. If `p[j-1] == '*'`, then `dp[0][j] = dp[0][j-2]`.
+
 ### Recurrence Relation
 
 Let $dp[i][j]$ be whether $s[0 \dots i-1]$ matches $p[0 \dots j-1]$.
@@ -249,6 +265,8 @@ def isMatchRegexMemo(s: str, p: str) -> bool:
 ```
 
 ### Bottom-Up (Tabulation)
+
+```python
 def is_match_regex(s: str, p: str) -> bool:
     """
     Regex pattern matching with . and *.
@@ -326,8 +344,8 @@ Key transitions:
 Key transitions:
 - `dp[0][2] = T`: `"c*"` matches empty (zero c's). `dp[0][0]` propagates.
 - `dp[0][4] = T`: `"c*a*"` matches empty. `dp[0][2]` propagates.
-- `dp[1][4] = T`: `"a*"` matches `"a"`.
-- `dp[2][4] = T`: `"a*"` matches `"aa"`.
+- `dp[1][4] = T`: `"a*"` matches `"a"`. `dp[0][4]` propagates because `a` matches `a`.
+- `dp[2][4] = T`: `"a*"` matches `"aa"`. `dp[1][4]` propagates because `a` matches `a`.
 - `dp[3][5] = T`: `"b"` matches `"b"`.
 
 ---
@@ -409,7 +427,10 @@ if p[j-2] == s[i-1] or p[j-2] == '.':
 
 ---
 
-## Space-Optimized Regex
+### Space-Optimized Regex (Tabulation)
+
+Notice in our recurrence relation: $dp[i][j]$ only depends on $dp[i-1][\dots]$ (the previous row) and $dp[i][\dots]$ (the current row). We can optimize the $O(m \times n)$ 2D matrix down to two $O(n)$ arrays or even a single $1D$ array of size $n$.
+By just holding onto the current row and the previous row of results, our space complexity drops significantly without affecting the time complexity.
 
 ```python
 def is_match_regex_optimized(s: str, p: str) -> bool:
@@ -420,7 +441,7 @@ def is_match_regex_optimized(s: str, p: str) -> bool:
     dp = [False] * (n + 1)
     dp[0] = True
 
-    # Initialize for x* patterns
+    # Initialize base cases for empty string matching a pattern of `x*y*z*`
     for j in range(2, n + 1):
         if p[j - 1] == '*':
             dp[j] = dp[j - 2]
@@ -432,9 +453,9 @@ def is_match_regex_optimized(s: str, p: str) -> bool:
             if p[j - 1] == s[i - 1] or p[j - 1] == '.':
                 new_dp[j] = dp[j - 1]
             elif p[j - 1] == '*':
-                new_dp[j] = new_dp[j - 2]  # Zero occurrences
+                new_dp[j] = new_dp[j - 2]  # Zero occurrences of preceding char
                 if p[j - 2] == s[i - 1] or p[j - 2] == '.':
-                    new_dp[j] = new_dp[j] or dp[j]
+                    new_dp[j] = new_dp[j] or dp[j]  # One or more occurrences
 
         dp = new_dp
 

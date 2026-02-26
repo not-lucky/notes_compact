@@ -55,15 +55,16 @@ Advanced string DP problems appear in FANG+ because:
 
 **Common String DP Categories:**
 
-- Subsequence: LCS, Distinct Subsequences
-- Transformation: Edit Distance, One Edit Distance
-- Decoding: Decode Ways, Valid Parentheses
-- Interleaving: Interleaving String, Scramble String
-- Palindrome: LPS, Partition, Count
+- 1D Prefix: Decode Ways, Valid Parentheses
+- 2D Sequence Alignment: LCS, Distinct Subsequences, Edit Distance, Interleaving String
+- Palindromic Strings: LPS, Partition, Count
+- Transformation/Scramble: Scramble String
 
 ---
 
-## 1D Prefix DP (Decoding and Formatting)
+## Sub-pattern: 1D Prefix DP (Decoding and Formatting)
+
+This sub-pattern involves a 1D state array where $dp[i]$ depends on a constant number of previous elements (e.g. $i-1$ and $i-2$).
 
 ### Decode Ways
 
@@ -153,7 +154,9 @@ def num_decodings_ii(s: str) -> int:
 
 ---
 
-## 2D Sequence Alignment (Two Strings)
+## Sub-pattern: 2D Sequence Alignment (Two Strings)
+
+This sub-pattern involves comparing two strings. The state is typically a 2D array $dp[i][j]$ representing the solution for prefixes $s1[0..i-1]$ and $s2[0..j-1]$.
 
 ### Distinct Subsequences
 
@@ -248,7 +251,9 @@ def is_interleave(s1: str, s2: str, s3: str) -> bool:
 
 ---
 
-## Recursive Splitting / Scramble
+## Sub-pattern: Recursive Splitting / Scramble
+
+This sub-pattern involves breaking a string into two parts, and recursively checking if the parts can form the target string.
 
 ### Scramble String
 
@@ -280,81 +285,11 @@ def is_scramble(s1: str, s2: str) -> bool:
 
 ---
 
-## Advanced String Structures
+## Sub-pattern: Palindromic Strings (Interval DP)
 
-### Longest Valid Parentheses
+These problems often use interval DP where the state is $dp[i][j]$ representing the substring from index $i$ to $j$. The transition checks if the outer characters match ($s[i] == s[j]$) and depends on the inner substring $dp[i+1][j-1]$.
 
-```python
-def longest_valid_parentheses(s: str) -> int:
-    """
-    Length of longest valid parentheses substring.
-
-    State: dp[i] = length of valid substring ending at i
-
-    Time: O(n)
-    Space: O(n)
-    """
-    n = len(s)
-    dp = [0] * n
-    max_len = 0
-
-    for i in range(1, n):
-        if s[i] == ')':
-            if s[i - 1] == '(':
-                # "...()"
-                dp[i] = (dp[i - 2] if i >= 2 else 0) + 2
-            elif i - dp[i - 1] - 1 >= 0 and s[i - dp[i - 1] - 1] == '(':
-                # "...))"
-                dp[i] = dp[i - 1] + 2
-                if i - dp[i - 1] - 2 >= 0:
-                    dp[i] += dp[i - dp[i - 1] - 2]
-
-            max_len = max(max_len, dp[i])
-
-    return max_len
-```
-
----
-
-## Palindrome Pairs
-
-```python
-def palindrome_pairs(words: list[str]) -> list[list[int]]:
-    """
-    Find pairs (i, j) where words[i] + words[j] is palindrome.
-
-    Time: O(n × k²) where k = max word length
-    Space: O(n × k)
-    """
-    def is_palindrome(s: str) -> bool:
-        return s == s[::-1]
-
-    word_to_idx = {word: i for i, word in enumerate(words)}
-    result = []
-
-    for i, word in enumerate(words):
-        for j in range(len(word) + 1):
-            prefix = word[:j]
-            suffix = word[j:]
-
-            # If prefix is palindrome, check if reverse of suffix exists
-            if is_palindrome(prefix):
-                rev_suffix = suffix[::-1]
-                if rev_suffix in word_to_idx and word_to_idx[rev_suffix] != i:
-                    result.append([word_to_idx[rev_suffix], i])
-
-            # If suffix is palindrome, check if reverse of prefix exists
-            if j != len(word) and is_palindrome(suffix):
-                rev_prefix = prefix[::-1]
-                if rev_prefix in word_to_idx and word_to_idx[rev_prefix] != i:
-                    result.append([i, word_to_idx[rev_prefix]])
-
-    return result
-```
-
----
-
-## Count Different Palindromic Subsequences
+### Count Different Palindromic Subsequences
 
 ```python
 def count_palindromic_subseq(s: str) -> int:
@@ -406,7 +341,87 @@ def count_palindromic_subseq(s: str) -> int:
 
 ---
 
-## Shortest Way to Form String
+## Sub-pattern: State Machine DP on Strings (Parentheses)
+
+These problems often involve a state machine or maintaining the current number of open brackets or valid length.
+
+### Longest Valid Parentheses
+
+```python
+def longest_valid_parentheses(s: str) -> int:
+    """
+    Length of longest valid parentheses substring.
+
+    State: dp[i] = length of valid substring ending at i
+
+    Time: O(n)
+    Space: O(n)
+    """
+    n = len(s)
+    dp = [0] * n
+    max_len = 0
+
+    for i in range(1, n):
+        if s[i] == ')':
+            if s[i - 1] == '(':
+                # "...()"
+                dp[i] = (dp[i - 2] if i >= 2 else 0) + 2
+            elif i - dp[i - 1] - 1 >= 0 and s[i - dp[i - 1] - 1] == '(':
+                # "...))"
+                dp[i] = dp[i - 1] + 2
+                if i - dp[i - 1] - 2 >= 0:
+                    dp[i] += dp[i - dp[i - 1] - 2]
+
+            max_len = max(max_len, dp[i])
+
+    return max_len
+```
+
+---
+
+## Sub-pattern: Two Pointers / Hash Map (Not Strictly DP)
+
+Some string matching problems are better solved with hashing, tries, or two pointers.
+
+### Palindrome Pairs
+
+```python
+def palindrome_pairs(words: list[str]) -> list[list[int]]:
+    """
+    Find pairs (i, j) where words[i] + words[j] is palindrome.
+
+    Time: O(n × k²) where k = max word length
+    Space: O(n × k)
+    """
+    def is_palindrome(s: str) -> bool:
+        return s == s[::-1]
+
+    word_to_idx = {word: i for i, word in enumerate(words)}
+    result = []
+
+    for i, word in enumerate(words):
+        for j in range(len(word) + 1):
+            prefix = word[:j]
+            suffix = word[j:]
+
+            # If prefix is palindrome, check if reverse of suffix exists
+            if is_palindrome(prefix):
+                rev_suffix = suffix[::-1]
+                if rev_suffix in word_to_idx and word_to_idx[rev_suffix] != i:
+                    result.append([word_to_idx[rev_suffix], i])
+
+            # If suffix is palindrome, check if reverse of prefix exists
+            if j != len(word) and is_palindrome(suffix):
+                rev_prefix = prefix[::-1]
+                if rev_prefix in word_to_idx and word_to_idx[rev_prefix] != i:
+                    result.append([i, word_to_idx[rev_prefix]])
+
+    return result
+```
+
+---
+
+### Shortest Way to Form String
 
 ```python
 def shortest_way(source: str, target: str) -> int:
