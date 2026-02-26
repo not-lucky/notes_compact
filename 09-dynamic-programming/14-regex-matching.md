@@ -44,14 +44,18 @@ Pattern matching DP is challenging because:
 ## When NOT to Use Regex DP
 
 1. **Simple Patterns (No `*`)**: If pattern has only literal characters and `.`, simple O(n) two-pointer matching works.
+   - *Example*: Checking if "abc" matches "a.c". Just loop through and compare `s[i] == p[i]` or `p[i] == '.'`.
 
 2. **Full Regex Features**: DP handles `*` and `.`, but not `+`, `?`, `{n,m}`, `|`, `()`, etc. For full regex, use proper regex engines (NFA/DFA).
 
 3. **Very Long Strings/Patterns**: O(m×n) can be slow for m, n = 10^5. Specialized algorithms or compiled regex engines are faster.
+   - *Example*: Grepping a 10MB log file with a 100-character regex. DP would take $10^9$ operations.
 
 4. **Multiple Patterns**: For matching against many patterns, build a combined automaton (Aho-Corasick for literals, NFA for regex).
+   - *Example*: A WAF (Web Application Firewall) matching incoming requests against 1000 known malicious signatures. Running DP 1000 times is too slow.
 
 5. **Streaming Input**: DP assumes you have the full string. For streaming regex matching, use DFA simulation.
+   - *Example*: Matching network packets on the fly where you don't have the whole string in memory at once.
 
 **Distinguish Wildcard vs Regex:**
 
@@ -64,11 +68,61 @@ Pattern matching DP is challenging because:
 ## Wildcard Matching
 
 Pattern with:
-
 - `?` matches any single character
 - `*` matches any sequence (including empty)
 
+### Recurrence Relation
+
+Let $dp[i][j]$ be whether $s[0 \dots i-1]$ matches $p[0 \dots j-1]$.
+
+$$
+dp[i][j] =
+\begin{cases}
+True & \text{if } i=0, j=0 \\
+dp[0][j-1] & \text{if } i=0, p[j-1] = '*' \\
+dp[i-1][j-1] & \text{if } i>0, p[j-1] \in \{s[i-1], '?'\} \\
+dp[i][j-1] \lor dp[i-1][j] & \text{if } i>0, p[j-1] = '*' \\
+False & \text{otherwise}
+\end{cases}
+$$
+
+### Top-Down (Memoization)
+
 ```python
+def isMatchWildcardMemo(s: str, p: str) -> bool:
+    m, n = len(s), len(p)
+    memo = {}
+
+    def dfs(i: int, j: int) -> bool:
+        if (i, j) in memo:
+            return memo[(i, j)]
+
+        # Base case 1: both empty
+        if i == m and j == n:
+            return True
+
+        # Base case 2: pattern empty but string not
+        if j == n:
+            return False
+
+        # Base case 3: string empty but pattern has remaining '*'
+        if i == m:
+            return p[j] == '*' and dfs(i, j + 1)
+
+        match = False
+        if p[j] == '*':
+            # Match 0 chars (skip '*') OR match 1+ chars (consume s[i])
+            match = dfs(i, j + 1) or dfs(i + 1, j)
+        elif p[j] in {s[i], '?'}:
+            match = dfs(i + 1, j + 1)
+
+        memo[(i, j)] = match
+        return match
+
+    return dfs(0, 0)
+```
+
+### Bottom-Up (Tabulation)
 def is_match_wildcard(s: str, p: str) -> bool:
     """
     Wildcard pattern matching.
@@ -142,11 +196,59 @@ def is_match_wildcard_2d(s: str, p: str) -> bool:
 ## Regular Expression Matching
 
 Pattern with:
-
 - `.` matches any single character
 - `*` matches zero or more of the preceding element
 
+### Recurrence Relation
+
+Let $dp[i][j]$ be whether $s[0 \dots i-1]$ matches $p[0 \dots j-1]$.
+
+$$
+dp[i][j] =
+\begin{cases}
+True & \text{if } i=0, j=0 \\
+dp[0][j-2] & \text{if } i=0, p[j-1] = '*' \text{ (match zero chars)} \\
+dp[i-1][j-1] & \text{if } i>0, p[j-1] \in \{s[i-1], '.'\} \\
+dp[i][j-2] \lor (dp[i-1][j] \land p[j-2] \in \{s[i-1], '.'\}) & \text{if } i>0, p[j-1] = '*' \\
+False & \text{otherwise}
+\end{cases}
+$$
+
+### Top-Down (Memoization)
+
 ```python
+def isMatchRegexMemo(s: str, p: str) -> bool:
+    m, n = len(s), len(p)
+    memo = {}
+
+    def dfs(i: int, j: int) -> bool:
+        if (i, j) in memo:
+            return memo[(i, j)]
+
+        # Base case 1: both empty
+        if i == m and j == n:
+            return True
+
+        # Base case 2: pattern empty but string not
+        if j == n:
+            return False
+
+        match = False
+        first_match = i < m and p[j] in {s[i], '.'}
+
+        if j + 1 < n and p[j + 1] == '*':
+            # Match 0 chars OR (match 1 char and stay at '*')
+            match = dfs(i, j + 2) or (first_match and dfs(i + 1, j))
+        elif first_match:
+            match = dfs(i + 1, j + 1)
+
+        memo[(i, j)] = match
+        return match
+
+    return dfs(0, 0)
+```
+
+### Bottom-Up (Tabulation)
 def is_match_regex(s: str, p: str) -> bool:
     """
     Regex pattern matching with . and *.
@@ -194,45 +296,39 @@ def is_match_regex(s: str, p: str) -> bool:
 
 ## Visual Walkthrough: Wildcard
 
-```
-s = "adceb", p = "*a*b"
-
-    ""  *  a  *  b
-""   T  T  F  F  F
-a    F  T  T  T  F
-d    F  T  F  T  F
-c    F  T  F  T  F
-e    F  T  F  T  F
-b    F  T  F  T  T ← Answer
+| | "" | `*` | `a` | `*` | `b` |
+|---|---|---|---|---|---|
+| **""** | T | T | F | F | F |
+| **`a`** | F | T | T | T | F |
+| **`d`** | F | T | F | T | F |
+| **`c`** | F | T | F | T | F |
+| **`e`** | F | T | F | T | F |
+| **`b`** | F | T | F | T | T ← Answer |
 
 Key transitions:
-- dp[0][1] = T: * matches empty
-- dp[1][2] = T: "a" matches "a"
-- dp[1][3] = T: * matches empty
-- dp[5][4] = T: * matches "dce"
-- dp[5][5] = T: "b" matches "b"
-```
+- `dp[0][1] = T`: `*` matches empty string.
+- `dp[1][2] = T`: `"a"` matches `"a"`.
+- `dp[1][3] = T`: `*` matches empty string (after `"a"`).
+- `dp[5][4] = T`: `*` matches `"dce"` (the previous `T` in the column drops down).
+- `dp[5][5] = T`: `"b"` matches `"b"`.
 
 ---
 
 ## Visual Walkthrough: Regex
 
-```
-s = "aab", p = "c*a*b"
-
-    ""  c  *  a  *  b
-""   T  F  T  F  T  F
-a    F  F  F  T  T  F
-a    F  F  F  F  T  F
-b    F  F  F  F  F  T ← Answer
+| | "" | `c` | `*` | `a` | `*` | `b` |
+|---|---|---|---|---|---|---|
+| **""** | T | F | T | F | T | F |
+| **`a`** | F | F | F | T | T | F |
+| **`a`** | F | F | F | F | T | F |
+| **`b`** | F | F | F | F | F | T ← Answer |
 
 Key transitions:
-- dp[0][2] = T: "c*" matches empty (zero c's)
-- dp[0][4] = T: "c*a*" matches empty
-- dp[1][4] = T: "a*" matches "a"
-- dp[2][4] = T: "a*" matches "aa"
-- dp[3][5] = T: "b" matches "b"
-```
+- `dp[0][2] = T`: `"c*"` matches empty (zero c's). `dp[0][0]` propagates.
+- `dp[0][4] = T`: `"c*a*"` matches empty. `dp[0][2]` propagates.
+- `dp[1][4] = T`: `"a*"` matches `"a"`.
+- `dp[2][4] = T`: `"a*"` matches `"aa"`.
+- `dp[3][5] = T`: `"b"` matches `"b"`.
 
 ---
 

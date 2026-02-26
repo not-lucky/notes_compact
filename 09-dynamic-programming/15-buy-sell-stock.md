@@ -45,14 +45,16 @@ Stock problems are popular because:
 ## When NOT to Use State Machine DP
 
 1. **Stock I (One Transaction)**: Simple min-tracking suffices. DP is overkill.
+   - *Counter-example*: Using a 2D array `dp[n][2]` when you only need to track the lowest price seen so far and the max difference.
 
 2. **Stock II (Unlimited, No Cooldown/Fee)**: Greedy (sum all positive differences) is O(n) and simpler.
+   - *Counter-example*: Setting up a state machine for `[1, 5, 3, 6]` when you can just add `(5-1) + (6-3) = 7`.
 
-3. **Prices Unknown in Advance**: DP assumes full price history. For online/streaming decisions, use different algorithms.
+3. **Prices Unknown in Advance**: DP assumes full price history. For online/streaming decisions, use different algorithms (like moving averages or ML models).
 
 4. **Short Selling**: Standard stock DP assumes buy-before-sell. Short selling (sell-before-buy) needs modified states.
 
-5. **Complex Fee Structures**: If fees depend on transaction size or are non-linear, the standard recurrence doesn't apply.
+5. **Complex Fee Structures**: If fees depend on transaction size (e.g., a percentage of the trade value) or are non-linear, the standard recurrence doesn't apply because the state no longer captures all necessary information (you'd need to know the exact buy price to calculate the fee).
 
 **Choose the Right Approach:**
 
@@ -127,21 +129,67 @@ def max_profit_2(prices: list[int]) -> int:
 
 ### State Machine Approach
 
+#### Recurrence Relation
+
+Let $hold[i]$ be max profit on day $i$ while holding a stock.
+Let $cash[i]$ be max profit on day $i$ while holding no stock.
+
+$$
+hold[i] = \max(hold[i-1], cash[i-1] - price[i])
+$$
+$$
+cash[i] = \max(cash[i-1], hold[i-1] + price[i])
+$$
+
+#### Tabulation (Space-Optimized)
+
 ```python
 def max_profit_2_dp(prices: list[int]) -> int:
     """
     State machine DP version.
-
-    States: hold (have stock), cash (no stock)
     """
-    hold = float('-inf')  # Profit if holding stock
-    cash = 0              # Profit if not holding
+    max_profit_holding_stock = float('-inf')  # Profit if holding stock
+    max_profit_empty_handed = 0               # Profit if not holding
 
     for price in prices:
-        hold = max(hold, cash - price)   # Buy
-        cash = max(cash, hold + price)   # Sell
+        # Buy stock: decrease cash by price
+        # Keep stock: profit doesn't change
+        max_profit_holding_stock = max(max_profit_holding_stock, max_profit_empty_handed - price)
 
-    return cash
+        # Sell stock: increase cash by price
+        # Keep empty hands: profit doesn't change
+        max_profit_empty_handed = max(max_profit_empty_handed, max_profit_holding_stock + price)
+
+    return max_profit_empty_handed
+```
+
+#### Top-Down (Memoization)
+
+```python
+def max_profit_2_memo(prices: list[int]) -> int:
+    """
+    Memoization version of State machine DP.
+    """
+    memo = {}
+
+    def dfs(i: int, holding: bool) -> int:
+        if i == len(prices):
+            return 0  # End of days, no more profit
+
+        if (i, holding) in memo:
+            return memo[(i, holding)]
+
+        if holding:
+            # Sell today or do nothing
+            res = max(dfs(i + 1, False) + prices[i], dfs(i + 1, True))
+        else:
+            # Buy today or do nothing
+            res = max(dfs(i + 1, True) - prices[i], dfs(i + 1, False))
+
+        memo[(i, holding)] = res
+        return res
+
+    return dfs(0, False)
 ```
 
 ---
@@ -149,6 +197,26 @@ def max_profit_2_dp(prices: list[int]) -> int:
 ## Best Time to Buy and Sell Stock III
 
 At most 2 transactions.
+
+### Recurrence Relation
+
+Let $buy1$ be max profit after 1st buy. Let $sell1$ be max profit after 1st sell.
+Let $buy2$ be max profit after 2nd buy. Let $sell2$ be max profit after 2nd sell.
+
+$$
+buy1_i = \max(buy1_{i-1}, -price_i)
+$$
+$$
+sell1_i = \max(sell1_{i-1}, buy1_{i-1} + price_i)
+$$
+$$
+buy2_i = \max(buy2_{i-1}, sell1_{i-1} - price_i)
+$$
+$$
+sell2_i = \max(sell2_{i-1}, buy2_{i-1} + price_i)
+$$
+
+### Space-Optimized Tabulation
 
 ```python
 def max_profit_3(prices: list[int]) -> int:
@@ -160,16 +228,19 @@ def max_profit_3(prices: list[int]) -> int:
     Time: O(n)
     Space: O(1)
     """
-    buy1 = buy2 = float('-inf')
-    sell1 = sell2 = 0
+    max_profit_after_buy1 = float('-inf')
+    max_profit_after_sell1 = 0
+    max_profit_after_buy2 = float('-inf')
+    max_profit_after_sell2 = 0
 
     for price in prices:
-        buy1 = max(buy1, -price)           # First buy
-        sell1 = max(sell1, buy1 + price)   # First sell
-        buy2 = max(buy2, sell1 - price)    # Second buy
-        sell2 = max(sell2, buy2 + price)   # Second sell
+        # Think backwards:
+        max_profit_after_sell2 = max(max_profit_after_sell2, max_profit_after_buy2 + price)
+        max_profit_after_buy2 = max(max_profit_after_buy2, max_profit_after_sell1 - price)
+        max_profit_after_sell1 = max(max_profit_after_sell1, max_profit_after_buy1 + price)
+        max_profit_after_buy1 = max(max_profit_after_buy1, -price)
 
-    return sell2
+    return max_profit_after_sell2
 ```
 
 ---
@@ -213,31 +284,48 @@ def max_profit_4(k: int, prices: list[int]) -> int:
 
 After selling, must wait one day before buying.
 
+### Recurrence Relation
+
+Let $hold[i]$ be max profit on day $i$ while holding a stock.
+Let $sold[i]$ be max profit on day $i$ right after selling a stock.
+Let $rest[i]$ be max profit on day $i$ after resting (either came from $sold[i-1]$ or $rest[i-1]$).
+
+$$
+hold[i] = \max(hold[i-1], rest[i-1] - price[i])
+$$
+$$
+sold[i] = hold[i-1] + price[i]
+$$
+$$
+rest[i] = \max(rest[i-1], sold[i-1])
+$$
+
+### Space-Optimized Tabulation
+
 ```python
 def max_profit_cooldown(prices: list[int]) -> int:
     """
     Unlimited transactions with 1-day cooldown after selling.
-
-    States:
-        hold: have stock
-        sold: just sold (cooldown next)
-        rest: no stock, can buy
-
-    Time: O(n)
-    Space: O(1)
     """
-    hold = float('-inf')
-    sold = 0
-    rest = 0
+    max_profit_holding_stock = float('-inf')
+    max_profit_just_sold = 0
+    max_profit_resting = 0
 
     for price in prices:
-        prev_sold = sold
+        # Cache previous day's sold state
+        prev_sold = max_profit_just_sold
 
-        sold = hold + price          # Sell today
-        hold = max(hold, rest - price)  # Buy today (from rest)
-        rest = max(rest, prev_sold)  # Do nothing (or came from sold)
+        # 1. Sell stock today
+        max_profit_just_sold = max_profit_holding_stock + price
 
-    return max(sold, rest)
+        # 2. Buy today (must come from resting, can't buy right after sell)
+        # OR Hold from yesterday
+        max_profit_holding_stock = max(max_profit_holding_stock, max_profit_resting - price)
+
+        # 3. Rest today (came from sold yesterday, or rested yesterday)
+        max_profit_resting = max(max_profit_resting, prev_sold)
+
+    return max(max_profit_just_sold, max_profit_resting)
 ```
 
 ### State Machine Diagram

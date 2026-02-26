@@ -45,10 +45,12 @@ Burst Balloons is a FANG+ hard problem because:
 2. **No Range Structure**: If removing an element doesn't affect only its range (e.g., global effects), interval DP doesn't apply.
 
 3. **Forward Thinking Works**: Some problems are naturally solved by considering "first" rather than "last." Only use "last" thinking when "first" creates dependency chaos.
+   - *Example*: Coin Change. Taking a coin first doesn't change the properties of the remaining coins, so we don't need "last taken" logic.
 
 4. **Small n (Brute Force)**: For n ≤ 10, brute force all permutations (O(n!)) might be acceptable and simpler to implement.
+   - *Example*: A game board with 8 tiles where you want to find the exact optimal sequence of removals.
 
-5. **Different Cost Function**: If bursting depends on more than just neighbors (e.g., global state, history), the standard recurrence breaks.
+5. **Different Cost Function**: If bursting depends on more than just immediate neighbors (e.g., global state, history, or parity of elements remaining), the standard recurrence breaks.
 
 **Recognize This Pattern When:**
 
@@ -90,6 +92,21 @@ Total: 15 + 120 + 24 + 8 = 167
 ---
 
 ## Solution
+
+### Recurrence Relation
+
+Let $nums$ be the 1-indexed array of balloons with virtual balloons $nums[0] = 1$ and $nums[n+1] = 1$.
+Let $dp[i][j]$ be the maximum coins obtained by bursting all balloons strictly between index $i$ and index $j$ (exclusive).
+
+$$
+dp[i][j] =
+\begin{cases}
+0 & \text{if } i+1 = j \\
+\max\limits_{i < k < j} \left\{ dp[i][k] + dp[k][j] + nums[i] \cdot nums[k] \cdot nums[j] \right\} & \text{if } i+1 < j
+\end{cases}
+$$
+
+### Bottom-Up (Tabulation)
 
 ```python
 def max_coins(nums: list[int]) -> int:

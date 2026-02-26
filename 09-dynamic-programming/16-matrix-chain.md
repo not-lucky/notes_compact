@@ -36,12 +36,16 @@ Matrix Chain Multiplication introduces **interval DP**:
 ## When NOT to Use Interval DP
 
 1. **Linear Dependencies**: If dp[i] only depends on dp[i-1] and dp[i-2], use 1D DP. Interval DP is for range-based dependencies.
+   - *Example*: Finding the longest increasing subsequence. You only need to look back linearly, not consider arbitrary combinations of left and right subsegments.
 
 2. **O(n³) Is Too Slow**: For n > 500, O(n³) may time out. Some problems have Knuth's optimization reducing to O(n²).
+   - *Example*: Finding optimal BST for 1000 nodes will TLE with standard O(n³) interval DP.
 
 3. **Non-Associative Operations**: Interval DP assumes combining (i..k) and (k+1..j) gives (i..j). If merging isn't associative or has side effects, the model breaks.
+   - *Example*: A game where combining two items changes the value of items *outside* the interval.
 
 4. **Greedy Works**: Some parenthesization problems have greedy solutions (e.g., Huffman coding for optimal merge). Check before using DP.
+   - *Example*: Merging ropes/files to minimize total cost (where you can pick *any* two to merge, not just adjacent ones) is solved with a Priority Queue in $O(n \log n)$, not Interval DP.
 
 5. **Graph Structure, Not Interval**: If the problem involves graphs rather than linear sequences, interval DP doesn't apply.
 
@@ -73,6 +77,20 @@ Optimal: (A×B)×C = 4500
 ---
 
 ## Solution
+
+### Recurrence Relation
+
+Let $dp[i][j]$ be the minimum number of scalar multiplications needed to compute the matrix $A_{i..j}$. The dimensions of matrix $A_i$ are $p_{i-1} \times p_i$.
+
+$$
+dp[i][j] =
+\begin{cases}
+0 & \text{if } i = j \\
+\min\limits_{i \le k < j} \left\{ dp[i][k] + dp[k+1][j] + p_{i-1} p_k p_j \right\} & \text{if } i < j
+\end{cases}
+$$
+
+### Bottom-Up (Tabulation)
 
 ```python
 def matrix_chain_order(p: list[int]) -> int:

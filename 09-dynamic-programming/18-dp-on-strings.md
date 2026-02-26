@@ -41,10 +41,13 @@ Advanced string DP problems appear in FANG+ because:
 ## When NOT to Use String DP
 
 1. **Simple String Matching**: For exact matching or pattern without wildcards, use built-in string methods or KMP. DP is overkill.
+   - *Example*: Finding the first occurrence of "needle" in "haystack".
 
 2. **Suffix-Based Problems**: For suffix arrays, longest repeated substring, or substring search, specialized suffix data structures are better than DP.
+   - *Example*: Finding the longest repeated substring in a 100,000 character string. Suffix trees do this in O(n), while DP would be O(n²).
 
 3. **Very Long Strings (n > 10⁴ for O(n²))**: Many string DPs are O(n²) or O(nm). For n = 10⁶, this times out. Consider approximations or different algorithms.
+   - *Example*: Comparing two full books for similarity.
 
 4. **Need Rolling Hash or Hashing**: For problems like finding duplicate substrings, Rabin-Karp hashing is often more efficient than DP.
 
@@ -60,157 +63,28 @@ Advanced string DP problems appear in FANG+ because:
 
 ---
 
-## Distinct Subsequences
+## 1D Prefix DP (Decoding and Formatting)
 
-Count subsequences of s that equal t.
+### Decode Ways
 
-```python
-def num_distinct(s: str, t: str) -> int:
-    """
-    Count distinct subsequences of s that equal t.
+Count ways to decode '1'-'26' to 'A'-'Z'.
 
-    State: dp[i][j] = ways to form t[0..j-1] from s[0..i-1]
-    Recurrence:
-        dp[i][j] = dp[i-1][j]  (don't use s[i-1])
-        if s[i-1] == t[j-1]: dp[i][j] += dp[i-1][j-1]
+#### Recurrence Relation
 
-    Time: O(m × n)
-    Space: O(n)
-    """
-    m, n = len(s), len(t)
-    dp = [0] * (n + 1)
-    dp[0] = 1  # Empty t can be formed in 1 way
+Let $dp[i]$ be the number of ways to decode prefix $s[0..i-1]$.
 
-    for i in range(1, m + 1):
-        # Iterate backwards to avoid overwriting
-        for j in range(min(i, n), 0, -1):
-            if s[i - 1] == t[j - 1]:
-                dp[j] += dp[j - 1]
-
-    return dp[n]
-```
-
-### Example
-
-```
-s = "rabbbit", t = "rabbit"
-
-Ways: 3
-r a b b b i t
-r a b b - i t  ✓
-r a b - b i t  ✓
-r a - b b i t  ✓
-```
-
----
-
-## Interleaving String
-
-Check if s3 is formed by interleaving s1 and s2.
-
-```python
-def is_interleave(s1: str, s2: str, s3: str) -> bool:
-    """
-    Is s3 an interleaving of s1 and s2?
-
-    State: dp[i][j] = can form s3[0..i+j-1] from s1[0..i-1] and s2[0..j-1]
-
-    Time: O(m × n)
-    Space: O(n)
-    """
-    m, n = len(s1), len(s2)
-
-    if m + n != len(s3):
-        return False
-
-    dp = [False] * (n + 1)
-    dp[0] = True
-
-    # Initialize first row
-    for j in range(1, n + 1):
-        dp[j] = dp[j - 1] and s2[j - 1] == s3[j - 1]
-
-    for i in range(1, m + 1):
-        dp[0] = dp[0] and s1[i - 1] == s3[i - 1]
-
-        for j in range(1, n + 1):
-            dp[j] = ((dp[j] and s1[i - 1] == s3[i + j - 1]) or
-                     (dp[j - 1] and s2[j - 1] == s3[i + j - 1]))
-
-    return dp[n]
-```
-
-### Example
-
-```
-s1 = "aab", s2 = "axy", s3 = "aaxaby"
-
-     ""  a   x   y
-""    T  T   F   F
-a     T  T   T   F
-a     T  T   T   F
-b     F  F   T   T
-
-True: s3 can be formed
-```
-
----
-
-## Scramble String
-
-Check if s2 is a scrambled version of s1.
-
-```python
-from functools import lru_cache
-
-def is_scramble(s1: str, s2: str) -> bool:
-    """
-    Is s2 a scramble of s1?
-
-    Scramble: recursively swap children of binary tree nodes.
-
-    Time: O(n⁴)
-    Space: O(n³)
-    """
-    if len(s1) != len(s2):
-        return False
-
-    if s1 == s2:
-        return True
-
-    @lru_cache(maxsize=None)
-    def dp(i1: int, i2: int, length: int) -> bool:
-        if s1[i1:i1+length] == s2[i2:i2+length]:
-            return True
-
-        # Check if same characters
-        if sorted(s1[i1:i1+length]) != sorted(s2[i2:i2+length]):
-            return False
-
-        for k in range(1, length):
-            # Not swapped
-            if dp(i1, i2, k) and dp(i1+k, i2+k, length-k):
-                return True
-            # Swapped
-            if dp(i1, i2+length-k, k) and dp(i1+k, i2, length-k):
-                return True
-
-        return False
-
-    return dp(0, 0, len(s1))
-```
-
----
-
-## Decode Ways
+$$
+dp[i] =
+\begin{cases}
+1 & \text{if } i = 0 \\
+dp[i-1] \cdot (\text{if } s[i-1] \neq '0') + dp[i-2] \cdot (\text{if } 10 \le int(s[i-2..i-1]) \le 26) & \text{if } i > 0
+\end{cases}
+$$
 
 ```python
 def num_decodings(s: str) -> int:
     """
     Count ways to decode '1'-'26' to 'A'-'Z'.
-
-    Time: O(n)
-    Space: O(1)
     """
     if not s or s[0] == '0':
         return 0
@@ -235,9 +109,7 @@ def num_decodings(s: str) -> int:
     return prev1
 ```
 
----
-
-## Decode Ways II
+### Decode Ways II
 
 With `*` matching 1-9.
 
@@ -255,37 +127,25 @@ def num_decodings_ii(s: str) -> int:
         return 0
 
     def single_ways(c: str) -> int:
-        if c == '*':
-            return 9  # 1-9
-        elif c == '0':
-            return 0
-        else:
-            return 1
+        if c == '*': return 9
+        elif c == '0': return 0
+        else: return 1
 
     def double_ways(c1: str, c2: str) -> int:
-        if c1 == '*' and c2 == '*':
-            return 15  # 11-19 (9) + 21-26 (6)
+        if c1 == '*' and c2 == '*': return 15  # 11-19 (9) + 21-26 (6)
         elif c1 == '*':
-            if c2 <= '6':
-                return 2  # 1X or 2X
-            else:
-                return 1  # only 1X
+            return 2 if c2 <= '6' else 1
         elif c2 == '*':
-            if c1 == '1':
-                return 9  # 11-19
-            elif c1 == '2':
-                return 6  # 21-26
-            else:
-                return 0
+            if c1 == '1': return 9
+            elif c1 == '2': return 6
+            else: return 0
         else:
-            num = int(c1 + c2)
-            return 1 if 10 <= num <= 26 else 0
+            return 1 if 10 <= int(c1 + c2) <= 26 else 0
 
     prev2, prev1 = 1, single_ways(s[0])
 
     for i in range(2, len(s) + 1):
-        curr = (single_ways(s[i - 1]) * prev1 +
-                double_ways(s[i - 2], s[i - 1]) * prev2) % MOD
+        curr = (single_ways(s[i - 1]) * prev1 + double_ways(s[i - 2], s[i - 1]) * prev2) % MOD
         prev2, prev1 = prev1, curr
 
     return prev1
@@ -293,7 +153,136 @@ def num_decodings_ii(s: str) -> int:
 
 ---
 
-## Longest Valid Parentheses
+## 2D Sequence Alignment (Two Strings)
+
+### Distinct Subsequences
+
+Count subsequences of $s$ that equal $t$.
+
+#### Recurrence Relation
+
+Let $dp[i][j]$ be the number of distinct subsequences of $s[0 \dots i-1]$ that equal $t[0 \dots j-1]$.
+
+$$
+dp[i][j] =
+\begin{cases}
+1 & \text{if } j = 0 \\
+0 & \text{if } i = 0 \text{ and } j > 0 \\
+dp[i-1][j] + (dp[i-1][j-1] \text{ if } s[i-1] == t[j-1] \text{ else } 0) & \text{otherwise}
+\end{cases}
+$$
+
+```python
+def num_distinct(s: str, t: str) -> int:
+    """
+    Count distinct subsequences of s that equal t.
+    """
+    m, n = len(s), len(t)
+    dp = [0] * (n + 1)
+    dp[0] = 1  # Empty t can be formed in 1 way
+
+    for i in range(1, m + 1):
+        # Iterate backwards to avoid overwriting
+        for j in range(min(i, n), 0, -1):
+            if s[i - 1] == t[j - 1]:
+                dp[j] += dp[j - 1]
+
+    return dp[n]
+```
+
+### Visual Walkthrough
+
+`s = "rabbbit"`, `t = "rabbit"`
+
+| | "" | `r` | `a` | `b` | `b` | `i` | `t` |
+|---|---|---|---|---|---|---|---|
+| **""** | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **`r`** | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
+| **`a`** | 1 | 1 | 1 | 0 | 0 | 0 | 0 |
+| **`b`** | 1 | 1 | 1 | 1 | 0 | 0 | 0 |
+| **`b`** | 1 | 1 | 1 | 2 | 1 | 0 | 0 |
+| **`b`** | 1 | 1 | 1 | 3 | 3 | 0 | 0 |
+| **`i`** | 1 | 1 | 1 | 3 | 3 | 3 | 0 |
+| **`t`** | 1 | 1 | 1 | 3 | 3 | 3 | 3 ← Answer |
+
+### Interleaving String
+
+Check if $s3$ is formed by interleaving $s1$ and $s2$.
+
+#### Recurrence Relation
+
+Let $dp[i][j]$ be whether $s3[0 \dots i+j-1]$ is an interleaving of $s1[0 \dots i-1]$ and $s2[0 \dots j-1]$.
+
+$$
+dp[i][j] =
+\begin{cases}
+True & \text{if } i=0, j=0 \\
+(dp[i-1][j] \land s1[i-1] == s3[i+j-1]) \lor (dp[i][j-1] \land s2[j-1] == s3[i+j-1]) & \text{otherwise}
+\end{cases}
+$$
+
+```python
+def is_interleave(s1: str, s2: str, s3: str) -> bool:
+    """
+    Is s3 an interleaving of s1 and s2?
+    """
+    m, n = len(s1), len(s2)
+
+    if m + n != len(s3):
+        return False
+
+    dp = [False] * (n + 1)
+    dp[0] = True
+
+    for j in range(1, n + 1):
+        dp[j] = dp[j - 1] and s2[j - 1] == s3[j - 1]
+
+    for i in range(1, m + 1):
+        dp[0] = dp[0] and s1[i - 1] == s3[i - 1]
+        for j in range(1, n + 1):
+            dp[j] = ((dp[j] and s1[i - 1] == s3[i + j - 1]) or
+                     (dp[j - 1] and s2[j - 1] == s3[i + j - 1]))
+
+    return dp[n]
+```
+
+---
+
+## Recursive Splitting / Scramble
+
+### Scramble String
+
+Check if $s2$ is a scrambled version of $s1$.
+
+```python
+from functools import lru_cache
+
+def is_scramble(s1: str, s2: str) -> bool:
+    """
+    Is s2 a scramble of s1?
+    """
+    if len(s1) != len(s2): return False
+    if s1 == s2: return True
+
+    @lru_cache(maxsize=None)
+    def dp(i1: int, i2: int, length: int) -> bool:
+        if s1[i1:i1+length] == s2[i2:i2+length]: return True
+        if sorted(s1[i1:i1+length]) != sorted(s2[i2:i2+length]): return False
+
+        for k in range(1, length):
+            if dp(i1, i2, k) and dp(i1+k, i2+k, length-k): return True
+            if dp(i1, i2+length-k, k) and dp(i1+k, i2, length-k): return True
+
+        return False
+
+    return dp(0, 0, len(s1))
+```
+
+---
+
+## Advanced String Structures
+
+### Longest Valid Parentheses
 
 ```python
 def longest_valid_parentheses(s: str) -> int:
