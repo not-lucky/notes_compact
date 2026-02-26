@@ -81,6 +81,12 @@ Topological sort is a FANG+ favorite because:
 3. **Multiple algorithms**: Kahn's (BFS) and DFS approaches
 4. **DAG validation**: Topological sort exists iff graph is acyclic
 
+### Amazon Context
+Amazon frequently asks variants of topological sort, particularly around **build systems** or **package installations**:
+- Given a list of packages and their dependencies, what is the valid installation order?
+- What is the lexicographically smallest installation order?
+- Find the earliest time all packages can be installed if multiple independent ones can install simultaneously (Parallel processing time).
+
 If you see "ordering" or "dependencies", think topological sort.
 
 ---
@@ -88,6 +94,13 @@ If you see "ordering" or "dependencies", think topological sort.
 ## Core Concept
 
 A **topological ordering** of a directed graph is a linear ordering of vertices such that for every edge u → v, u comes before v.
+
+### Directed Acyclic Graph (DAG) Formalization
+A directed graph $G = (V, E)$ is called a Directed Acyclic Graph (DAG) if there exists no path $v_1, v_2, ..., v_k$ such that $v_1 = v_k$.
+
+**Theorem**: A directed graph $G$ has a topological ordering if and only if $G$ is a DAG.
+- **Proof (Forward)**: If $G$ has a cycle $v_1 \rightarrow v_2 \rightarrow ... \rightarrow v_k \rightarrow v_1$, in any ordering, $v_1$ must precede $v_2$, which precedes $v_3$, ..., which precedes $v_k$, which must precede $v_1$. This implies $v_1$ precedes $v_1$, a contradiction. Thus, a topological ordering implies no cycles.
+- **Proof (Backward)**: Every DAG has at least one node with in-degree 0. Pick it, remove it, and repeat. The remaining graph is still a DAG, so we can always pick a node until the graph is empty, producing a valid topological sort.
 
 ```
 Dependencies:           Topological Order:
@@ -109,6 +122,7 @@ Dependencies:           Topological Order:
 
 Process nodes with in-degree 0 first, then reduce neighbors' in-degrees.
 
+### Python
 ```python
 from collections import defaultdict, deque
 
@@ -146,11 +160,108 @@ def topological_sort_kahn(n: int, edges: list[list[int]]) -> list[int]:
         return []
 
     return result
+```
 
+### Java
+```java
+import java.util.*;
 
-# Usage
-edges = [[0, 1], [0, 2], [1, 3], [2, 3]]
-print(topological_sort_kahn(4, edges))  # [0, 1, 2, 3] or [0, 2, 1, 3]
+class TopologicalSort {
+    public int[] topologicalSortKahn(int n, int[][] edges) {
+        // Time: O(V + E) | Space: O(V + E)
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        int[] inDegree = new int[n];
+
+        // Build graph and calculate in-degrees
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph.get(u).add(v);
+            inDegree[v]++;
+        }
+
+        // Find nodes with no dependencies
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        int[] result = new int[n];
+        int index = 0;
+
+        // Process nodes
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            result[index++] = node;
+
+            for (int neighbor : graph.get(node)) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+
+        // If we processed all nodes, return result, else there's a cycle
+        return index == n ? result : new int[0];
+    }
+}
+```
+
+### C++
+```cpp
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> topologicalSortKahn(int n, vector<vector<int>>& edges) {
+        // Time: O(V + E) | Space: O(V + E)
+        vector<vector<int>> graph(n);
+        vector<int> inDegree(n, 0);
+
+        // Build graph and calculate in-degrees
+        for (const auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            inDegree[edge[1]]++;
+        }
+
+        // Find nodes with no dependencies
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        vector<int> result;
+
+        // Process nodes
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            result.push_back(node);
+
+            for (int neighbor : graph[node]) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        // If we processed all nodes, return result, else there's a cycle
+        return result.size() == n ? result : vector<int>();
+    }
+};
 ```
 
 ---
@@ -539,26 +650,36 @@ Both [0, 1, 2, 3, 4] and [0, 2, 1, 4, 3] are valid!
 **Time Complexity: O(V + E)**
 
 ```
-Kahn's Algorithm:
-1. Computing in-degrees: O(E)
-2. Each vertex enqueued once: O(V)
-3. Each edge decrements in-degree once: O(E)
-4. Total: O(V + E)
+Kahn's Algorithm (BFS):
+1. Computing in-degrees: O(E) to visit all edges
+2. Queue initialization: O(V) to scan all in-degrees
+3. Processing: Each vertex enqueued/dequeued exactly once: O(V)
+4. Edge traversal: Each edge decrements in-degree exactly once: O(E)
+Total Time: O(V + E)
 
 DFS Algorithm:
-1. Each vertex visited once: O(V)
-2. Each edge examined once: O(E)
-3. Total: O(V + E)
+1. Outer loop over V vertices: O(V)
+2. DFS traversal visits each vertex exactly once
+3. Each edge examined exactly once: O(E)
+Total Time: O(V + E)
 ```
 
 **Space Complexity: O(V + E)**
 
 ```
-1. Graph storage: O(V + E)
+1. Graph storage (adjacency list): O(V + E)
 2. In-degree array (Kahn's) or color array (DFS): O(V)
-3. Queue/Stack: O(V)
-4. Total: O(V + E)
+3. Queue (Kahn's) or Call Stack (DFS): O(V) worst case
+Total Auxiliary Space: O(V + E)
 ```
+
+### Trade-offs: Kahn's (BFS) vs Recursive DFS
+
+While both algorithms have `O(V + E)` time complexity, their constant factors and space utilization behave differently:
+
+1. **Stack Overflow Risk (DFS)**: In a completely linear graph (e.g., $v_1 \rightarrow v_2 \rightarrow ... \rightarrow v_n$), the recursive call stack depth will be exactly $V$. If $V = 10^5$, this will exceed the default recursion limit in Python (usually 1000) and cause a Stack Overflow in languages like Java/C++. Kahn's algorithm avoids this entirely as it iterates using an explicit queue.
+2. **Memory Locality**: Kahn's algorithm tends to have better cache locality because it processes adjacent nodes level by level, making it slightly faster in practice for dense graphs.
+3. **Lexicographical Constraints**: Kahn's easily extends to "find the lexicographically smallest ordering" by swapping the standard `Queue` for a `PriorityQueue` (Min-Heap). Doing this with recursive DFS is remarkably complex.
 
 **Correctness proof for Kahn's algorithm:**
 
