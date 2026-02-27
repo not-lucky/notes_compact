@@ -1,5 +1,11 @@
 # Lessons
 
+### Binary Search Template Improvements
+- Right boundary `find_right_boundary` using `left < len(nums)` check before return is redundant if we initialize `left = 0, right = len(nums) - 1` and never exceed the initial `len(nums) - 1`. The loop `while left < right` guarantees `left` stays within bounds `[0, len(nums) - 1]` assuming `len(nums) > 0` which is handled by early return.
+- Explaining Python integer precision is a nice touch to add next to integer overflow guards (`mid = left + (right - left) // 2`).
+- `bisect.bisect` is just an alias for `bisect_right`. Make sure to emphasize this since it's commonly asked or used.
+- Binary search on answer templates require thinking carefully about whether we want the *first* True or *last* True (usually Left Boundary or Right Boundary template respectively).
+
 ### Rotated Sorted Array Details
 When breaking the array into 2 passes to do search in rotated sorted array:
 1. Target is in right portion if: `target >= nums[0]`? No, that means it's in the left portion!

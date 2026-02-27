@@ -318,7 +318,7 @@ Binary search is powerful but has specific requirements. Watch out for these tra
    - e.g. `[3, 1, 4, 1, 5]`. If you evaluate `nums[mid] >= 4`, it's `[False, False, True, False, True]`. There is no single transition point.
 
 2. **When You Need ALL Occurrences (and there are many)**
-   - If a target appears $K$ times, finding all of them takes $O(\log N + K)$. If $K \approx N$ (e.g., an array of all `5`s), this degrades to $O(N)$. Just use a linear scan.
+   - If a target appears $K$ times, finding all of them takes $O(\log N + K)$ time. If $K \approx N$ (e.g., an array of all `5`s), this degrades to $O(N)$. In these cases, just use a linear scan.
 
 3. **Linked Lists**
    - Binary search requires $O(1)$ random access. Reaching the middle of a linked list takes $O(N)$. Therefore, performing binary search on a linked list takes $O(N \log N)$ time—which is worse than a simple $O(N)$ linear scan!

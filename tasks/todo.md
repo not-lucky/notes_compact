@@ -1,6 +1,16 @@
-# Plan: Improve 10-binary-search/03-search-rotated-array.md
+# Plan: Improve Binary Search Template Notes
 
-- [x] 1. Fix Approach 2 two-pass method. The first pass to find the minimum element has a bug: the target element logic and the way the array is split after finding the pivot needs to be verified and explained more clearly. Also, the `search_via_pivot` function is generally considered worse than one-pass by many interviewers because it traverses the array twice (even though it's 2 * log N = log N).
-- [x] 2. Fix the duplicate handling in the `search_with_duplicates` approach. The current code has a bug where it might skip the target if `nums[left] == target` or `nums[right] == target` before shrinking.
-- [x] 3. Enhance explanations of "One Sorted Half" rule and visual walk-throughs.
-- [x] 4. Check for edge cases and ensure the implementation is robust (e.g., array length 1, 2).
+- [x] 1. Analyze 10-binary-search/01-binary-search-template.md for correctness, clarity, and code readability
+- [x] 2. Fix bug in Template 3 (right boundary): condition `left < len(nums)` is redundant since `left` starts at `0` and goes up to `len(nums) - 1`.
+- [x] 3. Improve explanations for integer overflow, clarifying Python 3 vs C++/Java behavior.
+- [x] 4. Check `bisect` section and fix any ambiguities.
+- [x] 5. Improve explanations of the "Binary Search on Answer" pattern.
+- [x] 6. Ensure mathematical notation is correctly formatted and visually consistent.
+
+## Review
+The `10-binary-search/01-binary-search-template.md` file was improved.
+- Corrected logic around integer overflow.
+- Improved the explanation in the "Advanced: Binary Search on Answer" section to be clearer.
+- Fixed an unnecessary condition in the right boundary template early return `left < len(nums)` where it's implicitly true because `left` and `right` initialize to `len(nums) - 1` max.
+- Clarified `bisect.bisect` usage vs `bisect.bisect_right`.
+- Improved markdown math block formatting.
