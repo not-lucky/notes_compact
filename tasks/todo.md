@@ -1,29 +1,21 @@
-# Rewrite DP on Strings Notes
+# Improve Chapter 09 Dynamic Programming Notes
 
-1.  **Analyze current content:** [Completed]
-    *   Review `09-dynamic-programming/18-dp-on-strings.md` for errors, clarity, and correctness.
-    *   Check code snippets for bugs and style issues.
-2.  **Plan improvements:** [Completed]
-    *   Enhance explanations of state definitions and transitions.
-    *   Ensure all code snippets are correct, well-commented, and Pythonic.
-    *   Add complexity analysis where missing or incorrect.
-    *   Reorganize content for better flow if needed.
-3.  **Implement changes:** [Completed]
-    *   Rewrite sections for better clarity and depth.
-    *   Update code blocks.
-4.  **Verify changes:** [Completed]
-    *   Check markdown formatting.
-    *   Verify code logic (tested Python snippets).
-5.  **Final review:** [Completed]
-    *   Update `tasks/todo.md` with results.
-
-# Matrix Chain Multiplication Review
-- Read current `09-dynamic-programming/16-matrix-chain.md`
-- Analyzed the text for errors, clarity, and correctness.
-- Fixed DP bugs and poor indexing:
-  - Translated all code from 1-indexed to 0-indexed which makes the Python loops *much* simpler and less error-prone.
-  - Rewrote the recurrence relation and explanations to match 0-indexed variables.
-  - Clarified the interval DP intuition, especially *why* we must loop by length.
-  - Added specific comments explaining the `k-1` step optimization in the `merge_stones` problem (ensuring the left partition can reduce to exactly 1 pile).
-  - Updated the general `interval_dp_template` to strictly follow 0-indexed arrays with clearly named variables (`length`, `i`, `j`, `k`).
-  - Addressed complexity limits explicitly (e.g. O(n³) is usually too slow for n > 500 without Knuth optimization).
+- [x] Improve `01-dp-fundamentals.md`
+- [x] Improve `02-memoization-vs-tabulation.md`
+- [x] Improve `03-1d-dp-basics.md`
+- [x] Improve `04-house-robber.md`
+- [x] Improve `05-coin-change.md`
+- [x] Improve `06-longest-increasing-subsequence.md`
+- [x] Improve `07-2d-dp-basics.md`
+- [x] Improve `08-longest-common-subsequence.md`
+- [x] Improve `09-edit-distance.md`
+- [x] Improve `10-knapsack-01.md`
+- [x] Improve `11-knapsack-unbounded.md`
+- [x] Improve `12-palindrome-dp.md`
+- [x] Improve `13-word-break.md`
+- [x] Improve `14-regex-matching.md`
+- [x] Improve `15-buy-sell-stock.md`
+- [x] Improve `16-matrix-chain.md`
+- [x] Improve `17-burst-balloons.md`
+- [x] Improve `18-dp-on-strings.md`
+- [x] Improve `README.md`

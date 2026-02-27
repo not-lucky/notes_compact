@@ -4,7 +4,7 @@
 
 ## Overview
 
-Palindrome DP problems involve finding, counting, or partitioning palindromic structures within strings. These naturally form **Interval DP** problems, where we solve for small intervals and expand outward.
+Palindrome DP problems involve finding, counting, or partitioning palindromic structures within strings. These naturally form **Interval DP** problems, where we solve for small intervals and expand outward to larger intervals.
 
 ## Formal Recurrence
 
@@ -27,7 +27,7 @@ $$
 ### 2. Longest Palindromic Subsequence (Non-contiguous)
 Let $dp[i][j]$ be the length of the longest palindromic subsequence in $s[i..j]$.
 
-If characters match, they form the ends of the LPS. If they don't, the LPS is the best of either ignoring the left character or the right character.
+If the outer characters match, they form the ends of the LPS. If they don't, the LPS is the maximum of either ignoring the left character or the right character.
 
 $$
 dp[i][j] =
@@ -42,31 +42,31 @@ $$
 
 **Why are palindrome problems well-suited for DP?**
 
-1. **Natural Substructure**: A string is a palindrome if its first and last characters match AND the substring between them is a palindrome. This is perfect recursive structure.
-2. **Interval DP Pattern**: We define state based on start and end indices `(i, j)`. The answer for larger ranges depends on strictly smaller ranges.
+1. **Natural Substructure**: A string is a palindrome if its first and last characters match AND the substring between them is a palindrome. This is a perfect recursive structure.
+2. **Interval DP Pattern**: We define the state based on start and end indices `(i, j)`. The answer for larger intervals depends strictly on smaller intervals.
 3. **The Fill Order**: For interval DP, we must evaluate smaller lengths before larger lengths. This means either:
    - Outer loop `length` from 1 to $n$, inner loop `i` from 0 to $n - length$.
    - Outer loop `i` backwards from $n-1$ down to 0, inner loop `j` forwards from `i` to $n-1$.
-4. **LPS Key Insight**: Longest Palindromic Subsequence of $s$ = `LCS(s, reverse(s))`. This is because a common subsequence that reads the same forwards and backwards is inherently palindromic.
+4. **LPS Key Insight**: The Longest Palindromic Subsequence of $s$ is equivalent to `LCS(s, reverse(s))`. This is because a common subsequence that reads the same forwards and backwards is inherently palindromic.
 
 ## Substring vs Subsequence Types
 
-Group problems conceptually to know which algorithm to apply:
+Grouping problems conceptually helps you know which algorithm to apply:
 
 ### Type 1: Substring (Contiguous)
 *Examples: Longest Palindromic Substring, Count Palindromic Substrings.*
 - **Characteristics**: Must be unbroken sequences of characters.
-- **Best Approach**: Expand Around Center ($O(n^2)$ time, $O(1)$ space). DP is usually $O(n^2)$ space, which is worse. Manacher's Algorithm is $O(n)$ time but complex.
+- **Best Approach**: Expand Around Center ($O(n^2)$ time, $O(1)$ space). DP takes $O(n^2)$ space, which is strictly worse. Manacher's Algorithm is $O(n)$ time but generally too complex for interviews.
 
 ### Type 2: Subsequence (Non-contiguous)
-*Examples: Longest Palindromic Subsequence, Valid Palindrome III (K deletions), Min Insertions to Make Palindrome.*
+*Examples: Longest Palindromic Subsequence, Valid Palindrome III (K deletions), Minimum Insertions to Make Palindrome.*
 - **Characteristics**: Can skip characters.
 - **Best Approach**: 2D Interval DP ($O(n^2)$ time and space). Can be space-optimized to $O(n)$.
 
 ### Type 3: Partitioning
 *Examples: Palindrome Partitioning I & II.*
-- **Characteristics**: Break string into chunks that are each valid palindromes.
-- **Best Approach**: Precompute all valid palindromic substrings using Interval DP, then run a 1D DP or Backtracking over the string splits.
+- **Characteristics**: Break the string into chunks that are each valid palindromes.
+- **Best Approach**: Precompute all valid palindromic substrings using Interval DP ($O(n^2)$), then run a 1D DP or Backtracking over the string splits.
 
 ---
 
@@ -74,18 +74,21 @@ Group problems conceptually to know which algorithm to apply:
 
 1. **Longest Palindromic Substring**: "Expand Around Center" is simpler and uses $O(1)$ space compared to DP's $O(n^2)$.
 2. **Simple Palindrome Check**: For checking if a single complete string is a palindrome, use two pointers ($O(n)$ time, $O(1)$ space). DP is completely unnecessary.
-3. **Very Long Strings**: 2D DP for LPS is $O(n^2)$ time and space. For $n = 10^5$, this will MLE (Memory Limit Exceeded) and TLE.
+3. **Very Long Strings**: 2D DP for LPS is $O(n^2)$ time and space. For $n \ge 10^4$, this will cause MLE (Memory Limit Exceeded) or TLE (Time Limit Exceeded).
 4. **Counting Distinct Palindromic Subsequences**: This is a much harder problem requiring careful handling of duplicates, often needing state beyond just `[i][j]`.
 
 ---
 
-## Longest Palindromic Substring (Contiguous)
+## Longest Palindromic Substring & Counting (Contiguous)
+
+For contiguous palindromes, "Expand Around Center" is the optimal approach.
 
 ### Approach 1: Expand Around Center (Best Practice) - O(n²) time, O(1) space
 
 ```python
 def longest_palindrome_substring(s: str) -> str:
-    if not s: return ""
+    if not s:
+        return ""
     start, max_len = 0, 1
 
     def expand(left: int, right: int) -> int:
@@ -109,15 +112,37 @@ def longest_palindrome_substring(s: str) -> str:
     return s[start:start + max_len]
 ```
 
-### Approach 2: DP Tabulation - O(n²) time, O(n²) space
+### Approach 2: Count Palindromic Substrings - O(n²) time, O(1) space
 
-Useful when you need to answer *many* `is_palindrome(i, j)` queries later, such as in partitioning problems.
+The same expansion logic can be used to count all palindromic substrings simply by counting each successful expansion.
 
 ```python
-def longest_palindrome_dp(s: str) -> str:
+def count_substrings(s: str) -> int:
+    count = 0
+
+    def expand_and_count(left: int, right: int) -> int:
+        palindromes = 0
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            palindromes += 1
+            left -= 1
+            right += 1
+        return palindromes
+
+    for i in range(len(s)):
+        count += expand_and_count(i, i)      # Odd length palindromes
+        count += expand_and_count(i, i + 1)  # Even length palindromes
+
+    return count
+```
+
+### Approach 3: DP Tabulation - O(n²) time, O(n²) space
+
+DP for substrings is useful when you need to answer *many* `is_palindrome(i, j)` queries later, such as in partitioning problems.
+
+```python
+def get_palindrome_table(s: str) -> list[list[bool]]:
     n = len(s)
     dp = [[False] * n for _ in range(n)]
-    start, max_len = 0, 1
 
     # Base cases: length 1
     for i in range(n):
@@ -131,11 +156,8 @@ def longest_palindrome_dp(s: str) -> str:
             if s[i] == s[j]:
                 if length == 2 or dp[i + 1][j - 1]:
                     dp[i][j] = True
-                    if length > max_len:
-                        start = i
-                        max_len = length
 
-    return s[start:start + max_len]
+    return dp
 ```
 
 ---
@@ -149,8 +171,10 @@ def longest_palindrome_subseq_memo(s: str) -> int:
     memo = {}
 
     def dfs(i: int, j: int) -> int:
-        if i > j: return 0
-        if i == j: return 1
+        if i > j:
+            return 0
+        if i == j:
+            return 1
 
         if (i, j) in memo:
             return memo[(i, j)]
@@ -173,17 +197,18 @@ Since `dp[i][j]` depends on `dp[i+1][...]` (the row below) and `dp[i][j-1]` (lef
 ```python
 def longest_palindrome_subseq(s: str) -> int:
     n = len(s)
-    # dp[j] will represent the current row `i` being computed.
+    # dp[j] will represent the row `i+1` (the row below the current one).
     dp = [0] * n
 
     for i in range(n - 1, -1, -1):
+        # new_dp[j] represents the current row `i` being computed.
         new_dp = [0] * n
-        new_dp[i] = 1  # Base case: single character
+        new_dp[i] = 1  # Base case: single character palindrome
 
         for j in range(i + 1, n):
             if s[i] == s[j]:
                 # dp[j-1] is from row i+1 (computed in previous outer loop iteration)
-                new_dp[j] = dp[j - 1] + 2
+                new_dp[j] = 2 + dp[j - 1]
             else:
                 # new_dp[j-1] is from current row, left. dp[j] is row below.
                 new_dp[j] = max(dp[j], new_dp[j - 1])
@@ -204,7 +229,7 @@ def longest_palindrome_subseq(s: str) -> int:
 | **3 (a)** | - | - | - | 1 | 1 |
 | **4 (b)** | - | - | - | - | 1 |
 
-*Note: Table is filled diagonally or bottom-to-top. Lower left is empty because $i \leq j$.*
+*Note: Table is filled diagonally or bottom-to-top. The lower left is empty because $i \leq j$.*
 
 ---
 
@@ -231,7 +256,7 @@ def min_insertions(s: str) -> int:
         new_dp[i] = 1
         for j in range(i + 1, n):
             if s[i] == s[j]:
-                new_dp[j] = dp[j - 1] + 2
+                new_dp[j] = 2 + dp[j - 1]
             else:
                 new_dp[j] = max(dp[j], new_dp[j - 1])
         dp = new_dp
@@ -247,12 +272,14 @@ def min_insertions(s: str) -> int:
 ```python
 def min_cut(s: str) -> int:
     n = len(s)
-    if n <= 1: return 0
+    if n <= 1:
+        return 0
 
     # 1. Precompute palindromes in O(n^2)
     is_palin = [[False] * n for _ in range(n)]
     for i in range(n):
         is_palin[i][i] = True
+
     for length in range(2, n + 1):
         for i in range(n - length + 1):
             j = i + length - 1
@@ -264,9 +291,9 @@ def min_cut(s: str) -> int:
     dp = [0] * n
     for i in range(n):
         if is_palin[0][i]:
-            dp[i] = 0 # Whole prefix is palindrome, 0 cuts
+            dp[i] = 0  # Whole prefix is palindrome, 0 cuts
         else:
-            dp[i] = i # Max possible cuts (each char separate)
+            dp[i] = i  # Max possible cuts (each char separate)
             for j in range(i):
                 if is_palin[j + 1][i]:
                     dp[i] = min(dp[i], dp[j] + 1)

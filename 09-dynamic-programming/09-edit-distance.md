@@ -1,70 +1,36 @@
-# Edit Distance
+# Edit Distance (Levenshtein Distance)
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md)
 
 ## Overview
 
-Edit Distance (Levenshtein Distance) measures the minimum number of single-character operations (insert, delete, replace) to transform one string into another.
+Edit Distance (Levenshtein Distance) measures the minimum number of single-character operations (insert, delete, replace) required to transform one string into another. It is the fundamental problem for string matching, spell checking, and computational biology (DNA sequence alignment).
 
 ## Building Intuition
 
-**Why does Edit Distance need three operations?**
+Imagine transforming `word1` into `word2` by scanning both strings from left to right. At each step, comparing prefixes `word1[0...i-1]` and `word2[0...j-1]`, you have choices:
 
-1. **Complete Transformation**: With only insert and delete, you can transform any string to any other. But replace makes it efficient—turning 'a' into 'b' is 1 operation, not 2 (delete 'a', insert 'b').
+1. **Why three operations?**
+   With only *insert* and *delete*, you can transform any string to any other. But *replace* acts as a shortcut. Turning 'a' into 'b' takes 1 *replace* operation instead of 2 (delete 'a', then insert 'b').
 
-2. **The Recurrence Logic**: At position (i, j), we're converting word1[0..i-1] to word2[0..j-1]:
-   - **Characters match**: No operation needed. Cost = dp[i-1][j-1].
-   - **Characters differ**: Three choices, pick cheapest:
-     - Delete from word1: Now convert word1[0..i-2] to word2[0..j-1]. Cost = dp[i-1][j] + 1.
-     - Insert into word1: Add word2[j-1] to match. Now convert word1[0..i-1] to word2[0..j-2]. Cost = dp[i][j-1] + 1.
-     - Replace: Change word1[i-1] to word2[j-1]. Cost = dp[i-1][j-1] + 1.
+2. **The Recurrence Logic (The Prefix Approach)**
+   - **If the last characters match (`word1[i-1] == word2[j-1]`)**:
+     No new operations are needed for these characters. The cost is simply the cost of transforming the remaining prefixes: `dp[i-1][j-1]`.
+   - **If the last characters DO NOT match**:
+     We must perform exactly 1 operation to fix the mismatch. We try all three possibilities and take the minimum:
+     - **Replace**: Change `word1[i-1]` to `word2[j-1]`. Now they match. Cost = `1 + dp[i-1][j-1]`.
+     - **Delete**: Remove `word1[i-1]`. We still need to match the remaining `word1` prefix with the current `word2` prefix. Cost = `1 + dp[i-1][j]`.
+     - **Insert**: Insert `word2[j-1]` at the end of `word1`. Now the ends match. We still need to match the current `word1` prefix with the remaining `word2` prefix. Cost = `1 + dp[i][j-1]`.
 
-3. **Why Base Cases Matter**: `dp[i][0]` represents converting a string of length $i$ to an empty string. The *only* way to do this is to delete all $i$ characters. Thus, `dp[i][0] = i`. Similarly, converting an empty string to a string of length $j$ requires inserting all $j$ characters, so `dp[0][j] = j`.
-
-4. **Relationship to LCS**: Edit Distance (delete + insert only) = m + n - 2×LCS. This shows LCS captures the "unchanging core" of both strings.
-
-5. **Mental Model**: Imagine you're an editor with three keys: Delete, Insert, and Replace. You process word1 from left to right, making it match word2. At each position, you choose the key that minimizes total presses.
-
-## Interview Context
-
-Edit Distance (Levenshtein Distance) is essential because:
-
-1. **Classic string DP**: Foundation for many problems
-2. **Real applications**: Spell checkers, DNA alignment, diff tools
-3. **Three operations**: Insert, delete, replace
-4. **Interview favorite**: Meta, Google, Microsoft
-
----
-
-## When NOT to Use Edit Distance
-
-1. **Fuzzy Matching at Scale**: For searching millions of strings, Edit Distance is O(m×n) per comparison. Use BK-trees, Levenshtein automata, or embedding-based similarity instead.
-   *Counter-example:* "Find closest spelling correction from dictionary of 100,000 words." Standard $O(M \times N)$ DP for each word is too slow; Trie + Levenshtein automaton is strictly better.
-
-2. **Operations Have Different Costs**: Standard Edit Distance assumes cost=1 for all operations. If insert costs differ from delete (e.g., keyboard distance), modify the DP accordingly.
-   *Counter-example:* "Minimum ASCII Delete Sum for Two Strings." Replacing a character is not a standard operation, and the cost of deletion varies based on ASCII value. Modify the state transition to add ASCII values instead of just `+1`.
-
-3. **Block Operations Allowed**: If you can move/copy entire substrings (like text editors), Edit Distance doesn't model this. Use sequence alignment or diff algorithms.
-
-4. **Only Need Approximate Answer**: For "is edit distance ≤ k" queries, you can prune the DP to only compute a diagonal band of width 2k+1, giving O(n×k) instead of O(m×n).
-   *Counter-example:* "Are these two strings one edit apart?" Using full $O(M \times N)$ DP is overkill. Just use two pointers in $O(N)$ time.
-
-5. **Strings Are Similar (Low Distance Expected)**: When k is known to be small, use Ukkonen's algorithm or the band optimization for O(n×k) time.
-
-**Recognize Edit Distance Pattern When:**
-
-- Transform one string to another
-- Operations: insert, delete, replace (with costs)
-- Need minimum operations or similarity measure
-
----
+3. **Base Cases (Empty Strings)**
+   Converting an empty string to a string of length $j$ requires exactly $j$ insertions. Converting a string of length $i$ to an empty string requires exactly $i$ deletions.
 
 ## Problem Statement
 
-Find minimum operations to convert word1 to word2.
-Operations: insert, delete, or replace a character.
+Find the minimum operations to convert `word1` to `word2`.
+Operations allowed: insert, delete, or replace a character.
 
-```
+```text
 Input: word1 = "horse", word2 = "ros"
 Output: 3
 Explanation:
@@ -77,47 +43,44 @@ rose → ros (remove 'e')
 
 ## Formal Recurrence Relation
 
-Let $dp[i][j]$ be the minimum number of operations required to convert the prefix `word1[0...i-1]` to the prefix `word2[0...j-1]`.
+Let $dp[i][j]$ be the minimum number of operations to convert `word1[0...i-1]` to `word2[0...j-1]`.
 
 **Base Cases:**
-$dp[i][0] = i$ for all $i \in [0, m]$ (deleting $i$ characters to reach an empty string)
-$dp[0][j] = j$ for all $j \in [0, n]$ (inserting $j$ characters to reach a string of length $j$)
+$dp[i][0] = i$ for all $i \in [0, m]$ (deleting $i$ characters)
+$dp[0][j] = j$ for all $j \in [0, n]$ (inserting $j$ characters)
 
 **Recursive Step:**
-If characters match (`word1[i-1] == word2[j-1]`):
+If `word1[i-1] == word2[j-1]`:
 $$dp[i][j] = dp[i-1][j-1]$$
-*(No operation needed, carry over the cost from the prefixes before these characters)*
 
-If characters DO NOT match:
+If `word1[i-1] \neq word2[j-1]`:
 $$dp[i][j] = 1 + \min(dp[i-1][j], \quad dp[i][j-1], \quad dp[i-1][j-1])$$
-- $dp[i-1][j]$ represents **Deleting** `word1[i-1]`
-- $dp[i][j-1]$ represents **Inserting** `word2[j-1]` into `word1`
-- $dp[i-1][j-1]$ represents **Replacing** `word1[i-1]` with `word2[j-1]`
+*(Delete, Insert, Replace respectively)*
 
 **Result:**
-$$dp[m][n]$$ where $m$ and $n$ are the lengths of `word1` and `word2`.
+$$dp[m][n]$$
 
 ---
 
-## Solution
+## Solutions
 
-### Top-Down (Memoization)
+### 1. Top-Down (Memoization)
 
 ```python
 def min_distance_memo(word1: str, word2: str) -> int:
     """
     Top-Down Memoization approach.
 
-    Time: O(m × n)
-    Space: O(m × n) for memo array and recursion stack
+    Time: O(m * n)
+    Space: O(m * n) for memo dictionary and recursion stack
     """
     m, n = len(word1), len(word2)
     memo = {}
 
     def helper(i: int, j: int) -> int:
         # Base cases
-        if i == 0: return j  # Insert all remaining characters of word2
-        if j == 0: return i  # Delete all remaining characters of word1
+        if i == 0: return j  # Insert remaining characters
+        if j == 0: return i  # Delete remaining characters
 
         if (i, j) in memo:
             return memo[(i, j)]
@@ -136,21 +99,24 @@ def min_distance_memo(word1: str, word2: str) -> int:
     return helper(m, n)
 ```
 
-### Bottom-Up 2D DP (Clearer)
+### 2. Bottom-Up 2D DP (Clearer)
 
 ```python
 def min_distance_2d(word1: str, word2: str) -> int:
     """
     2D DP version for clarity.
+
+    Time: O(m * n)
+    Space: O(m * n)
     """
     m, n = len(word1), len(word2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
 
     # Base cases
     for i in range(m + 1):
-        dp[i][0] = i  # Delete all characters
+        dp[i][0] = i
     for j in range(n + 1):
-        dp[0][j] = j  # Insert all characters
+        dp[0][j] = j
 
     for i in range(1, m + 1):
         for j in range(1, n + 1):
@@ -166,9 +132,11 @@ def min_distance_2d(word1: str, word2: str) -> int:
     return dp[m][n]
 ```
 
-### Bottom-Up with Space Optimization
+### 3. Bottom-Up with Space Optimization (Best)
 
-**Space Optimization Logic:** Similar to LCS, calculating $dp[i][j]$ requires only the current row $dp[i][...]$ and the previous row $dp[i-1][...]$. By iterating through the columns and carefully managing a `prev_diagonal` variable (which holds $dp[i-1][j-1]$), we can compute the entire matrix using a single 1D array, reducing space complexity from $O(M \times N)$ to $O(N)$.
+**Optimization Logic:**
+To calculate $dp[i][j]$, we only need values from the current row $dp[i][...]$ and the previous row $dp[i-1][...]$. By maintaining a 1D array and a `prev_diagonal` variable (which holds $dp[i-1][j-1]$), we drop the space complexity to $O(N)$.
+*Bonus:* We can ensure $O(\min(M, N))$ space by swapping `word1` and `word2` so the columns correspond to the shorter string.
 
 ```python
 def min_distance(word1: str, word2: str) -> int:
@@ -176,18 +144,20 @@ def min_distance(word1: str, word2: str) -> int:
     Minimum edit distance (Levenshtein distance).
     Space-optimized bottom-up DP.
 
-    Time: O(m × n)
-    Space: O(n)
+    Time: O(m * n)
+    Space: O(min(m, n))
     """
+    # Swap to ensure word2 is the shorter string for O(min(m, n)) space
+    if len(word1) < len(word2):
+        word1, word2 = word2, word1
+
     m, n = len(word1), len(word2)
 
     # dp_row represents the current row of the DP table
-    # Base case: converting "" to word2[0..j] requires j insertions
     dp_row = list(range(n + 1))
 
     for i in range(1, m + 1):
-        # prev_diagonal represents dp[i-1][j-1].
-        # Before we process column 1, dp[i-1][0] is just `dp_row[0]`.
+        # prev_diagonal represents dp[i-1][j-1]
         prev_diagonal = dp_row[0]
 
         # Base case for the new row: converting word1[0..i] to "" requires i deletions
@@ -234,114 +204,59 @@ Operations (backtrack from `dp[5][3]`):
 - `dp[2][2] = 1`: 'o' = 'o' → came from `dp[1][1]` (match)
 - `dp[1][1] = 1`: 'h' ≠ 'r' → came from `dp[0][0]` (replace 'h' → 'r')
 
-Answer: 3
+---
+
+## When NOT to Use Edit Distance
+
+Recognizing when standard Edit Distance is the *wrong* tool is a crucial senior engineer signal.
+
+1. **Fuzzy Matching at Scale**: For searching millions of strings, $O(M \times N)$ per comparison is too slow.
+   *Use Instead:* BK-trees, Levenshtein automata, or embedding-based vector search.
+2. **Operations Have Variable Costs**: Standard Edit Distance assumes `cost=1` for all operations. If insert costs differ from delete (e.g., keyboard distance), modify the state transition to add custom values instead of just `+1`.
+3. **Block Operations Allowed**: If you can move/copy entire substrings (like a text editor), standard DP won't model this.
+   *Use Instead:* Sequence alignment algorithms or diff algorithms (like Myers' diff algorithm).
+4. **Only Need Approximate Answer**: For "is edit distance ≤ k" queries, you can prune the DP to compute only a diagonal band of width $2k+1$, dropping complexity to $O(N \times K)$.
+   *Counter-example:* "Are these two strings one edit apart?" Just use a two-pointer approach in $O(N)$ time.
 
 ---
 
-## Understanding the Operations
+## Variants
 
-```
-dp[i-1][j] + 1:   Delete from word1
-                  "abc" → "ab" then convert to target
-
-dp[i][j-1] + 1:   Insert into word1
-                  "ab" → "abc" by inserting, matching target
-
-dp[i-1][j-1] + 1: Replace in word1
-                  "abc" → "adc" by replacing 'b' with 'd'
-```
-
----
-
-## Reconstructing the Edits
-
-```python
-def edit_distance_with_ops(word1: str, word2: str) -> tuple[int, list]:
-    """
-    Return min distance and list of operations.
-    """
-    m, n = len(word1), len(word2)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-
-    for i in range(m + 1):
-        dp[i][0] = i
-    for j in range(n + 1):
-        dp[0][j] = j
-
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            if word1[i - 1] == word2[j - 1]:
-                dp[i][j] = dp[i - 1][j - 1]
-            else:
-                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
-
-    # Backtrack to find operations
-    ops = []
-    i, j = m, n
-
-    while i > 0 or j > 0:
-        if i > 0 and j > 0 and word1[i - 1] == word2[j - 1]:
-            i -= 1
-            j -= 1
-        elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
-            ops.append(f"Replace '{word1[i-1]}' with '{word2[j-1]}' at {i-1}")
-            i -= 1
-            j -= 1
-        elif i > 0 and dp[i][j] == dp[i - 1][j] + 1:
-            ops.append(f"Delete '{word1[i-1]}' at {i-1}")
-            i -= 1
-        else:
-            ops.append(f"Insert '{word2[j-1]}' at {i}")
-            j -= 1
-
-    return dp[m][n], ops[::-1]
-```
-
----
-
-## Variant: One Edit Distance
+### 1. One Edit Distance
+Check if two strings are exactly one edit apart. Overkill to use full DP; use two pointers instead.
 
 ```python
 def is_one_edit_distance(s: str, t: str) -> bool:
     """
-    Check if strings are exactly one edit apart.
-
-    Time: O(n)
-    Space: O(1)
+    Time: O(n), Space: O(1)
     """
     m, n = len(s), len(t)
-
     if abs(m - n) > 1:
         return False
 
-    if m > n:
+    if m > n:  # Ensure s is the shorter string
         s, t = t, s
         m, n = n, m
 
-    # Now m <= n
     for i in range(m):
         if s[i] != t[i]:
             if m == n:
-                return s[i + 1:] == t[i + 1:]  # Replace
+                return s[i + 1:] == t[i + 1:]  # Replace case
             else:
-                return s[i:] == t[i + 1:]  # Insert/Delete
+                return s[i:] == t[i + 1:]      # Insert case (into shorter string)
 
-    return m + 1 == n  # Only valid if t is one longer
+    return m + 1 == n  # True if exactly one char appended
 ```
 
----
-
-## Variant: Delete Operations Only
+### 2. Delete Operations Only
+Find minimum deletions (from both strings) to make them equal.
+*Insight*: The characters that *aren't* deleted form the Longest Common Subsequence (LCS).
+Answer = Length(word1) + Length(word2) - 2 * Length(LCS).
 
 ```python
 def min_delete_distance(word1: str, word2: str) -> int:
     """
-    Minimum deletions (from both) to make strings equal.
-
-    Answer = m + n - 2 * LCS
-
-    Time: O(m × n)
-    Space: O(n)
+    Time: O(m * n), Space: O(n)
     """
     m, n = len(word1), len(word2)
     dp = [0] * (n + 1)
@@ -360,18 +275,40 @@ def min_delete_distance(word1: str, word2: str) -> int:
     return m + n - 2 * lcs
 ```
 
----
+### 3. Reconstructing the Edits
+We can backtrack through our DP table to find the actual list of operations.
 
-## Variant: Different Operation Costs
+```python
+def get_edit_operations(word1: str, word2: str) -> list[str]:
+    # ... (Assume dp table is built using 2D DP) ...
+    ops = []
+    i, j = m, n
+
+    while i > 0 or j > 0:
+        if i > 0 and j > 0 and word1[i - 1] == word2[j - 1]:
+            i -= 1; j -= 1
+        elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
+            ops.append(f"Replace '{word1[i-1]}' with '{word2[j-1]}' (at pos {i-1})")
+            i -= 1; j -= 1
+        elif i > 0 and dp[i][j] == dp[i - 1][j] + 1:
+            ops.append(f"Delete '{word1[i-1]}' (at pos {i-1})")
+            i -= 1
+        else:
+            ops.append(f"Insert '{word2[j-1]}' (after pos {i-1})")
+            j -= 1
+
+    return ops[::-1]
+```
+*(Note: Position indices reflect original `word1` string before applying any mutations)*
+
+### 4. Different Operation Costs
+Sometimes, insert, delete, and replace operations have different associated costs.
 
 ```python
 def weighted_edit_distance(word1: str, word2: str,
-                            insert_cost: int = 1,
-                            delete_cost: int = 1,
-                            replace_cost: int = 1) -> int:
-    """
-    Edit distance with custom operation costs.
-    """
+                           insert_cost: int = 1,
+                           delete_cost: int = 1,
+                           replace_cost: int = 1) -> int:
     m, n = len(word1), len(word2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
 
@@ -396,109 +333,41 @@ def weighted_edit_distance(word1: str, word2: str,
 
 ---
 
-## Edge Cases
+## Complexity Profile
 
-```python
-# 1. Empty strings
-word1 = "", word2 = "abc"
-# Distance = 3 (insert a, b, c)
+| Approach | Time | Space | Notes |
+| :--- | :--- | :--- | :--- |
+| **Top-Down Memoization** | $O(M \times N)$ | $O(M \times N)$ | High recursion overhead |
+| **Bottom-Up 2D DP** | $O(M \times N)$ | $O(M \times N)$ | Best for visualization/backtracking |
+| **Bottom-Up 1D DP** | $O(M \times N)$ | $O(\min(M, N))$ | **Optimal.** Swap strings to minimize space |
 
-# 2. Same strings
-word1 = "abc", word2 = "abc"
-# Distance = 0
+---
 
-# 3. Completely different
-word1 = "abc", word2 = "xyz"
-# Distance = 3 (replace all)
-
-# 4. One character
-word1 = "a", word2 = "b"
-# Distance = 1 (replace)
-
-# 5. Anagrams
-word1 = "abc", word2 = "cab"
-# Distance = 2 (various ways)
-```
+## Edge Cases to Consider
+When solving sequence alignment problems, immediately test your logic against these core edge cases:
+- **Empty strings**: `word1 = "", word2 = "abc"` → Distance 3 (Insert all).
+- **Identical strings**: `word1 = "abc", word2 = "abc"` → Distance 0.
+- **Completely distinct**: `word1 = "abc", word2 = "xyz"` → Distance 3 (Replace all).
+- **Single character mismatch**: `word1 = "a", word2 = "b"` → Distance 1 (Replace).
+- **Anagrams**: `word1 = "abc", word2 = "cab"` → Distance 2 (Delete and Insert).
 
 ---
 
 ## Common Mistakes
 
-```python
-# WRONG: Forgetting base cases
-dp = [[0] * (n + 1) for _ in range(m + 1)]
-# dp[i][0] and dp[0][j] are 0, but should be i and j!
-
-# CORRECT:
-for i in range(m + 1):
-    dp[i][0] = i
-for j in range(n + 1):
-    dp[0][j] = j
-
-
-# WRONG: Wrong min calculation
-dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])  # Missing +1
-
-# CORRECT:
-dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
-```
-
----
-
-## Relationship with LCS
-
-```
-Edit Distance with only insert/delete = m + n - 2 * LCS
-
-Example: "abc" → "ace"
-m = 3, n = 3, LCS = 2 (ac)
-Delete distance = 3 + 3 - 2*2 = 2
-```
-
----
-
-## Complexity
-
-| Variant               | Time  | Space |
-| --------------------- | ----- | ----- |
-| Standard              | O(mn) | O(n)  |
-| With reconstruction   | O(mn) | O(mn) |
-| One edit check        | O(n)  | O(1)  |
-| Delete only (via LCS) | O(mn) | O(n)  |
+1. **Forgetting Base Cases**:
+   Initializing the matrix with all `0`s instead of $i$ and $j$ for the first row and column. `dp[i][0]` must be $i$, because converting a string of length $i$ to an empty string takes $i$ deletions.
+2. **Missing `+1` in Transition**:
+   `dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])` is wrong. You are performing an operation, so it costs `1 + min(...)`.
+3. **Array Out of Bounds**:
+   When indexing `word1[i-1]` and `word2[j-1]`, ensure $i$ and $j$ loop from $1$ to $m$ and $n$ respectively.
 
 ---
 
 ## Interview Tips
-
-1. **Draw the DP table**: Helps visualization
-2. **Explain operations**: Insert, delete, replace
-3. **Know relationship with LCS**: Shows deeper understanding
-4. **Handle edge cases**: Empty strings
-5. **Space optimize**: Mention 1D array approach
-
----
-
-## Practice Problems
-
-| #   | Problem               | Difficulty | Variant          |
-| --- | --------------------- | ---------- | ---------------- |
-| 1   | Edit Distance         | Medium     | Classic          |
-| 2   | One Edit Distance     | Medium     | Boolean check    |
-| 3   | Delete Operations     | Medium     | LCS-based        |
-| 4   | Min ASCII Delete Sum  | Medium     | Weighted delete  |
-| 5   | Distinct Subsequences | Hard       | Count variations |
-
----
-
-## Key Takeaways
-
-1. **Three operations**: Insert, delete, replace (each cost 1)
-2. **Base cases matter**: Converting to/from empty string
-3. **Match = no cost**: Take diagonal value
-4. **No match = min + 1**: Choose best operation
-5. **Space optimizable**: Only need previous row
-
----
+- Always point out the space optimization ($O(M \times N) \rightarrow O(\min(M, N))$). Showing that you know to swap the variables so the inner loop runs over the shorter string is a massive "hire" signal.
+- Know the relationship between Edit Distance and Longest Common Subsequence (LCS).
+- Understand why dynamic programming is superior to pure recursion ($O(3^{\max(m, n)})$ bounds without memoization).
 
 ## Next: [10-knapsack-01.md](./10-knapsack-01.md)
 

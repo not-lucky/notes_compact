@@ -1,113 +1,122 @@
 # Coin Change
 
-> **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
+> **Prerequisites:** [1D DP Basics](./03-1d-dp-basics.md)
 
 ## Overview
 
-Coin Change is the canonical unbounded knapsack problem where you find the minimum/count of ways to reach a target amount using unlimited coins of given denominations.
+Coin Change is the canonical **unbounded knapsack** problem. In this pattern, you need to find either the **minimum number of coins** or the **total number of combinations** to reach a target amount using an unlimited supply of given coin denominations.
 
 ## Building Intuition
 
 **Why does Coin Change work with DP?**
 
-1. **Optimal Substructure**: If the optimal way to make amount 11 uses a coin of value 5, then the remaining 6 must also be made optimally. Using a suboptimal solution for 6 would make the overall solution suboptimal.
+1. **Optimal Substructure**: If the optimal way to make an amount of `11` uses a coin of value `5`, then the remaining amount `6` must also be made optimally. Using a suboptimal solution for `6` would make the overall solution for `11` suboptimal.
+2. **Overlapping Subproblems**: To make `11`, we might try subtracting a `1` or a `5`. The subproblem for `10` (after subtracting `1`) will eventually need to evaluate the amount `5`, and the subproblem for `6` (after subtracting `5`) will also need to evaluate `5`. We repeatedly solve for the same remaining amounts.
+3. **The Unbounded Nature**: Unlike the standard 0/1 Knapsack problem where items can only be used once, Coin Change allows using the same coin multiple times. This changes the traversal direction: we iterate forward through the amounts so that updated values can immediately be reused.
+4. **Mental Model**: Think of building a staircase. To reach step `N`, you can hop from any step that is exactly one coin-value behind. The minimum hops to reach `N` is `1 + minimum hops to the best valid previous step`.
 
-2. **Overlapping Subproblems**: To make 11, we try subtracting each coin denomination. If coins = [1, 5], we need solutions for 10 and 6. But making 10 also needs 6! Subproblems overlap heavily.
+## Why Greedy Fails
 
-3. **Why Greedy Fails**: Greedy (always use largest coin) fails for coins = [1, 3, 4], amount = 6. Greedy: 4+1+1 = 3 coins. Optimal: 3+3 = 2 coins.
+A greedy approach (always picking the largest possible coin first) does not always yield the minimum number of coins for arbitrary denominations.
 
-4. **The Unbounded Nature**: Unlike 0/1 knapsack, we can use each coin infinitely. This changes the iteration direction: we iterate forward through amounts so updated values can be reused (allowing multiple uses of same coin).
+```text
+coins = [1, 3, 4], amount = 6
 
-5. **Mental Model**: Think of building a staircase. To reach step N, you can hop from any step that's exactly one coin-value behind. The minimum hops to N is 1 + minimum hops to the best previous step.
+Greedy approach:
+- Pick 4 (remaining: 2)
+- Pick 1 (remaining: 1)
+- Pick 1 (remaining: 0)
+Total coins: 3 (4 + 1 + 1)
 
-6. **Counting vs Minimizing**: For counting ways, we add possibilities (dp[amount] += dp[amount - coin]). For minimizing coins, we take min (dp[amount] = min(dp[amount], dp[amount - coin] + 1)).
+Optimal DP approach:
+- Pick 3 (remaining: 3)
+- Pick 3 (remaining: 0)
+Total coins: 2 (3 + 3)
+```
 
-## Interview Context
-
-Coin Change is a must-know problem because:
-
-1. **Classic unbounded knapsack**: Unlimited use of each item
-2. **Two variants**: Min coins (optimization) and count ways (counting)
-3. **Foundation for harder problems**: Knapsack, subset sum
-4. **Interview staple**: Amazon, Google, Meta favorites
-
----
-
-## When NOT to Use Coin Change Pattern
-
-1. **Limited Coin Usage**: If each coin can only be used once, this is 0/1 Knapsack, not Coin Change. Use backward iteration instead of forward.
-
-2. **Greedy Works for Canonical Systems**: For "canonical" coin systems (like US currency: 1, 5, 10, 25), greedy actually works. Only use DP when coins are arbitrary.
-
-3. **Order Matters (Permutations)**: Coin Change counts combinations (1+2 = 2+1). If order matters, you need different loop ordering (amount outer, coins inner).
-
-4. **Very Large Amounts**: For amount = 10^9 with few coins, DP array is too large. Consider matrix exponentiation or formula-based approaches.
-
-5. **Negative Coin Values**: Coin Change assumes positive denominations. Negative values break the subproblem ordering.
-
-**Recognize Coin Change Pattern When:**
-
-- Unlimited use of items
-- Target sum/amount to reach
-- Minimize count OR count combinations
-- All values positive
+**Rule of Thumb:** Greedy works for canonical systems (like standard US currency: 1, 5, 10, 25), but you *must* use DP when coin denominations are arbitrary.
 
 ---
 
-## Problem 1: Minimum Coins
+## When to Use the Coin Change Pattern
 
-Find minimum number of coins to make amount. Return -1 if impossible.
+**Recognize the pattern when:**
+- You have an unlimited use of items (unbounded knapsack).
+- You are trying to reach an exact target sum or amount.
+- You need to minimize a count OR find the number of possible combinations.
+- All values involved are non-negative.
 
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-0 & \text{if } i = 0 \\
-\min_{c \in coins, c \le i} (dp[i - c] + 1) & \text{if } i > 0
-\end{cases}
-$$
+**Do NOT use this pattern when:**
+- Items can only be used once (**0/1 Knapsack**).
+- Finding permutations where order matters, e.g., `{1, 2}` is different from `{2, 1}` (this requires a different loop order).
+- The amount is massive (e.g., $10^9$) and memory is limited. This might require math or matrix exponentiation.
 
-**Base Case Explained:**
-`dp[0] = 0`: It takes exactly 0 coins to make the amount 0. All other amounts are initialized to infinity (`float('inf')`), because initially, we don't know if they can be made at all.
+---
 
-### Bottom-Up Solution
+## Problem 1: Minimum Coins (Coin Change)
+
+Given an array of integer `coins` and a target `amount`, return the fewest number of coins needed to make up that amount. If it cannot be made, return `-1`.
+
+### State and Recurrence
+
+- **State:** `dp[i]` represents the minimum number of coins needed to make the amount `i`.
+- **Recurrence:** `dp[i] = min(dp[i], dp[i - coin] + 1)` for each `coin` in `coins`.
+- **Base Case:** `dp[0] = 0` (It takes 0 coins to make an amount of 0). All other states are initialized to infinity (`inf`), representing unreachable amounts.
+
+### Visual Walkthrough
+
+`coins = [1, 2, 5]`, `amount = 5`
+
+| i (amount) | 0 | 1 | 2 | 3 | 4 | 5 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `dp[i]` | 0 | 1 | 1 | 2 | 2 | 1 |
+
+*Explanation for `dp[5]`*:
+- From coin `1`: `dp[5 - 1] + 1` = `dp[4] + 1` = $2 + 1 = 3$
+- From coin `2`: `dp[5 - 2] + 1` = `dp[3] + 1` = $2 + 1 = 3$
+- From coin `5`: `dp[5 - 5] + 1` = `dp[0] + 1` = $0 + 1 = 1$
+- `dp[5] = min(3, 3, 1) = 1`
+
+### Bottom-Up DP (Tabulation)
 
 ```python
 def coin_change(coins: list[int], amount: int) -> int:
     """
     Minimum coins to make amount.
 
-    State: dp[i] = min coins to make amount i
-    Recurrence: dp[i] = min(dp[i - coin] + 1) for each coin
-
-    Time: O(amount × len(coins))
+    Time: O(amount * len(coins))
     Space: O(amount)
     """
+    # Initialize DP array with infinity
     dp = [float('inf')] * (amount + 1)
-    dp[0] = 0  # 0 coins for amount 0
+    dp[0] = 0  # Base case: 0 coins needed to make amount 0
 
+    # For every amount from 1 to target
     for i in range(1, amount + 1):
         for coin in coins:
-            if coin <= i and dp[i - coin] != float('inf'):
+            # If the coin can be used for this amount
+            if coin <= i:
                 dp[i] = min(dp[i], dp[i - coin] + 1)
 
     return dp[amount] if dp[amount] != float('inf') else -1
 ```
 
-### Top-Down Solution
+### Top-Down DP (Memoization)
 
 ```python
 def coin_change_memo(coins: list[int], amount: int) -> int:
     """
-    Memoized recursive solution.
+    Memoized recursive solution for min coins.
     """
-    from functools import lru_cache
+    memo = {}
 
-    @lru_cache(maxsize=None)
     def dp(remaining: int) -> int:
         if remaining == 0:
             return 0
         if remaining < 0:
             return float('inf')
+        if remaining in memo:
+            return memo[remaining]
 
         min_coins = float('inf')
         for coin in coins:
@@ -115,47 +124,68 @@ def coin_change_memo(coins: list[int], amount: int) -> int:
             if result != float('inf'):
                 min_coins = min(min_coins, result + 1)
 
+        memo[remaining] = min_coins
         return min_coins
 
-    result = dp(amount)
-    return result if result != float('inf') else -1
+    ans = dp(amount)
+    return ans if ans != float('inf') else -1
 ```
 
-### Visual Walkthrough
+### BFS Approach (Shortest Path)
 
-**Coin Change DP Table:**
-`coins = [1, 2, 5]`, `amount = 5`
+Finding the minimum number of coins is equivalent to finding the shortest path in an unweighted graph, making Breadth-First Search (BFS) a highly effective approach.
 
-| i | 0 | 1 | 2 | 3 | 4 | 5 |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `dp[i]` | 0 | 1 | 1 | 2 | 2 | 1 |
+```python
+from collections import deque
 
-*Explanation for `dp[5]`*:
-- From coin `1`: `dp[5-1] + 1` = `dp[4] + 1` = `2 + 1 = 3`
-- From coin `2`: `dp[5-2] + 1` = `dp[3] + 1` = `2 + 1 = 3`
-- From coin `5`: `dp[5-5] + 1` = `dp[0] + 1` = `0 + 1 = 1`
-- `dp[5] = \min(3, 3, 1) = 1`
+def coin_change_bfs(coins: list[int], amount: int) -> int:
+    """
+    BFS approach - finds minimum coins naturally level-by-level.
+    """
+    if amount == 0:
+        return 0
+
+    queue = deque([(0, 0)])  # (current_amount, num_coins_used)
+    visited = {0}            # Keep track of visited amounts to avoid cycles
+
+    while queue:
+        curr_amt, num_coins = queue.popleft()
+
+        for coin in coins:
+            next_amt = curr_amt + coin
+
+            if next_amt == amount:
+                return num_coins + 1
+
+            # Only add to queue if we haven't seen this exact sum before
+            # and it doesn't exceed the target amount
+            if next_amt < amount and next_amt not in visited:
+                visited.add(next_amt)
+                queue.append((next_amt, num_coins + 1))
+
+    return -1
+```
 
 ---
 
 ## Problem 2: Number of Ways (Coin Change II)
 
-Count number of ways to make amount using coins.
+Given `coins` and an `amount`, return the **number of combinations** that make up that amount.
 
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-1 & \text{if } i = 0 \\
-\sum_{c \in coins, c \le i} dp[i - c] & \text{if } i > 0
-\end{cases}
-$$
+### State and Recurrence
 
-**Base Case Explained:**
-`dp[0] = 1`: There is exactly 1 way to make the amount 0 (by using no coins). This is the foundation of the counting DP; if this was 0, multiplying/adding from it would yield 0 for all states. All other states are initialized to 0.
+- **State:** `dp[i]` represents the number of ways to make the amount `i`.
+- **Recurrence:** `dp[i] = dp[i] + dp[i - coin]` for each `coin`.
+- **Base Case:** `dp[0] = 1`. There is exactly 1 way to make the amount 0 (by selecting no coins). If initialized to 0, all subsequent additions would remain 0.
+
+### Loop Ordering Is Critical
+
+To count **combinations** (where `{1, 2}` and `{2, 1}` are considered the same), you must iterate through the `coins` in the outer loop and the `amounts` in the inner loop.
+
+This ensures a coin is fully processed across all amounts before the next coin is considered, preventing the same set of coins from being counted in different orders.
 
 ### Visual Walkthrough
 
-**Coin Change II DP Table:**
 `coins = [1, 2]`, `amount = 3`
 
 | i (amount) | 0 | 1 | 2 | 3 |
@@ -165,119 +195,53 @@ $$
 | After coin `2` | 1 | 1 | 2 | 2 |
 
 *Explanation*:
-- Initial: `dp[0] = 1` (1 way to make 0), rest are 0.
-- Coin `1`: Updates `dp[1]`, `dp[2]`, `dp[3]`. `dp[i] += dp[i-1]`.
-  - `dp[1] += dp[0]` → 1
-  - `dp[2] += dp[1]` → 1
-  - `dp[3] += dp[2]` → 1
-- Coin `2`: Updates `dp[2]`, `dp[3]`. `dp[i] += dp[i-2]`.
-  - `dp[2] += dp[0]` → `1 + 1 = 2` ways (`{1,1}`, `{2}`)
-  - `dp[3] += dp[1]` → `1 + 1 = 2` ways (`{1,1,1}`, `{1,2}`)
+- **Initial:** `dp[0] = 1`, all others 0.
+- **Coin `1` pass:**
+  - `dp[1] += dp[0]` $\rightarrow 1$
+  - `dp[2] += dp[1]` $\rightarrow 1$
+  - `dp[3] += dp[2]` $\rightarrow 1$
+  *(At this point, ways to make 3: `{1, 1, 1}`)*
+- **Coin `2` pass:**
+  - `dp[2] += dp[0]` $\rightarrow 1 + 1 = 2$ ways (`{1,1}`, `{2}`)
+  - `dp[3] += dp[1]` $\rightarrow 1 + 1 = 2$ ways (`{1,1,1}`, `{1,2}`)
 
-### Bottom-Up Solution (Combinations)
-
-**Forward Iteration vs Backward Iteration**
-In unbounded knapsack problems like Coin Change, we can reuse the same coin multiple times. To achieve this, we iterate **forward** through the amounts (`for i in range(coin, amount + 1)`). When computing `dp[i]`, we rely on `dp[i - coin]`, which may have *already* been updated using the same coin in the current iteration. This allows the coin to be used multiple times.
-
-In contrast, 0/1 Knapsack uses **backward** iteration (`for i in range(amount, coin - 1, -1)`) to ensure each item is only used once, because `dp[i]` then relies on the *un-updated* previous state of the array from the previous item's iteration.
+### Bottom-Up DP (Combinations)
 
 ```python
 def change(amount: int, coins: list[int]) -> int:
     """
     Count combinations (order doesn't matter).
+    Key: Coins outer loop, amounts inner loop.
 
-    Key: Iterate coins in outer loop to avoid duplicates.
-
-    Time: O(amount × len(coins))
+    Time: O(amount * len(coins))
     Space: O(amount)
     """
     dp = [0] * (amount + 1)
-    dp[0] = 1  # One way to make 0
+    dp[0] = 1  # 1 way to make amount 0
 
-    # Process each coin completely before next
+    # Process one coin entirely before moving to the next
     for coin in coins:
+        # We start checking from `coin` because any amount less than `coin`
+        # obviously can't be made using this coin.
         for i in range(coin, amount + 1):
             dp[i] += dp[i - coin]
 
     return dp[amount]
 ```
 
-### Top-Down Solution (Combinations)
+### Permutations vs. Combinations
 
-```python
-def change_memo(amount: int, coins: list[int]) -> int:
-    """
-    Memoized recursive solution for counting combinations.
-
-    State requires both the current amount and coin index to avoid
-    duplicate combinations (e.g., treating {1,2} and {2,1} as the same).
-
-    Time: O(amount × len(coins))
-    Space: O(amount × len(coins)) for the memoization cache
-    """
-    from functools import lru_cache
-
-    @lru_cache(maxsize=None)
-    def dp(idx: int, remaining: int) -> int:
-        # Base cases
-        if remaining == 0:
-            return 1
-        if remaining < 0 or idx == len(coins):
-            return 0
-
-        # Option 1: Use the current coin (stay at same idx since unbounded)
-        include = dp(idx, remaining - coins[idx])
-
-        # Option 2: Skip the current coin, move to next
-        skip = dp(idx + 1, remaining)
-
-        return include + skip
-
-    return dp(0, amount)
-```
-
-### Why Outer Coin Loop?
-
-```
-coins = [1, 2], amount = 3
-
-CORRECT (coins outer - combinations):
-After coin 1: dp = [1, 1, 1, 1]  (ways: empty, 1, 1+1, 1+1+1)
-After coin 2: dp = [1, 1, 2, 2]  (add: 2, 2+1)
-Combinations: {1+1+1}, {1+2} = 2 ways
-
-WRONG (amount outer - permutations):
-dp[1] = 1 (just 1)
-dp[2] = 2 (1+1, 2)
-dp[3] = 3 (1+1+1, 1+2, 2+1)  ← Counts 1+2 and 2+1 separately!
-```
-
-### Order Matters (Permutations)
-
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-1 & \text{if } i = 0 \\
-\sum_{c \in coins, c \le i} dp[i - c] & \text{if } i > 0
-\end{cases}
-$$
-
-*(Note: The recurrence looks mathematically identical to combinations, but the state evaluation order changes the result. Here we build the sum by iterating $i$ first, treating $1+2$ and $2+1$ as distinct paths to reach $i$.)*
+What happens if you swap the loop order? You calculate **permutations**, where order matters. `{1, 2}` and `{2, 1}` are counted as distinct paths.
 
 ```python
 def num_ways_permutations(amount: int, coins: list[int]) -> int:
     """
     Count permutations (order matters).
-
-    Key: Iterate amount in outer loop.
-
-    Time: O(amount × len(coins))
-    Space: O(amount)
+    Key: Amount outer loop, coins inner loop.
     """
     dp = [0] * (amount + 1)
     dp[0] = 1
 
-    # Process each amount, try all coins
     for i in range(1, amount + 1):
         for coin in coins:
             if coin <= i:
@@ -286,72 +250,57 @@ def num_ways_permutations(amount: int, coins: list[int]) -> int:
     return dp[amount]
 ```
 
----
-
-## Comparison: Combinations vs Permutations
-
-| Aspect          | Combinations   | Permutations            |
-| --------------- | -------------- | ----------------------- |
-| Loop order      | Coins outer    | Amount outer            |
-| {1,2} and {2,1} | Same           | Different               |
-| Use case        | Coin Change II | Climbing Stairs variant |
+| Aspect | Combinations (Coin Change II) | Permutations (Combination Sum IV) |
+| :--- | :--- | :--- |
+| **Loop Order** | `coins` outer, `amount` inner | `amount` outer, `coins` inner |
+| **Duplicates** | `{1, 2}` same as `{2, 1}` | `{1, 2}` and `{2, 1}` are distinct |
 
 ---
 
-## Variation: Fewest Coins with Path
+## Restoring the Path (Finding Which Coins Were Used)
 
-By storing the last coin added in `parent[i]`, we can reconstruct the optimal path backwards from `amount` down to `0`.
+Often, finding the minimum coins isn't enough; you also need to know *which* coins were used. We can achieve this by storing a `parent` or `last_coin` array.
 
 ```python
-def coin_change_with_path(coins: list[int], amount: int) -> tuple:
+def coin_change_with_path(coins: list[int], amount: int) -> tuple[int, list[int]]:
     """
-    Return (min_coins, coins_used).
+    Return (min_coins, list_of_coins_used).
     """
     dp = [float('inf')] * (amount + 1)
-    parent = [-1] * (amount + 1)
+    last_coin = [-1] * (amount + 1)
     dp[0] = 0
 
     for i in range(1, amount + 1):
         for coin in coins:
             if coin <= i and dp[i - coin] + 1 < dp[i]:
                 dp[i] = dp[i - coin] + 1
-                parent[i] = coin
+                last_coin[i] = coin  # Track which coin got us here optimally
 
     if dp[amount] == float('inf'):
         return -1, []
 
-    # Reconstruct path
+    # Reconstruct path backwards from amount to 0
     coins_used = []
     curr = amount
     while curr > 0:
-        coins_used.append(parent[curr])
-        curr -= parent[curr]
+        used = last_coin[curr]
+        coins_used.append(used)
+        curr -= used
 
     return dp[amount], coins_used
 ```
 
 ---
 
-## Related: Perfect Squares
+## Related Problems
 
-Minimum perfect squares that sum to n.
+### Perfect Squares
 
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-0 & \text{if } i = 0 \\
-\min_{1 \le j^2 \le i} (dp[i - j^2] + 1) & \text{if } i > 0
-\end{cases}
-$$
+Find the minimum number of perfect square numbers (`1, 4, 9, 16, ...`) that sum to `n`.
+*This is exactly Coin Change where the "coins" are dynamically generated perfect squares up to `n`.*
 
 ```python
 def num_squares(n: int) -> int:
-    """
-    Same as coin change with coins = [1, 4, 9, 16, ...].
-
-    Time: O(n√n)
-    Space: O(n)
-    """
     dp = [float('inf')] * (n + 1)
     dp[0] = 0
 
@@ -366,191 +315,61 @@ def num_squares(n: int) -> int:
 
 ---
 
-## Related: Combination Sum IV
+## Common Pitfalls and Edge Cases
 
-Count permutations of nums that sum to target.
-
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-1 & \text{if } i = 0 \\
-\sum_{num \in nums, num \le i} dp[i - num] & \text{if } i > 0
-\end{cases}
-$$
-
+### 1. Initializing the DP Array Incorrectly
+For the "Minimum Coins" variation, initializing the DP array with `0` is a fatal mistake because the `min()` function will always prefer `0` over any actual count.
 ```python
-def combination_sum_4(nums: list[int], target: int) -> int:
-    """
-    Count permutations of nums that sum to target.
-
-    Same as coin change permutation version.
-
-    Time: O(target × len(nums))
-    Space: O(target)
-    """
-    dp = [0] * (target + 1)
-    dp[0] = 1
-
-    for i in range(1, target + 1):
-        for num in nums:
-            if num <= i:
-                dp[i] += dp[i - num]
-
-    return dp[target]
-```
-
----
-
-## BFS Alternative for Min Coins
-
-```python
-from collections import deque
-
-def coin_change_bfs(coins: list[int], amount: int) -> int:
-    """
-    BFS approach - finds minimum naturally.
-
-    Time: O(amount × len(coins))
-    Space: O(amount)
-    """
-    if amount == 0:
-        return 0
-
-    visited = set([0])
-    queue = deque([(0, 0)])  # (current_sum, num_coins)
-
-    while queue:
-        curr_sum, num_coins = queue.popleft()
-
-        for coin in coins:
-            next_sum = curr_sum + coin
-
-            if next_sum == amount:
-                return num_coins + 1
-
-            if next_sum < amount and next_sum not in visited:
-                visited.add(next_sum)
-                queue.append((next_sum, num_coins + 1))
-
-    return -1
-```
-
----
-
-## Edge Cases
-
-```python
-# 1. Amount is 0
-amount = 0
-# Return 0 (no coins needed)
-
-# 2. Impossible amount
-coins = [2], amount = 3
-# Return -1
-
-# 3. Single coin equals amount
-coins = [5], amount = 5
-# Return 1
-
-# 4. Large amount, small coins
-coins = [1], amount = 1000
-# Return 1000
-
-# 5. No coins
-coins = [], amount = 5
-# Return -1
-```
-
----
-
-## Common Mistakes
-
-```python
-# WRONG: Using 0 as impossible marker
+# WRONG
 dp = [0] * (amount + 1)
-dp[0] = 0
-for coin in coins:
-    if dp[i - coin] != 0:  # Wrong! 0 is valid for amount 0
 
-# CORRECT: Use infinity
+# CORRECT
 dp = [float('inf')] * (amount + 1)
 dp[0] = 0
-
-
-# WRONG: Combinations vs permutations confusion
-# This counts permutations, not combinations!
-for i in range(amount + 1):
-    for coin in coins:
-        dp[i] += dp[i - coin]
-
-
-# WRONG: Not checking coin <= i
-for coin in coins:
-    dp[i] = min(dp[i], dp[i - coin] + 1)  # IndexError when coin > i
-
-# CORRECT:
-for coin in coins:
-    if coin <= i:
-        dp[i] = min(dp[i], dp[i - coin] + 1)
 ```
 
----
-
-## Greedy Doesn't Work
-
-```
-coins = [1, 3, 4], amount = 6
-
-Greedy: 4 + 1 + 1 = 3 coins
-Optimal: 3 + 3 = 2 coins
-
-Greedy fails because larger coin isn't always better!
-```
+### 2. Edge Cases to Handle
+- **`amount == 0`**: Should return `0` (or `1` for combinations). DP arrays automatically handle this via the base case.
+- **Impossible amounts**: Be sure to return `-1` or `0` depending on the problem constraints when the final DP state is unreachable.
+- **Large amount, tiny coins**: Be aware of potential Time Limit Exceeded (TLE) if `amount` is huge and constraints allow for optimized mathematical approaches.
 
 ---
 
 ## Complexity Analysis
 
-| Problem         | Time              | Space     |
-| --------------- | ----------------- | --------- |
-| Min coins       | O(amount × coins) | O(amount) |
-| Count ways      | O(amount × coins) | O(amount) |
-| Perfect squares | O(n√n)            | O(n)      |
+| Problem Variant | Time Complexity | Space Complexity |
+| :--- | :--- | :--- |
+| **Minimum Coins (DP)** | $O(A \times C)$ | $O(A)$ |
+| **Minimum Coins (BFS)**| $O(A \times C)$ | $O(A)$ |
+| **Number of Ways** | $O(A \times C)$ | $O(A)$ |
+| **Perfect Squares** | $O(A \sqrt{A})$ | $O(A)$ |
 
----
-
-## Interview Tips
-
-1. **Clarify the variant**: Min coins or count ways?
-2. **Order matters?**: Affects loop structure
-3. **Handle impossible**: Return -1 or 0 appropriately
-4. **Explain greedy failure**: Shows deeper understanding
-5. **Know both approaches**: Top-down and bottom-up
+*Where $A$ is the `amount` and $C$ is the number of `coins`.*
 
 ---
 
 ## Practice Problems
 
-| #   | Problem            | Difficulty | Variant            |
-| --- | ------------------ | ---------- | ------------------ |
-| 1   | Coin Change        | Medium     | Min coins          |
-| 2   | Coin Change II     | Medium     | Count combinations |
-| 3   | Perfect Squares    | Medium     | Special coins      |
-| 4   | Combination Sum IV | Medium     | Count permutations |
-| 5   | Integer Break      | Medium     | Max product        |
+| Problem | Difficulty | Variant | Key Insight |
+| :--- | :--- | :--- | :--- |
+| [Coin Change](https://leetcode.com/problems/coin-change/) | Medium | Min Coins | Use `inf` initialization |
+| [Coin Change II](https://leetcode.com/problems/coin-change-ii/) | Medium | Combinations | Coins in the outer loop |
+| [Combination Sum IV](https://leetcode.com/problems/combination-sum-iv/) | Medium | Permutations | Amount in the outer loop |
+| [Perfect Squares](https://leetcode.com/problems/perfect-squares/) | Medium | Min Coins | "Coins" are perfect squares |
 
 ---
 
 ## Key Takeaways
 
-1. **Unbounded knapsack**: Each coin usable unlimited times
-2. **Combinations vs permutations**: Loop order matters
-3. **Infinity for impossible**: Not 0
-4. **Greedy fails**: Must use DP
-5. **Space O(amount)**: 1D array sufficient
+1. **Unbounded Knapsack:** Items (coins) can be reused infinitely. DP iterates forwards rather than backwards.
+2. **Combinations vs. Permutations:** Loop ordering determines whether you are counting unique combinations of coins or order-dependent permutations.
+3. **Initialization Matters:** Use `infinity` for minimum finding problems and `0` for counting problems.
+4. **Base Cases:** Making an amount of `0` requires `0` coins (Min Coins) and has `1` way to do it (Count Ways).
 
 ---
 
-## Next: [06-longest-increasing-subsequence.md](./06-longest-increasing-subsequence.md)
+## Next Steps
 
-Learn the LIS pattern with O(n log n) optimization.
+Now that you've mastered unbounded knapsack and standard linear sequences, it's time to tackle subsequences.
+
+**Next:** [Longest Increasing Subsequence](./06-longest-increasing-subsequence.md)

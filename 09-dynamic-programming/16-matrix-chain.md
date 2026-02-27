@@ -152,6 +152,8 @@ from functools import lru_cache
 
 def matrix_chain_memo(p: list[int]) -> int:
     n = len(p) - 1
+    if n <= 1:
+        return 0
 
     @lru_cache(maxsize=None)
     def dp(i: int, j: int) -> int:
@@ -206,21 +208,21 @@ def interval_dp_template(arr: list) -> int:
 
 ## Related: Minimum Cost to Merge Stones
 
-This is a classic variation. You must merge `k` consecutive piles into one. The cost of a merge is the sum of the piles being merged.
+This is a classic variation. You must merge `K` consecutive piles into one. The cost of a merge is the sum of the piles being merged.
 
-Note: To merge `stones[i..j]` down to 1 pile, the jump step for `mid` is `k - 1`. This guarantees that the left partition `i..mid` can always be reduced to exactly 1 pile.
+Note: To merge `stones[i..j]` down to 1 pile, the jump step for `mid` is `K - 1`. This guarantees that the left partition `i..mid` can always be reduced to exactly 1 pile.
 
 ```python
-def merge_stones(stones: list[int], k: int) -> int:
+def merge_stones(stones: list[int], K: int) -> int:
     """
-    Merge k consecutive piles into one, minimize total cost.
+    Merge K consecutive piles into one, minimize total cost.
 
-    Time: O(n³ / k)
+    Time: O(n³ / K)
     Space: O(n²)
     """
     n = len(stones)
     # Check if a valid merge to 1 pile is mathematically possible
-    if (n - 1) % (k - 1) != 0:
+    if (n - 1) % (K - 1) != 0:
         return -1
 
     # Prefix sums to quickly get the sum of stones[i..j]
@@ -234,19 +236,19 @@ def merge_stones(stones: list[int], k: int) -> int:
     # dp[i][j] = min cost to merge stones[i..j] as much as mathematically possible
     dp = [[0] * n for _ in range(n)]
 
-    for length in range(k, n + 1):
+    for length in range(K, n + 1):
         for i in range(n - length + 1):
             j = i + length - 1
             dp[i][j] = float('inf')
 
-            # Crucial optimization: step by k-1
+            # Crucial optimization: step by K-1
             # We want to merge i..mid into 1 pile, and mid+1..j into some piles
-            for mid in range(i, j, k - 1):
+            for mid in range(i, j, K - 1):
                 dp[i][j] = min(dp[i][j], dp[i][mid] + dp[mid + 1][j])
 
             # If the entire range i..j can be compressed into exactly 1 pile
-            # We add the cost of combining those final k piles together
-            if (j - i) % (k - 1) == 0:
+            # We add the cost of combining those final K piles together
+            if (j - i) % (K - 1) == 0:
                 dp[i][j] += range_sum(i, j)
 
     return dp[0][n - 1]
@@ -267,6 +269,7 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
     Space: O(n²)
     """
     n = len(keys)
+    if n == 0: return 0
     dp = [[0] * n for _ in range(n)]
 
     # Prefix array for O(1) range frequency sums
@@ -294,7 +297,8 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
                 right_cost = dp[r + 1][j] if r < j else 0
 
                 cost = left_cost + right_cost + freq_sum(i, j)
-                dp[i][j] = min(dp[i][j], cost)
+                if cost < dp[i][j]:
+                    dp[i][j] = cost
 
     return dp[0][n - 1]
 ```

@@ -4,204 +4,77 @@
 
 ## Overview
 
-Burst Balloons is a classic interval DP problem requiring the counterintuitive insight of thinking about the LAST element to process rather than the first.
+Burst Balloons is a classic and notoriously difficult Interval DP problem. It requires a counterintuitive insight: **thinking about the LAST element to process rather than the first**.
 
-## Building Intuition
-
-**Why think backwards (last burst, not first)?**
-
-1. **The Problem with "First Burst"**: If we burst balloon i first, its neighbors change. The next burst depends on the new configuration. Tracking all possible configurations is exponential.
-
-2. **The "Last Burst" Insight**: If balloon k is the LAST to burst in range (i, j), then:
-   - All balloons between i and k are already gone
-   - All balloons between k and j are already gone
-   - k's neighbors at burst time are i and j (fixed!)
-
-   This gives a clean recurrence: dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i]×nums[k]×nums[j])
-
-3. **Virtual Boundaries**: We add 1s at both ends ([1] + nums + [1]). This handles edge balloons gracefully—their "missing" neighbors become 1.
-
-4. **State Definition**: dp[i][j] = max coins from bursting ALL balloons strictly between i and j (i and j are NOT burst). This "exclusive" definition makes the recurrence clean.
-
-5. **Same as Matrix Chain**: The structure is identical! In matrix chain, we pick where to make the "final" multiplication. In balloons, we pick the "last" balloon to burst. The O(n³) pattern is the same.
-
-6. **Mental Model**: Instead of asking "what should I do first?", ask "what's the last thing I'll do?" Work backwards. The last balloon bursted sees a predictable environment.
-
-## Interview Context
-
-Burst Balloons is a FANG+ hard problem because:
-
-1. **Reverse thinking**: Consider last burst, not first
-2. **Interval DP mastery**: Non-obvious state definition
-3. **Tricky boundaries**: Virtual balloons at ends
-4. **Matrix chain connection**: Similar structure
+When dealing with arrays where removing an element changes the adjacency (neighbors) of the remaining elements, standard DP approaches often fail due to chaotic state dependencies. The Burst Balloons pattern solves this by working backwards.
 
 ---
 
-## When NOT to Use Burst Balloons Pattern
+## Building Intuition: Why Think Backwards?
 
-1. **Order Doesn't Affect Outcome**: If the result is the same regardless of burst order (like simple sum), DP is unnecessary.
-   - *Example*: Finding the sum of an array where removing an element doesn't change anything else.
+Imagine we have balloons `[A, B, C, D]`.
 
-2. **No Range Structure**: If removing an element doesn't affect only its range (e.g., global effects), interval DP doesn't apply.
-   - *Example*: A game where bursting a balloon doubles the score of all remaining balloons globally.
+### The Problem with "First Burst" (Forward Thinking)
+If we burst `B` first, its neighbors `A` and `C` are involved in the score. After `B` pops, `A` and `C` become adjacent.
+The new array is `[A, C, D]`.
+If we then burst `C`, its neighbors are now `A` and `D`. The score for bursting `C` depends on the fact that `B` was already burst. This means our subproblems are not independent—they depend on the exact sequence of previous bursts. Tracking all possible remaining configurations requires $O(2^n)$ states.
 
-3. **Forward Thinking Works**: Some problems are naturally solved by considering "first" rather than "last." Only use "last" thinking when "first" creates dependency chaos.
-   - *Example*: Coin Change. Taking a coin first doesn't change the properties of the remaining coins, so we don't need "last taken" logic.
+### The "Last Burst" Insight (Backward Thinking)
+Instead of asking "Which balloon should I burst first?", ask: **"Which balloon should I burst LAST?"**
 
-4. **Small n (Brute Force)**: For $n \le 10$, brute force all permutations ($O(n!)$) might be acceptable and simpler to implement.
-   - *Example*: A game board with 8 tiles where you want to find the exact optimal sequence of removals.
+Suppose we decide `C` will be the **very last** balloon we burst in the range `[A, B, C, D]`.
+What do we know at the exact moment we burst `C`?
+- All other balloons in the range (`A`, `B`, and `D`) have **already been burst**.
+- Therefore, `C` is completely isolated within this range.
+- When `C` is finally burst, its neighbors will be whatever is strictly **outside** our current range.
 
-5. **Different Cost Function**: If bursting depends on more than just immediate neighbors (e.g., global state, history, or parity of elements remaining), the standard recurrence breaks.
-   - *Example*: Cost is based on how many balloons have already been burst. You'd need an extra state dimension for the count, complicating the recurrence.
-
-**Recognize This Pattern When:**
-
-- Processing elements changes their neighbors
-- "First" thinking leads to complex dependencies
-- Range-based problem with "last processed" insight
+This completely decouples the left side of `C` from the right side. The subproblem of bursting `[A, B]` is now completely independent of the subproblem of bursting `[D]`.
 
 ---
 
-## Problem Statement
+## The Core Pattern
 
-Given n balloons with numbers, burst them to maximize coins.
-Bursting balloon i gives `nums[i-1] * nums[i] * nums[i+1]` coins.
+### 1. Virtual Boundaries
+The problem states that bursting balloon `i` gives `nums[i-1] * nums[i] * nums[i+1]` coins. Out-of-bounds indices are treated as if they have a balloon with value `1`.
+To avoid messy edge cases, we explicitly add these virtual `1`s to our array:
+`nums = [1] + original_nums + [1]`
 
-```
-Input: nums = [3, 1, 5, 8]
-Output: 167
+### 2. State Definition
+We use an **exclusive** range definition.
+Let $dp[i][j]$ be the maximum coins obtained by bursting ALL balloons **strictly between** index $i$ and index $j$.
+*Note: Balloons $i$ and $j$ themselves are NOT burst in this subproblem. They act as the indestructible walls (neighbors) for the last balloon burst in the range.*
 
-Explanation:
-Burst balloon 1 (value 1): 3*1*5 = 15 → nums = [3,5,8]
-Burst balloon 5 (value 5): 3*5*8 = 120 → nums = [3,8]
-Burst balloon 3 (value 3): 1*3*8 = 24 → nums = [8]
-Burst balloon 8 (value 8): 1*8*1 = 8 → nums = []
-Total: 15 + 120 + 24 + 8 = 167
-```
-
----
-
-## Key Insight: Think Backwards
-
-**Wrong approach**: Which balloon to burst first?
-
-- After bursting, neighbors change, making DP hard
-
-**Correct approach**: Which balloon to burst LAST in a range?
-
-- If k is last burst in range [i,j], neighbors are fixed as i-1 and j+1
-
----
-
-## Solution
-
-### Recurrence Relation
-
-Let $nums$ be the 1-indexed array of balloons with virtual balloons $nums[0] = 1$ and $nums[n+1] = 1$.
-Let $dp[i][j]$ be the maximum coins obtained by bursting all balloons strictly between index $i$ and index $j$ (exclusive).
+### 3. Transitions
+To find $dp[i][j]$, we guess which balloon $k$ (where $i < k < j$) is the **last** to burst.
+If $k$ is the last to burst:
+1. We must first burst all balloons between $i$ and $k$: cost is $dp[i][k]$
+2. We must also burst all balloons between $k$ and $j$: cost is $dp[k][j]$
+3. Finally, we burst $k$. Since all balloons strictly between $i$ and $j$ except $k$ are gone, $k$'s neighbors are exactly $i$ and $j$. The coins gained are: `nums[i] * nums[k] * nums[j]`.
 
 $$
-dp[i][j] =
-\begin{cases}
-0 & \text{if } i+1 = j \\
-\max\limits_{i < k < j} \left\{ dp[i][k] + dp[k][j] + nums[i] \cdot nums[k] \cdot nums[j] \right\} & \text{if } i+1 < j
-\end{cases}
+dp[i][j] = \max_{i < k < j} \left( dp[i][k] + dp[k][j] + nums[i] \cdot nums[k] \cdot nums[j] \right)
 $$
 
-**Space & Time Complexity Analysis:**
-Because $dp$ is an $O(n) \times O(n)$ table and computing each $dp[i][j]$ requires iterating over all possible split points $k$ where $i < k < j$ (taking $O(n)$ time), the total time complexity is $O(n^3)$.
-Space is $O(n^2)$ for the table. It cannot be reduced to $O(n)$ because we need to query results of all $O(n^2)$ sub-intervals.
-
-### Bottom-Up (Tabulation)
-
-```python
-def max_coins(nums: list[int]) -> int:
-    """
-    Maximum coins from bursting all balloons.
-
-    Key insight: Consider which balloon is burst LAST in each range.
-    Add virtual 1s at boundaries.
-
-    State: dp[i][j] = max coins from bursting all balloons in (i,j) exclusive
-    Recurrence: dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i]*nums[k]*nums[j])
-                for k in (i+1, j-1)
-
-    Time: O(n³)
-    Space: O(n²)
-    """
-    # Add virtual 1s at boundaries
-    nums = [1] + nums + [1]
-    n = len(nums)
-
-    dp = [[0] * n for _ in range(n)]
-
-    # Fill by increasing length
-    for length in range(2, n):  # length between i and j
-        for i in range(n - length):
-            j = i + length
-
-            for k in range(i + 1, j):  # k is last to burst
-                coins = nums[i] * nums[k] * nums[j]
-                total = dp[i][k] + dp[k][j] + coins
-                dp[i][j] = max(dp[i][j], total)
-
-    return dp[0][n - 1]
-```
+### 4. Base Case
+If there are no balloons strictly between $i$ and $j$ (i.e., $i + 1 == j$), then $dp[i][j] = 0$.
 
 ---
 
-## Visual Walkthrough
+## Implementations
 
-```
-nums = [3, 1, 5, 8]
-With boundaries: [1, 3, 1, 5, 8, 1]
-Indices:          0  1  2  3  4  5
-
-dp[i][j] = max coins bursting all in (i, j) exclusive
-
-Length 2 (no balloons between): all dp = 0
-
-Length 3 (one balloon between):
-dp[0][2]: burst 1 last → 1*3*1 = 3
-dp[1][3]: burst 2 last → 3*1*5 = 15
-dp[2][4]: burst 3 last → 1*5*8 = 40
-dp[3][5]: burst 4 last → 5*8*1 = 40
-
-Length 4 (two balloons between):
-dp[0][3]: k=1 → dp[0][1] + dp[1][3] + 1*3*5 = 0 + 15 + 15 = 30
-         k=2 → dp[0][2] + dp[2][3] + 1*1*5 = 3 + 0 + 5 = 8
-         max = 30
-
-dp[1][4]: k=2 → dp[1][2] + dp[2][4] + 3*1*8 = 0 + 40 + 24 = 64
-         k=3 → dp[1][3] + dp[3][4] + 3*5*8 = 15 + 0 + 120 = 135
-         max = 135
-
-...
-
-dp[0][5]: Check all k from 1 to 4
-         Eventually max = 167
-```
-
----
-
-## Memoization Version
-
-Many people find the top-down memoization approach more intuitive for interval DP because you don't have to worry about the complex loop ordering (iterating by length).
+### Top-Down (Memoization)
+Memoization is often much easier to write for Interval DP because you don't have to manually manage the loop order. The recursion naturally processes smaller intervals first.
 
 ```python
 from functools import lru_cache
 
-def max_coins_memo(nums: list[int]) -> int:
-    """
-    Top-down memoized version.
-    """
+def maxCoins(nums: list[int]) -> int:
+    # 1. Add virtual boundaries
     nums = [1] + nums + [1]
-    n = len(nums)
 
-    @lru_cache(maxsize=None)
+    @lru_cache(None)
     def dp(left: int, right: int) -> int:
-        # Base case: No balloons between left and right
+        # Base case: no balloons strictly between left and right
         if left + 1 == right:
             return 0
 
@@ -214,135 +87,143 @@ def max_coins_memo(nums: list[int]) -> int:
 
         return max_coins
 
-    return dp(0, n - 1)
+    # We want to burst all original balloons,
+    # which are strictly between index 0 and index len(nums)-1
+    return dp(0, len(nums) - 1)
 ```
 
----
-
-## Understanding the State
-
-```
-dp[i][j] represents bursting ALL balloons strictly between i and j.
-Balloons at positions i and j are NOT burst.
-
-When we burst k last:
-- All balloons in (i, k) already burst → dp[i][k]
-- All balloons in (k, j) already burst → dp[k][j]
-- Now k is alone between i and j → nums[i] * nums[k] * nums[j]
-
-Why this works:
-- Since k is last, its neighbors at burst time are i and j
-- Not the original neighbors (they're already burst)
-```
-
----
-
-## Common Variation: Minimum Cost
+### Bottom-Up (Tabulation)
+For Tabulation, **loop order is critical**. $dp[i][j]$ depends on $dp[i][k]$ and $dp[k][j]$. Notice that the intervals $(i, k)$ and $(k, j)$ are strictly **shorter** than $(i, j)$.
+Therefore, we must solve subproblems ordered by **interval length**.
 
 ```python
-def min_cost_burst(nums: list[int]) -> int:
-    """
-    Minimum cost to burst all balloons.
-    """
+def maxCoins(nums: list[int]) -> int:
     nums = [1] + nums + [1]
     n = len(nums)
 
+    # dp[i][j] = max coins from bursting balloons strictly between i and j
     dp = [[0] * n for _ in range(n)]
 
+    # Iterate by length of the interval (from 2 up to n-1)
+    # length represents (j - i).
+    # Min length is 2 (e.g., i=0, j=2, so strictly between is index 1)
     for length in range(2, n):
         for i in range(n - length):
             j = i + length
-            dp[i][j] = float('inf')
 
+            # Try every possible last balloon k to burst in (i, j)
             for k in range(i + 1, j):
-                cost = nums[i] * nums[k] * nums[j]
-                total = dp[i][k] + dp[k][j] + cost
-                dp[i][j] = min(dp[i][j], total)
+                coins = nums[i] * nums[k] * nums[j]
+                dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + coins)
 
     return dp[0][n - 1]
 ```
 
+**Complexity Analysis:**
+- **Time Complexity:** $O(n^3)$. There are $O(n^2)$ states (all pairs of $i, j$). For each state, we iterate through $O(n)$ possible choices for $k$.
+- **Space Complexity:** $O(n^2)$ to store the 2D DP table. Space cannot be optimized to 1D because $dp[i][j]$ depends on $dp[i][k]$ and $dp[k][j]$ which span multiple lengths and starting positions.
+
 ---
 
-## Related: Minimum Score Triangulation
+## Visual Walkthrough
+
+Let `nums = [3, 1, 5, 8]`.
+Add boundaries: `[1, 3, 1, 5, 8, 1]`. Let $n=6$.
+Indices: `0  1  2  3  4  5`
+
+**Length 2 (Base cases, j - i = 1):**
+No balloons strictly between $i$ and $j$. All $dp[i][i+1] = 0$.
+
+**Length 3 (j - i = 2, one balloon between):**
+- $dp[0][2]$: Burst balloon 1 (value 3) last. Coins = $1 \cdot 3 \cdot 1 = 3$.
+- $dp[1][3]$: Burst balloon 2 (value 1) last. Coins = $3 \cdot 1 \cdot 5 = 15$.
+- $dp[2][4]$: Burst balloon 3 (value 5) last. Coins = $1 \cdot 5 \cdot 8 = 40$.
+- $dp[3][5]$: Burst balloon 4 (value 8) last. Coins = $5 \cdot 8 \cdot 1 = 40$.
+
+**Length 4 (j - i = 3, two balloons between):**
+Calculate $dp[0][3]$ (range contains 3, 1).
+- Try bursting index 1 (value 3) last ($k=1$):
+  $dp[0][1] + dp[1][3] + 1 \cdot 3 \cdot 5 = 0 + 15 + 15 = 30$
+- Try bursting index 2 (value 1) last ($k=2$):
+  $dp[0][2] + dp[2][3] + 1 \cdot 1 \cdot 5 = 3 + 0 + 5 = 8$
+- Max for $dp[0][3] = 30$.
+
+We continue expanding length until we calculate $dp[0][5]$, which covers all original balloons and gives the final answer: `167`.
+
+---
+
+## Comparison with Matrix Chain Multiplication
+
+Burst Balloons is structurally identical to Matrix Chain Multiplication.
+
+| Aspect | Matrix Chain Multiplication | Burst Balloons |
+|--------|-----------------------------|----------------|
+| **Goal** | Minimize multiplication cost | Maximize burst coins |
+| **State $dp[i][j]$** | Cost to multiply matrices $i$ to $j$ | Coins from bursting balloons between $i$ and $j$ |
+| **Split point $k$** | Where to make the *last* matrix multiplication | Which balloon to burst *last* |
+| **Merge calculation**| $p[i-1] \cdot p[k] \cdot p[j]$ | $nums[i] \cdot nums[k] \cdot nums[j]$ |
+| **Boundaries** | Array of dimension sizes | Explicit virtual `1`s at ends |
+
+---
+
+## Related Problem: Minimum Score Triangulation
 
 Given a convex polygon with $n$ vertices, find the minimum score to triangulate it. The score of a triangle is the product of its 3 vertices.
 
-### Recurrence Relation
+**Insight:**
+Any triangulation of a polygon $[i \dots j]$ must contain exactly one triangle that uses the base edge $(i, j)$. Let the third vertex of this triangle be $k$. This triangle splits the remaining polygon into two smaller polygons: $[i \dots k]$ and $[k \dots j]$.
 
-Let $v$ be the array of vertex values. Let $dp[i][j]$ be the minimum score to triangulate the polygon formed by vertices $i, i+1, \dots, j$.
-
+**Recurrence:**
 $$
-dp[i][j] =
-\begin{cases}
-0 & \text{if } i+1 = j \quad \text{(a line, not a polygon)} \\
-\min\limits_{i < k < j} \left\{ dp[i][k] + dp[k][j] + v[i] \cdot v[k] \cdot v[j] \right\} & \text{if } i+1 < j
-\end{cases}
+dp[i][j] = \min_{i < k < j} \left( dp[i][k] + dp[k][j] + v[i] \cdot v[k] \cdot v[j] \right)
 $$
 
-```python
-def min_score_triangulation(values: list[int]) -> int:
-    """
-    Triangulate polygon with minimum total score.
-    Score of triangle = product of vertices.
-
-    Time: O(n³)
-    Space: O(n²)
-    """
-    n = len(values)
-    dp = [[0] * n for _ in range(n)]
-
-    for length in range(2, n):
-        for i in range(n - length):
-            j = i + length
-            dp[i][j] = float('inf')
-
-            for k in range(i + 1, j):
-                score = values[i] * values[k] * values[j]
-                total = dp[i][k] + dp[k][j] + score
-                dp[i][j] = min(dp[i][j], total)
-
-    return dp[0][n - 1]
-```
+Notice this is **exactly the same recurrence** as Burst Balloons, just minimizing instead of maximizing!
 
 ---
 
-## Related: Remove Boxes
+## Advanced Variation: Remove Boxes
+
+Remove Boxes is a FANG-favorite Hard problem that looks like Burst Balloons but requires a **3D State**.
+
+**Problem:** Given an array of colors, remove consecutive boxes of the same color to get points equal to `(count)^2`.
+Example: `[1, 3, 2, 2, 2, 3, 4, 3, 1]`
+
+**Why 2D DP Fails Here:**
+In Burst Balloons, when a balloon bursts, neighbors become adjacent, but the score formula `nums[i]*nums[k]*nums[j]` only cares about the *values* of the immediate neighbors.
+In Remove Boxes, when boxes are removed, separated boxes of the same color merge together (e.g., removing the `2`s above merges the `3`s into `[3, 3, 3]`). The points are `count^2`, so grouping them *before* removing yields far more points ($3^2 = 9$ instead of $1^2 + 2^2 = 5$).
+A 2D state $dp[i][j]$ cannot remember how many boxes of the same color as `boxes[i]` are waiting just outside the left boundary.
+
+**The 3D State Solution:**
+$dp(i, j, k) =$ max points for `boxes[i...j]` given that there are exactly $k$ boxes of the same color as `boxes[i]` attached immediately to the left of $i$.
 
 ```python
-def remove_boxes(boxes: list[int]) -> int:
-    """
-    Remove consecutive same-color boxes for points.
-    Points = (count of consecutive)²
-
-    State: dp[i][j][k] = max points for boxes[i..j] with k
-           same boxes attached to left of i
-
-    Time: O(n⁴)
-    Space: O(n³)
-    """
+def removeBoxes(boxes: list[int]) -> int:
     n = len(boxes)
     memo = {}
 
     def dp(i: int, j: int, k: int) -> int:
         if i > j:
             return 0
-
         if (i, j, k) in memo:
             return memo[(i, j, k)]
 
-        # Skip same colored boxes at start
+        # Optimization: Group identical consecutive boxes at the start
         while i < j and boxes[i] == boxes[i + 1]:
             i += 1
             k += 1
 
-        # Remove boxes[i] with k attached
+        # Option 1: Remove boxes[i] along with the k attached boxes right now.
+        # This gives us (k + 1)^2 points, and we recursively solve the remaining boxes[i+1...j].
         result = (k + 1) ** 2 + dp(i + 1, j, 0)
 
-        # Try to find same color later and remove together
+        # Option 2: Try to merge boxes[i] with another box of the same color later in the array.
+        # We look for a box boxes[m] == boxes[i].
+        # If we remove everything strictly between i and m (i.e., boxes[i+1...m-1]),
+        # then boxes[i] and its k attached boxes will touch boxes[m].
         for m in range(i + 1, j + 1):
             if boxes[m] == boxes[i]:
-                # Remove boxes[i+1..m-1] first, then combine
+                # Cost to remove the middle + cost of the merged remainder
                 result = max(result, dp(i + 1, m - 1, 0) + dp(m, j, k + 1))
 
         memo[(i, j, k)] = result
@@ -350,106 +231,29 @@ def remove_boxes(boxes: list[int]) -> int:
 
     return dp(0, n - 1, 0)
 ```
+*Time Complexity:* $O(n^4)$. Space: $O(n^3)$.
 
 ---
 
-## Comparison with Matrix Chain
+## Common Mistakes & Pitfalls
 
-| Aspect        | Matrix Chain            | Burst Balloons              |
-| ------------- | ----------------------- | --------------------------- |
-| State meaning | Cost to multiply        | Coins from bursting         |
-| Split point k | Where to split multiply | Last balloon to burst       |
-| Merge cost    | p[i-1] × p[k] × p[j]    | nums[i] × nums[k] × nums[j] |
-| Boundaries    | Dimensions array        | Virtual 1s at ends          |
+1. **Forgetting Virtual Boundaries:**
+   If you don't add `[1]` to the ends of the array, calculating `nums[i] * nums[k] * nums[j]` will throw index out of bounds errors when bursting the original edge balloons.
 
----
+2. **Wrong Loop Order in Tabulation:**
+   If you iterate $i$ from $0 \to n$ and $j$ from $i \to n$, you will calculate $dp[i][j]$ before $dp[k][j]$ is ready. **Interval DP tabulation must loop by interval length first**, or loop $i$ backwards (`n-1` down to `0`) and $j$ forwards (`i+1` to `n`).
 
-## Edge Cases
+3. **Inclusive vs Exclusive Bounds Confusion:**
+   Our state definition makes $i$ and $j$ **exclusive** bounds.
+   - Size of the dp array must be `(n+2) x (n+2)` (where $n$ is original length).
+   - $k$ must range strictly between: `for k in range(i + 1, j)`.
 
-```python
-# 1. Single balloon
-nums = [5]
-# Return 1 * 5 * 1 = 5
-
-# 2. Two balloons
-nums = [3, 5]
-# Burst 3 last: 1*3*1 + 1*5*3 = 3 + 15 = 18
-# Burst 5 last: 1*5*1 + 3*1*5 = 5 + 15 = 20
-# Return 20
-
-# 3. All same values
-nums = [1, 1, 1]
-# Any order gives same result
-```
-
----
-
-## Common Mistakes
-
-```python
-# WRONG: Not adding boundary 1s
-nums = [3, 1, 5, 8]
-# Bursting edge balloon: 3 * 1 * ? → what's the neighbor?
-
-# CORRECT: Add virtual 1s
-nums = [1, 3, 1, 5, 8, 1]
-
-
-# WRONG: Thinking about first burst, not last
-# If we burst i first, neighbors change and DP breaks
-
-# CORRECT: Think about last burst
-# When k is last in range, neighbors are fixed
-
-
-# WRONG: dp[i][j] includes i and j
-for k in range(i, j + 1):  # Wrong range!
-
-# CORRECT: dp[i][j] excludes i and j, k is strictly between
-for k in range(i + 1, j):
-```
-
----
-
-## Complexity
-
-| Metric      | Value          |
-| ----------- | -------------- |
-| Time        | O(n³)          |
-| Space       | O(n²)          |
-| States      | O(n²)          |
-| Transitions | O(n) per state |
-
----
-
-## Interview Tips
-
-1. **Explain the insight**: "Consider last balloon burst"
-2. **Add boundaries first**: Mention virtual 1s immediately
-3. **Define state clearly**: What dp[i][j] means
-4. **Walk through example**: Show understanding
-5. **Know related problems**: Matrix chain, triangulation
-
----
-
-## Practice Problems
-
-| #   | Problem                 | Difficulty | Similar Pattern |
-| --- | ----------------------- | ---------- | --------------- |
-| 1   | Burst Balloons          | Hard       | Core problem    |
-| 2   | Min Score Triangulation | Medium     | Same structure  |
-| 3   | Remove Boxes            | Hard       | 3D state        |
-| 4   | Strange Printer         | Hard       | Similar         |
-
----
-
-## Key Takeaways
-
-1. **Think backwards**: Last burst, not first
-2. **Add virtual boundaries**: Simplifies edge cases
-3. **Interval DP**: dp[i][j] for ranges
-4. **k is last burst**: Neighbors fixed as i, j
-5. **Same as matrix chain**: Just different meaning
+## Summary Checklist for Burst Balloons Pattern
+- [ ] Does removing an element merge its left and right neighbors?
+- [ ] Does the score depend on these new neighbors?
+- [ ] **Action:** Think about the LAST element removed.
+- [ ] **Action:** Add virtual boundaries to the input array.
+- [ ] **Action:** Use $O(n^3)$ Interval DP mapping out $dp[i][j]$ exclusively.
 
 ---
 

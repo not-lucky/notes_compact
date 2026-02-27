@@ -2,182 +2,168 @@
 
 ## Overview
 
-Dynamic Programming (DP) is an algorithmic technique that solves complex problems by breaking them into simpler overlapping subproblems and storing their solutions to avoid redundant computation.
+Dynamic Programming (DP) is a powerful algorithmic technique that solves complex problems by breaking them down into simpler, overlapping subproblems. It stores the solutions to these subproblems to avoid redundant computation, effectively trading space for time.
 
-## Building Intuition
+Think of DP as **"smart recursion with memory."**
 
-**Why does DP work?**
+## The Core Problem DP Solves
 
-Think of DP as "smart recursion with memory." The key insight is that many problems have a recursive structure where the same smaller problems appear repeatedly:
+### The Redundancy Problem
+In naive recursion, we often solve the exact same subproblems exponentially many times.
+For example, computing `Fibonacci(50)` naively would calculate `Fibonacci(25)` over 75,000 times! The time complexity becomes $O(2^N)$.
 
-1. **The Redundancy Problem**: In naive recursion, we solve the same subproblems exponentially many times. For Fibonacci(50), naive recursion would compute Fibonacci(25) over 75,000 times!
+### The Memory Solution
+If we store (memoize) the answer to each subproblem the *first* time we compute it, subsequent lookups take $O(1)$ time. This "state compression" transforms exponential-time algorithms into polynomial-time ones (like $O(N)$ or $O(N^2)$).
 
-2. **The Memory Solution**: If we store (memoize) each subproblem's answer the first time we compute it, subsequent lookups are O(1). This transforms exponential algorithms into polynomial ones.
+## The Two Essential Properties of DP
 
-3. **The Key Mental Model**: Imagine you're climbing a staircase with numbered steps. To reach step N, you must first reach step N-1 or N-2. The number of ways to reach N depends only on the number of ways to reach those earlier steps—not on HOW you reached them. This "state compression" is the essence of DP.
+A problem must have these two properties to be solvable with Dynamic Programming:
 
-4. **When DP "Clicks"**: DP works when the problem has "optimal substructure" (the best solution contains best solutions to subproblems) and "overlapping subproblems" (same subproblems recur). If subproblems don't overlap, you have Divide & Conquer instead.
+### 1. Optimal Substructure
+The optimal solution to the main problem can be constructed from the optimal solutions of its subproblems.
 
-## Interview Context
+*Example (Shortest Path):* If the shortest path from city A to city C goes through city B, then the path from A to B must be the shortest possible path from A to B, and the path from B to C must be the shortest possible path from B to C.
 
-Dynamic Programming is tested heavily because:
+### 2. Overlapping Subproblems
+The problem can be broken down into subproblems which are reused multiple times.
 
-1. **Problem decomposition**: Shows ability to break complex problems into subproblems
-2. **Optimization skill**: Finding optimal solutions efficiently
-3. **Pattern recognition**: Same patterns appear across different problems
-4. **Time-space tradeoffs**: Understanding memoization vs space optimization
+*Example (Fibonacci):*
+```text
+           fib(5)
+         /        \
+    fib(4)        fib(3)
+    /    \        /    \
+fib(3)  fib(2)  fib(2) fib(1)
+```
+Notice how `fib(3)` and `fib(2)` are evaluated multiple times. This is where DP shines by caching the results.
 
 ---
 
 ## When NOT to Use DP
 
-DP is powerful but not always appropriate. Avoid DP when:
+DP is powerful but not a silver bullet. Avoid it when:
 
-1. **No Overlapping Subproblems**: If each subproblem is unique, use Divide & Conquer.
-   - *Example*: Merge Sort splits an array into two halves, but sorting the left half shares no work with sorting the right half. DP's memoization provides no benefit.
+1. **No Overlapping Subproblems (Use Divide & Conquer):**
+   If subproblems are completely independent, caching doesn't help.
+   *Example:* Merge Sort splits an array in half, but sorting the left half shares no work with sorting the right half.
 
-2. **Greedy Works**: If locally optimal choices lead to globally optimal solutions, greedy is simpler and often faster ($O(N)$ or $O(N \log N)$ vs $O(N^2)$). DP is overkill.
-   - *Example (Coin Change with US Coins)*: To make 36¢ with [1, 5, 10, 25], always picking the largest possible coin (25 + 10 + 1) works perfectly. You don't need DP.
-   - *Counter-Example (When you NEED DP)*: To make 6¢ with [1, 3, 4], greedy picks 4 + 1 + 1 (3 coins). DP correctly explores and finds 3 + 3 (2 coins).
-   - *Example (Activity Selection)*: Finding the maximum number of non-overlapping intervals. Sorting by end time and greedily picking the next compatible interval is $O(N \log N)$ and optimal. DP would be $O(N^2)$.
+2. **Greedy is Optimal:**
+   If making the locally optimal choice at each step guarantees a globally optimal solution, a Greedy algorithm is simpler and often faster ($O(N)$ or $O(N \log N)$ vs DP's $O(N^2)$).
+   *Example:* Activity selection (finding max non-overlapping intervals) can be solved optimally in $O(N \log N)$ by sorting by end times and picking greedily.
 
-3. **State Space Explodes**: If the number of unique states is exponential (e.g., tracking subsets or permutations), even memoized DP may be too slow or run out of memory. Consider approximation algorithms or branch and bound.
-   - *Example*: Traveling Salesperson Problem (TSP) exactly on 50 cities. The state requires tracking the set of visited cities, which is $2^{50}$. DP is unfeasible.
+3. **State Space Explodes:**
+   If tracking the state requires exponential memory (e.g., tracking subsets, bitmasks, or permutations of large sets), DP becomes unfeasible.
+   *Example:* Traveling Salesperson Problem on 100 cities. Tracking the set of visited cities requires $2^{100}$ states.
 
-4. **No Optimal Substructure**: If the optimal solution doesn't contain optimal solutions to subproblems, DP won't work.
-   - *Example*: Longest Simple Path in a graph. Taking the longest path to an intermediate node may use up vertices needed for the remaining path, preventing you from completing the journey.
-   - *Example*: Maximum difference between two elements where the larger comes after the smaller. You can't just combine the maximum difference of the left half and right half. You also need the max of the right minus the min of the left.
-
-5. **Problem Asks for "Any" Valid Solution**: If you just need any valid solution (not optimal), BFS/DFS often suffices without DP overhead.
-
-**Red Flags That DP Won't Help:**
-
-- The problem involves graphs with cycles (except shortest path algorithms like Bellman-Ford/Floyd-Warshall which are technically DP).
-- You need to track the actual path/sequence, not just the count/optimal value (reconstruction requires extra space, though DP can still find the optimal *value*).
-- The constraints are tiny ($n \le 10$)—brute force/backtracking may be expected.
+4. **No Optimal Substructure:**
+   If combining optimal subproblem solutions doesn't yield the global optimal.
+   *Example:* Finding the *longest simple path* in a graph. The longest path from A to B and B to C might share vertices, making them impossible to combine into a valid simple path.
 
 ---
 
-## The Two Essential Properties
+## The DP Problem-Solving Template (The FAST Method)
 
-### 1. Optimal Substructure
+When tackling a DP problem, follow this structured framework:
 
-The optimal solution to the problem contains optimal solutions to subproblems.
+### 1. **F**ind the State
+What variables define a specific subproblem? How do you uniquely identify a subproblem?
+*   **1D Array:** `dp[i]` represents the answer for the subarray `arr[0...i]`.
+*   **2D Array:** `dp[i][j]` represents the answer using the first `i` items with capacity `j` (e.g., Knapsack).
 
-```
-Example: Shortest path A → C via B
-If A → B → C is shortest, then:
-- A → B must be the shortest path from A to B
-- B → C must be the shortest path from B to C
-```
+### 2. **A**nalyze the Recurrence (The Transition)
+How does the current state depend on previously computed states? What choices are available at this step?
+*   *Example (Climbing Stairs):* To reach step `i`, you either came from step `i-1` or step `i-2`.
+*   `dp[i] = dp[i-1] + dp[i-2]`
 
-### 2. Overlapping Subproblems
+### 3. **S**et the Base Cases
+What are the trivial subproblems that can be answered immediately without further calculation?
+*   *Example (Fibonacci):* `dp[0] = 0`, `dp[1] = 1`.
 
-The same subproblems are solved multiple times.
-
-```
-Fibonacci: fib(5)
-           /      \
-        fib(4)   fib(3)
-        /   \     /   \
-     fib(3) fib(2) fib(2) fib(1)
-     ...
-
-fib(2) and fib(3) computed multiple times!
-```
+### 4. **T**hink about the Answer
+Where will the final answer be stored once the computation is complete?
+*   Usually `dp[n]`, `dp[n][m]`, or `max(dp)`.
 
 ---
 
-## Recognizing DP Problems
+## The Four Stages of DP Solutions (Fibonacci Example)
 
-Ask yourself these questions:
+Most DP problems can be solved in these four stages. In an interview, progressing through these shows deep understanding.
 
-1. **Can I break this into smaller subproblems?**
-2. **Do subproblems overlap (same calculation repeated)?**
-3. **Is there an optimal choice at each step?**
-4. **Does the problem ask for min/max/count/feasibility?**
-
-Common DP keywords:
-
-- "Minimum/maximum number of..."
-- "Count all ways to..."
-- "Is it possible to..."
-- "Longest/shortest..."
-
----
-
-## Fibonacci: The Classic Example
-
-### Naive Recursion - O(2ⁿ)
+### Stage 1: Naive Recursion (Top-Down)
+Translate the recurrence relation directly into code. Usually times out (TLE) due to overlapping subproblems.
 
 ```python
 def fib_naive(n: int) -> int:
-    """
-    Exponential time - overlapping subproblems not reused.
-    """
+    # Base cases
     if n <= 1:
         return n
+    # Recurrence
     return fib_naive(n - 1) + fib_naive(n - 2)
+
+# Time Complexity: O(2^n) - Exponential branching
+# Space Complexity: O(n) - Call stack depth
 ```
 
-### Memoization (Top-Down) - O(n)
+### Stage 2: Memoization (Top-Down DP)
+Add a cache (dictionary or array) to the recursive function. Check the cache before computing, and save the result before returning.
 
 ```python
 def fib_memo(n: int, memo: dict = None) -> int:
-    """
-    Store computed results to avoid recomputation.
-
-    Time: O(n)
-    Space: O(n)
-    """
     if memo is None:
         memo = {}
 
+    # Check cache
+    if n in memo:
+        return memo[n]
+
+    # Base cases
     if n <= 1:
         return n
 
-    if n not in memo:
-        memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
-
+    # Compute and save to cache
+    memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
     return memo[n]
+
+# Time Complexity: O(n) - Each state computed once
+# Space Complexity: O(n) - Call stack + Memo dictionary
 ```
 
-### Tabulation (Bottom-Up) - O(n)
+### Stage 3: Tabulation (Bottom-Up DP)
+Eliminate recursion overhead by building a table (array) iteratively from the base cases up to `n`.
 
 ```python
 def fib_tab(n: int) -> int:
-    """
-    Build solution iteratively from base cases.
-
-    Time: O(n)
-    Space: O(n)
-    """
     if n <= 1:
         return n
 
+    # Initialize DP table
     dp = [0] * (n + 1)
+
+    # Base cases
+    dp[0] = 0
     dp[1] = 1
 
+    # Build bottom-up
     for i in range(2, n + 1):
         dp[i] = dp[i - 1] + dp[i - 2]
 
     return dp[n]
+
+# Time Complexity: O(n) - Single loop
+# Space Complexity: O(n) - DP array
 ```
 
-### Space Optimized - O(1)
+### Stage 4: Space Optimization
+Look at the recurrence. If `dp[i]` only depends on a few previous states (e.g., `dp[i-1]` and `dp[i-2]`), we don't need the entire array. We can just keep track of the required previous states.
 
 ```python
 def fib_optimized(n: int) -> int:
-    """
-    Only need last two values.
-
-    Time: O(n)
-    Space: O(1)
-    """
     if n <= 1:
         return n
 
-    prev2, prev1 = 0, 1
+    # Only store the two previous states needed
+    prev2 = 0 # dp[i-2]
+    prev1 = 1 # dp[i-1]
 
     for _ in range(2, n + 1):
         curr = prev1 + prev2
@@ -185,181 +171,42 @@ def fib_optimized(n: int) -> int:
         prev1 = curr
 
     return prev1
+
+# Time Complexity: O(n)
+# Space Complexity: O(1) - Constant variables only
 ```
 
 ---
 
-## The DP Problem-Solving Template
+## How to Recognize a DP Problem in Interviews
 
-### Step 1: Define the State
+Look for these strong signals:
 
-What does `dp[i]` or `dp[i][j]` represent?
-
-```python
-# 1D: dp[i] = answer for first i elements
-# 2D: dp[i][j] = answer for subproblem (i, j)
-```
-
-### Step 2: Define the Recurrence
-
-How does current state depend on previous states?
-
-```python
-# Example: Fibonacci
-# dp[i] = dp[i-1] + dp[i-2]
-```
-
-### Step 3: Define Base Cases
-
-What are the initial values? Base cases represent the smallest subproblems where the answer is known without further breakdown.
-
-- *Example*: Why is `dp[0] = 1` for Climbing Stairs? There is exactly 1 way to be at the ground floor (by doing nothing). Why is `dp[0] = 0` for Fibonacci? Because the $0^{th}$ Fibonacci number is defined as $0$.
-
-```python
-# dp[0] = 0, dp[1] = 1
-```
-
-### Step 4: Define the Answer
-
-Where do we find the final answer?
-
-```python
-# return dp[n]
-```
-
-### Step 5: Consider Optimization
-
-Can we reduce space complexity?
+1. **The problem asks for an extreme value:**
+   - "Find the **minimum/maximum** number of..."
+   - "Find the **longest/shortest**..."
+2. **The problem asks for counting:**
+   - "Find the **total number of ways** to..."
+   - "**Count all possible** valid..."
+3. **The problem asks for feasibility:**
+   - "**Is it possible** to reach/make/partition..."
+4. **Constraints:**
+   - Array/String length is typically $1000 \le N \le 10^5$ (pointing to $O(N)$ or $O(N \log N)$ DP) or $10 \le N \le 1000$ (pointing to $O(N^2)$ or $O(N^3)$ DP).
 
 ---
 
-## DP vs Greedy vs Divide & Conquer
+## Common Debugging Pitfalls
 
-| Approach | Subproblems     | Choice        | Example            |
-| -------- | --------------- | ------------- | ------------------ |
-| DP       | Overlapping     | Consider all  | Fibonacci          |
-| Greedy   | N/A             | Local optimal | Activity Selection |
-| D&C      | Non-overlapping | Combine       | Merge Sort         |
+If your DP solution is failing, check these common mistakes:
 
----
+1. **Incorrect Base Cases:** Are you starting with the right values? Did you account for `i=0` or empty string cases?
+2. **Off-by-One Array Bounds:** When defining a DP array `dp = [0] * n`, remember the indices are `0` to `n-1`. Often, it's easier to use `dp = [0] * (n + 1)` so `dp[n]` represents the answer for length `n`.
+3. **Missing State Transitions:** Did you consider *all* possible choices at the current state?
+4. **Initialization:** Is your DP array initialized with `0`, `-1`, `float('inf')`, or `float('-inf')`? Choosing the wrong initial value (e.g., initializing with `0` when looking for a minimum) will break the logic.
 
-## Common DP State Definitions
+## Summary
 
-### 1D States
-
-```python
-dp[i] = # solution for elements 0..i
-dp[i] = # solution ending at index i
-dp[i] = # solution using first i items
-```
-
-### 2D States
-
-```python
-dp[i][j] = # solution for elements i..j
-dp[i][j] = # solution for strings s1[0..i] and s2[0..j]
-dp[i][j] = # solution with i items and capacity j
-```
-
-### State Machine
-
-```python
-dp[i][state] = # solution at index i in given state
-# Example: Stock problems with hold/not-hold states
-```
-
----
-
-## Example: Climbing Stairs
-
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-1 & \text{if } i = 0 \text{ (1 way to do nothing)} \\
-1 & \text{if } i = 1 \text{ (1 step)} \\
-dp[i-1] + dp[i-2] & \text{if } i \ge 2
-\end{cases}
-$$
-
-```python
-def climb_stairs(n: int) -> int:
-    """
-    Count ways to climb n stairs (1 or 2 steps at a time).
-
-    State: dp[i] = ways to reach step i
-    Recurrence: dp[i] = dp[i-1] + dp[i-2]
-    Base: dp[0] = 1, dp[1] = 1
-    Answer: dp[n]
-
-    Time: O(n)
-    Space: O(1) after optimization
-    """
-    if n <= 2:
-        return n
-
-    prev2, prev1 = 1, 2
-
-    for _ in range(3, n + 1):
-        curr = prev1 + prev2
-        prev2 = prev1
-        prev1 = curr
-
-    return prev1
-```
-
----
-
-## Debugging DP Solutions
-
-Common issues:
-
-1. **Wrong base case**: Double-check edge cases
-2. **Off-by-one errors**: Verify loop bounds
-3. **Wrong recurrence**: Trace through small example
-4. **Missing states**: Ensure all cases covered
-5. **Integer overflow**: Use modulo if needed
-
-Debugging technique:
-
-```python
-# Print DP table for small inputs
-for i in range(n + 1):
-    print(f"dp[{i}] = {dp[i]}")
-```
-
----
-
-## Interview Tips
-
-1. **Start with brute force**: Show you understand the problem
-2. **Identify overlapping subproblems**: Draw recursion tree
-3. **Define state clearly**: Write it in comments
-4. **Build incrementally**: Start with memoization, then optimize
-5. **Trace small example**: Verify your solution works
-
----
-
-## Complexity Cheat Sheet
-
-| Problem Type       | Time           | Space          | Space-Optimized |
-| ------------------ | -------------- | -------------- | --------------- |
-| 1D DP              | O(n)           | O(n)           | O(1)            |
-| 2D DP              | O(n²) or O(nm) | O(n²) or O(nm) | O(n) or O(m)    |
-| Interval DP        | O(n³)          | O(n²)          | N/A             |
-| DP + Binary Search | O(n log n)     | O(n)           | O(n)            |
-
----
-
-## Key Takeaways
-
-1. **Two properties**: Optimal substructure + overlapping subproblems
-2. **Define state first**: Everything else follows
-3. **Start simple**: Recursion → memoization → tabulation → optimization
-4. **Practice patterns**: Most problems are pattern variations
-5. **Trace through**: Always verify with small examples
-
----
-
-## Next: [02-memoization-vs-tabulation.md](./02-memoization-vs-tabulation.md)
-
-Compare top-down and bottom-up approaches in detail.
+1. **Identify:** Optimal substructure + Overlapping subproblems.
+2. **State:** Define what a subproblem represents.
+3. **Transition:** Figure out how to build the current state from previous states.
+4. **Optimize:** Recursion $\to$ Memoization $\to$ Tabulation $\to$ Space Optimization.

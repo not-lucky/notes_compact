@@ -19,7 +19,7 @@ It is called "top-down" because we start from the top (the target state) and mov
 
 ### How It Works
 1. Write a standard recursive solution.
-2. Add a cache (dictionary/hash map or array) to store results.
+2. Add a cache (array or hash map) to store results.
 3. Before doing any computation in the recursive function, check if the state's result is in the cache.
 4. After computing a result, save it in the cache before returning.
 
@@ -49,29 +49,30 @@ $$
 def fib_memo(n: int) -> int:
     """
     Top-Down DP with Memoization.
-    Time: O(n) | Space: O(n) for cache + O(n) for call stack
+    Time: O(n) | Space: O(n) for cache + O(n) for call stack = O(n)
     """
     # Using an array for the cache is often faster than a dictionary
     # if the state space is dense and integer-based (0 to n)
-    memo = {}
-    
+    # Initialize with -1 to indicate uncomputed states
+    memo = [-1] * (n + 1)
+
     def dp(i: int) -> int:
         # 1. Base cases
         if i <= 1:
             return i
-            
+
         # 2. Check cache
-        if i in memo:
+        if memo[i] != -1:
             return memo[i]
-            
+
         # 3. Compute, store, and return
         memo[i] = dp(i - 1) + dp(i - 2)
         return memo[i]
-        
+
     return dp(n)
 ```
 
-*(Note: In Python, you can also use `@functools.lru_cache(None)` or `@functools.cache` to automatically memoize a recursive function).*
+*(Note: In Python, you can also use `@functools.cache` or `@functools.lru_cache(None)` to automatically memoize a recursive function).*
 
 ---
 
@@ -110,18 +111,18 @@ def fib_tab(n: int) -> int:
     """
     if n <= 1:
         return n
-        
+
     # 1. Initialize table
     dp = [0] * (n + 1)
-    
+
     # 2. Base cases
     dp[0] = 0
     dp[1] = 1
-    
+
     # 3. Fill the table iteratively
     for i in range(2, n + 1):
         dp[i] = dp[i - 1] + dp[i - 2]
-        
+
     # 4. Return final answer
     return dp[n]
 ```
@@ -130,7 +131,7 @@ def fib_tab(n: int) -> int:
 
 ## 3. The Power of Tabulation: Space Optimization
 
-One of the biggest advantages of tabulation is the ability to optimize space. 
+One of the biggest advantages of tabulation is the ability to optimize space.
 
 **The Core Concept:** If calculating the current state `dp[i]` only requires looking back a fixed number of steps (e.g., `dp[i-1]` and `dp[i-2]`), we don't need to store the entire `dp` array. We only need to keep track of the most recent steps.
 
@@ -146,16 +147,16 @@ def fib_optimized(n: int) -> int:
     """
     if n <= 1:
         return n
-        
+
     # We only need to track the last two states
     prev2 = 0  # represents dp[i-2]
     prev1 = 1  # represents dp[i-1]
-    
+
     for i in range(2, n + 1):
         curr = prev1 + prev2
         prev2 = prev1
         prev1 = curr
-        
+
     return prev1
 ```
 
@@ -180,20 +181,23 @@ $$
 ### Top-Down (Memoization)
 ```python
 def unique_paths_memo(m: int, n: int) -> int:
-    memo = {}
-    
+    # Initialize with -1 to indicate uncomputed states
+    # Note: dictionary caching is also fine here but arrays are faster
+    memo = [[-1] * n for _ in range(m)]
+
     def dp(r, c):
         # Base case: edges
         if r == 0 or c == 0:
             return 1
-            
-        if (r, c) in memo:
-            return memo[(r, c)]
-            
-        # Recursive step
-        memo[(r, c)] = dp(r - 1, c) + dp(r, c - 1)
-        return memo[(r, c)]
-        
+
+        # Check cache
+        if memo[r][c] != -1:
+            return memo[r][c]
+
+        # Recursive step: sum of paths from cell above and cell to the left
+        memo[r][c] = dp(r - 1, c) + dp(r, c - 1)
+        return memo[r][c]
+
     # Start from bottom-right, recurse up to top-left
     return dp(m - 1, n - 1)
 ```
@@ -201,14 +205,14 @@ def unique_paths_memo(m: int, n: int) -> int:
 ### Bottom-Up (Tabulation)
 ```python
 def unique_paths_tab(m: int, n: int) -> int:
-    # Initialize full table
+    # Initialize full table with 1s (handling the base case automatically)
     dp = [[1] * n for _ in range(m)]
-    
-    # Fill iteratively (base cases are already 1)
+
+    # Fill iteratively (starting from 1 since row 0 and col 0 are base cases)
     for r in range(1, m):
         for c in range(1, n):
             dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
-            
+
     return dp[m - 1][n - 1]
 ```
 
@@ -219,10 +223,10 @@ def unique_paths_tab(m: int, n: int) -> int:
 | Feature | Memoization (Top-Down) | Tabulation (Bottom-Up) |
 | :--- | :--- | :--- |
 | **Strategy** | Start at target, break into subproblems. | Start at bases, build up to target. |
-| **Implementation** | Recursion + Caching (Hash map/Array) | Iteration (Loops) + Array/Matrix |
+| **Implementation** | Recursion + Caching (Array/Hash map) | Iteration (Loops) + Array/Matrix |
 | **Evaluation** | **Lazy**: Computes only needed states. | **Eager**: Computes all states. |
 | **Speed** | Fast, but has recursion overhead. | Faster (no call stack overhead). |
-| **Space** | $O(N)$ (Cache + Call Stack). | $O(N)$, but easily optimized to $O(1)$. |
+| **Space** | $O(N)$ (Cache + Call Stack). | $O(N)$, but easily optimized to $O(1)$ or $O(M)$. |
 | **Stack Overflow?** | Yes, risk for large inputs. | No. |
 | **Ease of Writing** | Very intuitive, mimics math formula. | Harder to define state dependencies. |
 
@@ -241,6 +245,7 @@ def unique_paths_tab(m: int, n: int) -> int:
 
 - **Python Default Arguments for Memo:** Never use `def dp(n, memo={}):`. Default mutable arguments in Python persist across completely separate function calls! Always initialize `memo = {}` *inside* the outer wrapper function.
 - **Index Out of Bounds in Tabulation:** When writing tabulation loops, pay close attention to `range(n)` vs `range(n + 1)`. Often, DP arrays are sized `n + 1` to account for a base case at index 0.
+- **Cache Initialization:** When using arrays for memoization, make sure to initialize them with a value that cannot be a valid answer (like `-1`), not `0` (if `0` can be a valid answer).
 
 ---
 
