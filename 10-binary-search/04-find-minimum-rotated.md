@@ -8,8 +8,7 @@ Finding the minimum in a rotated array is a classic problem that tests:
 
 1. **Binary search adaptation**: Modifying the condition for dropping halves based on the array's rotation property.
 2. **Boundary conditions**: Knowing when to include/exclude `mid` (`right = mid` vs `left = mid + 1`).
-3. **Array properties**: Leveraging the invariant that at least one half of a rotated sorted array is always strictly sorted.
-4. **Problem decomposition**: This is often step 1 in solving the larger "Search in Rotated Sorted Array" problem.
+3. **Template mastery**: Recognizing that this is fundamentally a "Find Left Boundary" problem (Template 2).
 
 ---
 
@@ -26,49 +25,29 @@ Rotated:  [4, 5, 6, 7, 1, 2, 3]
             HERE - the minimum is where the order breaks
 ```
 
-- **Before the break**: Values are strictly increasing, and all values are $\ge$ the last element (assuming no duplicates, or $\ge$ the first element in all cases).
-- **After the break**: Values are strictly increasing, and all values are $\le$ the first element (assuming no duplicates).
+### The Key Insight: Compare `nums[mid]` with `nums[right]`
 
-**The Key Insight: Compare `nums[mid]` with `nums[right]`**
+When trying to find the minimum, comparing `nums[mid]` with `nums[left]` can be ambiguous. The bulletproof strategy is to always compare `nums[mid]` with `nums[right]`.
 
-When trying to find the minimum, comparing `nums[mid]` with `nums[left]` can be ambiguous. The bulletproof strategy is to compare `nums[mid]` with `nums[right]`.
+Why? Because the rightmost element gives us a stable point of reference. In a valid rotated sorted array, the minimum element MUST be less than or equal to the rightmost element. 
 
-Why? Because the rightmost element gives us a stable point of reference. In a valid rotated sorted array, the minimum element MUST be less than or equal to the rightmost element. If `nums[mid] > nums[right]`, `mid` is definitely in the "before the break" portion.
+### The Monotonic Property (Connecting to Template 2)
 
-```text
-Case 1: nums[mid] > nums[right]
-[3, 4, 5, 1, 2]
- L     M     R
+Recall from the [Binary Search Template](./01-binary-search-template.md) that binary search requires a condition that evaluates to `[False, False, ..., True, True]`.
 
-- Since 5 > 2, the array MUST break somewhere to the right of mid.
-- The minimum cannot be at mid (because mid is larger than right).
-- Action: search the right half strictly -> left = mid + 1
-
-Case 2: nums[mid] <= nums[right]
-[4, 5, 1, 2, 3]
-       L  M  R
-
-- Since 2 <= 3, the right half (from mid to right) is strictly sorted.
-- The minimum MUST be at mid or to the left of mid.
-- Action: search the left half, including mid -> right = mid
-```
-
-## Mental Model: The Cliff
-
-Imagine walking along the array values like elevation. A rotated sorted array looks like a cliff:
+If we check if elements belong to the "right-side sorted portion" by evaluating `nums[i] <= nums[right]`, we get exactly this property!
 
 ```text
-        6  7
-      5
-    4
-  3                      The values "fall off a cliff"
-                        and start low again.
-                1  2  3
+Array:     [4,  5,  6,  7,  1,  2,  3]
+Target:    Compare with nums[right] which is 3
+Condition: nums[i] <= 3
+
+Eval:      [F,  F,  F,  F,  T,  T,  T]
+                                ↑
+                We want the FIRST True!
 ```
 
-You are searching for the bottom of the cliff.
-- If you're standing high (`nums[mid] > nums[right]`), the cliff is ahead of you. Move right (`left = mid + 1`).
-- If you're standing low (`nums[mid] <= nums[right]`), the cliff is behind you (or you are exactly at the bottom). Move left, but don't step forward off your current spot (`right = mid`).
+Since we are looking for the **first occurrence** where `nums[i] <= nums[right]`, this is a textbook application of **Template 2 (Find Left Boundary)**. 
 
 ---
 
@@ -79,10 +58,9 @@ LeetCode 153: Find Minimum in Rotated Sorted Array
 **The Algorithm:**
 1. Initialize `left = 0`, `right = len(nums) - 1`.
 2. Loop while `left < right`.
-3. Calculate `mid = left + (right - left) // 2`.
-4. If `nums[mid] > nums[right]`, the minimum is in the right half -> `left = mid + 1`.
-5. Else, the minimum is in the left half (including `mid`) -> `right = mid`.
-6. When the loop ends (`left == right`), `nums[left]` is the minimum.
+3. Calculate `mid`.
+4. If `nums[mid] <= nums[right]`, `mid` is in the right-side portion. The minimum is at `mid` or to its left $\rightarrow$ `right = mid`.
+5. Else, `mid` is in the left-side portion. The minimum is strictly to the right $\rightarrow$ `left = mid + 1`.
 
 ```python
 def findMin(nums: list[int]) -> int:
@@ -99,16 +77,17 @@ def findMin(nums: list[int]) -> int:
     if nums[left] <= nums[right]:
         return nums[left]
 
-    # Use left < right to find the EXACT index of the minimum.
+    # Template 2: Find Left Boundary
     while left < right:
         mid = left + (right - left) // 2
 
-        if nums[mid] > nums[right]:
-            # Minimum must be to the right of mid
-            left = mid + 1
-        else:
-            # Minimum is at mid or to the left of mid
+        # Does mid belong to the right-side sorted portion?
+        if nums[mid] <= nums[right]:
+            # It does. The minimum (boundary) could be mid or to the left.
             right = mid
+        else:
+            # It doesn't. The minimum must be to the right.
+            left = mid + 1
 
     # Loop terminates when left == right
     return nums[left]
@@ -116,9 +95,9 @@ def findMin(nums: list[int]) -> int:
 
 ### Why `left < right` instead of `left <= right`?
 
-We're not looking for a specific *target* value that we can return immediately from inside the loop. We are narrowing down a *range* to find a *position*. 
+We're not looking for a specific *target* value that we can return immediately from inside the loop. We are narrowing down a *range* to find a *boundary position*. 
 
-When `left == right`, the search space has shrunk to a single element. That element *must* be the minimum. If we used `left <= right`, we would risk an infinite loop or an out-of-bounds error when trying to update `left` or `right` without finding a target.
+This perfectly matches **Template 2**. When `left == right`, the search space has shrunk to a single element, which *must* be the answer. If we used `left <= right`, we would risk an infinite loop or out-of-bounds error when updating boundaries without a `return mid` statement.
 
 ---
 
@@ -140,7 +119,7 @@ nums[M] == nums[R] -> Minimum is on the right (index 3)
 
 **The Problem:** We cannot determine which half contains the minimum.
 
-**The Solution:** If `nums[mid] == nums[right]`, we know that the element at `right` has a duplicate at `mid`. Therefore, we can safely discard `nums[right]` without losing the minimum element. We simply decrement `right` by 1.
+**The Solution:** If `nums[mid] == nums[right]`, we know that the element at `right` has a duplicate at `mid`. Because we still have `mid` in our search space, we can safely discard `nums[right]` without losing the minimum element. We simply decrement `right` by 1.
 
 ```python
 def findMinDuplicates(nums: list[int]) -> int:
@@ -155,12 +134,12 @@ def findMinDuplicates(nums: list[int]) -> int:
     while left < right:
         mid = left + (right - left) // 2
 
-        if nums[mid] > nums[right]:
-            # Minimum is definitely to the right
-            left = mid + 1
-        elif nums[mid] < nums[right]:
-            # Minimum is at mid or to the left
+        if nums[mid] < nums[right]:
+            # mid is in the right-side sorted portion
             right = mid
+        elif nums[mid] > nums[right]:
+            # mid is in the left-side sorted portion
+            left = mid + 1
         else:
             # nums[mid] == nums[right]
             # We can't be sure which half holds the minimum, but we can
@@ -179,37 +158,65 @@ If the array is filled with identical elements (e.g., `[1, 1, 1, 1, 1]`), `nums[
 
 ### 1. Finding the Maximum
 
-If you need the maximum element in a rotated sorted array, the easiest approach is to find the minimum first.
+There are two great ways to find the maximum element in a rotated sorted array.
 
-- The maximum element is always exactly *before* the minimum element.
-- Since the array wraps around, if the minimum is at index `i`, the maximum is at `(i - 1) % n`.
+**Approach 1: Using the Minimum (The Clever Way)**
+
+The maximum element is always exactly *before* the minimum element. Once you find the index of the minimum, `(index - 1) % n` gives you the maximum. Python's negative indexing handles this natively.
 
 ```python
 def findMax(nums: list[int]) -> int:
-    """
-    Find maximum element in a rotated sorted array.
-
-    Time Complexity: O(log n)
-    Space Complexity: O(1)
-    """
     left, right = 0, len(nums) - 1
 
-    # 1. Edge case: fully sorted array
     if nums[left] <= nums[right]:
         return nums[right]
 
-    # 2. Find index of minimum
     while left < right:
         mid = left + (right - left) // 2
-        if nums[mid] > nums[right]:
-            left = mid + 1
-        else:
+        if nums[mid] <= nums[right]:
             right = mid
+        else:
+            left = mid + 1
 
-    # left is the index of the minimum.
-    # The maximum is just before it. We handle wrap-around natively with Python's negative indexing,
-    # or mathematically: (left - 1) % len(nums)
+    # left is the index of the minimum. The max is just before it.
     return nums[left - 1]
+```
+
+**Approach 2: Template 3 (The Rigorous Way)**
+
+We can also find the maximum directly by finding the LAST element before the drop-off. If we compare elements to `nums[0]`, we get a `[True, True, ..., False, False]` pattern!
+
+```text
+Array:     [4,  5,  6,  7,  1,  2,  3]
+Condition: nums[i] >= 4 (nums[0])
+
+Eval:      [T,  T,  T,  T,  F,  F,  F]
+                        ↑
+            We want the LAST True!
+```
+
+This perfectly matches **Template 3 (Find Right Boundary)**:
+
+```python
+def findMaxDirect(nums: list[int]) -> int:
+    """Find max directly using Template 3 (Right Boundary)"""
+    left, right = 0, len(nums) - 1
+    
+    # Edge case: fully sorted array
+    if nums[left] <= nums[right]:
+        return nums[right]
+        
+    while left < right:
+        # CRITICAL: Template 3 requires rounding up for mid!
+        mid = left + (right - left + 1) // 2
+        
+        # Does mid belong to the left-side sorted portion?
+        if nums[mid] >= nums[0]:
+            left = mid      # It does. Answer could be mid or to the right.
+        else:
+            right = mid - 1 # It doesn't. Answer must be to the left.
+            
+    return nums[left]
 ```
 
 ### 2. Finding Rotation Count
@@ -224,9 +231,6 @@ def findRotationCount(nums: list[int]) -> int:
     """
     Find how many times a strictly sorted array was rotated to the right.
     Equivalent to finding the index of the minimum element.
-
-    Time Complexity: O(log n)
-    Space Complexity: O(1)
     """
     left, right = 0, len(nums) - 1
 
@@ -235,10 +239,10 @@ def findRotationCount(nums: list[int]) -> int:
 
     while left < right:
         mid = left + (right - left) // 2
-        if nums[mid] > nums[right]:
-            left = mid + 1
-        else:
+        if nums[mid] <= nums[right]:
             right = mid
+        else:
+            left = mid + 1
 
     return left # Returns the index of the minimum, which equals rotation count
 ```
@@ -248,16 +252,16 @@ def findRotationCount(nums: list[int]) -> int:
 ## Common Pitfalls & Edge Cases
 
 1. **Comparing `mid` with `left` instead of `right`:**
-   Comparing with `left` breaks when the sub-array is fully sorted. In `[1, 2, 3, 4, 5]`, `nums[mid] > nums[left]` is true, which might incorrectly imply the minimum is to the right if you aren't careful. Always compare `nums[mid]` to `nums[right]` for a stable reference point.
+   Comparing with `left` breaks when the sub-array is fully sorted. In `[1, 2, 3, 4, 5]`, `nums[mid] > nums[left]` is true, which might incorrectly imply the minimum is to the right. Always compare `nums[mid]` to `nums[right]` for a stable reference point.
 
 2. **Using `right = mid - 1` when `nums[mid] <= nums[right]`:**
-   If `nums[mid]` happens to be the minimum, doing `right = mid - 1` will skip right past it. Since `mid` *could* be the minimum (e.g., `mid` is at the bottom of the cliff), you must keep it in the search space using `right = mid`.
+   If `nums[mid]` happens to be the minimum, doing `right = mid - 1` will skip right past it. Since `mid` evaluates to `True` for our boundary condition, you must keep it in the search space using `right = mid`.
 
-3. **Using `while left <= right:`:**
-   This will cause an infinite loop because when `left == right`, `mid == left == right`, and the `else` block triggers `right = mid`, changing nothing. Since you are narrowing a range rather than searching for a specific target, always use `while left < right:` to narrow down to a single element.
+3. **Using `while left <= right:` for boundary finding:**
+   This will cause an infinite loop because when `left == right`, `mid == left == right`, and the `if` block triggers `right = mid`, changing nothing. Since you are narrowing a range rather than searching for a specific target, always use `while left < right:` to narrow down to a single element.
 
 4. **Handling purely sorted arrays:**
-   If an array like `[1, 2, 3, 4, 5]` is passed, the binary search will still work and eventually correctly find the `1`, but doing a quick `if nums[left] <= nums[right]: return nums[left]` upfront avoids the binary search entirely for an $O(1)$ best case.
+   If an array like `[1, 2, 3, 4, 5]` is passed, doing a quick `if nums[left] <= nums[right]: return nums[left]` upfront avoids the binary search entirely for an $O(1)$ best case.
 
 ---
 
@@ -265,8 +269,8 @@ def findRotationCount(nums: list[int]) -> int:
 
 | Condition / Step | Why? |
 | :--- | :--- |
-| **`while left < right`** | We are narrowing a range to find a position. Loop terminates when `left == right`, pointing precisely at the min. |
-| **Compare `mid` to `right`** | Right bound acts as a stable reference to detect the "cliff". |
-| **`nums[mid] > nums[right]`** | The array wraps around in the right half. The minimum is to the right. `left = mid + 1` |
-| **`nums[mid] < nums[right]`** | The right half is strictly increasing. The minimum is at `mid` or left. `right = mid` |
-| **`nums[mid] == nums[right]`** | (Duplicates only) Cannot determine which half. Safely discard `right`. `right -= 1` |
+| **`while left < right`** | We are finding a boundary position (Template 2). Loop terminates when `left == right`, pointing precisely at the min. |
+| **Compare `mid` to `right`** | Right bound acts as a stable reference to evaluate the monotonic condition `nums[i] <= nums[right]`. |
+| **`nums[mid] <= nums[right]`** | `mid` is in the right-side portion. The minimum is at `mid` or left. `right = mid` |
+| **`nums[mid] > nums[right]`** | `mid` is in the left-side portion. The minimum is to the right. `left = mid + 1` |
+| **`nums[mid] == nums[right]`** | (Duplicates only) Cannot determine which half. Safely discard `right` since `mid` has same value. `right -= 1` |
