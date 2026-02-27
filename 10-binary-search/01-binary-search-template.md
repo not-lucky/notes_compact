@@ -7,7 +7,7 @@
 Binary search is one of the most fundamental algorithms, yet one of the most frequently failed in interviews. Donald Knuth famously noted that while the first binary search was published in 1946, the first published binary search without bugs did not appear until 1962.
 
 Interviewers test:
-1. **Implementation accuracy**: Can you write bug-free binary search on the first try? (Off-by-one errors are lethal).
+1. **Implementation accuracy**: Can you write bug-free binary search on the first try? (Off-by-one errors and infinite loops are lethal).
 2. **Variant recognition**: Can you identify that a problem requires binary search even when there's no explicitly sorted array?
 3. **Boundary conditions**: Do you know when to use `<` vs `<=`, or `mid` vs `mid + 1`?
 4. **Search Space Reduction**: Can you define a monotonic boolean function to search over a range of answers (Binary Search on Answer)?
@@ -46,9 +46,9 @@ When searching for a target in a sorted array:
 
 ---
 
-## The Three Templates
+## The Three Core Templates
 
-Mastering binary search means mastering how to adjust your search space boundaries.
+Mastering binary search means mastering how to adjust your search space boundaries. While there are many ways to write binary search, sticking to these standard templates minimizes bugs.
 
 ### Template 1: Find Exact Match (Standard)
 
@@ -78,7 +78,8 @@ def binary_search(nums: list[int], target: int) -> int:
 ```
 
 **Key Signatures:**
-- `left <= right` (Loop runs even when `left == right` to check the last element).
+- Initial bounds: `left = 0`, `right = len(nums) - 1`.
+- Loop condition: `left <= right` (Runs even when `left == right` to check the last element).
 - Early exit: `return mid` inside the loop.
 - Boundary updates: `left = mid + 1` and `right = mid - 1`.
 
@@ -88,82 +89,74 @@ def binary_search(nums: list[int], target: int) -> int:
 
 Used when finding the **first** position where a condition becomes true (e.g., first occurrence of duplicates, or where to insert an element). **You cannot stop early.**
 
+This is the most versatile and robust template. It maintains the invariant that the answer is always within the `[left, right]` range.
+
 ```python
 def find_left_boundary(nums: list[int], target: int) -> int:
     """
-    Find first occurrence of target.
-    Returns the leftmost index if found, else -1.
+    Find first occurrence of target or the insertion point (bisect_left).
+    Returns the leftmost index where nums[i] >= target.
     """
-    left, right = 0, len(nums) - 1
-    result = -1  # Keep track of the best valid candidate so far
-
-    while left <= right:
-        mid = left + (right - left) // 2
-
-        if nums[mid] >= target:
-            if nums[mid] == target:
-                result = mid    # Found a candidate, but keep searching left for an earlier one
-            right = mid - 1     # Squeeze right boundary to find earlier occurrences
-        else:
-            left = mid + 1      # nums[mid] is too small, target must be to the right
-
-    return result
-```
-
-**Alternative (The "Insert" or `bisect_left` pattern):**
-This is often preferred by advanced competitive programmers. It finds the first index where `nums[i] >= target`.
-
-```python
-def bisect_left_custom(nums: list[int], target: int) -> int:
     # Note: right = len(nums), NOT len(nums) - 1.
     # Target might need to be inserted at the very end.
     left, right = 0, len(nums)
 
-    while left < right:  # Note: < not <=
+    while left < right:  # Terminate when left == right
         mid = left + (right - left) // 2
 
         if nums[mid] < target:
-            left = mid + 1      # Mid is strictly less than target, must move right
+            left = mid + 1      # Mid is strictly less than target, answer must be to the right
         else:
-            right = mid         # Mid is >= target. It COULD be the answer, so don't do mid - 1
+            right = mid         # Mid is >= target. It COULD be the answer, so keep it in search space
 
     # At the end of the loop, left == right.
     return left
 ```
 
-**Key Signatures (Alternative Pattern):**
-- Initial bounds: `[0, len(nums)]`.
-- Loop condition: `left < right` (terminates when `left == right`).
-- Boundary updates: `left = mid + 1` and `right = mid` (Never `right = mid - 1`).
-- Return `left`.
+**Key Signatures:**
+- Initial bounds: `left = 0`, `right = len(nums)` (The possible answers are `0` through `len(nums)`).
+- Loop condition: `left < right` (terminates exactly when `left == right`, leaving one unambiguous answer).
+- Boundary updates: `left = mid + 1` and `right = mid` (Never `right = mid - 1`, because `mid` might be the answer).
+- Return `left` (or `right`, they are equal).
+
+*Note: If you specifically need to know if the target exists, you check `if left < len(nums) and nums[left] == target` after the loop.*
 
 ---
 
 ### Template 3: Find Right Boundary (Last Occurrence)
 
-Used when finding the **last** position where a condition is true.
+Used when finding the **last** position where a condition is true (e.g., the last occurrence of a target).
+
+Similar to Template 2, but the logic is mirrored.
 
 ```python
 def find_right_boundary(nums: list[int], target: int) -> int:
     """
-    Find last occurrence of target.
-    Returns the rightmost index if found, else -1.
+    Find the last occurrence of a target.
+    Returns the rightmost index where nums[i] <= target.
     """
     left, right = 0, len(nums) - 1
-    result = -1
 
-    while left <= right:
-        mid = left + (right - left) // 2
+    while left < right:
+        # CRITICAL: When using left = mid, we must bias mid to the RIGHT
+        # by adding 1, otherwise we get infinite loops when left == right - 1
+        mid = left + (right - left + 1) // 2
 
-        if nums[mid] <= target:
-            if nums[mid] == target:
-                result = mid    # Found candidate, but keep searching right for a later one
-            left = mid + 1      # Squeeze left boundary to find later occurrences
+        if nums[mid] > target:
+            right = mid - 1     # Mid is strictly greater than target, answer must be to the left
         else:
-            right = mid - 1     # nums[mid] is too large, target must be to the left
+            left = mid          # Mid is <= target. It COULD be the answer, so keep it in search space
 
-    return result
+    # Check if we actually found the target
+    if left < len(nums) and nums[left] == target:
+        return left
+    return -1
 ```
+
+**Key Signatures:**
+- Loop condition: `left < right`.
+- Mid calculation: **`mid = left + (right - left + 1) // 2`** (Rounds up).
+- Boundary updates: `left = mid` and `right = mid - 1`.
 
 ---
 
@@ -171,22 +164,22 @@ def find_right_boundary(nums: list[int], target: int) -> int:
 
 Target = `5` in `[1, 2, 3, 5, 5, 5, 8, 9]`
 
-**Left boundary (finds first 5):**
+**Left boundary (finds first 5 using `bisect_left` template):**
 ```text
-[1, 2, 3, 5, 5, 5, 8, 9]
- L           M        R     mid=3, nums[3]=5 >= 5, result=3, R=2
- L     M  R                 mid=1, nums[1]=2 < 5,  L=2
-       LM R                 mid=2, nums[2]=3 < 5,  L=3
-       R  L                 L > R, return result=3
+[1, 2, 3, 5, 5, 5, 8, 9] (len=8)
+ L           M           R   (left=0, right=8) mid=4, nums[4]=5 >= 5 -> right=mid=4
+ L     M     R               (left=0, right=4) mid=2, nums[2]=3 < 5  -> left=mid+1=3
+          LM R               (left=3, right=4) mid=3, nums[3]=5 >= 5 -> right=mid=3
+          LR                 (left=3, right=3) left==right, loop terminates. Return 3.
 ```
 
-**Right boundary (finds last 5):**
+**Right boundary (finds last 5 using Template 3):**
 ```text
-[1, 2, 3, 5, 5, 5, 8, 9]
- L           M        R     mid=3, nums[3]=5 <= 5, result=3, L=4
-             L     M  R     mid=5, nums[5]=5 <= 5, result=5, L=6
-                   L  MR    mid=6, nums[6]=8 > 5,  R=5
-                   RL       L > R, return result=5
+[1, 2, 3, 5, 5, 5, 8, 9] (len=8)
+ L           M        R      (left=0, right=7) mid=4, nums[4]=5 <= 5 -> left=mid=4
+             L     M  R      (left=4, right=7) mid=6, nums[6]=8 > 5  -> right=mid-1=5
+             LM R            (left=4, right=5) mid=5, nums[5]=5 <= 5 -> left=mid=5
+                LR           (left=5, right=5) left==right, loop terminates. Return 5.
 ```
 
 ---
@@ -219,6 +212,7 @@ def first_occurrence(nums: list[int], target: int) -> int:
     return -1
 
 def last_occurrence(nums: list[int], target: int) -> int:
+    # bisect_right gives the index AFTER the last occurrence
     idx = bisect.bisect_right(nums, target) - 1
     if idx >= 0 and nums[idx] == target:
         return idx
@@ -236,7 +230,7 @@ The array isn't sorted, but the *answer space* is monotonic.
 You need to find a minimum or maximum value that satisfies a certain condition.
 1. Define the search space: `[min_possible_answer, max_possible_answer]`.
 2. Define a helper function: `is_valid(guess) -> bool` that runs in $O(N)$.
-3. Use binary search (Template 2 or 3) to find the boundary where `is_valid` flips.
+3. Use binary search (Template 2) to find the boundary where `is_valid` flips.
 
 **Example Conceptual Problem:** "Koko Eating Bananas" (Find minimum eating speed $k$).
 - If $k=1$, it takes too long (`is_valid(1) == False`).
@@ -247,22 +241,24 @@ You need to find a minimum or maximum value that satisfies a certain condition.
 
 ```python
 def solve(params):
-    left, right = min_ans, max_ans
-    result = -1
+    # Search space: possible answers for k
+    left, right = min_possible_k, max_possible_k
 
-    while left <= right:
+    while left < right:
         mid = left + (right - left) // 2
 
         if is_valid(mid, params):
-            result = mid       # Mid works, but can we find a SMALLER answer?
-            right = mid - 1    # Squeeze right
+            # mid works, but can we find a SMALLER valid k?
+            # keep mid in the search space
+            right = mid
         else:
-            left = mid + 1     # Mid doesn't work, we need a larger answer
+            # mid is too small, must be strictly larger
+            left = mid + 1
 
-    return result
+    return left # or right, they are equal
 ```
 
-Total Time Complexity: $O(N \log M)$ where $N$ is array size and $M$ is the answer space size.
+Total Time Complexity: $O(N \log M)$ where $N$ is array size and $M$ is the answer space size (`max_ans - min_ans`).
 
 ---
 
@@ -278,18 +274,23 @@ mid = left + (right - left) // 2
 ```
 
 ### 2. Infinite Loops
-Occurs when `left == right` (or `left == right - 1`) and the search space doesn't shrink.
+Occurs when `left == right - 1` and the search space doesn't shrink.
 ```python
 # DANGER: Infinite loop if left = 0, right = 1 and we do:
-left = mid   # Since mid = 0 + 1//2 = 0, left remains 0 forever!
+mid = left + (right - left) // 2  # mid = 0
+if condition:
+    left = mid   # left remains 0 forever! Search space [0, 1] never shrinks.
 
-# Fix 1: Always use left = mid + 1 or right = mid - 1 (with left <= right)
-# Fix 2: If using left = mid, calculate mid as rounding UP:
+# The Golden Rule to prevent infinite loops:
+# If you use `left = mid`, your mid calculation MUST round up:
 # mid = left + (right - left + 1) // 2
+
+# If you use `right = mid`, your mid calculation MUST round down (default):
+# mid = left + (right - left) // 2
 ```
 
 ### 3. Edge Cases Checklist
-- [ ] Empty array (`if not nums: return -1`)
+- [ ] Empty array (`if not nums: return ...`)
 - [ ] Array with 1 element (walk through it manually)
 - [ ] Target is smaller than the 0th element
 - [ ] Target is larger than the last element
