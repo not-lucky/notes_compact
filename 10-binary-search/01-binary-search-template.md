@@ -321,10 +321,10 @@ Binary search is powerful but has specific requirements. Watch out for these tra
    - If a target appears $K$ times, finding all of them takes $O(\log N + K)$. If $K \approx N$ (e.g., an array of all `5`s), this degrades to $O(N)$. Just use a linear scan.
 
 3. **Linked Lists**
-   - Binary search requires $O(1)$ random access. Reaching the middle of a linked list takes $O(N)$. Binary search on a linked list is $O(N \log N)$—worse than an $O(N)$ linear scan!
+   - Binary search requires $O(1)$ random access. Reaching the middle of a linked list takes $O(N)$. Therefore, performing binary search on a linked list takes $O(N \log N)$ time—which is worse than a simple $O(N)$ linear scan!
 
 4. **Dynamic Data (Frequent Inserts/Deletes)**
-   - Inserting into a sorted array takes $O(N)$. If you are constantly adding elements and then searching, your overall time is dominated by the $O(N)$ inserts. Use a Balanced BST (like `SortedList` in Python) or a Hash Map instead.
+   - Inserting into a sorted array takes $O(N)$ time. If you are constantly adding elements and then searching, your overall time is dominated by the $O(N)$ inserts. In these scenarios, use a Balanced BST (like `SortedList` in Python) or a Hash Map instead.
 
 ---
 
