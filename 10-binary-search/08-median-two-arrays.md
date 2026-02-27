@@ -148,12 +148,12 @@ def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
             if (m + n) % 2 == 1:
                 # Odd total length: median is the maximum of the left partition
                 return float(max_left)
-            else:
-                # Even total length: median is average of max(left) and min(right)
-                min_right = min(nums1_right, nums2_right)
-                return (max_left + min_right) / 2.0
 
-        elif nums1_left > nums2_right:
+            # Even total length: median is average of max(left) and min(right)
+            min_right = min(nums1_right, nums2_right)
+            return (max_left + min_right) / 2.0
+
+        if nums1_left > nums2_right:
             # nums1's left side is too large. We need to shrink nums1's contribution.
             right = i - 1
         else:
