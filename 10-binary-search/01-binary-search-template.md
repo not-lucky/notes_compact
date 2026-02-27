@@ -243,8 +243,8 @@ You need to find a minimum or maximum value that satisfies a certain condition.
 - If $k=1$, it takes too long (`is_valid(1) == False`).
 - If $k=100$, she finishes in time (`is_valid(100) == True`).
 - If she can finish at speed $k$, she can *definitely* finish at speed $k+1$.
-- The condition `is_valid(k)` is monotonic: `[F, F, F, T, T, T]`.
-- We want to find the **first** `True` (Left Boundary).
+- The condition `is_valid(k)` is monotonic: `[False, False, False, True, True, True]`.
+- We want to find the **first** `True` (Left Boundary Template).
 
 ```python
 def solve(params):
@@ -257,7 +257,7 @@ def solve(params):
 
         if is_valid(mid, params):
             # mid works, but can we find a SMALLER valid k?
-            # keep mid in the search space
+            # keep mid in the search space, maybe a smaller value to the left works
             right = mid
         else:
             # mid is too small, must be strictly larger
