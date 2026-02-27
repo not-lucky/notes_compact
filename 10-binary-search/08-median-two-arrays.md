@@ -4,36 +4,36 @@
 
 ## Interview Context
 
-This is a classic hard problem and FANG+ favorite because:
+This is arguably the most famous "Hard" problem in technical interviews. It's a FANG+ favorite because it tests:
 
-1. **Non-obvious binary search**: Requires creative application
-2. **Edge case heavy**: Many boundary conditions
-3. **Optimal solution is tricky**: O(log(min(m,n))) is not intuitive
-4. **Tests deep understanding**: Not pattern matching
+1. **Non-obvious binary search**: Applying binary search not to find a value, but to find a *partitioning index*.
+2. **Deep analytical thinking**: Memorization will fail here; you must thoroughly understand the invariants.
+3. **Edge case mastery**: Handling out-of-bounds indices, empty arrays, and even/odd total lengths seamlessly.
+4. **Optimal complexity**: Finding an $O(\log(\min(m,n)))$ solution when $O(m+n)$ is the obvious baseline.
 
 ---
 
 ## Building Intuition
 
-**What Is the Median Really?**
+### What Is the Median Really?
 
-The median is the value that PARTITIONS the data into two equal halves:
+Before thinking about arrays, let's define the median. The median is the value that **partitions a dataset into two equal halves**, such that every element in the left half is less than or equal to every element in the right half.
 
-```
-Merged: [1, 2, 3, 4, 5, 6, 7, 8]
-                  ↑
-             Left Half: [1,2,3,4]
-             Right Half: [5,6,7,8]
+```text
+Merged: [1, 2, 3, 4, | 5, 6, 7, 8]
+                     ↑
+             Left Half: [1,2,3,4] (max = 4)
+             Right Half: [5,6,7,8] (min = 5)
+
+             Valid because: max(Left) <= min(Right)
              Median = (4+5)/2 = 4.5
 ```
 
-**The Key Insight: Partition, Don't Merge**
+### The Key Insight: Partition, Don't Merge
 
-The naive approach merges both arrays first (O(m+n)), then finds the middle.
+The naive approach merges both arrays first ($O(m+n)$), then finds the middle element. But we don't need to *actually* merge the arrays. We just need to find the correct **partition point** across both arrays simultaneously.
 
-But here's the insight: we don't need to ACTUALLY merge. We just need to find the correct PARTITION POINT.
-
-```
+```text
 nums1: [1, 3, | 8, 9]      partition i=2 (2 elements on left)
 nums2: [2, 4, 5, | 7, 10]  partition j=3 (3 elements on left)
                            total left = 5 elements
@@ -44,541 +44,302 @@ Combined right half: [7, 8, 9, 10]
 If max(left) ≤ min(right), this is a valid partition!
 ```
 
-**Why Binary Search Works Here**
+### Why Binary Search Works Here
 
-We're searching for the correct partition point in nums1. Given how many elements we take from nums1, we can calculate how many to take from nums2.
+We're searching for the correct partition point in `nums1`. Because the total number of elements in the left half is fixed, choosing a partition index in `nums1` strictly dictates the partition index in `nums2`.
 
-```
+```text
 Total elements: m + n
-Left half should have: (m + n + 1) // 2 elements
+Left half must contain: (m + n + 1) // 2 elements
 
 If we take i elements from nums1:
-- We must take j = (m+n+1)//2 - i elements from nums2
+- We MUST take j = (m + n + 1) // 2 - i elements from nums2
 
-So there's only ONE variable to search: i
-Binary search on i!
+So there's only ONE independent variable to search: i.
+Since the arrays are sorted, we can binary search for i!
 ```
 
-**The Valid Partition Condition**
+### The Valid Partition Condition
 
-A partition is valid if left half ≤ right half. Since both arrays are sorted internally, we only need to check the CROSS elements:
+A partition is valid if the combined left half is $\le$ the combined right half. Since `nums1` and `nums2` are individually sorted, we already know `nums1[left] <= nums1[right]` and `nums2[left] <= nums2[right]`.
 
-```
+We only need to check the **cross-array elements**:
+
+```text
 nums1: [..., A, | B, ...]
 nums2: [..., C, | D, ...]
 
 Valid if: A ≤ D  AND  C ≤ B
 
-A is max of nums1's left side
-C is max of nums2's left side
-B is min of nums1's right side
-D is min of nums2's right side
+A is nums1_left  (max of nums1's left side)
+C is nums2_left  (max of nums2's left side)
+B is nums1_right (min of nums1's right side)
+D is nums2_right (min of nums2's right side)
 ```
 
-**Mental Model: Cutting Two Ropes**
+### Why Search on the Smaller Array?
 
-Imagine two ropes (sorted arrays) that you want to combine into one sorted rope. You need to cut each rope at some point, then verify that the left pieces fit before the right pieces.
+We must binary search on the shorter array to ensure $j$ (the partition index in `nums2`) doesn't go negative or out of bounds.
 
-- Cut rope1 at position i, rope2 at position j
-- The last bead on rope1's left piece must be smaller than rope2's first right bead
-- The last bead on rope2's left piece must be smaller than rope1's first right bead
-
-**Why Search on the Smaller Array?**
-
-If we search on the larger array, the partition j might go negative:
-
-```
+```text
 nums1: [1,2,3,4,5,6,7,8,9,10]  (m=10)
-nums2: [5]                      (n=1)
+nums2: [5]                     (n=1)
 Total = 11, left half needs 6 elements
 
-If i=8 (from nums1), j = 6-8 = -2 ← Invalid!
+If we search nums1 and guess i=8, then j = 6 - 8 = -2 ← Invalid index!
+By searching the smaller array, j is guaranteed to be within [0, n].
 ```
-
-By searching on the smaller array, j always stays valid.
-
-**Visual Walkthrough**
-
-```
-nums1: [1, 3, 8]  (m=3)
-nums2: [2, 4, 5, 7]  (n=4)
-Total = 7, left half needs 4 elements
-
-Step 1: Binary search on nums1 (0 to 3)
-  i = 1, j = 4-1 = 3
-  nums1: [1 | 3, 8]
-  nums2: [2, 4, 5 | 7]
-
-  Check: nums1[0]=1 ≤ nums2[3]=7 ✓
-         nums2[2]=5 ≤ nums1[1]=3 ✗
-
-  nums2's left max (5) > nums1's right min (3)
-  Need MORE from nums1! left = i+1 = 2
-
-Step 2:
-  i = 2, j = 4-2 = 2
-  nums1: [1, 3 | 8]
-  nums2: [2, 4 | 5, 7]
-
-  Check: nums1[1]=3 ≤ nums2[2]=5 ✓
-         nums2[1]=4 ≤ nums1[2]=8 ✓
-
-  Valid partition!
-  Odd total: median = max(3, 4) = 4
-```
-
----
-
-## When NOT to Use This Approach
-
-**1. Arrays Aren't Sorted**
-
-This entire approach relies on sorted order. Unsorted arrays need:
-
-- Sort first: O(n log n + m log m)
-- Or use quickselect: O(n + m) average
-
-**2. Finding Other Quantiles**
-
-This partition approach is specific to median. For:
-
-- 25th percentile → Modify partition sizes
-- kth element → Use the kth element approach (also provided below)
-
-**3. More Than Two Arrays**
-
-For k sorted arrays, use:
-
-- Heap-based merge: O(total × log k)
-- Not a simple generalization of this approach
-
-**4. Very Small Arrays**
-
-If m + n ≤ 10:
-
-- Just merge and find middle: O(m + n)
-- Simpler to implement, same practical speed
-
-**5. Streaming Data**
-
-If arrays are being appended to:
-
-- Two-heap approach is better
-- This approach needs complete arrays
-
-**Red Flags:**
-
-- "Arrays may be unsorted" → Sort first or different approach
-- "Multiple arrays" → Heap-based merge
-- "Running median as elements arrive" → Two-heap approach
-- "Very large arrays that don't fit in memory" → External merge sort
 
 ---
 
 ## The Problem
 
-Given two sorted arrays `nums1` and `nums2`, find the median of the combined sorted array.
+Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays.
 
-```
-nums1 = [1, 3]
-nums2 = [2]
-Merged = [1, 2, 3]
-Median = 2.0
-
-nums1 = [1, 2]
-nums2 = [3, 4]
-Merged = [1, 2, 3, 4]
-Median = (2 + 3) / 2 = 2.5
-```
-
-**Requirement**: O(log(m+n)) time complexity.
+**Requirement**: The overall run time complexity should be $O(\log(m+n))$.
+*(Note: Searching the smaller array actually gives $O(\log(\min(m,n)))$, which is strictly better and expected in FANG interviews).*
 
 ---
 
-## Binary Search on Partition
+## 1. Optimal Solution: Binary Search on Partition
+
+This is the standard expected solution for the hard problem.
+
+### Algorithm
+1. Ensure `nums1` is the smaller array.
+2. Define `left = 0` and `right = m`.
+3. Binary search for `i` (partition in `nums1`), calculate `j` (partition in `nums2`).
+4. Handle edge cases using $-\infty$ and $+\infty$ when partitions fall at the very edges of the arrays.
+5. Check if the cross-conditions are met:
+   - If `nums1_left > nums2_right`: `i` is too far right, move `right = i - 1`.
+   - If `nums2_left > nums1_right`: `i` is too far left, move `left = i + 1`.
+   - Otherwise, we found the perfect partition! Calculate median based on even/odd total length.
 
 ```python
-def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:
-    """
-    Find median of two sorted arrays.
-
-    Time: O(log(min(m, n)))
-    Space: O(1)
-    """
-    # Ensure nums1 is the smaller array
+def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
+    # Ensure nums1 is the smaller array to guarantee valid j indices and optimize time
     if len(nums1) > len(nums2):
         nums1, nums2 = nums2, nums1
 
     m, n = len(nums1), len(nums2)
-    total = m + n
-    half = (total + 1) // 2
+    total_len = m + n
+    # (total_len + 1) // 2 works perfectly for both even and odd total lengths
+    # Odd: gives exactly the middle index (1-based)
+    # Even: gives the end of the left half
+    half_len = (total_len + 1) // 2
 
     left, right = 0, m
 
     while left <= right:
-        # Partition positions
-        i = (left + right) // 2  # Elements from nums1 in left half
-        j = half - i              # Elements from nums2 in left half
+        # i is the number of elements from nums1 in the left partition
+        i = (left + right) // 2
+        # j is the number of elements from nums2 in the left partition
+        j = half_len - i
 
-        # Edge values (use -inf/inf for boundaries)
+        # Extract the 4 elements immediately surrounding the partition.
+        # Use -inf / inf if the partition is at the extreme edges.
         nums1_left = nums1[i - 1] if i > 0 else float('-inf')
         nums1_right = nums1[i] if i < m else float('inf')
+
         nums2_left = nums2[j - 1] if j > 0 else float('-inf')
         nums2_right = nums2[j] if j < n else float('inf')
 
-        # Check if partition is valid
+        # Check if the partition is perfectly valid
         if nums1_left <= nums2_right and nums2_left <= nums1_right:
-            # Valid partition found
-            if total % 2 == 1:
-                # Odd total: median is max of left half
+            # We found the correct partition!
+            if total_len % 2 == 1:
+                # Odd length: median is the maximum of the left partition
                 return max(nums1_left, nums2_left)
             else:
-                # Even total: average of max(left) and min(right)
-                return (max(nums1_left, nums2_left) +
-                        min(nums1_right, nums2_right)) / 2
+                # Even length: median is average of max(left) and min(right)
+                return (max(nums1_left, nums2_left) + min(nums1_right, nums2_right)) / 2.0
 
         elif nums1_left > nums2_right:
-            # nums1 partition too far right
+            # nums1's left side is too large. We need to shrink nums1's contribution.
             right = i - 1
         else:
-            # nums1 partition too far left
+            # nums2's left side is too large. We need to expand nums1's contribution.
             left = i + 1
 
-    raise ValueError("Arrays are not sorted")
+    raise ValueError("Input arrays are not sorted or are invalid.")
 ```
+
+### Complexity Analysis
+- **Time Complexity:** $O(\log(\min(m, n)))$ because we only binary search the smaller array.
+- **Space Complexity:** $O(1)$ since we only store a few pointer variables.
 
 ---
 
 ## Visual Walkthrough
 
-Finding median of [1, 3, 8] and [2, 4, 5, 7]:
+Finding median of `[1, 3, 8]` and `[2, 4, 5, 7]`:
 
-```
+```text
 m=3, n=4, total=7, half=4
+Left half must contain exactly 4 elements.
 
 Step 1: left=0, right=3
-        i=1, j=3
+        i = (0+3)//2 = 1. Therefore, j = 4 - 1 = 3
+
         nums1: [1 | 3, 8]
         nums2: [2, 4, 5 | 7]
 
         nums1_left=1, nums1_right=3
         nums2_left=5, nums2_right=7
 
-        Check: 1 <= 7? Yes. 5 <= 3? No!
-        nums2_left > nums1_right: need more from nums1
+        Check: 1 <= 7? Yes.
+        Check: 5 <= 3? No! (nums2_left > nums1_right)
+
+        Action: We need a larger right element from nums1, so we must increase i.
         left = i + 1 = 2
 
 Step 2: left=2, right=3
-        i=2, j=2
+        i = (2+3)//2 = 2. Therefore, j = 4 - 2 = 2
+
         nums1: [1, 3 | 8]
         nums2: [2, 4 | 5, 7]
 
         nums1_left=3, nums1_right=8
         nums2_left=4, nums2_right=5
 
-        Check: 3 <= 5? Yes. 4 <= 8? Yes!
-        Valid partition!
+        Check: 3 <= 5? Yes.
+        Check: 4 <= 8? Yes!
 
-        Odd total: return max(3, 4) = 4
+        Action: Valid partition found!
+        Total is odd (7), so median = max(nums1_left, nums2_left)
+        median = max(3, 4) = 4.0
 ```
 
 ---
 
-## Why Binary Search Works
+## 2. Alternative: Kth Element Approach
 
-1. **We only search on the smaller array** (nums1)
-2. **For each partition i in nums1, j is determined**: j = half - i
-3. **Monotonic property**: If current partition is too far right, all further right are also invalid
-4. **Binary search finds the correct partition** in O(log m)
+While the partition approach is mathematically beautiful, some candidates prefer finding the $k^{th}$ element of two sorted arrays. This solves a slightly more general problem.
 
----
-
-## Alternative: Kth Element Approach
-
-Find the kth smallest element in two sorted arrays:
+If we can find the $k^{th}$ smallest element in $O(\log k)$ time, we can find the median by querying for $k = \lfloor\frac{m+n}{2}\rfloor$ and $k = \lfloor\frac{m+n}{2}\rfloor + 1$.
 
 ```python
-def find_kth_element(nums1: list[int], nums2: list[int], k: int) -> int:
-    """
-    Find kth smallest element in two sorted arrays.
+def findMedianSortedArrays_Kth(nums1: list[int], nums2: list[int]) -> float:
+    total_len = len(nums1) + len(nums2)
 
-    Time: O(log k)
-    Space: O(1)
-    """
-    m, n = len(nums1), len(nums2)
-    i, j = 0, 0  # Starting indices
+    def get_kth(k: int, a_start: int, b_start: int) -> int:
+        # Base cases
+        if a_start >= len(nums1): return nums2[b_start + k - 1]
+        if b_start >= len(nums2): return nums1[a_start + k - 1]
+        if k == 1: return min(nums1[a_start], nums2[b_start])
 
-    while True:
-        # Edge cases
-        if i >= m:
-            return nums2[j + k - 1]
-        if j >= n:
-            return nums1[i + k - 1]
-        if k == 1:
-            return min(nums1[i], nums2[j])
-
-        # Compare elements at k//2 positions
+        # We want to compare the (k/2)th element of both arrays to discard half of k
         mid = k // 2
-        new_i = min(i + mid, m) - 1
-        new_j = min(j + mid, n) - 1
+        a_val = nums1[a_start + mid - 1] if a_start + mid - 1 < len(nums1) else float('inf')
+        b_val = nums2[b_start + mid - 1] if b_start + mid - 1 < len(nums2) else float('inf')
 
-        if nums1[new_i] <= nums2[new_j]:
-            # Discard left part of nums1
-            k -= (new_i - i + 1)
-            i = new_i + 1
+        # If a_val is smaller, we can safely discard the first (k/2) elements of nums1
+        if a_val < b_val:
+            return get_kth(k - mid, a_start + mid, b_start)
         else:
-            # Discard left part of nums2
-            k -= (new_j - j + 1)
-            j = new_j + 1
+            return get_kth(k - mid, a_start, b_start + mid)
 
-
-def find_median_via_kth(nums1: list[int], nums2: list[int]) -> float:
-    """
-    Find median using kth element approach.
-
-    Time: O(log(m + n))
-    Space: O(1)
-    """
-    total = len(nums1) + len(nums2)
-
-    if total % 2 == 1:
-        return find_kth_element(nums1, nums2, total // 2 + 1)
+    if total_len % 2 == 1:
+        return get_kth(total_len // 2 + 1, 0, 0)
     else:
-        left = find_kth_element(nums1, nums2, total // 2)
-        right = find_kth_element(nums1, nums2, total // 2 + 1)
-        return (left + right) / 2
+        left_median = get_kth(total_len // 2, 0, 0)
+        right_median = get_kth(total_len // 2 + 1, 0, 0)
+        return (left_median + right_median) / 2.0
 ```
+
+### Complexity Analysis
+- **Time Complexity:** $O(\log(m+n))$ since we discard roughly half of $k$ at each recursive step, and initially $k \approx \frac{m+n}{2}$.
+- **Space Complexity:** $O(\log(m+n))$ for the recursion stack (or $O(1)$ if converted to iterative).
 
 ---
 
-## Comparison of Approaches
+## Common Interview Pitfalls
 
-| Approach      | Time            | Space | Complexity  |
-| ------------- | --------------- | ----- | ----------- |
-| Partition     | O(log min(m,n)) | O(1)  | Medium-High |
-| Kth Element   | O(log(m+n))     | O(1)  | Medium      |
-| Merge First k | O(k) = O(m+n)   | O(1)  | Low         |
+1. **Forgetting to Swap for Smaller Array**
+   If you don't ensure `nums1` is the smaller array, `j` could become negative during the binary search, causing `IndexError`.
+   ```python
+   if len(nums1) > len(nums2):
+       nums1, nums2 = nums2, nums1
+   ```
 
-The partition approach is slightly faster but harder to implement correctly.
+2. **Mishandling Infinity at Boundaries**
+   When `i = 0`, it means the left partition contains NO elements from `nums1`. The maximum value of an empty set is $-\infty$, meaning it will safely pass the `nums1_left <= nums2_right` check.
+   ```python
+   # Correct boundary handling
+   nums1_left = nums1[i - 1] if i > 0 else float('-inf')
+   ```
 
----
-
-## Edge Cases
-
-### One Array Empty
-
-```python
-nums1 = []
-nums2 = [1, 2, 3]
-# Median is just median of nums2
-```
-
-### Arrays of Different Sizes
-
-```python
-nums1 = [1, 2]
-nums2 = [3, 4, 5, 6, 7, 8]
-# Still works with partition approach
-```
-
-### Single Elements
-
-```python
-nums1 = [1]
-nums2 = [2]
-# Median = (1 + 2) / 2 = 1.5
-```
-
-### Duplicates
-
-```python
-nums1 = [1, 1, 1]
-nums2 = [1, 1, 1]
-# Median = 1
-```
+3. **Wrong "Half Length" Math**
+   Using `(m + n) // 2` causes logic errors for odd-length combinations. Always use `(m + n + 1) // 2` which gracefully handles both even and odd totals without extra conditional branching inside the loop parameters.
 
 ---
 
-## Related Problems
+## Extensions and Related Problems
 
-### Find Kth Smallest in Two Arrays
+### 1. Find Kth Smallest in Two Sorted Arrays
+Directly solved using the $k^{th}$ element approach above.
 
-```python
-def kth_smallest_two_arrays(nums1: list[int], nums2: list[int], k: int) -> int:
-    """Direct application of kth element approach."""
-    return find_kth_element(nums1, nums2, k)
-```
-
-### Median of Multiple Sorted Arrays
-
-For more than 2 arrays, use a min-heap approach:
+### 2. Median of K Sorted Arrays
+This requires shifting from a Binary Search approach to a **Min-Heap (Priority Queue)** approach.
 
 ```python
 import heapq
 
-def median_multiple_arrays(arrays: list[list[int]]) -> float:
-    """
-    Find median of multiple sorted arrays.
+def median_k_arrays(arrays: list[list[int]]) -> float:
+    # Time: O(total * log K) where K is number of arrays
+    total_elements = sum(len(arr) for arr in arrays)
+    target = (total_elements + 1) // 2
 
-    Time: O(total * log k) where k = number of arrays
-    Space: O(k)
-    """
-    total = sum(len(arr) for arr in arrays)
-    target = (total + 1) // 2
-
-    # Min heap: (value, array_index, element_index)
     heap = []
+    # Initialize heap with the first element of each array
     for i, arr in enumerate(arrays):
         if arr:
             heapq.heappush(heap, (arr[0], i, 0))
 
     count = 0
-    prev = curr = 0
+    prev_val = curr_val = 0
 
     while heap:
-        prev = curr
-        curr, arr_idx, elem_idx = heapq.heappop(heap)
+        prev_val = curr_val
+        curr_val, arr_idx, elem_idx = heapq.heappop(heap)
         count += 1
 
         if count == target:
-            if total % 2 == 1:
-                return curr
-            # Need one more for even total
+            if total_elements % 2 == 1:
+                return float(curr_val)
+            # If total_elements is even, we need the NEXT element to average them.
+            # We don't return yet, we let the loop run one more time.
 
-        if count == target + 1 and total % 2 == 0:
-            return (prev + curr) / 2
+        elif count == target + 1 and total_elements % 2 == 0:
+            return (prev_val + curr_val) / 2.0
 
-        # Add next element from same array
+        # Push the next element from the same array into the heap
         if elem_idx + 1 < len(arrays[arr_idx]):
             next_val = arrays[arr_idx][elem_idx + 1]
             heapq.heappush(heap, (next_val, arr_idx, elem_idx + 1))
 
-    return curr
+    return 0.0
 ```
 
----
-
-## Common Mistakes
-
-### 1. Not Ensuring nums1 is Smaller
-
-```python
-# Wrong: not swapping
-# Binary search on larger array may go out of bounds
-
-# Correct
-if len(nums1) > len(nums2):
-    nums1, nums2 = nums2, nums1
-```
-
-### 2. Wrong Boundary Values
-
-```python
-# Wrong: using 0 or len(array)
-nums1_left = nums1[i - 1] if i > 0 else 0  # Should be -inf
-
-# Correct
-nums1_left = nums1[i - 1] if i > 0 else float('-inf')
-nums1_right = nums1[i] if i < m else float('inf')
-```
-
-### 3. Off-by-One in Half Calculation
-
-```python
-# For median, left half should have (total + 1) // 2 elements
-half = (total + 1) // 2  # Correct for both odd and even
-```
-
-### 4. Wrong Final Answer for Even Total
-
-```python
-# Even total: average of two middle elements
-if total % 2 == 0:
-    return (max(nums1_left, nums2_left) +
-            min(nums1_right, nums2_right)) / 2
-```
+### 3. Find Median from Data Stream
+When the arrays are dynamically growing, the partition binary search fails. You must switch to the **Two Heaps** pattern (a Max-Heap for the left half, and a Min-Heap for the right half) to keep the median balanced in $O(\log n)$ per insertion. *(Covered extensively in the Heaps chapter)*.
 
 ---
 
-## Step-by-Step Implementation Guide
+## Summary of Approaches
 
-1. **Ensure nums1 is smaller** (reduces search space)
-2. **Calculate half** = (m + n + 1) // 2
-3. **Binary search on nums1**: from 0 to m
-4. **For each i, calculate j** = half - i
-5. **Get boundary values** with -inf/inf for edges
-6. **Check partition validity**: left maxes ≤ right mins
-7. **Adjust search range** based on which condition fails
-8. **Return median** based on odd/even total
+| Approach | Time Complexity | Space Complexity | Best When... |
+|----------|----------------|-----------------|--------------|
+| **Binary Search Partition** | $O(\log(\min(m,n)))$ | $O(1)$ | FANG interviews. Expected optimal solution. |
+| **Kth Element (Recursive)** | $O(\log(m+n))$ | $O(\log(m+n))$ | Solving the more generic "find Kth" variant. |
+| **Two Pointers Merge** | $O(m+n)$ | $O(1)$ | The interviewer asks for the brute force first. |
+| **Min-Heap Merge** | $O((m+n) \log K)$ | $O(K)$ | There are $>2$ sorted arrays to process. |
 
 ---
 
-## Complexity Analysis
+## Final Checklist for Interviews
 
-| Operation            | Time                       | Space    |
-| -------------------- | -------------------------- | -------- |
-| Partition approach   | O(log min(m,n))            | O(1)     |
-| Kth element approach | O(log k) where k = (m+n)/2 | O(1)     |
-| Naive merge          | O(m + n)                   | O(m + n) |
-
----
-
-## Edge Cases Checklist
-
-- [ ] One array empty
-- [ ] Both arrays have one element
-- [ ] Arrays of very different sizes
-- [ ] All elements in one array < all in other
-- [ ] Duplicate elements
-- [ ] Odd vs even total length
-
----
-
-## Practice Problems
-
-| #   | Problem                               | Difficulty | Key Insight             |
-| --- | ------------------------------------- | ---------- | ----------------------- |
-| 1   | Median of Two Sorted Arrays           | Hard       | Partition binary search |
-| 2   | Kth Smallest Element in Sorted Matrix | Medium     | Related technique       |
-| 3   | Find K Pairs with Smallest Sums       | Medium     | Heap + binary search    |
-| 4   | Merge K Sorted Lists                  | Hard       | Heap approach           |
-| 5   | Find Median from Data Stream          | Hard       | Two heaps               |
-
----
-
-## Interview Tips
-
-1. **Start with brute force**: Mention O(m+n) merge approach first
-2. **Explain the partition idea**: Draw the arrays with partition
-3. **Handle edge cases explicitly**: Empty arrays, boundaries
-4. **Test with examples**: Walk through a small case
-5. **Mention complexity**: O(log min(m,n)) is optimal
-
----
-
-## Key Takeaways
-
-1. **Partition-based approach**: Find correct split point
-2. **Search on smaller array**: Reduces time complexity
-3. **Use -inf/inf for boundaries**: Handles edge cases cleanly
-4. **Two conditions for valid partition**: Check both
-5. **Different formulas for odd/even**: Know both cases
-
----
-
-## Summary: Binary Search Patterns
-
-This concludes Chapter 10 on Binary Search. The key patterns covered:
-
-| Pattern               | Key Insight                    |
-| --------------------- | ------------------------------ |
-| Standard Template     | Find exact match or boundary   |
-| First/Last Occurrence | Continue searching after match |
-| Rotated Array         | Identify sorted half           |
-| Find Minimum          | Compare with right boundary    |
-| Peak Element          | Follow uphill direction        |
-| Search Space          | Binary search on answer range  |
-| Matrix Search         | 1D conversion or staircase     |
-| Median Two Arrays     | Partition both arrays          |
-
-Mastering these patterns will prepare you for most binary search problems in FANG+ interviews.
+- [ ] Acknowledge the naive $O(m+n)$ approach immediately to establish a baseline.
+- [ ] Diagram the partition concept. Showing the "cut" visually proves you understand the invariant.
+- [ ] Emphasize that finding `i` *guarantees* `j` because the left partition size is constant.
+- [ ] Dry-run the edge cases (especially $m=0$) before the interviewer points them out.

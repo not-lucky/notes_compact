@@ -4,36 +4,36 @@
 
 ## Interview Context
 
-Peak finding demonstrates binary search on non-sorted arrays:
+Peak finding demonstrates an advanced and creative use of binary search on **non-sorted** arrays. It tests your ability to adapt standard algorithms to non-standard properties.
 
-1. **Creative application**: Binary search without sorted order
-2. **Neighbor comparison**: Different from typical value comparison
-3. **Multiple valid answers**: Any peak is acceptable
-4. **Foundation for harder problems**: Bitonic search, local maxima
+1. **Creative application**: Binary search on an unsorted array based on local properties rather than global ordering.
+2. **Neighbor comparison**: Comparing elements to their adjacent neighbors rather than a fixed target.
+3. **Multiple valid answers**: Returning any valid peak is acceptable.
+4. **Foundation for harder problems**: Precursor to bitonic search, finding local extrema in 2D matrices, and optimization functions.
 
 ---
 
 ## Building Intuition
 
-**What Is a Peak?**
+### What Is a Peak?
 
 A peak element is strictly greater than its neighbors:
 
-```
+```text
 Array: [1, 3, 5, 4, 2]
             ↑
          5 is a PEAK: 5 > 3 (left) and 5 > 4 (right)
 ```
 
-Special boundary rule: Elements at the edges only need to be greater than their ONE neighbor (imagine `nums[-1] = nums[n] = -∞`).
+**Boundary Rule**: Elements at the edges only need to be strictly greater than their ONE adjacent neighbor. This is logically equivalent to imagining that out-of-bounds elements are negative infinity (`nums[-1] = nums[n] = -∞`).
 
-**Why Does Binary Search Work on Unsorted Data?**
+### Why Does Binary Search Work on Unsorted Data?
 
-This is the mind-bending part. The array isn't sorted, so how can we eliminate half at each step?
+This is the non-intuitive part. How can we eliminate half the search space if the array isn't sorted?
 
-The key: **we're guaranteed to find A peak by following the uphill direction**.
+The key insight: **We are guaranteed to find AT LEAST ONE peak by simply following the uphill slope.**
 
-```
+```text
 [1, 2, 1, 3, 5, 6, 4]
           M
 
@@ -41,437 +41,337 @@ nums[mid] = 3
 nums[mid+1] = 5
 
 Since 3 < 5, we go RIGHT. Why?
-
-Either:
-- 5 is a peak (5 > 6? No, but maybe...), OR
-- There's something even bigger to the right, OR
-- We hit the boundary (which is -∞, so the last element before it is a peak)
-
-No matter what, going uphill ALWAYS leads to a peak!
 ```
 
-**Mental Model: Climbing a Mountain**
+Because if we move to the right (to 5), one of three things must happen:
+1. `5` is a peak (if `5 > 6`, which it isn't here, but could be in another array).
+2. The sequence continues to go up, eventually hitting a peak.
+3. The sequence continues to go up until the end of the array. Since the out-of-bounds value is `-∞`, the very last element would be a peak.
 
-Imagine you're blindfolded on a mountain range. You can only feel the slope at your current position.
+**No matter what, going uphill ALWAYS leads to a peak!**
 
-- If the ground slopes UP to your right → walk right (you'll find a peak or summit)
-- If the ground slopes UP to your left → walk left
-- If you're at a local maximum → you found a peak!
+### Mental Model: Climbing a Mountain
 
-You might not find the HIGHEST peak, but you'll find A peak.
+Imagine you're blindfolded on a mountain range. You can only feel the slope directly under your feet.
+- If the ground slopes UP to your right → step right (you are guaranteed to find a peak or summit).
+- If the ground slopes UP to your left → step left.
+- If you're at a local maximum (both sides slope down) → you found a peak!
 
-**The Mathematical Guarantee**
+You might not find the *highest* peak (global maximum), but you will definitively find *a* peak (local maximum).
 
-Why must following uphill lead to a peak?
+### The Mathematical Guarantee
 
-1. If `nums[mid] < nums[mid+1]`, we go right
+Why must following the uphill direction lead to a peak?
+
+1. If `nums[mid] < nums[mid+1]`, we move right.
 2. The right portion either:
-   - Has a peak somewhere (we'll find it), OR
-   - Keeps increasing until the boundary
-3. At the boundary, `nums[n] = -∞` by definition
-4. So the last element before boundary IS a peak
+   - Contains a peak somewhere within it, OR
+   - Keeps increasing monotonically until the rightmost boundary.
+3. At the rightmost boundary `n-1`, by definition, `nums[n] = -∞`.
+4. Therefore, if the sequence only increases, the last element before the boundary `nums[n-1]` IS a peak because `nums[n-1] > nums[n-2]` (it was increasing) and `nums[n-1] > -∞`.
 
-**Multiple Peaks Don't Matter**
+### Multiple Peaks Don't Matter
 
-```
+```text
 [1, 3, 1, 5, 1, 7, 1]
     ↑     ↑     ↑
-   All three are valid peaks
-
-Binary search finds ONE of them—and that's fine for most problems.
+   All three are valid peaks.
 ```
+Binary search finds ONE of them based on the initial `mid` selection and subsequent slope tracking. This is perfectly acceptable for standard peak-finding problems.
 
 ---
 
 ## When NOT to Use Peak Binary Search
 
-**1. You Need THE Maximum (Not Just A Peak)**
-
-- Peak search finds A local maximum
-- If you need THE global maximum, you need O(n) scan
-
-```
-[1, 5, 1, 3, 1]
-    ↑     ↑
-Both are peaks, but 5 is the maximum. Binary search might find 3.
-```
+**1. You Need THE Maximum (Global Maximum, Not Just A Peak)**
+- Peak search finds *a* local maximum.
+- If you need the *global* maximum in an unsorted array, you need an $O(n)$ linear scan.
 
 **2. You Need ALL Peaks**
+- Finding all peaks requires checking every element, so an $O(n)$ linear scan is mandatory.
 
-- Finding all peaks requires O(n) linear scan
-- No way around it—each element must be checked
+**3. Equal Adjacent Elements Are Allowed (Plateaus)**
+- If `nums[i] == nums[i+1]` is possible, the "uphill" direction is ambiguous (a plateau). Binary search cannot definitively choose left or right to guarantee finding a peak.
+- Standard $O(\log n)$ peak finding requires *strictly* unequal adjacent elements (or a strict definition of a peak that accounts for plateaus in a way that allows binary search, which is rare).
 
-**3. Equal Elements Allowed**
+**4. Very Small Arrays ($n \le 3$)**
+- While binary search works, direct comparisons are simpler and faster in practice.
 
-- If plateau is allowed (nums[i] == nums[i+1]), the "uphill" direction is ambiguous
-- Some problems define peak as ">=" instead of ">"
-- Check problem definition carefully
-
-**4. Very Small Arrays (n <= 3)**
-
-- Just check all elements directly
-- Binary search overhead not worth it
-
-**Red Flags:**
-
-- "Find the maximum element" → Linear scan or different approach
-- "Find all peaks" → Linear scan
-- "Elements may be equal" → Carefully read peak definition
-- "Find peaks satisfying condition X" → May need linear scan
+**🚩 Red Flags for Standard Binary Search:**
+- "Find the *maximum* element" → $O(n)$ scan.
+- "Find *all* peaks" → $O(n)$ scan.
+- "Elements may be *equal*" → Binary search might degrade to $O(n)$ or require complex modifications.
 
 ---
 
-## Find Peak Element
+## Core Implementation: Find Peak Element
 
-LeetCode 162: Find Peak Element
+**LeetCode 162: Find Peak Element**
 
 ```python
 def find_peak_element(nums: list[int]) -> int:
     """
-    Find any peak element in the array.
+    Find any peak element in the array and return its index.
+    Assumption: nums[i] != nums[i+1] for all valid i.
 
     Time: O(log n)
     Space: O(1)
     """
     left, right = 0, len(nums) - 1
 
+    # Standard template for finding an index where a condition is met
+    # Notice the condition `left < right`
     while left < right:
         mid = left + (right - left) // 2
 
+        # Compare mid with its right neighbor to determine slope
         if nums[mid] < nums[mid + 1]:
-            # Peak is on the right side
+            # The slope is increasing upwards to the right.
+            # A peak MUST exist to the right of mid.
+            # mid itself cannot be the peak because its right neighbor is larger.
             left = mid + 1
         else:
-            # Peak is on the left side (including mid)
+            # The slope is decreasing downwards to the right (nums[mid] > nums[mid+1]).
+            # A peak MUST exist to the left of mid+1.
+            # mid ITSELF could be the peak, so we include it in the search space.
             right = mid
 
+    # Loop terminates when left == right.
+    # Because our logic guarantees the search space always contains a peak,
+    # the single remaining element must be a peak.
     return left
 ```
 
----
+### Visual Walkthrough
 
-## Visual Walkthrough
+Finding a peak in `[1, 2, 1, 3, 5, 6, 4]`:
 
-Finding peak in [1, 2, 1, 3, 5, 6, 4]:
-
-```
+```text
 Step 1: [1, 2, 1, 3, 5, 6, 4]
          L        M        R
-
          nums[M]=3 < nums[M+1]=5
-         Peak on right, L = mid + 1 = 4
+         Slope is up to the right. Peak is strictly to the right.
+         left = mid + 1 = 4
 
 Step 2: [1, 2, 1, 3, 5, 6, 4]
                      L  M  R
-
          nums[M]=6 > nums[M+1]=4
-         Peak on left (including mid), R = mid = 5
+         Slope is down to the right. Peak is at mid or to its left.
+         right = mid = 5
 
 Step 3: [1, 2, 1, 3, 5, 6, 4]
                      L  R
                      M
-
          nums[M]=5 < nums[M+1]=6
-         L = mid + 1 = 5
+         Slope is up to the right. Peak is strictly to the right.
+         left = mid + 1 = 5
 
 Step 4: [1, 2, 1, 3, 5, 6, 4]
                         LR
-
-         L == R, return 5
-         nums[5] = 6 is a peak
+         left == right. Loop terminates.
+         Return left (index 5). nums[5] = 6 is indeed a peak.
 ```
 
 ---
 
-## Why This Works: The Proof
+## Advanced Variants
 
-1. **Base case**: If array has one element, it's a peak (boundaries are -∞)
+### 1. Peak in a Bitonic Array
 
-2. **Inductive step**:
-   - If `nums[mid] < nums[mid+1]`, we move right
-   - The subarray `[mid+1, right]` has left boundary `nums[mid]`
-   - If `nums[mid+1]` is not the peak, there must be a higher value to its right
-   - Eventually we find a peak or reach the boundary (which is -∞)
-
-3. **Similar logic applies when moving left**
-
----
-
-## Alternative: Recursive Implementation
+A bitonic array strictly increases then strictly decreases. It has **exactly one** peak (the global maximum). The standard peak-finding algorithm works perfectly here.
 
 ```python
-def find_peak_recursive(nums: list[int], left: int = None, right: int = None) -> int:
+def peak_index_in_mountain_array(arr: list[int]) -> int:
     """
-    Find peak element recursively.
-
-    Time: O(log n)
-    Space: O(log n) - recursion stack
-    """
-    if left is None:
-        left, right = 0, len(nums) - 1
-
-    if left == right:
-        return left
-
-    mid = left + (right - left) // 2
-
-    if nums[mid] < nums[mid + 1]:
-        return find_peak_recursive(nums, mid + 1, right)
-    else:
-        return find_peak_recursive(nums, left, mid)
-```
-
----
-
-## Variant: Find All Peaks
-
-```python
-def find_all_peaks(nums: list[int]) -> list[int]:
-    """
-    Find all peak elements in the array.
-
-    Time: O(n) - must check all elements
-    Space: O(k) - k peaks
-    """
-    if not nums:
-        return []
-
-    n = len(nums)
-    peaks = []
-
-    for i in range(n):
-        left_ok = (i == 0) or (nums[i] > nums[i - 1])
-        right_ok = (i == n - 1) or (nums[i] > nums[i + 1])
-
-        if left_ok and right_ok:
-            peaks.append(i)
-
-    return peaks
-```
-
----
-
-## Peak in Bitonic Array
-
-A bitonic array increases then decreases (exactly one peak):
-
-```python
-def find_peak_bitonic(nums: list[int]) -> int:
-    """
-    Find the peak in a bitonic array.
-    Bitonic: strictly increasing then strictly decreasing.
+    Find the peak index in a mountain (bitonic) array.
+    Guaranteed: arr strictly increases then strictly decreases.
 
     Time: O(log n)
     Space: O(1)
     """
-    left, right = 0, len(nums) - 1
+    left, right = 0, len(arr) - 1
 
     while left < right:
         mid = left + (right - left) // 2
 
-        if nums[mid] < nums[mid + 1]:
-            # Still in increasing part
+        if arr[mid] < arr[mid + 1]:
+            # We are on the ascending slope
             left = mid + 1
         else:
-            # In decreasing part or at peak
+            # We are on the descending slope, or exactly at the peak
             right = mid
 
     return left
 ```
 
----
+### 2. Search in a Bitonic Array
 
-## Search in Bitonic Array
+**LeetCode 1095: Find in Mountain Array**
 
-First find peak, then binary search both halves:
+To search for a target in a bitonic array:
+1. Find the peak index (using the logic above).
+2. Binary search the strictly ascending left half `[0, peak]`.
+3. If not found, binary search the strictly descending right half `[peak + 1, n - 1]`.
 
 ```python
-def search_bitonic(nums: list[int], target: int) -> int:
-    """
-    Search for target in a bitonic array.
+class Solution:
+    def findInMountainArray(self, target: int, mountain_arr: 'MountainArray') -> int:
+        n = mountain_arr.length()
 
-    Time: O(log n)
-    Space: O(1)
-    """
-    # Find peak
-    left, right = 0, len(nums) - 1
-    while left < right:
-        mid = left + (right - left) // 2
-        if nums[mid] < nums[mid + 1]:
-            left = mid + 1
-        else:
-            right = mid
-    peak = left
+        # 1. Find the peak
+        left, right = 0, n - 1
+        while left < right:
+            mid = left + (right - left) // 2
+            if mountain_arr.get(mid) < mountain_arr.get(mid + 1):
+                left = mid + 1
+            else:
+                right = mid
+        peak = left
 
-    # Search in increasing part (0 to peak)
-    result = binary_search_asc(nums, target, 0, peak)
-    if result != -1:
-        return result
+        # 2. Binary search ascending left half
+        def search_asc(left, right):
+            while left <= right:
+                mid = left + (right - left) // 2
+                val = mountain_arr.get(mid)
+                if val == target:
+                    return mid
+                elif val < target:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+            return -1
 
-    # Search in decreasing part (peak+1 to end)
-    return binary_search_desc(nums, target, peak + 1, len(nums) - 1)
+        res = search_asc(0, peak)
+        if res != -1:
+            return res
 
+        # 3. Binary search descending right half
+        def search_desc(left, right):
+            while left <= right:
+                mid = left + (right - left) // 2
+                val = mountain_arr.get(mid)
+                if val == target:
+                    return mid
+                elif val > target: # Note the flipped comparison for descending
+                    left = mid + 1
+                else:
+                    right = mid - 1
+            return -1
 
-def binary_search_asc(nums, target, left, right):
-    """Standard binary search on ascending array."""
-    while left <= right:
-        mid = left + (right - left) // 2
-        if nums[mid] == target:
-            return mid
-        elif nums[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return -1
-
-
-def binary_search_desc(nums, target, left, right):
-    """Binary search on descending array."""
-    while left <= right:
-        mid = left + (right - left) // 2
-        if nums[mid] == target:
-            return mid
-        elif nums[mid] > target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return -1
+        return search_desc(peak + 1, n - 1)
 ```
 
----
+### 3. Peak in a 2D Matrix
 
-## Peak in 2D Matrix
+**LeetCode 1901: Find a Peak Element II**
 
-Find peak in a 2D matrix where you can move in 4 directions:
+Find a peak in an $m \times n$ matrix where an element is strictly greater than its adjacent (top, bottom, left, right) neighbors. No two adjacent cells are equal.
+
+**Insight:** Apply binary search on the *columns*.
+1. Pick middle column `mid_col`.
+2. Find the global maximum element in this column at `row = max_row`.
+3. Compare `mat[max_row][mid_col]` with its left and right neighbors `mat[max_row][mid_col-1]` and `mat[max_row][mid_col+1]`.
+4. Because we chose the maximum element in the column, it is guaranteed to be greater than its top and bottom neighbors. We only need to resolve the left/right condition.
+5. If the left neighbor is greater, search the left half of columns. Otherwise, search the right half.
 
 ```python
-def find_peak_2d(mat: list[list[int]]) -> list[int]:
+def findPeakGrid(mat: list[list[int]]) -> list[int]:
     """
-    Find peak element in 2D matrix.
-    An element is peak if >= all 4 neighbors.
+    Find any peak element in a 2D matrix.
 
-    Time: O(m log n) or O(n log m)
+    Time: O(m * log n) where m is rows, n is cols.
     Space: O(1)
     """
-    def get_max_row(col: int) -> int:
-        max_row = 0
-        for row in range(len(mat)):
-            if mat[row][col] > mat[max_row][col]:
-                max_row = row
-        return max_row
-
     rows, cols = len(mat), len(mat[0])
-    left, right = 0, cols - 1
+    left_col, right_col = 0, cols - 1
 
-    while left <= right:
-        mid_col = left + (right - left) // 2
-        max_row = get_max_row(mid_col)
+    while left_col <= right_col:
+        mid_col = left_col + (right_col - left_col) // 2
 
-        # Check if this is a peak
+        # Find the row index of the maximum element in the current column
+        max_row = 0
+        for r in range(rows):
+            if mat[r][mid_col] > mat[max_row][mid_col]:
+                max_row = r
+
+        # Compare with left and right neighbors
         left_val = mat[max_row][mid_col - 1] if mid_col > 0 else -1
         right_val = mat[max_row][mid_col + 1] if mid_col < cols - 1 else -1
 
-        if mat[max_row][mid_col] >= left_val and mat[max_row][mid_col] >= right_val:
-            return [max_row, mid_col]
-        elif left_val > mat[max_row][mid_col]:
-            right = mid_col - 1
-        else:
-            left = mid_col + 1
+        current_val = mat[max_row][mid_col]
 
-    return [-1, -1]
+        if current_val > left_val and current_val > right_val:
+            return [max_row, mid_col]
+        elif left_val > current_val:
+            # Peak must be in the left columns
+            right_col = mid_col - 1
+        else:
+            # Peak must be in the right columns
+            left_col = mid_col + 1
+
+    return [-1, -1] # Unreachable if array follows constraints
 ```
 
 ---
 
 ## Complexity Analysis
 
-| Problem           | Time       | Space |
-| ----------------- | ---------- | ----- |
-| Find one peak     | O(log n)   | O(1)  |
-| Find all peaks    | O(n)       | O(k)  |
-| Peak in bitonic   | O(log n)   | O(1)  |
-| Search in bitonic | O(log n)   | O(1)  |
-| Peak in 2D matrix | O(m log n) | O(1)  |
+| Problem | Approach | Time Complexity | Space Complexity |
+| :--- | :--- | :--- | :--- |
+| **Find One Peak (1D)** | Binary Search | $O(\log n)$ | $O(1)$ |
+| **Find All Peaks (1D)** | Linear Scan | $O(n)$ | $O(k)$ for $k$ peaks |
+| **Search in Bitonic Array**| 3 Binary Searches | $O(\log n)$ | $O(1)$ |
+| **Find Peak Element II (2D)** | Binary Search on Columns | $O(m \log n)$ | $O(1)$ |
 
 ---
 
 ## Common Mistakes
 
-### 1. Off-by-One in Comparison
+### 1. Wrong Loop Condition & Out-of-Bounds Error
+
+**The Error:** Using `while left <= right:` and then checking `nums[mid] < nums[mid+1]`. If `left == right`, `mid` is the last element, and `mid + 1` causes an IndexError.
+**The Fix:** Use `while left < right:` when checking `mid + 1`. This guarantees `mid` can never be the last index of the search space.
 
 ```python
-# Wrong: comparing with mid-1 instead of mid+1
-if nums[mid] < nums[mid - 1]:  # May go out of bounds
-
-# Correct: compare with mid+1 (right neighbor)
-if nums[mid] < nums[mid + 1]:
-```
-
-### 2. Wrong Loop Condition
-
-```python
-# Wrong: using <= causes issues with mid+1 access
+# WRONG
 while left <= right:
-    if nums[mid] < nums[mid + 1]:  # mid+1 might be out of bounds!
+    # Danger: if mid == len(nums)-1, nums[mid+1] throws IndexError
+    if nums[mid] < nums[mid+1]: ...
 
-# Correct: use < so mid+1 is always valid
+# CORRECT
 while left < right:
+    # Safe: left < right implies right >= left + 1, so mid <= right - 1.
+    # Therefore mid + 1 <= right, preventing out-of-bounds access.
+    if nums[mid] < nums[mid+1]: ...
 ```
 
-### 3. Forgetting Boundary Conditions
+### 2. Incorrect State Update
 
-```python
-# Make sure to handle edge cases
-# When array has 1 element: return 0
-# When array has 2 elements: return index of larger
-```
+**The Error:** `left = mid` or `right = mid - 1`.
+**The Fix:** If `nums[mid] < nums[mid+1]`, `mid` CANNOT be the peak (its right neighbor is larger). We can safely eliminate `mid` and set `left = mid + 1`. If `nums[mid] > nums[mid+1]`, `mid` COULD be the peak, so we must retain it in the search space with `right = mid`.
 
 ---
 
-## Edge Cases Checklist
+## Edge Cases to Consider
 
-- [ ] Single element → return 0
-- [ ] Two elements → return index of larger
-- [ ] Strictly increasing → return last index
-- [ ] Strictly decreasing → return first index
-- [ ] All same values → return any index
-- [ ] Peak at beginning
-- [ ] Peak at end
+- **Array of length 1:** Handled perfectly by `while left < right` (loop never runs, returns `left = 0`).
+- **Array of length 2:** e.g., `[2, 1]` or `[1, 2]`. Correctly steps left or right and returns the max.
+- **Strictly Increasing (`[1, 2, 3, 4, 5]`):** Always updates `left = mid + 1`, eventually returning the last index.
+- **Strictly Decreasing (`[5, 4, 3, 2, 1]`):** Always updates `right = mid`, eventually returning the first index `0`.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                      | Difficulty | Key Insight                     |
-| --- | ---------------------------- | ---------- | ------------------------------- |
-| 1   | Find Peak Element            | Medium     | Follow uphill direction         |
-| 2   | Peak Index in Mountain Array | Medium     | Same as bitonic peak            |
-| 3   | Find in Mountain Array       | Hard       | Find peak + two binary searches |
-| 4   | Find a Peak Element II       | Medium     | Column binary search + row max  |
-| 5   | Longest Mountain in Array    | Medium     | Expand from each peak           |
-
----
-
-## Interview Tips
-
-1. **Explain the insight**: Why binary search works on unsorted array
-2. **Multiple valid answers**: Clarify any peak is acceptable
-3. **Handle boundaries**: First/last elements can be peaks
-4. **Prove correctness**: Show uphill always leads to peak
-5. **Consider variations**: 2D peaks, all peaks, bitonic
-
----
-
-## Key Takeaways
-
-1. **Binary search on non-sorted arrays**: Works with monotonic property
-2. **Follow uphill direction**: Always leads to a peak
-3. **Boundaries are -∞**: Makes first/last elements potential peaks
-4. **Bitonic is special case**: Exactly one peak
-5. **2D extension exists**: Use column-wise binary search
+| Problem | Difficulty | Key Insight |
+| :--- | :---: | :--- |
+| [162. Find Peak Element](https://leetcode.com/problems/find-peak-element/) | Medium | Standard application of following the uphill slope. |
+| [852. Peak Index in a Mountain Array](https://leetcode.com/problems/peak-index-in-a-mountain-array/) | Medium | Identical to 162, but guarantees only a single peak exists. |
+| [1095. Find in Mountain Array](https://leetcode.com/problems/find-in-mountain-array/) | Hard | Find peak first, then binary search ascending/descending halves. |
+| [1901. Find a Peak Element II](https://leetcode.com/problems/find-a-peak-element-ii/) | Medium | Binary search on columns. Find max in mid col, check L/R neighbors. |
 
 ---
 
 ## Next: [06-search-space.md](./06-search-space.md)
 
-Binary search on the answer space for optimization problems.
+Explore **Binary Search on Answer Space**, a crucial pattern for optimization problems where you search for a target value rather than an array index.

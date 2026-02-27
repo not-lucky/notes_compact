@@ -4,194 +4,83 @@
 
 ## Interview Context
 
-Matrix search problems test:
+Matrix search problems are extremely common in FANG interviews because they test multiple dimensions of problem-solving:
 
-1. **Dimensional thinking**: Treating 2D as 1D or using properties
-2. **Multiple approaches**: Different strategies for different matrix types
-3. **Edge case handling**: Boundaries, empty matrices
-4. **Optimization awareness**: O(m+n) vs O(log(mn)) tradeoffs
+1. **Dimensional thinking**: Can you elegantly map a 2D structure to a 1D sequence?
+2. **Property exploitation**: Can you leverage the specific sorted properties (Type 1 vs. Type 2) to eliminate search space efficiently?
+3. **Domain reduction**: Can you define a path that guarantees progress towards the target?
+4. **Binary Search on Answer**: Can you recognize when the search space is the *range of values* rather than the *indices*?
 
 ---
 
-## Building Intuition
+## The Core Distinction: Two Types of "Sorted" Matrices
 
-**Two Types of "Sorted" Matrices**
+This is the critical distinction that changes EVERYTHING about your approach. In an interview, **always clarify which type you are dealing with before writing code**.
 
-This is the critical distinction that changes EVERYTHING:
+### TYPE 1: Row-wise AND Column-wise Sorted
+Often called "Partially Sorted" or "Monotonic Matrix".
+- Each row is sorted left-to-right.
+- Each column is sorted top-to-bottom.
+- **CRITICAL**: No global order guarantee (e.g., the last element of row $i$ might be larger than the first element of row $i+1$).
 
 ```
-TYPE 1: Row-wise and Column-wise Sorted (Not Globally Sorted)
 ┌────────────────────────┐
-│  1    4    7   11     │  Each row is sorted left→right
-│  2    5    8   12     │  Each column is sorted top→bottom
-│  3    6    9   16     │  BUT: 11 > 2, 11 > 3 (no global order)
-│ 10   13   14   17     │
-└────────────────────────┘
-
-TYPE 2: Fully Sorted (Row-major Order)
-┌────────────────────────┐
-│  1    3    5    7     │  Each row is sorted
-│ 10   11   16   20     │  AND: row[i].last < row[i+1].first
-│ 23   30   34   60     │  It's really a 1D sorted array in 2D form
+│  1    4    7   11      │  11 > 2, so it's not globally sorted
+│  2    5    8   12      │  You CANNOT treat this as a 1D array
+│  3    6    9   16      │
+│ 10   13   14   17      │
 └────────────────────────┘
 ```
 
-**Type 2: The "Fake 2D" Array**
-
-A Type 2 matrix is just a sorted 1D array displayed in rows:
-
-```
-1D view: [1, 3, 5, 7, 10, 11, 16, 20, 23, 30, 34, 60]
-
-2D view:  1   3   5   7
-         10  11  16  20
-         23  30  34  60
-
-Index conversion:
-- 1D index 7 → 2D position (row=1, col=3) = matrix[1][3] = 20
-- row = index // num_cols
-- col = index % num_cols
-```
-
-**Type 1: The Staircase Insight**
-
-For Type 1, you can't use simple 1D conversion. Instead, use the **staircase pattern** from a corner:
+### TYPE 2: Fully Sorted (Row-major Order)
+Strictly sorted matrix.
+- Each row is sorted.
+- The first element of each row is strictly greater than the last element of the previous row.
+- **CRITICAL**: It is structurally identical to a sorted 1D array wrapped into 2D.
 
 ```
-Start at TOP-RIGHT (or bottom-left):
 ┌────────────────────────┐
-│  1    4    7   [11] ← START HERE
-│  2    5    8   12     │
-│  3    6    9   16     │
-│ 10   13   14   17     │
+│  1    3    5    7      │  7 < 10
+│ 10   11   16   20      │  20 < 23
+│ 23   30   34   60      │  This is just [1,3,5,7,10,11,16,20,23,30,34,60]
 └────────────────────────┘
-
-Looking for 5:
-- At 11: 11 > 5, go LEFT (eliminate column)
-- At 7: 7 > 5, go LEFT
-- At 4: 4 < 5, go DOWN (eliminate row)
-- At 5: FOUND!
 ```
-
-**Why Top-Right (or Bottom-Left)?**
-
-From top-right:
-
-- Go LEFT → values decrease (eliminate that column)
-- Go DOWN → values increase (eliminate that row)
-
-You can make a decision at every step! Each move eliminates a row OR column.
-
-From top-left (BAD):
-
-- Go RIGHT → values increase
-- Go DOWN → values increase
-- BOTH directions increase! Can't decide which way to go.
-
-**Mental Model: The Ladder**
-
-Imagine you're on a ladder leaning against a wall:
-
-- Going LEFT means stepping down the ladder (smaller values)
-- Going DOWN means climbing up the wall (larger values)
-- You can always adjust your position to reach your target
 
 ---
 
-## When NOT to Use These Approaches
+## Strategy 1: The 1D Mapping (For Type 2 Fully Sorted)
 
-**1. Type 1 Methods on Type 2 Matrix (and Vice Versa)**
+A Type 2 matrix is just a sorted 1D array displayed in rows. We can run standard binary search by converting 1D indices to 2D coordinates on the fly.
 
-- Type 2 allows O(log(mn)) binary search
-- Type 1 only allows O(m+n) staircase
-- Using staircase on Type 2 wastes efficiency
-- Using 1D binary search on Type 1 gives wrong results
+### The Math:
+For a matrix of dimensions `m x n` (m rows, n cols):
+- The conceptual 1D array has indices from `0` to `(m * n) - 1`.
+- Given a 1D index `mid`:
+  - `row = mid // n` (integer division by number of columns)
+  - `col = mid % n` (modulo by number of columns)
 
-**2. Unsorted Matrix**
-
-If rows/columns aren't sorted, no efficient search exists:
-
-```
-┌──────────────┐
-│ 5   2   8    │
-│ 1   9   3    │  No pattern → must check all elements O(mn)
-│ 4   7   6    │
-└──────────────┘
-```
-
-**3. When You Need Multiple Elements**
-
-- "Find all elements satisfying X" → likely O(mn)
-- These methods find ONE element
-
-**4. Non-Square Matrices with Extreme Dimensions**
-
-For m×n where m >> n (or vice versa):
-
-- Staircase is O(m+n) which is basically O(m)
-- Binary search per row might be better: O(m·log(n))
-- Compare based on actual dimensions
-
-**Red Flags:**
-
-- "Find all occurrences" → Can't avoid O(mn)
-- Matrix isn't sorted at all → Linear scan
-- Matrix has complex sorting (diagonals, etc.) → Different approach
-
----
-
-## Types of Sorted Matrices
-
-### Type 1: Row and Column Sorted
-
-Each row is sorted, each column is sorted, but no global order:
-
-```
-[1,  4,  7,  11]
-[2,  5,  8,  12]
-[3,  6,  9,  16]
-[10, 13, 14, 17]
-```
-
-### Type 2: Fully Sorted (Row-major)
-
-Rows are sorted, and first element of each row > last element of previous row:
-
-```
-[1,  3,  5,  7]
-[10, 11, 16, 20]
-[23, 30, 34, 60]
-```
-
-This is essentially a sorted 1D array in 2D form.
-
----
-
-## Search a 2D Matrix (Type 2)
-
-LeetCode 74: Search a 2D Matrix
-
-### Approach 1: Treat as 1D Array
+### Implementation (LeetCode 74: Search a 2D Matrix)
 
 ```python
-def search_matrix(matrix: list[list[int]], target: int) -> bool:
+def searchMatrix(matrix: list[list[int]], target: int) -> bool:
     """
-    Search in row-major sorted matrix.
+    Search in a fully sorted (Type 2) matrix.
     Treat as 1D array with index conversion.
 
-    Time: O(log(m*n))
+    Time: O(log(m * n))
     Space: O(1)
     """
     if not matrix or not matrix[0]:
         return False
 
     m, n = len(matrix), len(matrix[0])
-    left, right = 0, m * n - 1
+    left, right = 0, (m * n) - 1
 
     while left <= right:
         mid = left + (right - left) // 2
-        # Convert 1D index to 2D
-        row, col = mid // n, mid % n
+
+        # Convert 1D index back to 2D coordinates
+        row, col = divmod(mid, n) # Equivalent to: mid // n, mid % n
         val = matrix[row][col]
 
         if val == target:
@@ -204,14 +93,35 @@ def search_matrix(matrix: list[list[int]], target: int) -> bool:
     return False
 ```
 
-### Approach 2: Two Binary Searches
+*Note: You could also do two binary searches (one to find the row, one within the row), but treating it as a 1D array is cleaner and mathematically elegant. Both are $O(\log(m \cdot n))$.*
+
+---
+
+## Strategy 2: The "Staircase" or "Saddle Point" (For Type 1)
+
+For Type 1 (Row/Col sorted), standard binary search fails because flattening it doesn't yield a sorted 1D array.
+
+**The Insight:** We need a starting point where we can make a deterministic binary decision (eliminate a row OR eliminate a column).
+
+If we start at the **Top-Left (0, 0)**:
+- Go Right -> Values increase
+- Go Down -> Values increase
+- *Problem: If target > current, which way do we go? We can't decide!*
+
+If we start at the **Top-Right (0, n-1)**:
+- Go Left -> Values decrease (entire column eliminated)
+- Go Down -> Values increase (entire row eliminated)
+- *Perfect! Every step securely eliminates an entire row or column.*
+
+### Implementation (LeetCode 240: Search a 2D Matrix II)
 
 ```python
-def search_matrix_v2(matrix: list[list[int]], target: int) -> bool:
+def searchMatrixII(matrix: list[list[int]], target: int) -> bool:
     """
-    First find the row, then search within it.
+    Search in a row-sorted AND col-sorted (Type 1) matrix.
+    Start at Top-Right and eliminate row or col at each step.
 
-    Time: O(log m + log n) = O(log(m*n))
+    Time: O(m + n) - in worst case we traverse one full row and col
     Space: O(1)
     """
     if not matrix or not matrix[0]:
@@ -219,356 +129,132 @@ def search_matrix_v2(matrix: list[list[int]], target: int) -> bool:
 
     m, n = len(matrix), len(matrix[0])
 
-    # Binary search for the correct row
-    top, bottom = 0, m - 1
-    while top <= bottom:
-        mid_row = top + (bottom - top) // 2
+    # Start at Top-Right corner
+    r, c = 0, n - 1
 
-        if matrix[mid_row][0] > target:
-            bottom = mid_row - 1
-        elif matrix[mid_row][-1] < target:
-            top = mid_row + 1
-        else:
-            # Target could be in this row
-            break
-    else:
-        return False  # No valid row found
-
-    # Binary search within the row
-    row = top + (bottom - top) // 2
-    left, right = 0, n - 1
-
-    while left <= right:
-        mid = left + (right - left) // 2
-
-        if matrix[row][mid] == target:
+    while r < m and c >= 0:
+        if matrix[r][c] == target:
             return True
-        elif matrix[row][mid] < target:
-            left = mid + 1
+        elif matrix[r][c] > target:
+            # Current is too big, and everything below it is even bigger.
+            # So the target cannot be in this column. Move left.
+            c -= 1
         else:
-            right = mid - 1
+            # Current is too small, and everything left of it is even smaller.
+            # So the target cannot be in this row. Move down.
+            r += 1
 
     return False
 ```
 
+*Alternative: Starting at Bottom-Left `(m-1, 0)` also works (Up = decrease, Right = increase). Never start at Top-Left or Bottom-Right.*
+
 ---
 
-## Search a 2D Matrix II (Type 1)
+## Strategy 3: Binary Search on Answer / Value Range
 
-LeetCode 240: Search a 2D Matrix II
+Some matrix problems don't ask you to *find a target*, but rather ask for a property across the matrix, like "Kth smallest element" or "Median".
 
-### Approach: Start from Corner
+When you see a Type 1 Matrix (Row/Col sorted) AND you need to find an element based on its rank (Kth, Median):
+**Use Binary Search on the Value Range.**
 
-Start from top-right (or bottom-left) corner:
+### The Pattern
+1. Search space is `[matrix[0][0], matrix[m-1][n-1]]` (min and max values in the matrix).
+2. Given a `mid` value, count how many elements in the matrix are $\le$ `mid`.
+3. If count < K, `mid` is too small (search right). Else, search left.
+4. Counting takes $O(m+n)$ using the Staircase method!
 
-- If current > target: move left
-- If current < target: move down
+### Implementation (LeetCode 378: Kth Smallest Element in a Sorted Matrix)
 
 ```python
-def search_matrix_2(matrix: list[list[int]], target: int) -> bool:
+def kthSmallest(matrix: list[list[int]], k: int) -> int:
     """
-    Search in row-sorted and column-sorted matrix.
-    Start from top-right corner.
+    Find the Kth smallest element in a Type 1 Matrix.
+    Uses Binary Search on the value range + Staircase counting.
 
-    Time: O(m + n)
+    Time: O((m+n) * log(MAX_VAL - MIN_VAL))
     Space: O(1)
     """
-    if not matrix or not matrix[0]:
-        return False
-
     m, n = len(matrix), len(matrix[0])
-    row, col = 0, n - 1  # Top-right corner
 
-    while row < m and col >= 0:
-        if matrix[row][col] == target:
-            return True
-        elif matrix[row][col] > target:
-            col -= 1  # Eliminate this column
-        else:
-            row += 1  # Eliminate this row
-
-    return False
-```
-
-### Why This Works
-
-```
-[1,  4,  7,  11]
-[2,  5,  8,  12]
-[3,  6,  9,  16]
-[10, 13, 14, 17]
-
-Looking for 5, start at 11:
-11 > 5: move left to 7
-7 > 5: move left to 4
-4 < 5: move down to 5
-Found!
-```
-
-At each step, we eliminate either a row or a column.
-
----
-
-## Visual Comparison
-
-```
-Type 2 (Fully Sorted):          Type 1 (Row/Col Sorted):
-┌─────────────────────┐         ┌─────────────────────┐
-│ 1   3   5   7      │         │ 1   4   7   11     │
-│ 10  11  16  20     │         │ 2   5   8   12     │
-│ 23  30  34  60     │         │ 3   6   9   16     │
-└─────────────────────┘         │ 10  13  14  17     │
-                                └─────────────────────┘
-Binary search: O(log mn)        Staircase: O(m + n)
-```
-
----
-
-## Count Negatives in Sorted Matrix
-
-LeetCode 1351: Count Negative Numbers in a Sorted Matrix
-
-```python
-def count_negatives(grid: list[list[int]]) -> int:
-    """
-    Count negatives in matrix sorted in non-increasing order.
-
-    Time: O(m + n)
-    Space: O(1)
-    """
-    m, n = len(grid), len(grid[0])
-    count = 0
-    row, col = 0, n - 1  # Start top-right
-
-    while row < m and col >= 0:
-        if grid[row][col] < 0:
-            # All elements below in this column are negative
-            count += (m - row)
-            col -= 1
-        else:
-            row += 1
-
-    return count
-```
-
----
-
-## Kth Smallest in Sorted Matrix
-
-LeetCode 378: Kth Smallest Element in a Sorted Matrix
-
-### Approach: Binary Search on Value
-
-```python
-def kth_smallest(matrix: list[list[int]], k: int) -> int:
-    """
-    Find kth smallest element in row/col sorted matrix.
-
-    Time: O(n * log(max - min))
-    Space: O(1)
-    """
-    n = len(matrix)
-
-    def count_less_or_equal(mid: int) -> int:
-        """Count elements <= mid."""
+    def count_less_equal(mid_val: int) -> int:
+        """Counts how many elements in matrix are <= mid_val in O(m+n) time."""
         count = 0
-        row, col = n - 1, 0  # Start bottom-left
+        r, c = m - 1, 0  # Start Bottom-Left
 
-        while row >= 0 and col < n:
-            if matrix[row][col] <= mid:
-                count += row + 1  # All elements above are also <=
-                col += 1
+        while r >= 0 and c < n:
+            if matrix[r][c] <= mid_val:
+                # If current is <= mid_val, everything above it in this col is also <=
+                count += (r + 1)
+                c += 1       # Move right to look for more
             else:
-                row -= 1
-
+                r -= 1       # Move up to find smaller elements
         return count
 
-    left, right = matrix[0][0], matrix[n-1][n-1]
+    # Value range binary search
+    left = matrix[0][0]
+    right = matrix[m-1][n-1]
 
     while left < right:
         mid = left + (right - left) // 2
 
-        if count_less_or_equal(mid) < k:
+        if count_less_equal(mid) < k:
             left = mid + 1
         else:
-            right = mid
+            right = mid  # mid could be the answer
 
     return left
 ```
 
-### Why Binary Search on Value?
-
-- Binary search directly on positions doesn't work (not sorted that way)
-- But we can binary search on the answer value
-- For each candidate value, count how many elements are ≤ it
-- Find the smallest value with at least k elements ≤ it
+*FANG Note: This is a highly desired pattern at Google and Meta. Master the transition between "binary searching indices" and "binary searching the answer space".*
 
 ---
 
-## Median in Row-Wise Sorted Matrix
+## Applications & Variations
 
-```python
-def find_median(matrix: list[list[int]]) -> int:
-    """
-    Find median of row-wise sorted matrix.
-    Assume odd total elements.
+### 1. Count Negatives in Sorted Matrix (LeetCode 1351)
+Matrix is sorted in non-increasing (descending) order both row-wise and col-wise.
+**Approach**: Staircase. Start top-right. If `grid[r][c] < 0`, then everything below it is also `< 0` (since it's sorted descending). Count `m - r` and move left. If `grid[r][c] >= 0`, move down.
+**Time**: $O(m+n)$
 
-    Time: O(m * log n * log(max - min))
-    Space: O(1)
-    """
-    import bisect
-
-    m, n = len(matrix), len(matrix[0])
-    target = (m * n + 1) // 2
-
-    def count_less_or_equal(val: int) -> int:
-        count = 0
-        for row in matrix:
-            count += bisect.bisect_right(row, val)
-        return count
-
-    # Find min and max in matrix
-    low = min(row[0] for row in matrix)
-    high = max(row[-1] for row in matrix)
-
-    while low < high:
-        mid = low + (high - low) // 2
-
-        if count_less_or_equal(mid) < target:
-            low = mid + 1
-        else:
-            high = mid
-
-    return low
-```
-
----
-
-## Row with Maximum Ones
-
-```python
-def row_with_max_ones(matrix: list[list[int]]) -> int:
-    """
-    Find row with maximum 1s in binary matrix (rows sorted).
-
-    Time: O(m + n)
-    Space: O(1)
-    """
-    m, n = len(matrix), len(matrix[0])
-    max_row = -1
-    col = n - 1  # Start from rightmost column
-
-    for row in range(m):
-        # Move left while seeing 1s
-        while col >= 0 and matrix[row][col] == 1:
-            col -= 1
-            max_row = row
-
-    return max_row
-```
+### 2. Leftmost Column with at Least a One (Premium)
+Binary matrix where rows are sorted (0s then 1s).
+**Approach**: Staircase from Top-Right. If `1`, record column and move left. If `0`, move down.
+**Time**: $O(m+n)$
 
 ---
 
 ## Complexity Summary
 
-| Problem                        | Approach               | Time            | Space |
-| ------------------------------ | ---------------------- | --------------- | ----- |
-| Search Type 2 (fully sorted)   | 1D binary search       | O(log mn)       | O(1)  |
-| Search Type 1 (row/col sorted) | Staircase              | O(m + n)        | O(1)  |
-| Count negatives                | Staircase              | O(m + n)        | O(1)  |
-| Kth smallest                   | Binary search on value | O(n log(range)) | O(1)  |
-| Row with max ones              | Staircase              | O(m + n)        | O(1)  |
+| Problem Type | Best Approach | Time Complexity | Space Complexity |
+| :--- | :--- | :--- | :--- |
+| **Search (Type 2 - Fully Sorted)** | 1D mapping Binary Search | $\mathcal{O}(\log(m \cdot n))$ | $\mathcal{O}(1)$ |
+| **Search (Type 1 - Row/Col Sorted)** | Staircase from Corner (Top-R/Bot-L) | $\mathcal{O}(m + n)$ | $\mathcal{O}(1)$ |
+| **Kth Smallest / Median** | BS on Value + Staircase Counting | $\mathcal{O}((m+n) \log(\text{Range}))$ | $\mathcal{O}(1)$ |
+| **Count conditional elements** | Staircase (if monotonic) | $\mathcal{O}(m + n)$ | $\mathcal{O}(1)$ |
 
 ---
 
-## Choosing the Right Approach
+## Common Interview Pitfalls
 
-```
-Is the matrix fully sorted (row-major order)?
-    │
-    ├── Yes → Treat as 1D array, O(log mn)
-    │
-    └── No → Is it row and column sorted?
-              │
-              ├── Yes → Staircase from corner, O(m + n)
-              │
-              └── Partially sorted → Binary search on value
-```
-
----
-
-## Common Mistakes
-
-### 1. Wrong Index Conversion
-
-```python
-# Wrong: mixing up row and column
-row, col = mid % n, mid // n
-
-# Correct
-row, col = mid // n, mid % n
-```
-
-### 2. Wrong Corner for Staircase
-
-```python
-# Wrong: starting from top-left (both directions increase)
-row, col = 0, 0
-
-# Correct: top-right or bottom-left
-row, col = 0, n - 1  # or (m - 1, 0)
-```
-
-### 3. Out of Bounds
-
-```python
-# Always check bounds
-while row < m and col >= 0:  # Not just while True
-```
+1. **Blindly applying Binary Search to Type 1**
+   - Flattening a Type 1 matrix does NOT yield a sorted array. Always verify strict row-major sorting before using 1D mapping.
+2. **Starting Staircase from the wrong corner**
+   - Top-Left (0,0) and Bottom-Right (m-1, n-1) are traps. Both directions increase or decrease respectively. You MUST start where one direction increases and the other decreases (Top-Right or Bottom-Left).
+3. **Using $O(m \log n)$ when $O(m+n)$ is expected**
+   - For Type 1 search, binary searching each row takes $O(m \log n)$. This is usually considered suboptimal by interviewers compared to the elegant $O(m+n)$ staircase method.
+4. **Getting the DivMod wrong**
+   - `row = mid // cols`
+   - `col = mid % cols`
+   - **Never use `rows` here!** You are slicing the 1D array into chunks of length `cols`.
 
 ---
 
-## Edge Cases Checklist
-
-- [ ] Empty matrix
-- [ ] Single row / single column
-- [ ] Single element
-- [ ] Target smaller than all elements
-- [ ] Target larger than all elements
-- [ ] Target not present
-
----
-
-## Practice Problems
-
-| #   | Problem                                 | Difficulty | Key Insight            |
-| --- | --------------------------------------- | ---------- | ---------------------- |
-| 1   | Search a 2D Matrix                      | Medium     | Treat as 1D            |
-| 2   | Search a 2D Matrix II                   | Medium     | Staircase from corner  |
-| 3   | Kth Smallest Element in Sorted Matrix   | Medium     | Binary search on value |
-| 4   | Count Negative Numbers in Sorted Matrix | Easy       | Staircase counting     |
-| 5   | Median of Row Wise Sorted Matrix        | Hard       | Binary search on value |
-| 6   | Row with Maximum Ones                   | Easy       | Staircase              |
-
----
-
-## Interview Tips
-
-1. **Clarify matrix type**: Fully sorted vs row/col sorted
-2. **Mention both approaches**: For fully sorted, mention 1D trick
-3. **Draw the matrix**: Visualize the search path
-4. **Handle edge cases**: Empty, single element, not found
-5. **Know complexities**: O(log mn) vs O(m+n)
-
----
-
-## Key Takeaways
-
-1. **Two types of sorted matrices**: Different approaches for each
-2. **1D trick for fully sorted**: Convert indices
-3. **Staircase for row/col sorted**: O(m+n) from corner
-4. **Binary search on value**: For kth smallest problems
-5. **Corner choice matters**: Top-right or bottom-left only
+## Edge Cases to Check
+- `matrix = []` or `matrix = [[]]` (Empty structures)
+- `m = 1` or `n = 1` (1D array disguised as 2D)
+- `target` is smaller than `matrix[0][0]` or larger than `matrix[-1][-1]`
+- All elements are the same
 
 ---
 

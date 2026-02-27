@@ -2,132 +2,64 @@
 
 > **Prerequisites:** [Binary Search Template](./01-binary-search-template.md)
 
-## Interview Context
-
-Rotated array search is a FANG+ favorite because:
-
-1. **Tests adaptability**: Standard binary search needs modification
-2. **Multiple variants**: With/without duplicates, find target/minimum
-3. **Requires careful analysis**: Must identify the sorted half
-4. **Edge case heavy**: Boundary conditions are tricky
-
----
-
-## Building Intuition
-
-**What Happens When You Rotate a Sorted Array?**
-
-```
-Original: [0, 1, 2, 3, 4, 5, 6, 7]
-                        ↓ rotate at index 4
-Rotated:  [4, 5, 6, 7, 0, 1, 2, 3]
-                    ↑
-             This is the "pivot"
-```
-
-The array breaks into TWO sorted subarrays joined at the pivot:
-
-- Left portion: [4, 5, 6, 7] — sorted, but all values are LARGER
-- Right portion: [0, 1, 2, 3] — sorted, but all values are SMALLER
-
-**The Key Insight: One Half Is ALWAYS Sorted**
-
-No matter where you pick `mid`, at least one half (left or right) is completely sorted. Why?
-
-```
-Case 1: mid is in the LEFT portion (larger values)
-[4, 5, 6, 7, 0, 1, 2, 3]
-       ↑
-      mid=6
-Left half [4,5,6] is sorted (we're before the pivot)
-Right half [7,0,1,2,3] contains the pivot
-
-Case 2: mid is in the RIGHT portion (smaller values)
-[4, 5, 6, 7, 0, 1, 2, 3]
-                ↑
-               mid=1
-Left half [4,5,6,7,0] contains the pivot
-Right half [1,2,3] is sorted (we're after the pivot)
-```
-
-**Mental Model: The Mountain Range**
-
-Think of the rotated array as two mountains side by side:
-
-- A tall mountain (the larger values before rotation)
-- A shorter mountain (the smaller values)
-
-Binary search is like asking: "Is my target on the tall mountain or the short one?" Once you know which sorted slope to search, it's standard binary search.
-
-**How to Identify the Sorted Half**
-
-Compare `nums[left]` with `nums[mid]`:
-
-- If `nums[left] <= nums[mid]`: Left half is sorted (no pivot in between)
-- Otherwise: Right half is sorted
-
-Then check if your target falls within the sorted half's range.
-
-**Why This Works**
-
-The sorted half has a predictable range: `[nums[left], nums[mid]]` or `[nums[mid], nums[right]]`. You can definitively say whether target is in that range. If not, target must be in the other (unsorted) half—and you recurse there.
-
----
-
-## When NOT to Use Rotated Array Search
-
-**1. The Array Isn't Rotated**
-
-- A "rotation of 0" or "rotation of n" is just a sorted array
-- Use standard binary search (it's simpler)
-- The rotated search still works, but why add complexity?
-
-**2. Array Has Many Duplicates**
-
-- Duplicates break the `nums[left] <= nums[mid]` check
-- Worst case degrades to O(n)
-- See the variant with duplicates below
-
-**3. Array Is Not Sorted Before Rotation**
-
-- If original array wasn't sorted, rotation means nothing
-- No binary search will help
-
-**4. You Need All Occurrences**
-
-- Rotated search finds ONE occurrence
-- For all occurrences, you'd need additional boundary searches
-
-**Red Flags in Problem Statements:**
-
-- "Array may have duplicates" → Use O(n) fallback or careful duplicate handling
-- "Find all positions of target" → Rotated search + boundary search
-- "Array is not sorted" → Different problem entirely
-
----
-
 ## What is a Rotated Sorted Array?
 
-A sorted array rotated at some pivot:
+A sorted array that has been circularly shifted (rotated) at some unknown pivot index.
 
-```
+```text
 Original: [0, 1, 2, 4, 5, 6, 7]
 Rotated:  [4, 5, 6, 7, 0, 1, 2]  (rotated at index 4)
                ↑
-            pivot point
+            pivot point (minimum element)
 ```
 
-Properties:
+**Key Properties:**
+1. The array consists of **two completely sorted subarrays**.
+2. All elements in the left subarray are strictly greater than all elements in the right subarray.
+3. The minimum element is at the rotation point.
 
-- The array consists of two sorted subarrays
-- One half is always completely sorted
-- The minimum element is at the rotation point
+## Interview Context
+
+Rotated array search is a FANG+ staple because:
+1. **It tests fundamental adaptability**: Can you modify the standard binary search template when the array isn't fully sorted?
+2. **It forces careful case analysis**: You must identify the sorted half and manage boundaries meticulously.
+3. **It has multiple variants**: Searching for a target, handling duplicates, or finding the minimum element.
 
 ---
 
-## Search in Rotated Array (No Duplicates)
+## The Core Concept: The "One Sorted Half" Rule
 
-LeetCode 33: Search in Rotated Sorted Array
+**The Insight:** No matter where you place your `mid` pointer, **at least one half of the array will always be completely sorted**.
+
+```text
+Case 1: mid is in the LEFT (taller) portion
+[4, 5, 6, 7, 0, 1, 2, 3]
+       ↑
+      mid=6
+Left half [4, 5, 6] is completely sorted.
+Right half [7, 0, 1, 2, 3] contains the pivot.
+
+Case 2: mid is in the RIGHT (shorter) portion
+[4, 5, 6, 7, 0, 1, 2, 3]
+                ↑
+               mid=1
+Left half [4, 5, 6, 7, 0] contains the pivot.
+Right half [1, 2, 3] is completely sorted.
+```
+
+### How to use this property:
+1. Compare `nums[left]` and `nums[mid]` to determine **which half is sorted**.
+   - If `nums[left] <= nums[mid]`, the left half is sorted.
+   - Otherwise, the right half is sorted.
+2. Check if the `target` falls within the range of the **sorted** half.
+   - If it does, discard the unsorted half.
+   - If it doesn't, discard the sorted half.
+
+---
+
+## Approach 1: One-Pass Binary Search (Standard)
+
+This is the standard, most expected approach in an interview for **LeetCode 33: Search in Rotated Sorted Array**.
 
 ```python
 def search(nums: list[int], target: int) -> int:
@@ -137,6 +69,9 @@ def search(nums: list[int], target: int) -> int:
     Time: O(log n)
     Space: O(1)
     """
+    if not nums:
+        return -1
+
     left, right = 0, len(nums) - 1
 
     while left <= right:
@@ -145,144 +80,83 @@ def search(nums: list[int], target: int) -> int:
         if nums[mid] == target:
             return mid
 
-        # Determine which half is sorted
+        # 1. Determine which half is completely sorted
         if nums[left] <= nums[mid]:
             # Left half is sorted
+
+            # 2. Check if target is strictly within this sorted half
             if nums[left] <= target < nums[mid]:
-                right = mid - 1  # Target in left half
+                right = mid - 1  # Target is in the left half
             else:
-                left = mid + 1   # Target in right half
+                left = mid + 1   # Target must be in the right half
         else:
             # Right half is sorted
+
+            # 2. Check if target is strictly within this sorted half
             if nums[mid] < target <= nums[right]:
-                left = mid + 1   # Target in right half
+                left = mid + 1   # Target is in the right half
             else:
-                right = mid - 1  # Target in left half
+                right = mid - 1  # Target must be in the left half
 
     return -1
 ```
 
----
-
-## Visual Walkthrough
-
-Finding target=0 in [4, 5, 6, 7, 0, 1, 2]:
-
-```
-Step 1: [4, 5, 6, 7, 0, 1, 2]
-         L        M        R
-
-         nums[L]=4 <= nums[M]=7 → Left sorted
-         Is 4 <= 0 < 7? No
-         Search right half, L = mid + 1 = 4
-
-Step 2: [4, 5, 6, 7, 0, 1, 2]
-                     L  M  R
-
-         nums[L]=0 <= nums[M]=1 → Left sorted
-         Is 0 <= 0 < 1? Yes
-         Search left half, R = mid - 1 = 4
-
-Step 3: [4, 5, 6, 7, 0, 1, 2]
-                     LR
-                     M
-
-         nums[M]=0 == target
-         Return mid = 4
-```
+### Visual Walkthrough
+Finding `target=0` in `[4, 5, 6, 7, 0, 1, 2]`:
+1. `L=0(4)`, `R=6(2)` -> `mid=3(7)`.
+   `nums[L] <= nums[mid]` (4 <= 7) -> Left is sorted `[4, 5, 6, 7]`.
+   Is `0` between `4` and `7`? No.
+   Search right: `L = mid + 1 = 4`.
+2. `L=4(0)`, `R=6(2)` -> `mid=5(1)`.
+   `nums[L] <= nums[mid]` (0 <= 1) -> Left is sorted `[0, 1]`.
+   Is `0` between `0` and `1`? Yes (`nums[L] <= 0 < nums[mid]`).
+   Search left: `R = mid - 1 = 4`.
+3. `L=4(0)`, `R=4(0)` -> `mid=4(0)`.
+   `nums[mid] == 0`. Target found! Return 4.
 
 ---
 
-## Search in Rotated Array (With Duplicates)
+## Approach 2: Find Pivot First (Two-Pass)
 
-LeetCode 81: Search in Rotated Sorted Array II
+**FANG Fave Tip:** Many candidates struggle with the complex `if/else` bounds in the one-pass approach. The two-pass approach is often viewed favorably by interviewers because it breaks the problem into two simpler, standard binary searches.
 
-Duplicates break the `nums[left] <= nums[mid]` check:
-
-```
-[1, 0, 1, 1, 1]
- L     M     R
-
-nums[L]=1, nums[M]=1, nums[R]=1
-Can't determine which half is sorted!
-```
-
-Solution: Skip duplicates at boundaries.
-
-```python
-def search_with_duplicates(nums: list[int], target: int) -> bool:
-    """
-    Search target in rotated sorted array (with duplicates).
-
-    Time: O(n) worst case, O(log n) average
-    Space: O(1)
-    """
-    left, right = 0, len(nums) - 1
-
-    while left <= right:
-        mid = left + (right - left) // 2
-
-        if nums[mid] == target:
-            return True
-
-        # Handle duplicates: can't determine sorted half
-        if nums[left] == nums[mid] == nums[right]:
-            left += 1
-            right -= 1
-        elif nums[left] <= nums[mid]:
-            # Left half is sorted
-            if nums[left] <= target < nums[mid]:
-                right = mid - 1
-            else:
-                left = mid + 1
-        else:
-            # Right half is sorted
-            if nums[mid] < target <= nums[right]:
-                left = mid + 1
-            else:
-                right = mid - 1
-
-    return False
-```
-
-**Important**: With duplicates, worst case is O(n) when all elements are the same except one.
-
----
-
-## Alternative Approach: Find Pivot First
-
-1. Find the rotation point (minimum element)
-2. Determine which half contains target
-3. Do standard binary search on that half
+1. **Find the rotation point (minimum element).** This tells us where the array is "split".
+2. **Determine which sorted subarray the target belongs to.**
+3. **Run a standard binary search** on that specific subarray.
 
 ```python
 def search_via_pivot(nums: list[int], target: int) -> int:
     """
-    Search by first finding rotation point.
+    Two-pass approach: Find pivot, then standard binary search.
 
     Time: O(log n)
     Space: O(1)
     """
+    if not nums:
+        return -1
+
     n = len(nums)
 
-    # Find rotation point (minimum element index)
+    # Pass 1: Find rotation point (index of minimum element)
     left, right = 0, n - 1
     while left < right:
         mid = left + (right - left) // 2
         if nums[mid] > nums[right]:
-            left = mid + 1
+            left = mid + 1   # Min is to the right
         else:
-            right = mid
+            right = mid      # Min is mid or to the left
 
-    pivot = left
+    pivot = left  # Index of the minimum element
 
-    # Determine which half to search
-    if target >= nums[pivot] and target <= nums[n - 1]:
+    # Pass 2: Determine which half to search
+    # Since nums[pivot] is the absolute minimum:
+    # If target is <= the last element, it must be in the right sorted portion
+    if target <= nums[n - 1]:
         left, right = pivot, n - 1
     else:
         left, right = 0, pivot - 1
 
-    # Standard binary search
+    # Pass 3: Standard binary search
     while left <= right:
         mid = left + (right - left) // 2
         if nums[mid] == target:
@@ -297,126 +171,108 @@ def search_via_pivot(nums: list[int], target: int) -> int:
 
 ---
 
-## Complexity Analysis
+## Follow-up: Search in Rotated Array (With Duplicates)
 
-| Variant          | Time                     | Space |
-| ---------------- | ------------------------ | ----- |
-| No duplicates    | O(log n)                 | O(1)  |
-| With duplicates  | O(n) worst, O(log n) avg | O(1)  |
-| Find pivot first | O(log n)                 | O(1)  |
+**LeetCode 81: Search in Rotated Sorted Array II**
 
----
+When duplicates are allowed, the core check `nums[left] <= nums[mid]` breaks down.
+Consider: `nums = [1, 0, 1, 1, 1]`, `target = 0`
+- `L=0 (1)`, `M=2 (1)`.
+- `nums[L] == nums[M]`. Which half is sorted? We don't know! It could be `[1, 1, 1, 0, 1]` or `[1, 0, 1, 1, 1]`.
 
-## Common Mistakes
-
-### 1. Wrong Sorted Half Detection
+**Solution:** When `nums[left] == nums[mid]`, we cannot safely eliminate either half based on standard logic. However, since `nums[mid] != target` (checked at the start of loop), and `nums[left] == nums[mid]`, we know `nums[left] != target`. We can safely shrink the search space by `left += 1`.
 
 ```python
-# Wrong: using < instead of <=
-if nums[left] < nums[mid]:  # Fails when left == mid
-
-# Correct: use <=
-if nums[left] <= nums[mid]:
-```
-
-### 2. Wrong Target Range Check
-
-```python
-# Wrong: missing = sign
-if nums[left] < target < nums[mid]:  # Misses when target == nums[left]
-
-# Correct: include left boundary
-if nums[left] <= target < nums[mid]:
-```
-
-### 3. Not Handling Single Element
-
-```python
-# Edge case: single element
-nums = [1], target = 1
-# Make sure left <= right condition catches this
-```
-
----
-
-## Variant: Search in Nearly Sorted Array
-
-Array where element at index `i` may be at `i-1`, `i`, or `i+1`:
-
-```python
-def search_nearly_sorted(nums: list[int], target: int) -> int:
+def search_with_duplicates(nums: list[int], target: int) -> bool:
     """
-    Search in array where elements can be ±1 from sorted position.
+    Search target in rotated sorted array WITH duplicates.
 
-    Time: O(log n)
+    Time: O(log n) average, O(n) worst case
     Space: O(1)
     """
+    if not nums:
+        return False
+
     left, right = 0, len(nums) - 1
 
     while left <= right:
         mid = left + (right - left) // 2
 
-        # Check mid and neighbors
         if nums[mid] == target:
-            return mid
-        if mid > left and nums[mid - 1] == target:
-            return mid - 1
-        if mid < right and nums[mid + 1] == target:
-            return mid + 1
+            return True
 
-        # Decide which half
-        if nums[mid] < target:
-            left = mid + 2  # Skip mid+1 (already checked)
+        # Handle duplicates: shrink window when we can't determine sorted half
+        if nums[left] == nums[mid]:
+            left += 1
+
+        # Left half is strictly sorted
+        elif nums[left] < nums[mid]:
+            if nums[left] <= target < nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+
+        # Right half is strictly sorted
         else:
-            right = mid - 2  # Skip mid-1 (already checked)
+            if nums[mid] < target <= nums[right]:
+                left = mid + 1
+            else:
+                right = mid - 1
 
-    return -1
+    return False
 ```
+**Important Interview Note:** The worst-case time complexity degrades to **O(N)** (e.g., array is `[1,1,1,1,1]` and target is `2`). Be sure to explicitly state this to your interviewer!
 
 ---
 
-## Edge Cases Checklist
+## Common Mistakes & Edge Cases
 
-- [ ] Array not rotated (rotation = 0)
-- [ ] Single element
-- [ ] Two elements
-- [ ] Target is first element
-- [ ] Target is last element
-- [ ] Target is at rotation point
-- [ ] Target not in array
-- [ ] All duplicates (for variant with duplicates)
+### 1. Wrong Sorted Half Detection
+```python
+# ❌ WRONG: Fails when left == mid (e.g. 2 elements left)
+if nums[left] < nums[mid]:
+
+# ✅ CORRECT: Must use <= to handle window size 2
+if nums[left] <= nums[mid]:
+```
+
+### 2. Missing Equality in Range Checks
+```python
+# ❌ WRONG: Misses when target == nums[left] or target == nums[right]
+if nums[left] < target < nums[mid]:
+
+# ✅ CORRECT: The boundary of the array must be inclusive
+if nums[left] <= target < nums[mid]:
+```
+
+### 3. Edge Cases Checklist
+Always test your code mentally against:
+- [ ] `nums = [1]`, `target = 1` (Single element)
+- [ ] `nums = [3, 1]`, `target = 1` (Two elements, rotated)
+- [ ] `nums = [1, 2, 3, 4, 5]` (Not rotated at all)
+- [ ] Target is not in the array
+- [ ] Array contains only duplicates of one number (for LC 81 variant)
+
+---
+
+## Complexity Analysis
+
+| Variant | Time Complexity | Space Complexity |
+|---------|-----------------|------------------|
+| No Duplicates (1-Pass) | $O(\log N)$ | $O(1)$ |
+| No Duplicates (2-Pass Pivot) | $O(\log N)$ | $O(1)$ |
+| With Duplicates | $O(\log N)$ avg, $O(N)$ worst | $O(1)$ |
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                                 | Difficulty | Key Insight          |
-| --- | --------------------------------------- | ---------- | -------------------- |
-| 1   | Search in Rotated Sorted Array          | Medium     | Identify sorted half |
-| 2   | Search in Rotated Sorted Array II       | Medium     | Handle duplicates    |
-| 3   | Find Minimum in Rotated Sorted Array    | Medium     | Find pivot           |
-| 4   | Find Minimum in Rotated Sorted Array II | Hard       | Duplicates + pivot   |
-| 5   | Rotation Count                          | Medium     | Index of minimum     |
-
----
-
-## Interview Tips
-
-1. **Clarify duplicates**: Significantly changes complexity
-2. **Draw the array**: Visualize the rotation
-3. **State your approach**: "First identify which half is sorted"
-4. **Handle edge cases**: Non-rotated array, single element
-5. **Mention tradeoffs**: One-pass vs find-pivot-first approaches
-
----
-
-## Key Takeaways
-
-1. **One half is always sorted**: Key insight for binary search
-2. **Check target in sorted half**: Easier to verify bounds
-3. **Duplicates complicate things**: May need linear fallback
-4. **Two approaches**: Single-pass or find-pivot-first
-5. **Watch boundary conditions**: Include/exclude equals signs carefully
+| Problem | Difficulty | Key Insight |
+|---------|------------|-------------|
+| [LC 33: Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Medium | Identify sorted half, manage bounds |
+| [LC 81: Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/) | Medium | Handle duplicates with `left += 1` |
+| [LC 153: Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Medium | Find the pivot |
+| [LC 154: Find Minimum in Rotated Array II](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/) | Hard | Find the pivot with duplicates |
 
 ---
 

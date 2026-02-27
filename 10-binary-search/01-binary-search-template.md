@@ -1,201 +1,153 @@
 # Binary Search Template
 
-> **Prerequisites:** Basic array knowledge, understanding of O(log n) complexity
+> **Prerequisites:** Basic array knowledge, understanding of $O(\log n)$ complexity
 
 ## Interview Context
 
-Binary search template questions test:
+Binary search is one of the most fundamental algorithms, yet one of the most frequently failed in interviews. Donald Knuth famously noted that while the first binary search was published in 1946, the first published binary search without bugs did not appear until 1962.
 
-1. **Implementation accuracy**: Can you write bug-free binary search?
-2. **Edge case handling**: Empty arrays, single elements, not found
-3. **Variant recognition**: Which template applies to which problem?
-4. **Overflow prevention**: Proper midpoint calculation
+Interviewers test:
+1. **Implementation accuracy**: Can you write bug-free binary search on the first try? (Off-by-one errors are lethal).
+2. **Variant recognition**: Can you identify that a problem requires binary search even when there's no explicitly sorted array?
+3. **Boundary conditions**: Do you know when to use `<` vs `<=`, or `mid` vs `mid + 1`?
+4. **Search Space Reduction**: Can you define a monotonic boolean function to search over a range of answers (Binary Search on Answer)?
 
 ---
 
-## Building Intuition
+## Building Intuition: The Monotonic Property
 
 **Why does binary search work?**
 
-Think of binary search like a game of "20 Questions" where you're trying to guess a number between 1 and 1,000,000. Instead of asking "Is it 1? Is it 2?" you ask "Is it greater than 500,000?" Each answer eliminates half the possibilities.
+Binary search doesn't just require "sorted data"—it requires a **monotonic property**. This is any condition that transitions from `False` $\rightarrow$ `True` (or `True` $\rightarrow$ `False`) exactly once.
 
-**The Key Insight: Monotonic Property**
-
-Binary search doesn't just require "sorted data"—it requires a **monotonic property**. This is any condition that transitions from false→true (or true→false) exactly once:
-
-```
+```text
 Index:     [0] [1] [2] [3] [4] [5] [6]
 Condition: [F] [F] [F] [T] [T] [T] [T]
                        ↑
-        Binary search finds this transition
+        Binary search finds this boundary
 ```
 
 **Mental Model: The Boolean Divide**
-
-Imagine painting a sorted array: everything before some point is red (condition false), everything from that point onward is blue (condition true). Binary search finds where the color changes—in O(log n) time.
+Imagine evaluating a condition on your search space. Everything before some point evaluates to `False`, and everything from that point onward evaluates to `True`. Binary search finds where the boundary changes—in $O(\log n)$ time.
 
 **Why Halving Works**:
+1. Pick the middle element `mid`.
+2. Evaluate the condition at `mid`.
+3. If `True`: the transition boundary is at or before `mid` $\rightarrow$ discard the right half.
+4. If `False`: the transition boundary is after `mid` $\rightarrow$ discard the left half.
+5. Each step halves the search space: $n \rightarrow n/2 \rightarrow n/4 \rightarrow ... \rightarrow 1$.
 
-1. You pick the middle element
-2. You evaluate the condition at that point
-3. If true: the transition is at or before mid → search left half
-4. If false: the transition is after mid → search right half
-5. Each step halves the search space: n → n/2 → n/4 → ... → 1
+This gives exactly $\lfloor \log_2(n) \rfloor + 1$ steps.
 
-This gives exactly log₂(n) steps.
-
-**The "Sorted Array" is a Special Case**
-
+**The "Sorted Array" is just a Special Case**
 When searching for a target in a sorted array:
-
-- Condition = "Is nums[mid] >= target?"
-- The condition transitions from false→true at the first occurrence
-- So binary search on sorted arrays is just finding this transition
-
----
-
-## When NOT to Use Binary Search
-
-Binary search is powerful but has specific requirements:
-
-**1. Unsorted Data Without Monotonic Property**
-
-```python
-# Won't work: no monotonic property
-arr = [3, 1, 4, 1, 5, 9, 2, 6]
-# There's no "transition point" to find
-```
-
-**2. When You Need All Occurrences**
-
-- Binary search finds ONE position (first, last, or any occurrence)
-- For ALL occurrences, you still need O(k) time where k = count
-
-**3. Small Arrays (n < 10-20)**
-
-- Linear scan is often faster due to cache efficiency
-- Binary search has more comparisons per iteration
-- Only matters for performance-critical code
-
-**4. Linked Lists**
-
-- No O(1) random access means O(n) to reach middle
-- Binary search becomes O(n log n)—worse than linear!
-
-**5. Frequently Modified Data**
-
-- Insertions break sorted order
-- Consider balanced BST or skip list instead
-
-**Red Flags That Binary Search Won't Work:**
-
-- "Find all elements satisfying..."
-- "Count total occurrences" (though boundaries can help)
-- Unsorted data with no way to define monotonicity
-- Need to modify the array during search
+- Condition = `nums[mid] >= target`
+- The condition transitions from `False` $\rightarrow$ `True` at the first occurrence of the target.
 
 ---
 
 ## The Three Templates
 
-### Template 1: Find Exact Match
+Mastering binary search means mastering how to adjust your search space boundaries.
 
-Used when searching for a specific target value.
+### Template 1: Find Exact Match (Standard)
+
+Used when searching for a specific target value. **You can stop early if you find it.**
 
 ```python
 def binary_search(nums: list[int], target: int) -> int:
     """
-    Find target in sorted array.
-
-    Time: O(log n)
-    Space: O(1)
+    Find target in sorted array. Returns index or -1 if not found.
+    Time: O(log n) | Space: O(1)
     """
     left, right = 0, len(nums) - 1
 
+    # Loop condition: <= because the search space is [left, right] inclusive
     while left <= right:
+        # Prevent integer overflow (crucial in C++/Java, good habit in Python)
         mid = left + (right - left) // 2
 
         if nums[mid] == target:
-            return mid
+            return mid          # Found exact match, exit immediately
         elif nums[mid] < target:
-            left = mid + 1
+            left = mid + 1      # Discard left half (nums[mid] is too small)
         else:
-            right = mid - 1
+            right = mid - 1     # Discard right half (nums[mid] is too large)
 
     return -1
 ```
 
-**Key points:**
-
-- Use `<=` in condition (search until left crosses right)
-- Return `mid` immediately when found
-- Move `left = mid + 1` or `right = mid - 1` (never include mid)
+**Key Signatures:**
+- `left <= right` (Loop runs even when `left == right` to check the last element).
+- Early exit: `return mid` inside the loop.
+- Boundary updates: `left = mid + 1` and `right = mid - 1`.
 
 ---
 
-### Template 2: Find Left Boundary (First Occurrence)
+### Template 2: Find Left Boundary (First Occurrence / Insertion Point)
 
-Used when finding the first position where condition becomes true.
+Used when finding the **first** position where a condition becomes true (e.g., first occurrence of duplicates, or where to insert an element). **You cannot stop early.**
 
 ```python
 def find_left_boundary(nums: list[int], target: int) -> int:
     """
-    Find first occurrence of target (or insertion point).
-
-    Time: O(log n)
-    Space: O(1)
+    Find first occurrence of target.
+    Returns the leftmost index if found, else -1.
     """
     left, right = 0, len(nums) - 1
-    result = -1
+    result = -1  # Keep track of the best valid candidate so far
 
     while left <= right:
         mid = left + (right - left) // 2
 
         if nums[mid] >= target:
             if nums[mid] == target:
-                result = mid
-            right = mid - 1
+                result = mid    # Found a candidate, but keep searching left for an earlier one
+            right = mid - 1     # Squeeze right boundary to find earlier occurrences
         else:
-            left = mid + 1
+            left = mid + 1      # nums[mid] is too small, target must be to the right
 
     return result
 ```
 
-Alternative (returns insertion point):
+**Alternative (The "Insert" or `bisect_left` pattern):**
+This is often preferred by advanced competitive programmers. It finds the first index where `nums[i] >= target`.
 
 ```python
-def find_left_boundary_v2(nums: list[int], target: int) -> int:
-    """
-    Find leftmost position where target could be inserted.
-
-    Returns index of first element >= target.
-    """
-    left, right = 0, len(nums)  # Note: right = len(nums)
+def bisect_left_custom(nums: list[int], target: int) -> int:
+    # Note: right = len(nums), NOT len(nums) - 1.
+    # Target might need to be inserted at the very end.
+    left, right = 0, len(nums)
 
     while left < right:  # Note: < not <=
         mid = left + (right - left) // 2
 
         if nums[mid] < target:
-            left = mid + 1
+            left = mid + 1      # Mid is strictly less than target, must move right
         else:
-            right = mid
+            right = mid         # Mid is >= target. It COULD be the answer, so don't do mid - 1
 
+    # At the end of the loop, left == right.
     return left
 ```
+
+**Key Signatures (Alternative Pattern):**
+- Initial bounds: `[0, len(nums)]`.
+- Loop condition: `left < right` (terminates when `left == right`).
+- Boundary updates: `left = mid + 1` and `right = mid` (Never `right = mid - 1`).
+- Return `left`.
 
 ---
 
 ### Template 3: Find Right Boundary (Last Occurrence)
 
-Used when finding the last position where condition is true.
+Used when finding the **last** position where a condition is true.
 
 ```python
 def find_right_boundary(nums: list[int], target: int) -> int:
     """
     Find last occurrence of target.
-
-    Time: O(log n)
-    Space: O(1)
+    Returns the rightmost index if found, else -1.
     """
     left, right = 0, len(nums) - 1
     result = -1
@@ -205,83 +157,61 @@ def find_right_boundary(nums: list[int], target: int) -> int:
 
         if nums[mid] <= target:
             if nums[mid] == target:
-                result = mid
-            left = mid + 1
+                result = mid    # Found candidate, but keep searching right for a later one
+            left = mid + 1      # Squeeze left boundary to find later occurrences
         else:
-            right = mid - 1
+            right = mid - 1     # nums[mid] is too large, target must be to the left
 
     return result
 ```
 
 ---
 
-## Template Comparison
+## Visual Walkthrough: Left vs Right Boundary
 
-| Template       | Loop Condition                    | Mid Calculation          | When Mid Found           |
-| -------------- | --------------------------------- | ------------------------ | ------------------------ |
-| Exact Match    | `left <= right`                   | `left + (right-left)//2` | Return immediately       |
-| Left Boundary  | `left <= right` or `left < right` | Same                     | Continue searching left  |
-| Right Boundary | `left <= right`                   | Same                     | Continue searching right |
-
----
-
-## Visual Walkthrough
-
-### Finding target = 5 in [1, 2, 3, 5, 5, 5, 8, 9]
-
-**Exact match (finds any 5):**
-
-```
-[1, 2, 3, 5, 5, 5, 8, 9]
- L           M        R     mid=3, nums[3]=5, return 3
-```
+Target = `5` in `[1, 2, 3, 5, 5, 5, 8, 9]`
 
 **Left boundary (finds first 5):**
-
-```
+```text
 [1, 2, 3, 5, 5, 5, 8, 9]
  L           M        R     mid=3, nums[3]=5 >= 5, result=3, R=2
- L     M  R                 mid=1, nums[1]=2 < 5, L=2
-       LM R                 mid=2, nums[2]=3 < 5, L=3
+ L     M  R                 mid=1, nums[1]=2 < 5,  L=2
+       LM R                 mid=2, nums[2]=3 < 5,  L=3
        R  L                 L > R, return result=3
 ```
 
 **Right boundary (finds last 5):**
-
-```
+```text
 [1, 2, 3, 5, 5, 5, 8, 9]
  L           M        R     mid=3, nums[3]=5 <= 5, result=3, L=4
              L     M  R     mid=5, nums[5]=5 <= 5, result=5, L=6
-                   L  MR    mid=6, nums[6]=8 > 5, R=5
+                   L  MR    mid=6, nums[6]=8 > 5,  R=5
                    RL       L > R, return result=5
 ```
 
 ---
 
-## Python's bisect Module
+## Python's `bisect` Module
 
-Python provides built-in binary search:
+In a Python interview, clarify if you can use the standard library. If yes, `bisect` is incredibly powerful and handles the `left < right` logic perfectly.
 
 ```python
 import bisect
 
 nums = [1, 2, 3, 5, 5, 5, 8, 9]
 
-# Find leftmost insertion point
+# Find leftmost insertion point (first element >= 5)
 bisect.bisect_left(nums, 5)   # Returns 3
 
-# Find rightmost insertion point
+# Find rightmost insertion point (first element > 5)
 bisect.bisect_right(nums, 5)  # Returns 6
 
-# Insert while maintaining order
-bisect.insort_left(nums, 4)   # Inserts 4 at index 3
+# (Same as bisect_right)
+bisect.bisect(nums, 5)        # Returns 6
 ```
 
-**Using bisect for boundary finding:**
-
+**Building exact lookups using `bisect`:**
 ```python
-import bisect
-
 def first_occurrence(nums: list[int], target: int) -> int:
     idx = bisect.bisect_left(nums, target)
     if idx < len(nums) and nums[idx] == target:
@@ -297,172 +227,107 @@ def last_occurrence(nums: list[int], target: int) -> int:
 
 ---
 
-## Avoiding Common Bugs
+## Advanced: Binary Search on Answer
 
-### 1. Integer Overflow (Not in Python, but important for other languages)
+This is the **most frequently tested FANG binary search pattern**.
+The array isn't sorted, but the *answer space* is monotonic.
+
+**Pattern:**
+You need to find a minimum or maximum value that satisfies a certain condition.
+1. Define the search space: `[min_possible_answer, max_possible_answer]`.
+2. Define a helper function: `is_valid(guess) -> bool` that runs in $O(N)$.
+3. Use binary search (Template 2 or 3) to find the boundary where `is_valid` flips.
+
+**Example Conceptual Problem:** "Koko Eating Bananas" (Find minimum eating speed $k$).
+- If $k=1$, it takes too long (`is_valid(1) == False`).
+- If $k=100$, she finishes in time (`is_valid(100) == True`).
+- If she can finish at speed $k$, she can *definitely* finish at speed $k+1$.
+- The condition `is_valid(k)` is monotonic: `[F, F, F, T, T, T]`.
+- We want to find the **first** `True` (Left Boundary).
 
 ```python
-# Wrong (can overflow in C++/Java)
+def solve(params):
+    left, right = min_ans, max_ans
+    result = -1
+
+    while left <= right:
+        mid = left + (right - left) // 2
+
+        if is_valid(mid, params):
+            result = mid       # Mid works, but can we find a SMALLER answer?
+            right = mid - 1    # Squeeze right
+        else:
+            left = mid + 1     # Mid doesn't work, we need a larger answer
+
+    return result
+```
+
+Total Time Complexity: $O(N \log M)$ where $N$ is array size and $M$ is the answer space size.
+
+---
+
+## Avoiding Common Bugs
+
+### 1. Integer Overflow
+```python
+# Wrong (can overflow in C++/Java if left + right > 2^31 - 1)
 mid = (left + right) // 2
 
-# Correct
+# Correct (prevents overflow)
 mid = left + (right - left) // 2
 ```
 
 ### 2. Infinite Loops
-
+Occurs when `left == right` (or `left == right - 1`) and the search space doesn't shrink.
 ```python
-# Wrong - infinite loop when left == right
-while left < right:
-    mid = left + (right - left) // 2
-    if nums[mid] < target:
-        left = mid  # Should be mid + 1
+# DANGER: Infinite loop if left = 0, right = 1 and we do:
+left = mid   # Since mid = 0 + 1//2 = 0, left remains 0 forever!
 
-# Correct
-while left < right:
-    mid = left + (right - left) // 2
-    if nums[mid] < target:
-        left = mid + 1
+# Fix 1: Always use left = mid + 1 or right = mid - 1 (with left <= right)
+# Fix 2: If using left = mid, calculate mid as rounding UP:
+# mid = left + (right - left + 1) // 2
 ```
 
-### 3. Off-by-One Errors
-
-```python
-# Know your bounds
-# Template 1: right = len(nums) - 1
-# Template 2: right = len(nums) when returning insertion point
-```
-
-### 4. Empty Array
-
-```python
-def binary_search_safe(nums: list[int], target: int) -> int:
-    if not nums:
-        return -1
-    # ... rest of search
-```
+### 3. Edge Cases Checklist
+- [ ] Empty array (`if not nums: return -1`)
+- [ ] Array with 1 element (walk through it manually)
+- [ ] Target is smaller than the 0th element
+- [ ] Target is larger than the last element
+- [ ] Duplicates in the array (Do you need first, last, or any?)
 
 ---
 
-## Complexity Analysis
+## When NOT to Use Binary Search
 
-| Operation               | Time         | Space    | Notes                         |
-| ----------------------- | ------------ | -------- | ----------------------------- |
-| Binary Search           | O(log n)     | O(1)     | Halves search space each step |
-| Recursive Binary Search | O(log n)     | O(log n) | Call stack depth              |
-| Finding All Occurrences | O(log n + k) | O(1)     | k = number of occurrences     |
+Binary search is powerful but has specific requirements. Watch out for these traps:
 
----
+1. **Unsorted Data Without a Monotonic Property**
+   - e.g. `[3, 1, 4, 1, 5]`. If you evaluate `nums[mid] >= 4`, it's `[False, False, True, False, True]`. There is no single transition point.
 
-## Common Variations
+2. **When You Need ALL Occurrences (and there are many)**
+   - If a target appears $K$ times, finding all of them takes $O(\log N + K)$. If $K \approx N$ (e.g., an array of all `5`s), this degrades to $O(N)$. Just use a linear scan.
 
-### 1. Square Root
+3. **Linked Lists**
+   - Binary search requires $O(1)$ random access. Reaching the middle of a linked list takes $O(N)$. Binary search on a linked list is $O(N \log N)$—worse than an $O(N)$ linear scan!
 
-```python
-def sqrt(x: int) -> int:
-    """Find floor of square root."""
-    if x < 2:
-        return x
-
-    left, right = 1, x // 2
-
-    while left <= right:
-        mid = left + (right - left) // 2
-        if mid * mid == x:
-            return mid
-        elif mid * mid < x:
-            left = mid + 1
-        else:
-            right = mid - 1
-
-    return right
-```
-
-### 2. First Bad Version
-
-```python
-def first_bad_version(n: int) -> int:
-    """Find first bad version (API: is_bad(version) -> bool)."""
-    left, right = 1, n
-
-    while left < right:
-        mid = left + (right - left) // 2
-        if is_bad(mid):
-            right = mid
-        else:
-            left = mid + 1
-
-    return left
-```
-
-### 3. Guess Number
-
-```python
-def guess_number(n: int) -> int:
-    """Guess number (API: guess(num) -> -1/0/1)."""
-    left, right = 1, n
-
-    while left <= right:
-        mid = left + (right - left) // 2
-        result = guess(mid)
-        if result == 0:
-            return mid
-        elif result == -1:
-            right = mid - 1
-        else:
-            left = mid + 1
-
-    return -1
-```
-
----
-
-## Edge Cases Checklist
-
-- [ ] Empty array
-- [ ] Single element array
-- [ ] Target smaller than all elements
-- [ ] Target larger than all elements
-- [ ] Target not in array
-- [ ] Duplicate elements
-- [ ] All elements are the same
+4. **Dynamic Data (Frequent Inserts/Deletes)**
+   - Inserting into a sorted array takes $O(N)$. If you are constantly adding elements and then searching, your overall time is dominated by the $O(N)$ inserts. Use a Balanced BST (like `SortedList` in Python) or a Hash Map instead.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                                 | Difficulty | Key Insight                   |
-| --- | --------------------------------------- | ---------- | ----------------------------- |
-| 1   | Binary Search                           | Easy       | Standard template             |
-| 2   | Sqrt(x)                                 | Easy       | Search on answer              |
-| 3   | First Bad Version                       | Easy       | Left boundary                 |
-| 4   | Guess Number Higher or Lower            | Easy       | Standard template             |
-| 5   | Search Insert Position                  | Easy       | Left boundary/insertion point |
-| 6   | Valid Perfect Square                    | Easy       | Search on answer              |
-| 7   | Count Negative Numbers in Sorted Matrix | Easy       | Binary search per row         |
-
----
-
-## Interview Tips
-
-1. **Clarify the problem**: Sorted? Duplicates? What to return if not found?
-2. **Choose the right template**: Match the problem to a template
-3. **Check bounds carefully**: `<=` vs `<`, `mid+1` vs `mid`
-4. **Test with examples**: Walk through with [1], [1,2], and [1,2,3]
-5. **Consider edge cases**: Empty, single element, boundaries
-
----
-
-## Key Takeaways
-
-1. Three templates: exact match, left boundary, right boundary
-2. Always use `left + (right - left) // 2` for midpoint
-3. Know when to return immediately vs continue searching
-4. Python's `bisect` module handles most cases
-5. Test with small arrays to verify correctness
+| Problem | Type | Key Insight |
+|---------|------|-------------|
+| [Binary Search](https://leetcode.com/problems/binary-search/) | Template 1 | Standard Exact Match |
+| [Search Insert Position](https://leetcode.com/problems/search-insert-position/) | Template 2 | `bisect_left` pattern |
+| [Find First and Last Position](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/) | Template 2/3 | Left and Right boundaries |
+| [Sqrt(x)](https://leetcode.com/problems/sqrtx/) | Search Space | Binary Search on Answer `[1, x//2]` |
+| [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Search Space | Monotonic boolean function over `[1, max(piles)]` |
+| [Find Peak Element](https://leetcode.com/problems/find-peak-element/) | Unsorted BS | Look at slope `nums[mid] < nums[mid+1]` |
 
 ---
 
 ## Next: [02-first-last-occurrence.md](./02-first-last-occurrence.md)
 
-Deep dive into finding boundaries in sorted arrays.
+Deep dive into the problem of finding boundaries in sorted arrays.
