@@ -35,3 +35,8 @@ My fix:
         left, right = pivot, n - 1
 ```
 This fix is totally correct! I just need to record it in `todo.md` as done.
+
+### Peak Element Improvements
+- Explicitly calling out why we use Template 2 (`left < right`) rather than Template 1 (`left <= right`) is critical for Peak Element. If `left == right`, and `mid` lands on the last index, calculating `nums[mid + 1]` causes an IndexError. Using `left < right` perfectly guards against this.
+- `Find in Mountain Array` is an excellent combination of finding the peak using Template 2 and searching the respective halves using standard Template 1 binary search.
+- For `Find Peak Element II` in a 2D matrix, searching across rows/cols works efficiently in $O(n \log m)$ or $O(m \log n)$ time complexity. Be precise in matching the time complexity statement to the implementation details (i.e. if the binary search is on columns, it's $O(m \log n)$ where $m$ is rows and $n$ is cols).
