@@ -1,78 +1,55 @@
-# Matrix Chain Multiplication
+# Matrix Chain Multiplication & Interval DP
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
 ## Overview
 
-Matrix Chain Multiplication is the canonical interval DP problem where you find the optimal way to parenthesize a sequence of operations.
+Matrix Chain Multiplication is the canonical **interval DP** problem. The goal is to find the optimal way to parenthesize a sequence of operations to minimize the total cost. Interval DP is used when a problem asks you to combine adjacent elements or split an array into pieces optimally.
 
 ## Building Intuition
 
 **Why is interval DP needed for matrix chain?**
 
-1. **Order Matters, But Not Linearly**: Matrix multiplication is associative (result is same), but the COST depends on parenthesization. We're not choosing a sequence—we're choosing a STRUCTURE (binary tree of operations).
-
-2. **Interval = Subchain**: dp[i][j] represents the best way to multiply matrices i through j. Every subchain can be split at some point k, giving (i..k) and (k+1..j).
-
-3. **The Split Point Insight**: To multiply matrices i to j, we must eventually do ONE final multiplication that combines two groups. That multiplication has dimensions p[i-1] × p[k] × p[j]. We try all possible k and take the minimum.
-
-4. **Why Iterate by Length**: dp[i][j] depends on dp[i][k] and dp[k+1][j], which are shorter chains. So we must solve shorter chains first. Iterating by length (1, 2, 3, ...) ensures this.
-
-5. **O(n³) Breakdown**: n² subproblems (all i,j pairs), each taking O(n) to solve (trying all split points k). Total: O(n³).
-
-6. **Mental Model**: Think of grouping expressions like ((A×B)×C) vs (A×(B×C)). The binary tree of multiplications can have many shapes. We're finding the tree with minimum total cost.
-
-## Interview Context
-
-Matrix Chain Multiplication introduces **interval DP**:
-
-1. **Parenthesization problems**: Optimal way to combine
-2. **O(n³) pattern**: Iterate by length, split points
-3. **Foundation for harder**: Burst balloons, merge stones
-4. **Classic optimization**: Minimize/maximize over splits
+1. **Order Matters, But Not Linearly**: Matrix multiplication is associative (the final matrix is the same regardless of parenthesization), but the computational COST depends heavily on the parenthesization. We are not choosing a sequence—we are choosing a STRUCTURE (a binary tree of operations).
+2. **Interval = Subchain**: `dp[i][j]` represents the optimal cost to multiply the sequence of matrices from index `i` through index `j` inclusive. Every subchain can be split at some point `k`, creating two smaller subchains: `(i..k)` and `(k+1..j)`.
+3. **The Split Point Insight**: To combine the matrices `i` to `j`, we must eventually perform ONE final multiplication that combines the optimal result of the left group with the right group. That multiplication has dimensions $p_i \times p_{k+1} \times p_{j+1}$. We try all possible split points `k` and take the minimum.
+4. **Why Iterate by Length**: `dp[i][j]` depends on `dp[i][k]` and `dp[k+1][j]`, which represent *shorter* chains. To ensure we have the answers for smaller subproblems before we need them, we must iterate over the **length of the interval**, building up from length 1, to 2, to 3, etc.
+5. **O(n³) Breakdown**: There are $O(n^2)$ subproblems (all `i, j` pairs), and each takes $O(n)$ time to solve because we try all split points `k` between `i` and `j`. Total time: $O(n^3)$.
 
 ---
 
-## When NOT to Use Interval DP
+## Recognizing Interval DP
 
-1. **Linear Dependencies**: If `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`, use 1D DP. Interval DP is for range-based dependencies.
-   - *Example*: Finding the longest increasing subsequence. You only need to look back linearly, not consider arbitrary combinations of left and right subsegments.
+Interval DP is appropriate when:
+- You need to combine contiguous ranges optimally (e.g., merging adjacent files/stones).
+- You need to split a contiguous range into two subranges optimally.
+- The operations form a tree structure over adjacent elements.
 
-2. **O(n³) Is Too Slow**: For $n > 500$, $O(n^3)$ may time out. Some problems have Knuth's optimization reducing to $O(n^2)$.
-   - *Example*: Finding optimal BST for 1000 nodes will TLE with standard $O(n^3)$ interval DP.
+**When NOT to Use Interval DP:**
 
-3. **Non-Associative Operations**: Interval DP assumes combining `(i..k)` and `(k+1..j)` gives `(i..j)`. If merging isn't associative or has side effects, the model breaks.
-   - *Example*: A game where combining two items changes the value of items *outside* the interval. Or an operation where `(A + B) + C != A + (B + C)`.
-
-4. **Greedy Works**: Some parenthesization problems have greedy solutions (e.g., Huffman coding for optimal merge). Check before using DP.
-   - *Example*: Merging ropes/files to minimize total cost (where you can pick *any* two to merge, not just adjacent ones) is solved with a Priority Queue in $O(n \log n)$, not Interval DP. Because any two elements can be merged, there is no "interval" constraint.
-
-5. **Graph Structure, Not Interval**: If the problem involves graphs rather than linear sequences, interval DP doesn't apply.
-   - *Example*: Shortest path or traveling salesperson problem. While order matters, the topology is a graph, not a sequence of elements that can be split into intervals.
-
-**Recognize Interval DP When:**
-
-- Combine contiguous ranges optimally
-- Split a range into two subranges
-- Order of operations affects cost but not result
+1. **Linear Dependencies**: If `dp[i]` only depends on `dp[i-1]` or `dp[i-2]`, use 1D DP. Interval DP is for range-based dependencies.
+2. **O(n³) Is Too Slow**: For $n > 500$, an $O(n^3)$ solution will usually time out. Some problems have Knuth's optimization, which reduces the time complexity to $O(n^2)$.
+3. **Greedy Works**: Some parenthesization or merging problems have greedy solutions (e.g., Huffman coding for optimal merge cost of items where any two can be merged, not just adjacent ones). If you can merge *any* two items, sort or use a Priority Queue in $O(n \log n)$. Interval DP strictly requires combining *adjacent* elements.
+4. **Graph Structure**: If the problem involves graphs rather than a linear sequence of elements that can be partitioned, interval DP doesn't apply (e.g., Traveling Salesperson).
 
 ---
 
 ## Problem Statement
 
-Given dimensions of n matrices, find minimum multiplications to compute their product.
+Given an array `p` of dimensions for $n$ matrices, find the minimum number of scalar multiplications needed to compute the matrix product.
 
-Matrix i has dimensions p[i-1] × p[i].
+- Matrix `i` (0-indexed) has dimensions `p[i] × p[i+1]`.
+- Note: The array `p` has length $n + 1$.
 
-```
+```text
 Example:
 p = [10, 30, 5, 60]
 Matrices: A(10×30), B(30×5), C(5×60)
 
-(A×B)×C = 10×30×5 + 10×5×60 = 1500 + 3000 = 4500
-A×(B×C) = 30×5×60 + 10×30×60 = 9000 + 18000 = 27000
+(A×B)×C = (10×30×5) + (10×5×60) = 1500 + 3000 = 4500
+A×(B×C) = (30×5×60) + (10×30×60) = 9000 + 18000 = 27000
 
-Optimal: (A×B)×C = 4500
+Optimal cost is 4500.
 ```
 
 ---
@@ -81,85 +58,78 @@ Optimal: (A×B)×C = 4500
 
 ### Recurrence Relation
 
-Let $dp[i][j]$ be the minimum number of scalar multiplications needed to compute the matrix $A_{i..j}$. The dimensions of matrix $A_i$ are $p_{i-1} \times p_i$.
+Let $dp[i][j]$ be the minimum number of multiplications to compute the product of matrices $A_i \dots A_j$ (0-indexed). The dimensions of matrix $A_m$ are $p_m \times p_{m+1}$.
 
 $$
 dp[i][j] =
 \begin{cases}
 0 & \text{if } i = j \\
-\min\limits_{i \le k < j} \left\{ dp[i][k] + dp[k+1][j] + p_{i-1} p_k p_j \right\} & \text{if } i < j
+\min\limits_{i \le k < j} \left\{ dp[i][k] + dp[k+1][j] + p_i \cdot p_{k+1} \cdot p_{j+1} \right\} & \text{if } i < j
 \end{cases}
 $$
 
-**Space & Time Complexity Analysis:**
-Because $dp$ is an $O(n) \times O(n)$ table and computing each $dp[i][j]$ requires iterating over all possible split points $k$ where $i \le k < j$ (taking $O(n)$ time), the total time complexity is $O(n^3)$.
-Space is $O(n^2)$ for the table. It is possible to optimize space with Knuth's Optimization to $O(n^2)$ time, but the space remains $O(n^2)$ because we must store answers to all $O(n^2)$ subproblems.
+### Bottom-Up DP (Tabulation)
 
-### Bottom-Up (Tabulation)
+It is highly recommended to use **0-indexed matrices** in Python. If `p` has length $N$, there are $n = N - 1$ matrices. We use a 2D array of size $n \times n$.
 
 ```python
 def matrix_chain_order(p: list[int]) -> int:
     """
-    Minimum scalar multiplications to multiply chain of matrices.
-
-    State: dp[i][j] = min cost to multiply matrices i through j
-    Recurrence: dp[i][j] = min(dp[i][k] + dp[k+1][j] + p[i-1]*p[k]*p[j])
-                for all k in [i, j-1]
+    Minimum scalar multiplications to multiply a chain of matrices.
 
     Time: O(n³)
     Space: O(n²)
     """
     n = len(p) - 1  # Number of matrices
-
     if n <= 1:
         return 0
 
-    # dp[i][j] = min cost for matrices i to j (1-indexed)
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    # dp[i][j] = min cost to multiply matrices i through j (inclusive)
+    dp = [[0] * n for _ in range(n)]
 
-    # Fill by increasing chain length
-    for length in range(2, n + 1):  # length of chain
-        for i in range(1, n - length + 2):
-            j = i + length - 1
+    # Loop by length of the chain (from 2 up to n)
+    for length in range(2, n + 1):
+        # i is the start index
+        for i in range(n - length + 1):
+            j = i + length - 1  # j is the end index
             dp[i][j] = float('inf')
 
+            # k is the split point: we split into (i..k) and (k+1..j)
             for k in range(i, j):
-                cost = dp[i][k] + dp[k + 1][j] + p[i - 1] * p[k] * p[j]
+                # Cost = cost of left + cost of right + cost of multiplying left and right
+                # Left matrix result is p[i] x p[k+1]
+                # Right matrix result is p[k+1] x p[j+1]
+                cost = dp[i][k] + dp[k+1][j] + p[i] * p[k+1] * p[j+1]
                 dp[i][j] = min(dp[i][j], cost)
 
-    return dp[1][n]
+    return dp[0][n - 1]
 ```
 
----
+### With Parenthesization Reconstruction
 
-## With Parenthesization
-
-If you need to reconstruct the actual parenthesization, keep an additional `split` table.
+If you need to reconstruct the optimal parenthesization, keep a separate `split` table to record the `k` that yielded the minimum cost for `dp[i][j]`.
 
 ```python
 def matrix_chain_with_solution(p: list[int]) -> tuple[int, str]:
-    """
-    Return min cost and optimal parenthesization.
-    """
     n = len(p) - 1
-
     if n <= 1:
-        return 0, "A1" if n == 1 else ""
+        return 0, "A0" if n == 1 else ""
 
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
-    split = [[0] * (n + 1) for _ in range(n + 1)]
+    dp = [[0] * n for _ in range(n)]
+    split = [[0] * n for _ in range(n)]
 
     for length in range(2, n + 1):
-        for i in range(1, n - length + 2):
+        for i in range(n - length + 1):
             j = i + length - 1
             dp[i][j] = float('inf')
 
             for k in range(i, j):
-                cost = dp[i][k] + dp[k + 1][j] + p[i - 1] * p[k] * p[j]
+                cost = dp[i][k] + dp[k+1][j] + p[i] * p[k+1] * p[j+1]
                 if cost < dp[i][j]:
                     dp[i][j] = cost
-                    split[i][j] = k
+                    split[i][j] = k  # Store the optimal split point
 
+    # Recursive function to build the string
     def build_parens(i: int, j: int) -> str:
         if i == j:
             return f"A{i}"
@@ -168,42 +138,19 @@ def matrix_chain_with_solution(p: list[int]) -> tuple[int, str]:
         right = build_parens(k + 1, j)
         return f"({left} × {right})"
 
-    return dp[1][n], build_parens(1, n)
+    return dp[0][n - 1], build_parens(0, n - 1)
 ```
 
 ---
 
-## Visual Walkthrough
+## Top-Down DP (Memoization)
 
-```
-p = [10, 30, 5, 60]
-Matrices: A1(10×30), A2(30×5), A3(5×60)
-
-Step 1: Length 2 chains
-dp[1][2] = p[0]*p[1]*p[2] = 10*30*5 = 1500   (A1×A2)
-dp[2][3] = p[1]*p[2]*p[3] = 30*5*60 = 9000   (A2×A3)
-
-Step 2: Length 3 chain
-dp[1][3] = min of:
-  k=1: dp[1][1] + dp[2][3] + p[0]*p[1]*p[3] = 0 + 9000 + 10*30*60 = 27000
-  k=2: dp[1][2] + dp[3][3] + p[0]*p[2]*p[3] = 1500 + 0 + 10*5*60 = 4500 ✓
-
-Answer: 4500, ((A1 × A2) × A3)
-```
-
----
-
-## Memoization Version
-
-Many people find the top-down memoization approach more intuitive for interval DP because you don't have to worry about the complex loop ordering (iterating by length).
+Many people find the top-down memoization approach more intuitive for interval DP because you don't have to worry about the complex loop ordering (iterating by length). The recursion automatically solves the smaller dependencies first.
 
 ```python
 from functools import lru_cache
 
 def matrix_chain_memo(p: list[int]) -> int:
-    """
-    Top-down memoized version.
-    """
     n = len(p) - 1
 
     @lru_cache(maxsize=None)
@@ -215,32 +162,68 @@ def matrix_chain_memo(p: list[int]) -> int:
         min_cost = float('inf')
         # Try all possible split points k
         for k in range(i, j):
-            cost = dp(i, k) + dp(k + 1, j) + p[i - 1] * p[k] * p[j]
+            cost = dp(i, k) + dp(k + 1, j) + p[i] * p[k+1] * p[j+1]
             min_cost = min(min_cost, cost)
 
         return min_cost
 
-    return dp(1, n)
+    return dp(0, n - 1)
+```
+
+---
+
+## Standard Interval DP Template
+
+Most interval DP problems follow this exact structure:
+
+```python
+def interval_dp_template(arr: list) -> int:
+    n = len(arr)
+    dp = [[0] * n for _ in range(n)]
+
+    # Base cases: intervals of length 1
+    for i in range(n):
+        dp[i][i] = base_case(arr[i])
+
+    # Iterate over interval lengths
+    for length in range(2, n + 1):
+        # Iterate over start index
+        for i in range(n - length + 1):
+            j = i + length - 1  # Calculate end index
+
+            dp[i][j] = float('inf')  # Or float('-inf') if maximizing
+
+            # Iterate over split points
+            for k in range(i, j):  # Sometimes range(i, j + 1) depending on problem
+                # Transition
+                cost = dp[i][k] + dp[k+1][j] + merge_cost(i, k, j)
+                dp[i][j] = min(dp[i][j], cost)
+
+    return dp[0][n - 1]
 ```
 
 ---
 
 ## Related: Minimum Cost to Merge Stones
 
+This is a classic variation. You must merge `k` consecutive piles into one. The cost of a merge is the sum of the piles being merged.
+
+Note: To merge `stones[i..j]` down to 1 pile, the jump step for `mid` is `k - 1`. This guarantees that the left partition `i..mid` can always be reduced to exactly 1 pile.
+
 ```python
 def merge_stones(stones: list[int], k: int) -> int:
     """
     Merge k consecutive piles into one, minimize total cost.
 
-    Time: O(n³)
+    Time: O(n³ / k)
     Space: O(n²)
     """
     n = len(stones)
-
+    # Check if a valid merge to 1 pile is mathematically possible
     if (n - 1) % (k - 1) != 0:
-        return -1  # Impossible
+        return -1
 
-    # Prefix sums for range sum
+    # Prefix sums to quickly get the sum of stones[i..j]
     prefix = [0] * (n + 1)
     for i in range(n):
         prefix[i + 1] = prefix[i] + stones[i]
@@ -248,7 +231,7 @@ def merge_stones(stones: list[int], k: int) -> int:
     def range_sum(i: int, j: int) -> int:
         return prefix[j + 1] - prefix[i]
 
-    # dp[i][j] = min cost to merge stones[i..j] as much as possible
+    # dp[i][j] = min cost to merge stones[i..j] as much as mathematically possible
     dp = [[0] * n for _ in range(n)]
 
     for length in range(k, n + 1):
@@ -256,10 +239,13 @@ def merge_stones(stones: list[int], k: int) -> int:
             j = i + length - 1
             dp[i][j] = float('inf')
 
+            # Crucial optimization: step by k-1
+            # We want to merge i..mid into 1 pile, and mid+1..j into some piles
             for mid in range(i, j, k - 1):
                 dp[i][j] = min(dp[i][j], dp[i][mid] + dp[mid + 1][j])
 
-            # If can merge to single pile
+            # If the entire range i..j can be compressed into exactly 1 pile
+            # We add the cost of combining those final k piles together
             if (j - i) % (k - 1) == 0:
                 dp[i][j] += range_sum(i, j)
 
@@ -268,22 +254,22 @@ def merge_stones(stones: list[int], k: int) -> int:
 
 ---
 
-## Related: Optimal BST
+## Related: Optimal Binary Search Tree
+
+Given sorted keys and their search frequencies, build a BST that minimizes the expected search cost. This uses interval DP because a BST on sorted keys `i` to `j` can be formed by picking any key `r` as the root, making `i..r-1` the left subtree and `r+1..j` the right subtree.
 
 ```python
 def optimal_bst(keys: list[int], freq: list[int]) -> int:
     """
-    Construct BST with minimum search cost.
+    Construct BST with minimum expected search cost.
 
     Time: O(n³)
     Space: O(n²)
     """
     n = len(keys)
-
-    # dp[i][j] = min cost for keys[i..j]
     dp = [[0] * n for _ in range(n)]
 
-    # Frequency sum for range
+    # Prefix array for O(1) range frequency sums
     prefix = [0] * (n + 1)
     for i in range(n):
         prefix[i + 1] = prefix[i] + freq[i]
@@ -291,21 +277,23 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
     def freq_sum(i: int, j: int) -> int:
         return prefix[j + 1] - prefix[i]
 
-    # Single keys
+    # Base case: tree with a single key
     for i in range(n):
         dp[i][i] = freq[i]
 
-    # Fill by length
     for length in range(2, n + 1):
         for i in range(n - length + 1):
             j = i + length - 1
             dp[i][j] = float('inf')
 
-            # Try each root
+            # Try every key in range as the root
             for r in range(i, j + 1):
-                left = dp[i][r - 1] if r > i else 0
-                right = dp[r + 1][j] if r < j else 0
-                cost = left + right + freq_sum(i, j)
+                # Cost is left subtree + right subtree + sum of all frequencies in tree
+                # (because when this becomes a subtree, every node goes 1 level deeper)
+                left_cost = dp[i][r - 1] if r > i else 0
+                right_cost = dp[r + 1][j] if r < j else 0
+
+                cost = left_cost + right_cost + freq_sum(i, j)
                 dp[i][j] = min(dp[i][j], cost)
 
     return dp[0][n - 1]
@@ -313,135 +301,37 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
 
 ---
 
-## Interval DP Template
-
-```python
-def interval_dp_template(arr: list) -> int:
-    """
-    General interval DP template.
-    """
-    n = len(arr)
-    dp = [[0] * n for _ in range(n)]
-
-    # Base case: single elements
-    for i in range(n):
-        dp[i][i] = base_case(arr[i])
-
-    # Fill by increasing length
-    for length in range(2, n + 1):
-        for i in range(n - length + 1):
-            j = i + length - 1
-
-            dp[i][j] = initial_value  # inf or -inf
-
-            # Try all split points
-            for k in range(i, j):  # or range(i, j + 1)
-                dp[i][j] = optimize(
-                    dp[i][j],
-                    dp[i][k] + dp[k + 1][j] + merge_cost(i, k, j)
-                )
-
-    return dp[0][n - 1]
-```
-
----
-
-## Edge Cases
-
-```python
-# 1. Single matrix
-p = [10, 20]  # One matrix, no multiplication
-# Return 0
-
-# 2. Two matrices
-p = [10, 20, 30]  # A1(10×20) × A2(20×30)
-# Return 10 * 20 * 30 = 6000
-
-# 3. Identity dimension
-p = [1, 1, 1, 1]  # All 1×1 matrices
-# Return 1 + 1 = 2
-```
-
----
-
 ## Common Mistakes
 
-```python
-# WRONG: Wrong loop order
-for i in range(n):
-    for j in range(i, n):  # dp[i+1][j] not computed yet!
-        ...
+1. **Iterating by end indices instead of length**:
+   ```python
+   # WRONG: Will read dp[k+1][j] before it's computed!
+   for i in range(n):
+       for j in range(i + 1, n):
+           for k in range(i, j): ...
 
-# CORRECT: Loop by length
-for length in range(2, n + 1):
-    for i in range(n - length + 1):
-        j = i + length - 1
-        ...
-
-
-# WRONG: Wrong dimension indexing
-cost = p[i] * p[k] * p[j]  # Off by one!
-
-# CORRECT:
-cost = p[i-1] * p[k] * p[j]  # p is 0-indexed dimensions
-
-
-# WRONG: Not initializing with inf
-dp[i][j] = dp[i][k] + dp[k+1][j] + cost  # First iteration uses 0!
-
-# CORRECT:
-dp[i][j] = float('inf')
-for k in range(...):
-    dp[i][j] = min(dp[i][j], ...)
-```
+   # CORRECT: Iterate by length
+   for length in range(2, n + 1):
+       for i in range(n - length + 1):
+           j = i + length - 1
+   ```
+2. **Indexing errors with dimensions**:
+   If using 0-indexed matrices, matrix `i` has size `p[i] x p[i+1]`. The cost to merge `i..k` and `k+1..j` is `p[i] * p[k+1] * p[j+1]`. Off-by-one errors here are very common.
+3. **Not initializing DP table properly**:
+   Always initialize `dp[i][j] = float('inf')` inside the length/start loops *before* the inner `k` loop. Otherwise, `min()` will just keep `0`.
 
 ---
 
-## Complexity
+## Complexity Profile
 
-| Problem             | Time  | Space |
-| ------------------- | ----- | ----- |
-| Matrix Chain        | O(n³) | O(n²) |
-| Merge Stones        | O(n³) | O(n²) |
-| Optimal BST         | O(n³) | O(n²) |
-| General Interval DP | O(n³) | O(n²) |
-
-Note: Some can be optimized to O(n²) with Knuth's optimization.
-
----
-
-## Interview Tips
-
-1. **Recognize interval pattern**: "Combine ranges optimally"
-2. **Loop by length**: Not by endpoints
-3. **Split point k**: What it represents
-4. **Merge cost**: How to compute efficiently
-5. **Reconstruct solution**: Keep track of split points
-
----
-
-## Practice Problems
-
-| #   | Problem                     | Difficulty | Variation         |
-| --- | --------------------------- | ---------- | ----------------- |
-| 1   | Matrix Chain Multiplication | Medium     | Classic           |
-| 2   | Burst Balloons              | Hard       | Reverse thinking  |
-| 3   | Merge Stones                | Hard       | K-way merge       |
-| 4   | Optimal BST                 | Hard       | Tree construction |
-| 5   | Minimum Score Triangulation | Medium     | Polygon           |
-
----
-
-## Key Takeaways
-
-1. **Interval DP**: dp[i][j] for ranges
-2. **Loop by length**: Ensures dependencies solved
-3. **Try all splits**: O(n) per subproblem
-4. **O(n³) typical**: But O(n²) possible with optimizations
-5. **Foundation for harder**: Burst balloons, etc.
+| Problem             | Time  | Space | Notes |
+| ------------------- | ----- | ----- | ----- |
+| Matrix Chain        | O(n³) | O(n²) | Can be mapped to polygon triangulation. |
+| Merge Stones        | O(n³) | O(n²) | `dp[i][j][m]` optimized to 2D DP. |
+| Optimal BST         | O(n³) | O(n²) | Can be optimized to O(n²) with Knuth's. |
 
 ---
 
 ## Next: [17-burst-balloons.md](./17-burst-balloons.md)
 
-Apply interval DP to the Burst Balloons problem.
+Apply interval DP to the notoriously tricky Burst Balloons problem.
