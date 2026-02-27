@@ -162,107 +162,6 @@ def topological_sort_kahn(n: int, edges: list[list[int]]) -> list[int]:
     return result
 ```
 
-### Java
-```java
-import java.util.*;
-
-class TopologicalSort {
-    public int[] topologicalSortKahn(int n, int[][] edges) {
-        // Time: O(V + E) | Space: O(V + E)
-        List<List<Integer>> graph = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            graph.add(new ArrayList<>());
-        }
-
-        int[] inDegree = new int[n];
-
-        // Build graph and calculate in-degrees
-        for (int[] edge : edges) {
-            int u = edge[0];
-            int v = edge[1];
-            graph.get(u).add(v);
-            inDegree[v]++;
-        }
-
-        // Find nodes with no dependencies
-        Queue<Integer> queue = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            if (inDegree[i] == 0) {
-                queue.offer(i);
-            }
-        }
-
-        int[] result = new int[n];
-        int index = 0;
-
-        // Process nodes
-        while (!queue.isEmpty()) {
-            int node = queue.poll();
-            result[index++] = node;
-
-            for (int neighbor : graph.get(node)) {
-                inDegree[neighbor]--;
-                if (inDegree[neighbor] == 0) {
-                    queue.offer(neighbor);
-                }
-            }
-        }
-
-        // If we processed all nodes, return result, else there's a cycle
-        return index == n ? result : new int[0];
-    }
-}
-```
-
-### C++
-```cpp
-#include <vector>
-#include <queue>
-
-using namespace std;
-
-class Solution {
-public:
-    vector<int> topologicalSortKahn(int n, vector<vector<int>>& edges) {
-        // Time: O(V + E) | Space: O(V + E)
-        vector<vector<int>> graph(n);
-        vector<int> inDegree(n, 0);
-
-        // Build graph and calculate in-degrees
-        for (const auto& edge : edges) {
-            graph[edge[0]].push_back(edge[1]);
-            inDegree[edge[1]]++;
-        }
-
-        // Find nodes with no dependencies
-        queue<int> q;
-        for (int i = 0; i < n; i++) {
-            if (inDegree[i] == 0) {
-                q.push(i);
-            }
-        }
-
-        vector<int> result;
-
-        // Process nodes
-        while (!q.empty()) {
-            int node = q.front();
-            q.pop();
-            result.push_back(node);
-
-            for (int neighbor : graph[node]) {
-                inDegree[neighbor]--;
-                if (inDegree[neighbor] == 0) {
-                    q.push(neighbor);
-                }
-            }
-        }
-
-        // If we processed all nodes, return result, else there's a cycle
-        return result.size() == n ? result : vector<int>();
-    }
-};
-```
 
 ---
 
@@ -677,7 +576,7 @@ Total Auxiliary Space: O(V + E)
 
 While both algorithms have `O(V + E)` time complexity, their constant factors and space utilization behave differently:
 
-1. **Stack Overflow Risk (DFS)**: In a completely linear graph (e.g., $v_1 \rightarrow v_2 \rightarrow ... \rightarrow v_n$), the recursive call stack depth will be exactly $V$. If $V = 10^5$, this will exceed the default recursion limit in Python (usually 1000) and cause a Stack Overflow in languages like Java/C++. Kahn's algorithm avoids this entirely as it iterates using an explicit queue.
+1. **Stack Overflow Risk (DFS)**: In a completely linear graph (e.g., $v_1 \rightarrow v_2 \rightarrow ... \rightarrow v_n$), the recursive call stack depth will be exactly $V$. If $V = 10^5$, this will exceed the default recursion limit in Python (usually 1000) and cause a Stack Overflow. Kahn's algorithm avoids this entirely as it iterates using an explicit queue.
 2. **Memory Locality**: Kahn's algorithm tends to have better cache locality because it processes adjacent nodes level by level, making it slightly faster in practice for dense graphs.
 3. **Lexicographical Constraints**: Kahn's easily extends to "find the lexicographically smallest ordering" by swapping the standard `Queue` for a `PriorityQueue` (Min-Heap). Doing this with recursive DFS is remarkably complex.
 

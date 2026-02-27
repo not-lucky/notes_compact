@@ -75,11 +75,11 @@ Size N heap + k pops:  O(n + k log n) time, O(n) space
 Size K heap:           O(n log k) time,    O(k) space
 
 When k << n:
-- n log k << n log n (less work per element)
-- O(k) << O(n) (less space)
+- n log k < n log n (less work per element)
+- O(k) < O(n) (less space)
 
 When k ≈ n:
-- Just sort the array instead!
+- Just sort the array instead! (O(n log n) is better due to simpler constant factors)
 ```
 
 **Visual: The Heap as a "Threshold Keeper"**
@@ -104,9 +104,9 @@ Final threshold=7, heap contains [7,8,9] = 3 largest
 
 ## When NOT to Use Top-K with Heap
 
-**1. K Is Close to N**
+1. **K Is Close to N**
 
-When k ≈ n, just sort:
+When $k \approx n$, just sort:
 
 ```python
 # If k > n/2, sorting is often faster
@@ -241,6 +241,7 @@ def k_largest(nums: list[int], k: int) -> list[int]:
 
 def k_largest_sorted(nums: list[int], k: int) -> list[int]:
     """Return k largest in descending order."""
+    # We can either sort the k_largest result O(k log k) or use nlargest
     return sorted(k_largest(nums, k), reverse=True)
 ```
 
@@ -311,24 +312,27 @@ def top_k_frequent(nums: list[int], k: int) -> list[int]:
     """
     Find k most frequent elements.
 
-    Time: O(n log k) - counting is O(n), heap is O(n log k)
-    Space: O(n) for counter
+    Time: O(n log k) - counting is O(n), heap is O(k log k) ... Wait, actually:
+          If we use nlargest: O(m log k) where m is number of unique elements.
+          Worst case m=n, so O(n log k).
+    Space: O(n) for counter and heap
 
-    Example: nums = [1,1,1,2,2,3], k = 2 → [1, 2]
+    Example: nums = [1,1,1,2,2,3], k = 2 -> [1, 2]
     """
     # Count frequencies
     count = Counter(nums)
 
-    # Method 1: nlargest with key
+    # Method 1: nlargest with key (Cleanest in Python)
     return heapq.nlargest(k, count.keys(), key=count.get)
 
     # Method 2: Manual heap (for understanding)
     # Min heap of (freq, num), size k
     # heap = []
     # for num, freq in count.items():
-    #     heapq.heappush(heap, (freq, num))
-    #     if len(heap) > k:
-    #         heapq.heappop(heap)
+    #     if len(heap) < k:
+    #         heapq.heappush(heap, (freq, num))
+    #     elif freq > heap[0][0]:
+    #         heapq.heapreplace(heap, (freq, num))
     # return [num for freq, num in heap]
 ```
 
@@ -348,12 +352,19 @@ def k_closest(points: list[list[int]], k: int) -> list[list[int]]:
 
     Use MAX heap of size k: evict furthest point.
     """
-    # Max heap: (-distance, point)
+    # Max heap: (-distance, x, y)
     heap = []
 
     for x, y in points:
         dist = x*x + y*y  # No need for sqrt (monotonic)
 
+        # Store the actual coordinates inside the heap elements to avoid
+        # array comparison issues if distances tie. Wait! With `heapq`,
+        # if the first tuple elements are equal, it compares the second elements.
+        # So we should be careful. Actually storing an index or a custom
+        # comparable object is safer in Python if distances tie.
+        # But points as a list [x, y] works because lists are comparable.
+        # However, to avoid unnecessary array creations in loops, we can use indices:
         if len(heap) < k:
             heapq.heappush(heap, (-dist, [x, y]))
         elif dist < -heap[0][0]:  # Closer than furthest in heap
@@ -372,8 +383,9 @@ import heapq
 class KthLargest:
     """
     Find kth largest in stream of numbers.
+    (LeetCode 703)
 
-    Time: O(log k) per add
+    Time: O(log k) per add, O(n log k) for init
     Space: O(k)
 
     Maintain min heap of size k.
@@ -400,12 +412,13 @@ class KthLargest:
 
 # Usage
 kth = KthLargest(3, [4, 5, 8, 2])
-# heap = [4, 5, 8] (size 3, smallest = 4 = 3rd largest)
+# heap init -> [2, 4, 5, 8] then pops 2 -> [4, 5, 8]
+# root = smallest = 4 = 3rd largest
 
-kth.add(3)   # heap = [4, 5, 8], returns 4
-kth.add(5)   # heap = [5, 5, 8], returns 5
-kth.add(10)  # heap = [5, 8, 10], returns 5
-kth.add(9)   # heap = [8, 9, 10], returns 8
+print(kth.add(3))   # heap = [4, 5, 8], returns 4 (3 < 4, skipped)
+print(kth.add(5))   # heap = [5, 5, 8], returns 5
+print(kth.add(10))  # heap = [5, 8, 10], returns 5
+print(kth.add(9))   # heap = [8, 9, 10], returns 8
 ```
 
 ---
@@ -432,12 +445,12 @@ def k_largest_unique(nums: list[int], k: int) -> list[int]:
 
 | Approach           | Time       | Space | When to Use              |
 | ------------------ | ---------- | ----- | ------------------------ |
-| Sort + slice       | O(n log n) | O(n)  | k ≈ n                    |
-| Heap of size k     | O(n log k) | O(k)  | k << n                   |
+| Sort + slice       | O(n log n) | O(n)  | $k \approx n$                    |
+| Heap of size k     | O(n log k) | O(k)  | $k \ll n$                   |
 | nlargest/nsmallest | O(n log k) | O(k)  | Simple cases             |
 | QuickSelect        | O(n) avg   | O(1)  | Only need kth, not all k |
 
-**Break-even point**: When k ≈ n/log(n), heap and sort are similar.
+**Break-even point**: When $k \approx n/\log_2(n)$, heap and sort are similar.
 
 ---
 
@@ -446,7 +459,6 @@ def k_largest_unique(nums: list[int], k: int) -> list[int]:
 ```python
 import heapq
 
-# WRONG: Using max heap for k largest
 def k_largest_wrong(nums, k):
     heap = [-x for x in nums]  # Max heap of ALL elements
     heapq.heapify(heap)
@@ -461,13 +473,14 @@ def k_largest_correct(nums, k):
 
 # WRONG: Forgetting to handle k > n
 def k_largest_no_check(nums, k):
-    heap = nums[:k]  # Works
+    heap = nums[:k]  # If k > len(nums), heap is just nums
     heapq.heapify(heap)
-    for num in nums[k:]:  # Might be empty
+    for num in nums[k:]:  # Safe in Python, just an empty iterator
         if num > heap[0]:
             heapq.heapreplace(heap, num)
     return heap
-    # If k > n, returns all nums (often correct but check problem)
+    # In Python this actually works gracefully! But in other languages
+    # it might cause array out of bounds. Always check `if k > len(nums)`.
 
 # WRONG: Returning unsorted when sorted is expected
 def k_largest_unsorted(nums, k):
@@ -481,22 +494,23 @@ def k_largest_unsorted(nums, k):
 
 ```python
 # 1. k = 0
-k_largest([1, 2, 3], 0)  # → []
+k_largest([1, 2, 3], 0)  # -> []
 
 # 2. k > len(nums)
-k_largest([1, 2], 5)  # → [1, 2] or [2, 1]
+# (Depends on interpretation: return all or error? Usually return all sorted/unsorted)
+k_largest([1, 2], 5)  # -> [1, 2] or [2, 1]
 
 # 3. k = len(nums)
-k_largest([1, 2, 3], 3)  # → [1, 2, 3] (all elements)
+k_largest([1, 2, 3], 3)  # -> [1, 2, 3] (all elements)
 
 # 4. All same elements
-k_largest([5, 5, 5, 5], 2)  # → [5, 5]
+k_largest([5, 5, 5, 5], 2)  # -> [5, 5]
 
 # 5. Negative numbers
-k_largest([-5, -1, -3], 2)  # → [-1, -3]
+k_largest([-5, -1, -3], 2)  # -> [-1, -3]
 
 # 6. Empty array
-k_largest([], 3)  # → []
+k_largest([], 3)  # -> []
 ```
 
 ---
@@ -505,9 +519,9 @@ k_largest([], 3)  # → []
 
 1. **Ask about order**: Does result need to be sorted?
 2. **Clarify k**: Can k be 0? Greater than array length?
-3. **Explain heap choice**: "I use min heap because root is smallest of the largest"
-4. **Mention complexity**: O(n log k) is better than O(n log n) when k << n
-5. **Consider QuickSelect**: For kth element only, O(n) average is possible
+3. **Explain heap choice**: "I use a min heap because the root represents the smallest of the current largest elements, making it the perfect threshold to check against."
+4. **Mention complexity**: $O(n \log k)$ is better than $O(n \log n)$ when $k \ll n$.
+5. **Consider QuickSelect**: For the single $k$-th element, $O(n)$ average time is possible, but if you need all $k$ elements, you'd still have to sort or extract from the partition.
 
 ---
 
@@ -527,11 +541,11 @@ k_largest([], 3)  # → []
 
 ## Key Takeaways
 
-1. **K largest → Min heap of size K**: Root is what we might evict
-2. **K smallest → Max heap of size K**: Same logic, opposite direction
-3. **Time is O(n log k)**: Better than O(n log n) sorting when k is small
-4. **heapq.nlargest/nsmallest**: Use for simple cases
-5. **Stream variant**: Maintain heap of size k, root is the answer
+1. **K largest $\rightarrow$ Min heap of size K**: Root is what we might evict.
+2. **K smallest $\rightarrow$ Max heap of size K**: Same logic, opposite direction.
+3. **Time is $O(n \log k)$**: Better than $O(n \log n)$ sorting when $k$ is small.
+4. **heapq.nlargest/nsmallest**: Use for simple cases where a custom heap loop isn't explicitly required.
+5. **Stream variant**: Maintain heap of size $k$, root is always the $k$-th element threshold.
 
 ---
 

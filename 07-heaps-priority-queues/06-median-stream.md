@@ -77,16 +77,17 @@ If left has extra: median = left max
 
 **The "Always Add Left First" Trick**
 
-The implementation uses a clever dance:
+The implementation uses a clever dance. Instead of writing complex `if/else` checks to decide where a new element belongs, it:
 
-```
-1. Push to left heap (might violate "left ≤ right")
-2. Pop left's max, push to right (now left max ≤ right min)
-3. If right is bigger, move one back to left
-
-This ensures:
-- Invariant 1: left max ≤ right min (step 2 guarantees)
-- Invariant 2: left size ≥ right size (step 3 guarantees)
+```python
+1. Pushes to left heap
+   - We temporarily put it in the "smaller half" bucket
+   - This might violate the "left ≤ right" rule!
+2. Pops left's max, pushes to right
+   - The largest element in the left bucket MUST belong in the right bucket
+   - This single move guarantees: left max ≤ right min
+3. If right is bigger, moves one back to left
+   - Balances sizes so left always has ≥ elements than right
 ```
 
 **Why Not Just Sort Each Time?**
@@ -248,8 +249,8 @@ class MedianFinder:
     def findMedian(self) -> float:
         """Return median of current numbers."""
         if len(self.left) > len(self.right):
-            return -self.left[0]  # Odd: left has extra element
-        return (-self.left[0] + self.right[0]) / 2  # Even: average of middles
+            return float(-self.left[0])  # Odd: left has extra element
+        return (-self.left[0] + self.right[0]) / 2.0  # Even: average of middles
 
 
 # Usage
@@ -294,6 +295,8 @@ Sorted: [3, 5, 8], median = 5 ✓
 
 ## Alternative: Insert to Correct Side First
 
+Instead of the "always push left, pop left, push right" dance, you can use explicit conditional logic. This is slightly faster in practice since it avoids redundant `heappush`/`heappop` operations, but the edge cases are trickier to write correctly in an interview.
+
 ```python
 import heapq
 
@@ -311,16 +314,17 @@ class MedianFinder:
         else:
             heapq.heappush(self.right, num)
 
-        # Rebalance
+        # Rebalance: Left can have at most 1 more element than right
         if len(self.left) > len(self.right) + 1:
             heapq.heappush(self.right, -heapq.heappop(self.left))
+        # Right cannot have more elements than left
         elif len(self.right) > len(self.left):
             heapq.heappush(self.left, -heapq.heappop(self.right))
 
     def findMedian(self) -> float:
         if len(self.left) > len(self.right):
             return -self.left[0]
-        return (-self.left[0] + self.right[0]) / 2
+        return (-self.left[0] + self.right[0]) / 2.0
 ```
 
 ---
@@ -348,16 +352,19 @@ from collections import defaultdict
 
 class SlidingWindowMedian:
     """
-    Find median in sliding window of size k.
+    Find median in sliding window of size k using lazy deletion.
 
     Time: O(n log k) for n elements
     Space: O(k)
     """
 
-    def __init__(self):
-        self.left = []   # Max heap (negated)
+    def __init__(self, k: int):
+        self.k = k
+        self.left = []   # Max heap (stores negated values)
         self.right = []  # Min heap
-        self.removed = defaultdict(int)  # Lazy removal count
+        self.delayed = defaultdict(int)  # Lazy removal count
+
+        # Track valid sizes (excluding delayed elements)
         self.left_size = 0
         self.right_size = 0
 
@@ -372,47 +379,50 @@ class SlidingWindowMedian:
         self._balance()
 
     def remove(self, num: int) -> None:
-        """Lazy remove number from structure."""
-        self.removed[num] += 1
-        if self.left and num <= -self.left[0]:
+        """Mark number for lazy removal."""
+        self.delayed[num] += 1
+        # Update valid counts immediately
+        if num <= -self.left[0]:
             self.left_size -= 1
         else:
             self.right_size -= 1
         self._balance()
 
+    def _prune(self, heap: list[int], is_left: bool) -> None:
+        """Remove delayed elements from the top of the heap."""
+        while heap:
+            val = -heap[0] if is_left else heap[0]
+            if self.delayed[val] > 0:
+                self.delayed[val] -= 1
+                heapq.heappop(heap)
+            else:
+                break
+
     def _balance(self) -> None:
-        """Balance heaps and clean removed elements."""
-        # Balance sizes
-        while self.left_size > self.right_size + 1:
+        """Maintain size invariants and prune tops."""
+        # 1. Move elements if valid sizes are unbalanced
+        if self.left_size > self.right_size + 1:
+            self._prune(self.left, is_left=True)
             val = -heapq.heappop(self.left)
+            heapq.heappush(self.right, val)
             self.left_size -= 1
-            if self.removed[val] > 0:
-                self.removed[val] -= 1
-            else:
-                heapq.heappush(self.right, val)
-                self.right_size += 1
-
-        while self.right_size > self.left_size:
+            self.right_size += 1
+        elif self.left_size < self.right_size:
+            self._prune(self.right, is_left=False)
             val = heapq.heappop(self.right)
+            heapq.heappush(self.left, -val)
+            self.left_size += 1
             self.right_size -= 1
-            if self.removed[val] > 0:
-                self.removed[val] -= 1
-            else:
-                heapq.heappush(self.left, -val)
-                self.left_size += 1
 
-        # Clean removed from heap tops
-        while self.left and self.removed[-self.left[0]] > 0:
-            self.removed[-heapq.heappop(self.left)] -= 1
+        # 2. Prune both tops so find_median gets valid elements
+        self._prune(self.left, is_left=True)
+        self._prune(self.right, is_left=False)
 
-        while self.right and self.removed[self.right[0]] > 0:
-            self.removed[heapq.heappop(self.right)] -= 1
-
-    def find_median(self, is_odd: bool) -> float:
+    def find_median(self) -> float:
         """Get current median."""
-        if is_odd:
+        if self.k % 2 == 1:
             return float(-self.left[0])
-        return (-self.left[0] + self.right[0]) / 2
+        return (-self.left[0] + self.right[0]) / 2.0
 
 
 def medianSlidingWindow(nums: list[int], k: int) -> list[float]:
@@ -422,17 +432,19 @@ def medianSlidingWindow(nums: list[int], k: int) -> list[float]:
     Time: O(n log k)
     Space: O(k)
     """
-    swm = SlidingWindowMedian()
+    swm = SlidingWindowMedian(k)
     result = []
 
-    for i, num in enumerate(nums):
-        swm.add(num)
+    # Initialize first window
+    for i in range(k):
+        swm.add(nums[i])
+    result.append(swm.find_median())
 
-        if i >= k:
-            swm.remove(nums[i - k])
-
-        if i >= k - 1:
-            result.append(swm.find_median(k % 2 == 1))
+    # Slide window
+    for i in range(k, len(nums)):
+        swm.remove(nums[i - k])
+        swm.add(nums[i])
+        result.append(swm.find_median())
 
     return result
 ```
@@ -485,39 +497,42 @@ heapq.heappush(self.left, -num)
 
 # WRONG: Not handling empty heaps
 def findMedian(self):
-    return (-self.left[0] + self.right[0]) / 2  # Fails if right is empty!
+    return (-self.left[0] + self.right[0]) / 2.0  # Fails if right is empty!
 
 # CORRECT:
 def findMedian(self):
     if len(self.left) > len(self.right):
-        return -self.left[0]
-    return (-self.left[0] + self.right[0]) / 2
+        return float(-self.left[0])
+    return (-self.left[0] + self.right[0]) / 2.0
 
 
 # WRONG: Integer division
 return (-self.left[0] + self.right[0]) // 2  # Truncates!
 
 # CORRECT:
-return (-self.left[0] + self.right[0]) / 2  # Float division
+return (-self.left[0] + self.right[0]) / 2.0  # Float division
 ```
 
 ---
 
 ## Complexity Analysis
 
-| Operation     | Time     | Space |
-| ------------- | -------- | ----- |
-| addNum        | O(log n) | O(1)  |
-| findMedian    | O(1)     | O(1)  |
-| Overall space | -        | O(n)  |
+| Operation     | Time     | Space       |
+| ------------- | -------- | ----------- |
+| addNum        | O(log n) | O(1)*       |
+| findMedian    | O(1)     | O(1)        |
+| Overall       | -        | O(n)        |
 
-For sliding window:
-| Operation | Time |
-|-----------|------|
-| Add | O(log k) |
-| Remove (lazy) | O(1) |
-| Balance | O(log k) amortized |
-| Find median | O(1) |
+*\*Note: `addNum` space is amortized O(1) per call, but requires O(n) total auxiliary space to store all elements.*
+
+For sliding window median:
+| Operation       | Time               | Space |
+|-----------------|--------------------|-------|
+| Add             | O(log k)           | O(k)  |
+| Remove (lazy)   | O(1)               | -     |
+| Prune / Balance | O(log k) amortized | -     |
+| Find median     | O(1)               | -     |
+| Overall         | O(n log k)         | O(k)  |
 
 ---
 

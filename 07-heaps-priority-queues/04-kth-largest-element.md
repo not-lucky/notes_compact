@@ -36,7 +36,7 @@ k=2, n=6 → index 4 → value 5 ✓
 
 **Why Min Heap of Size K Works**
 
-Imagine a competition where only k winners advance:
+Imagine a competition where only $k$ winners advance:
 
 ```
 Top 3 competition, contestants arrive one by one:
@@ -52,7 +52,7 @@ Final 3: [4,5,6]
 Kth (3rd) largest = smallest of the 3 = 4 ← That's the root!
 ```
 
-The heap root is always the "weakest winner" — the kth largest.
+The heap root is always the "weakest winner" — the $k$-th largest.
 
 **QuickSelect: Partial Sorting Insight**
 
@@ -60,7 +60,7 @@ QuickSelect asks: "What if we could stop sorting early?"
 
 ```
 Full QuickSort: Partition everything, recurse both sides, O(n log n)
-QuickSelect: Partition, but only recurse ONE side, O(n)
+QuickSelect: Partition, but only recurse ONE side, O(n) average
 
 Why one side? After partitioning:
 [elements < pivot] [pivot] [elements > pivot]
@@ -70,38 +70,17 @@ If pivot lands at index k-1, we're done!
 If pivot is left of target, search right.
 If pivot is right of target, search left.
 
-We halve the problem each time (on average):
-n + n/2 + n/4 + ... = 2n = O(n)
+We halve the problem size each time (on average):
+n + n/2 + n/4 + ... ≈ 2n = O(n)
 ```
 
 **Mental Model: Finding Median Height in a Crowd**
 
 Imagine finding the 5th tallest person among 100 people.
 
-**Sorting approach**: Line everyone up by height, count to 5th. (O(n log n))
-
-**Heap approach**: Keep a "short list" of 5 tallest seen so far. Anyone taller than the shortest on your list gets swapped in. At the end, the shortest on your list is the answer. (O(n log k))
-
-**QuickSelect approach**: Ask everyone to stand left/right of a random person. Count how many are taller. Repeat only with the relevant group. (O(n) average)
-
-**When Each Approach Wins**
-
-```
-Sorting O(n log n):
-- Simple, stable, no surprises
-- Good when k ≈ n (need most of the array)
-- Works well with sorted input
-
-Heap O(n log k):
-- Excellent when k << n
-- Natural for streaming data
-- Easy to implement correctly
-
-QuickSelect O(n) average:
-- Best single-query performance
-- Modifies the array (usually OK)
-- O(n²) worst case needs random pivot
-```
+**Sorting approach**: Line everyone up by height, count to 5th. ($O(n \log n)$)
+**Heap approach**: Keep a "short list" of 5 tallest seen so far. Anyone taller than the shortest on your list gets swapped in. At the end, the shortest on your list is the answer. ($O(n \log k)$)
+**QuickSelect approach**: Ask everyone to stand left or right of a randomly chosen person based on height. Count how many are taller. If there are exactly 4 people taller, your random person is the answer! Otherwise, repeat only with the relevant group. ($O(n)$ average)
 
 ---
 
@@ -111,7 +90,7 @@ QuickSelect O(n) average:
 
 ```python
 # K is very small relative to N
-# O(n log n) is overkill for finding single element
+# O(n log n) is overkill for finding a single element
 
 nums = list(range(1000000))
 k = 5
@@ -122,7 +101,7 @@ sorted(nums)[-k]  # Sorts 1M elements to find 5th largest!
 
 ```python
 # K = 1 (just use max())
-max(nums)  # O(n), simpler than heap
+max(nums)  # O(n), simpler and faster than heap
 
 # K ≈ N (sorting is similar or better)
 # O(n log k) ≈ O(n log n) when k ≈ n
@@ -143,7 +122,7 @@ max(nums)  # O(n), simpler than heap
 **Red Flags:**
 
 - "Array is read-only" → Can't use QuickSelect without copy
-- "Need guaranteed O(n)" → QuickSelect is O(n) average, not worst
+- "Need guaranteed O(n)" → QuickSelect is $O(n)$ average, not worst (median-of-medians provides guaranteed $O(n)$ but is rarely practical to implement)
 - "Data arrives as stream" → Heap is the answer
 - "Need k=1" → Just use max()/min()
 
@@ -182,11 +161,16 @@ def find_kth_largest_sort(nums: list[int], k: int) -> int:
     # return sorted(nums, reverse=True)[k - 1]
 ```
 
-Simple but not optimal for large n with small k.
+Simple, readable, but not optimal for large $n$ with small $k$.
 
 ---
 
 ## Approach 2: Min Heap of Size K (Optimal for Streaming)
+
+**Why min heap?**
+- We want to keep the $k$ largest elements
+- The root of a min heap is the smallest of these $k$
+- The smallest of the $k$ largest = the $k$-th largest
 
 ```python
 import heapq
@@ -211,12 +195,6 @@ def find_kth_largest_heap(nums: list[int], k: int) -> int:
     return heap[0]  # Root is kth largest
 ```
 
-**Why min heap?**
-
-- We keep k largest elements
-- Root is the smallest of these k
-- Smallest of k largest = kth largest
-
 ---
 
 ## Approach 3: QuickSelect (Optimal Average Case)
@@ -228,36 +206,29 @@ import random
 
 def find_kth_largest_quickselect(nums: list[int], k: int) -> int:
     """
-    QuickSelect algorithm.
+    QuickSelect algorithm (Recursive).
 
     Time: O(n) average, O(n²) worst case
-    Space: O(1) excluding recursion stack
+    Space: O(log n) average for recursion stack
 
-    Convert to (n-k+1)th smallest for easier implementation.
+    Convert to (n-k) index for easier implementation (finding the element 
+    that would be at index n-k if the array was sorted ascending).
     """
-    # kth largest = (n-k+1)th smallest = element at index (n-k) when sorted
     target_index = len(nums) - k
 
     def quickselect(left: int, right: int) -> int:
+        # Base case: subarray with 1 element
         if left == right:
             return nums[left]
 
-        # Random pivot to avoid O(n²) worst case
+        # Random pivot to avoid O(n²) worst case on sorted arrays
         pivot_idx = random.randint(left, right)
-        pivot_idx = partition(left, right, pivot_idx)
-
-        if pivot_idx == target_index:
-            return nums[pivot_idx]
-        elif pivot_idx < target_index:
-            return quickselect(pivot_idx + 1, right)
-        else:
-            return quickselect(left, pivot_idx - 1)
-
-    def partition(left: int, right: int, pivot_idx: int) -> int:
         pivot = nums[pivot_idx]
+
         # Move pivot to end
         nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]
 
+        # Lomuto Partition Scheme
         store_idx = left
         for i in range(left, right):
             if nums[i] < pivot:
@@ -266,18 +237,23 @@ def find_kth_largest_quickselect(nums: list[int], k: int) -> int:
 
         # Move pivot to final position
         nums[store_idx], nums[right] = nums[right], nums[store_idx]
-        return store_idx
+
+        # Recurse only on the required half
+        if store_idx == target_index:
+            return nums[store_idx]
+        elif store_idx < target_index:
+            return quickselect(store_idx + 1, right)
+        else:
+            return quickselect(left, store_idx - 1)
 
     return quickselect(0, len(nums) - 1)
 ```
 
----
-
-## QuickSelect Visual Example
+### QuickSelect Visual Example
 
 Finding 2nd largest in `[3, 2, 1, 5, 6, 4]`:
 
-- 2nd largest = element at index 4 (0-indexed) when sorted ascending
+- 2nd largest = element at index `6 - 2 = 4` (0-indexed) when sorted ascending
 
 ```
 Initial: [3, 2, 1, 5, 6, 4], target_index = 4
@@ -288,9 +264,57 @@ After partition: [2, 1, 3, 5, 6, 4]
 target_index (4) > 2, recurse right: [5, 6, 4]
 
 Round 2: pivot = 5 (from subarray [5, 6, 4] which is indices 3-5)
-After partition: [4, 5, 6]
-                    ^ pivot at index 4
+After partition: [2, 1, 3, 4, 5, 6]
+                              ^ pivot at index 4
 target_index (4) == 4, return nums[4] = 5 ✓
+```
+
+### Approach 3B: Iterative QuickSelect (O(1) Space)
+
+To guarantee $O(1)$ space, we can eliminate the recursion stack entirely.
+
+```python
+import random
+
+def find_kth_largest_iterative(nums: list[int], k: int) -> int:
+    """
+    Iterative QuickSelect.
+
+    Time: O(n) average, O(n²) worst case
+    Space: O(1)
+    """
+    target = len(nums) - k
+    left, right = 0, len(nums) - 1
+
+    while left <= right:
+        if left == right:
+            return nums[left]
+            
+        pivot_idx = random.randint(left, right)
+        pivot = nums[pivot_idx]
+
+        # Move pivot to end
+        nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]
+
+        # Partition
+        store = left
+        for i in range(left, right):
+            if nums[i] < pivot:
+                nums[i], nums[store] = nums[store], nums[i]
+                store += 1
+
+        # Restore pivot
+        nums[store], nums[right] = nums[right], nums[store]
+
+        # Narrow search space
+        if store == target:
+            return nums[store]
+        elif store < target:
+            left = store + 1
+        else:
+            right = store - 1
+
+    return -1 # Should theoretically never be reached
 ```
 
 ---
@@ -302,86 +326,29 @@ import heapq
 
 def find_kth_largest_maxheap(nums: list[int], k: int) -> int:
     """
-    Build max heap, pop k times.
+    Build max heap of all elements, pop k times.
 
-    Time: O(n + k log n) = O(n) when k is small
+    Time: O(n + k log n)
     Space: O(n) for heap
     """
     # Negate for max heap
     max_heap = [-x for x in nums]
+    
+    # Heapify takes O(n) time
     heapq.heapify(max_heap)
 
+    # Pop k-1 times. Each pop takes O(log n) time
     for _ in range(k - 1):
         heapq.heappop(max_heap)
 
     return -max_heap[0]
 ```
 
-Less efficient than min heap approach when k << n.
+This is less efficient than the Min Heap approach when $k \ll n$, but it can be faster if $k$ is extremely small (like $k=1$ or $2$). The space complexity is worse: $O(n)$ instead of $O(k)$.
 
 ---
 
-## Comparison of Approaches
-
-| Approach    | Time (Average) | Time (Worst)   | Space  | Best When         |
-| ----------- | -------------- | -------------- | ------ | ----------------- |
-| Sort        | O(n log n)     | O(n log n)     | O(n)   | k ≈ n             |
-| Min Heap K  | O(n log k)     | O(n log k)     | O(k)   | k << n, streaming |
-| Max Heap N  | O(n + k log n) | O(n + k log n) | O(n)   | k is very small   |
-| QuickSelect | O(n)           | O(n²)          | O(1)\* | Single query      |
-
-\*O(log n) for recursion stack in practice
-
-**Recommendation:**
-
-- Interview: Start with heap O(n log k), mention QuickSelect O(n)
-- Production: QuickSelect for single query, heap for streaming
-
----
-
-## Iterative QuickSelect (No Recursion)
-
-```python
-import random
-
-def find_kth_largest_iterative(nums: list[int], k: int) -> int:
-    """
-    Iterative QuickSelect.
-
-    Time: O(n) average
-    Space: O(1)
-    """
-    target = len(nums) - k
-    left, right = 0, len(nums) - 1
-
-    while left <= right:
-        pivot_idx = random.randint(left, right)
-        pivot = nums[pivot_idx]
-
-        # Move pivot to end
-        nums[pivot_idx], nums[right] = nums[right], nums[pivot_idx]
-
-        store = left
-        for i in range(left, right):
-            if nums[i] < pivot:
-                nums[i], nums[store] = nums[store], nums[i]
-                store += 1
-
-        nums[store], nums[right] = nums[right], nums[store]
-
-        if store == target:
-            return nums[store]
-        elif store < target:
-            left = store + 1
-        else:
-            right = store - 1
-
-    return nums[left]
-```
-
----
-
-## Using Python's heapq.nlargest
+## Using Python's Built-ins
 
 ```python
 import heapq
@@ -396,7 +363,26 @@ def find_kth_largest_nlargest(nums: list[int], k: int) -> int:
     return heapq.nlargest(k, nums)[-1]
 ```
 
-Clean and readable. Internally uses a heap.
+Clean and readable. `heapq.nlargest` internally uses an equivalent to the Min Heap approach when $k$ is small, or sorts when $k$ is large.
+
+---
+
+## Comparison of Approaches
+
+| Approach               | Time (Average) | Time (Worst)   | Space     | Best When                      |
+| ---------------------- | -------------- | -------------- | --------- | ------------------------------ |
+| Sort                   | $O(n \log n)$  | $O(n \log n)$  | $O(1)$*   | $k \approx n$                  |
+| Min Heap of size $k$   | $O(n \log k)$  | $O(n \log k)$  | $O(k)$    | $k \ll n$, streaming data      |
+| Max Heap of size $n$   | $O(n + k \log n)$ | $O(n + k \log n)$ | $O(n)$ | $k$ is extremely small         |
+| QuickSelect            | $O(n)$         | $O(n^2)$       | $O(1)$**  | Fast single query, general use |
+
+\* $O(n)$ if sorting out-of-place (e.g. `sorted()`)
+\** Recursive is $O(\log n)$ call stack average, Iterative is strict $O(1)$
+
+**Recommendation:**
+
+- **Interview**: Start with the Min Heap $O(n \log k)$, then implement QuickSelect $O(n)$ average.
+- **Production**: `heapq.nlargest()` handles the heavy lifting gracefully.
 
 ---
 
@@ -408,16 +394,19 @@ Same problem, just use different index or heap type:
 import heapq
 
 def find_kth_smallest(nums: list[int], k: int) -> int:
-    """Find kth smallest element."""
-    return heapq.nsmallest(k, nums)[-1]
+    """Find kth smallest element using max heap of size k."""
+    # Max heap of size k (negate elements)
+    heap = [-x for x in nums[:k]]
+    heapq.heapify(heap)
+    
+    for num in nums[k:]:
+        if num < -heap[0]:
+            heapq.heapreplace(heap, -num)
+            
+    return -heap[0]
 
-    # Or with max heap of size k:
-    # heap = [-x for x in nums[:k]]
-    # heapq.heapify(heap)
-    # for num in nums[k:]:
-    #     if num < -heap[0]:
-    #         heapq.heapreplace(heap, -num)
-    # return -heap[0]
+    # Or simply:
+    # return heapq.nsmallest(k, nums)[-1]
 ```
 
 ---
@@ -448,27 +437,27 @@ find_kth_largest([1, 2, 3, 4, 5], 3)  # → 3
 
 ## Interview Tips
 
-1. **Start with heap**: O(n log k), easy to implement correctly
-2. **Mention QuickSelect**: Show you know O(n) is possible
-3. **Discuss trade-offs**: QuickSelect modifies array, has O(n²) worst case
-4. **Random pivot**: Essential for QuickSelect to avoid worst case
+1. **Start with heap**: $O(n \log k)$, easy to implement correctly.
+2. **Mention QuickSelect**: Show you know $O(n)$ is possible.
+3. **Discuss trade-offs**: QuickSelect modifies array, has $O(n^2)$ worst case.
+4. **Random pivot**: Essential for QuickSelect to avoid worst case on sorted arrays.
 5. **Clarify kth**: Is it 0-indexed or 1-indexed? Largest or smallest?
 
 ---
 
 ## Common Follow-up Questions
 
-**Q: Can you do better than O(n log k)?**
-A: Yes, QuickSelect is O(n) average.
+**Q: Can you do better than $O(n \log k)$?**
+A: Yes, QuickSelect is $O(n)$ average. (And median-of-medians is $O(n)$ worst case).
 
-**Q: What if array is streaming?**
-A: Heap is better because we process one element at a time.
+**Q: What if the array is continuously streaming?**
+A: The Min Heap of size $K$ is best because we process one element at a time and maintain a fixed memory footprint of $O(K)$.
 
-**Q: What if k changes frequently?**
-A: Maintain sorted structure (balanced BST) or recalculate.
+**Q: What if $k$ changes frequently?**
+A: Maintain a sorted structure (like a balanced BST) or recalculate.
 
-**Q: What if we need kth largest in multiple subarrays?**
-A: Consider segment tree or wavelet tree (advanced).
+**Q: What if the numbers have a bounded range? (e.g., 0 to 10000)**
+A: We can use Counting Sort / Bucket Sort in $O(n)$ time and $O(\text{range})$ space.
 
 ---
 
@@ -486,11 +475,11 @@ A: Consider segment tree or wavelet tree (advanced).
 
 ## Key Takeaways
 
-1. **Heap O(n log k)**: Min heap of size k, root is answer
-2. **QuickSelect O(n)**: Partition-based, like QuickSort but one side
-3. **Random pivot**: Critical for QuickSelect performance
-4. **kth largest = (n-k+1)th smallest**: Index conversion trick
-5. **Interview strategy**: Heap first, then discuss QuickSelect
+1. **Heap $O(n \log k)$**: Min heap of size $k$, root is the answer.
+2. **QuickSelect $O(n)$**: Partition-based, like QuickSort but only exploring one side.
+3. **Random pivot**: Critical for QuickSelect performance.
+4. **$k$-th largest = $(n-k)$-th smallest**: Index conversion trick (`len(nums) - k`).
+5. **Interview strategy**: Explain Heap first, then QuickSelect.
 
 ---
 

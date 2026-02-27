@@ -55,7 +55,7 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
 
 ---
 
-## Interview Context
+## Interview Context & FANG Focus
 
 Understanding graph representations is critical because:
 
@@ -64,7 +64,10 @@ Understanding graph representations is critical because:
 3. **Interview input formats**: You'll receive edges as lists, must build your own structure
 4. **Conversion skills**: Often need to convert between representations
 
-Interviewers expect you to quickly build a graph from edge lists and choose the right representation.
+### FANG Perspective
+- **Amazon** loves Grid/Matrix traversal problems (like "Rotting Oranges" or "Number of Islands") and often asks them as a disguised graph problem. You must recognize when a 2D matrix *is* the graph vs when a 2D matrix is an adjacency matrix.
+- **Google/Meta** often present problems with an edge list input and ask follow-ups about dense vs sparse implications. Being able to fluently write an adjacency list from an edge list is a non-negotiable prerequisite.
+- Expect questions on the recursion stack limit. When working with Deep DFS, you must know your language's limits (Python hits a recursion limit around 1000).
 
 ---
 
@@ -99,9 +102,25 @@ Undirected Graph:           Directed Graph:
 
 ---
 
+## Edge Types (DFS/BFS Context)
+
+When traversing a directed graph (especially using DFS), edges are categorized into four types. This theory is heavily tested in cycle detection and topological sorting.
+
+1. **Tree Edge**: Edges that form the DFS spanning tree (visiting an unvisited node).
+2. **Back Edge**: Edge pointing from a node to one of its ancestors in the DFS tree. **Presence of a back edge indicates a cycle.**
+3. **Forward Edge**: Edge pointing from a node to a descendant in the DFS tree (that is not a direct child).
+4. **Cross Edge**: Edge pointing from a node to another node that is neither an ancestor nor descendant (typically to a node already fully processed).
+
+In an **undirected graph**, every edge is either a Tree Edge or a Back Edge. Forward and Cross edges do not exist because if an edge could be a cross edge, it would have been traversed in the opposite direction and classified differently.
+
+---
+
 ## Representation 1: Adjacency List
 
 **Most common for interviews.** Store neighbors for each vertex.
+
+<details>
+<summary>Python</summary>
 
 ```python
 from collections import defaultdict
@@ -113,11 +132,6 @@ def build_adjacency_list(n: int, edges: list[list[int]],
 
     Time: O(E)
     Space: O(V + E)
-
-    Args:
-        n: Number of vertices (0 to n-1)
-        edges: List of [u, v] pairs
-        directed: If True, only add u -> v
     """
     graph = defaultdict(list)
 
@@ -132,46 +146,25 @@ def build_adjacency_list(n: int, edges: list[list[int]],
 
     return graph
 
-
 # Example
 edges = [[0, 1], [0, 2], [1, 3], [2, 3]]
 graph = build_adjacency_list(4, edges)
 # {0: [1, 2], 1: [0, 3], 2: [0, 3], 3: [1, 2]}
 ```
+</details>
 
 ### With Weights
 
-```python
-def build_weighted_graph(n: int, edges: list[list[int]],
-                          directed: bool = False) -> dict[int, list[tuple[int, int]]]:
-    """
-    Build weighted adjacency list.
-    edges format: [u, v, weight]
-    """
-    graph = defaultdict(list)
-
-    for i in range(n):
-        graph[i]
-
-    for u, v, w in edges:
-        graph[u].append((v, w))
-        if not directed:
-            graph[v].append((u, w))
-
-    return graph
-
-
-# Example
-edges = [[0, 1, 5], [0, 2, 3], [1, 3, 1]]
-graph = build_weighted_graph(4, edges, directed=True)
-# {0: [(1, 5), (2, 3)], 1: [(3, 1)], 2: [], 3: []}
-```
+For weighted graphs, store tuples/pairs/objects containing `(neighbor, weight)`.
 
 ---
 
 ## Representation 2: Adjacency Matrix
 
 **Best for dense graphs** or when checking edge existence frequently.
+
+<details>
+<summary>Python</summary>
 
 ```python
 def build_adjacency_matrix(n: int, edges: list[list[int]],
@@ -190,148 +183,50 @@ def build_adjacency_matrix(n: int, edges: list[list[int]],
             matrix[v][u] = 1
 
     return matrix
-
-
-# Example
-edges = [[0, 1], [0, 2], [1, 3]]
-matrix = build_adjacency_matrix(4, edges)
-# [[0, 1, 1, 0],
-#  [1, 0, 0, 1],
-#  [1, 0, 0, 0],
-#  [0, 1, 0, 0]]
 ```
-
-### With Weights
-
-```python
-def build_weighted_matrix(n: int, edges: list[list[int]],
-                           directed: bool = False) -> list[list[int]]:
-    """
-    Build weighted adjacency matrix.
-    Use infinity for no edge.
-    """
-    INF = float('inf')
-    matrix = [[INF] * n for _ in range(n)]
-
-    # Distance to self is 0
-    for i in range(n):
-        matrix[i][i] = 0
-
-    for u, v, w in edges:
-        matrix[u][v] = w
-        if not directed:
-            matrix[v][u] = w
-
-    return matrix
-```
+</details>
 
 ---
 
-## Representation 3: Edge List
+## Comparison of Representations and Complexity Analysis
 
-**Simplest form**, often the input format. Convert to adjacency list for processing.
+| Operation         | Adjacency List | Adjacency Matrix | Edge List |
+| ----------------- | -------------- | ---------------- | --------- |
+| **Space**             | **O(V + E)**       | **O(V²)**            | O(E)      |
+| Add edge          | O(1)           | O(1)             | O(1)      |
+| Remove edge       | O(degree)      | O(1)             | O(E)      |
+| Check edge exists | O(degree)      | O(1)             | O(E)      |
+| Get all neighbors | O(degree)      | O(V)             | O(E)      |
+| Iterate all edges | O(V + E)       | O(V²)            | O(E)      |
 
-```python
-# Edge list format
-edges = [(0, 1), (0, 2), (1, 3), (2, 3)]
+### Sparse vs Dense Representation Analysis
 
-# Weighted edge list
-weighted_edges = [(0, 1, 5), (0, 2, 3), (1, 3, 1)]
+1. **Sparse Graphs ($E \ll V^2$)**:
+   - For example, cities connected by highways, or users in a social network.
+   - Using an **Adjacency Matrix** here is extremely wasteful. A matrix for 1 million users takes $10^6 \times 10^6$ bytes = 1 Terabyte of memory, mostly storing `0`s (no connection).
+   - An **Adjacency List** only stores actual connections, keeping memory proportional to the actual data $O(V + E)$.
 
-# Direct usage (e.g., Bellman-Ford)
-for u, v, w in weighted_edges:
-    # Process edge
-    pass
-```
+2. **Dense Graphs ($E \approx V^2$)**:
+   - For example, flight paths between major hubs, or small highly connected clusters.
+   - An **Adjacency Matrix** is very efficient here. It offers $O(1)$ edge lookups and has lower constant overhead than a list of lists or hash maps. The $O(V^2)$ memory is justified because almost all cells are `1`.
 
----
+### Language Limits: Recursion Stack Space
 
-## Comparison of Representations
+When analyzing Space Complexity for graphs, you **must include the recursion stack** for DFS.
 
-| Operation         | Adjacency List | Adjacency Matrix |
-| ----------------- | -------------- | ---------------- |
-| Space             | O(V + E)       | O(V²)            |
-| Add edge          | O(1)           | O(1)             |
-| Remove edge       | O(E)           | O(1)             |
-| Check edge exists | O(degree)      | O(1)             |
-| Get all neighbors | O(1)           | O(V)             |
-| Iterate all edges | O(V + E)       | O(V²)            |
-
-**Use Adjacency List when:**
-
-- Graph is sparse (E << V²)
-- Most interview problems
-- Need to iterate neighbors frequently
-
-**Use Adjacency Matrix when:**
-
-- Graph is dense (E ≈ V²)
-- Need frequent edge existence checks
-- Floyd-Warshall algorithm
-
----
-
-## Building Graphs from Common Input Formats
-
-### Format 1: Edge List with N Nodes
-
-```python
-# Input: n = 4, edges = [[0,1], [1,2], [2,3]]
-def solve(n: int, edges: list[list[int]]) -> ...:
-    graph = defaultdict(list)
-    for u, v in edges:
-        graph[u].append(v)
-        graph[v].append(u)  # Undirected
-    # Now use graph...
-```
-
-### Format 2: Adjacency List Already Given
-
-```python
-# Input: graph = [[1,2], [0,3], [0], [1]]
-# graph[i] = list of neighbors of node i
-def solve(graph: list[list[int]]) -> ...:
-    # Use directly
-    for neighbor in graph[0]:
-        print(neighbor)
-```
-
-### Format 3: Prerequisites (Directed)
-
-```python
-# Input: numCourses = 4, prerequisites = [[1,0], [2,1], [3,2]]
-# [a, b] means b -> a (b is prereq of a)
-def solve(numCourses: int, prerequisites: list[list[int]]) -> ...:
-    graph = defaultdict(list)
-    for a, b in prerequisites:
-        graph[b].append(a)  # b -> a
-```
-
-### Format 4: Grid as Graph
-
-```python
-# Input: grid (2D array)
-def solve(grid: list[list[int]]) -> ...:
-    rows, cols = len(grid), len(grid[0])
-
-    # Neighbors using directions
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-
-    def get_neighbors(r: int, c: int):
-        for dr, dc in directions:
-            nr, nc = r + dr, c + dc
-            if 0 <= nr < rows and 0 <= nc < cols:
-                yield nr, nc
-```
+- **Python**: Default recursion limit is typically 1000. For graphs deeper than this (e.g., a linked list shaped graph of 10,000 nodes), DFS will throw `RecursionError`.
+  - *Interview tip*: You can use `sys.setrecursionlimit(2000)` in Python, but interviewers prefer iterative DFS using an explicit stack for deep graphs.
 
 ---
 
 ## Grid as Implicit Graph
 
-Grids are graphs where:
+Grids (2D arrays) are graphs where:
 
-- Each cell is a vertex
-- Adjacent cells are connected by edges
+- Each cell is a **vertex**
+- Adjacent cells (up, down, left, right) represent **edges**
+
+**Crucial Theory**: *Never build an explicit Adjacency List for a grid problem.* Grids are already their own adjacency matrix / graph representation. The connections are implicitly defined by the indices.
 
 ```
 Grid:               Implicit Graph:
@@ -342,11 +237,17 @@ Grid:               Implicit Graph:
                     (2,0)     (2,1)   (2,2)
 ```
 
+### Grid Traversal Template
+
+<details>
+<summary>Python</summary>
+
 ```python
-# Grid traversal template
+from collections import deque
+
 def grid_bfs(grid: list[list[int]], start: tuple[int, int]):
     rows, cols = len(grid), len(grid[0])
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # Right, Left, Down, Up
 
     visited = set([start])
     queue = deque([start])
@@ -356,11 +257,14 @@ def grid_bfs(grid: list[list[int]], start: tuple[int, int]):
 
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
-            if (0 <= nr < rows and 0 <= nc < cols and
-                (nr, nc) not in visited and grid[nr][nc] == 1):
+            # 1. Bounds check
+            # 2. Visited check
+            # 3. Validity check (e.g., grid[nr][nc] == 1)
+            if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in visited and grid[nr][nc] == 1:
                 visited.add((nr, nc))
                 queue.append((nr, nc))
 ```
+</details>
 
 ---
 
@@ -395,7 +299,7 @@ n = 3, edges = [[0, 1]]  # Node 2 is isolated
 2. **Clarify directed/undirected**: Critical for building graph correctly
 3. **Handle disconnected graphs**: Don't assume all nodes are reachable
 4. **Initialize all nodes**: Important for graphs with isolated nodes
-5. **Use defaultdict**: Cleaner than checking if key exists
+5. **Use correct data structure**: Default to Array/Vector of Arrays/Vectors when node IDs are `0` to `n-1`. Only use HashMap/Dictionary if nodes are arbitrary strings/values.
 
 ---
 
@@ -415,8 +319,9 @@ n = 3, edges = [[0, 1]]  # Node 2 is isolated
 1. **Adjacency list** is default for interviews (sparse, efficient)
 2. **Adjacency matrix** for dense graphs or edge existence checks
 3. **Always handle disconnected graphs**: Iterate over all nodes
-4. **Grids are implicit graphs**: Each cell is a node
+4. **Grids are implicit graphs**: Each cell is a node, never build an explicit graph for a grid.
 5. **Know the input format**: Build graph accordingly
+6. **Mind the recursion limits**: Especially important in Python when dealing with deep graphs.
 
 ---
 

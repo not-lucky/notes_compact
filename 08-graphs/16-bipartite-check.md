@@ -11,7 +11,7 @@ Bipartite checking is important because:
 3. **Real applications**: Matching problems, scheduling, conflict detection
 4. **BFS/DFS practice**: Standard traversal with coloring
 
-Common in Google and Microsoft interviews.
+**FANG Context**: Very common in Google and Amazon interviews. At Google, it often appears as a scheduling or resource allocation problem. At Amazon, it frequently shows up in relation to graph coloring and conflict resolution. Note that while this is a classic graph problem, **Word Ladder** (a shortest path BFS problem) is even more frequently asked at Amazon/Google and is highly recommended to practice alongside this.
 
 ---
 
@@ -19,7 +19,7 @@ Common in Google and Microsoft interviews.
 
 A graph is **bipartite** if vertices can be divided into two disjoint sets such that every edge connects a vertex in one set to a vertex in the other.
 
-Equivalently: A graph is bipartite **if and only if** it contains no odd-length cycles.
+Equivalently (based on **König's theorem**): A graph is bipartite **if and only if** it contains no odd-length cycles. This is the formal bipartite theorem. If you find an odd cycle, it is impossible to 2-color the graph.
 
 ```
 Bipartite:              Not Bipartite:
@@ -34,78 +34,13 @@ Sets: {1,4} and {2,3}     Triangle has odd cycle
 
 ## BFS Approach (Two-Coloring)
 
-```python
-from collections import deque
-
-def is_bipartite_bfs(graph: list[list[int]]) -> bool:
-    """
-    Check if graph is bipartite using BFS.
-
-    graph[i] = list of neighbors of node i
-
-    Time: O(V + E)
-    Space: O(V)
-    """
-    n = len(graph)
-    color = [-1] * n  # -1 = uncolored, 0 or 1 = color
-
-    for start in range(n):
-        if color[start] != -1:
-            continue  # Already colored
-
-        # BFS from this component
-        queue = deque([start])
-        color[start] = 0
-
-        while queue:
-            node = queue.popleft()
-
-            for neighbor in graph[node]:
-                if color[neighbor] == -1:
-                    # Color with opposite color
-                    color[neighbor] = 1 - color[node]
-                    queue.append(neighbor)
-                elif color[neighbor] == color[node]:
-                    # Same color as neighbor = not bipartite
-                    return False
-
-    return True
-```
+### Python
 
 ---
 
 ## DFS Approach
 
-```python
-def is_bipartite_dfs(graph: list[list[int]]) -> bool:
-    """
-    Check if graph is bipartite using DFS.
-
-    Time: O(V + E)
-    Space: O(V)
-    """
-    n = len(graph)
-    color = [-1] * n
-
-    def dfs(node: int, c: int) -> bool:
-        color[node] = c
-
-        for neighbor in graph[node]:
-            if color[neighbor] == -1:
-                if not dfs(neighbor, 1 - c):
-                    return False
-            elif color[neighbor] == c:
-                return False
-
-        return True
-
-    for start in range(n):
-        if color[start] == -1:
-            if not dfs(start, 0):
-                return False
-
-    return True
-```
+### Python
 
 ---
 
@@ -362,6 +297,17 @@ color = [-1] * n  # -1 = unvisited, 0 or 1 = group
 | BFS        | O(V + E)          | O(V)  |
 | DFS        | O(V + E)          | O(V)  |
 | Union-Find | O((V + E) × α(V)) | O(V)  |
+
+### Deep Dive into Complexity
+
+**Time Complexity:**
+- **BFS/DFS**: `O(V + E)` where `V` is the number of vertices and `E` is the number of edges. We visit every vertex once and iterate through all its adjacent edges. In the worst-case dense graph, `E` can be up to `V^2`, so the time is bounded by `O(V^2)`.
+- **Union-Find**: `O((V + E) × α(V))` because we process each node and its edges. The inverse Ackermann function `α(V)` is practically constant, but it's technically slightly slower than standard BFS/DFS traversals.
+
+**Space Complexity:**
+- **BFS**: `O(V)` to store the `color` array of size `V` and the queue. In the worst case (a star graph or very dense graph), the queue could store up to `O(V)` vertices simultaneously.
+- **DFS**: `O(V)` to store the `color` array and for the call stack during recursion. In the worst-case (a skewed graph or a single long path), the recursion depth can reach `V`.
+- **Union-Find**: `O(V)` for the `parent` and `rank` arrays. It avoids recursion but maintains the same overall space class.
 
 ---
 

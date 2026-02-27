@@ -13,6 +13,11 @@ Word Ladder is a FANG+ classic because:
 
 This problem frequently appears at Google and Amazon.
 
+### FANG Context: Amazon & Google
+This problem is heavily tested at **Amazon** (frequently as a phone screen or online assessment) and **Google** (often as an onsite interview question to test optimization).
+- **Amazon** focuses on whether you can get a working BFS solution and handle edge cases (like `endWord` not in the list).
+- **Google** interviewers will almost always push you to optimize from standard BFS to the **Bidirectional BFS** approach. They want to see you recognize the exponential branching factor and understand how searching from both ends reduces the search space significantly.
+
 ---
 
 ## Problem Statement
@@ -151,6 +156,21 @@ def ladder_length_optimized(beginWord: str, endWord: str,
 ---
 
 ## Solution 3: Bidirectional BFS
+
+### Theory: Why Bidirectional BFS?
+In a standard BFS, the number of nodes in the queue grows exponentially with the distance from the start node (branching factor $B^d$, where $B$ is the branching factor and $d$ is the distance).
+
+In **Bidirectional BFS**, we simultaneously run two BFS searches: one forward from the start node and one backward from the target node. We stop when the two frontiers intersect.
+
+**The Math:**
+- Standard BFS checks $B^d$ nodes.
+- Bidirectional BFS checks $B^{d/2} + B^{d/2}$ nodes.
+- For a branching factor of $B=10$ and distance $d=6$, standard BFS visits $10^6 = 1,000,000$ nodes, while bidirectional BFS visits $2 \times 10^3 = 2,000$ nodes. This is a massive speedup!
+
+**When to use:**
+1. You know both the start and target nodes.
+2. The branching factor is roughly the same in both directions.
+3. The graph is unweighted (or all edges have the same weight).
 
 Expand from both ends, meet in middle. Much faster for deep searches.
 
@@ -321,69 +341,6 @@ def open_lock(deadends: list[str], target: str) -> int:
 ```
 
 ### Minimum Genetic Mutation
-
-```python
-from collections import deque
-
-def min_mutation(start: str, end: str, bank: list[str]) -> int:
-    """
-    Minimum mutations to transform gene.
-    Each position: A, C, G, T
-    """
-    bank_set = set(bank)
-
-    if end not in bank_set:
-        return -1
-
-    queue = deque([(start, 0)])
-    visited = {start}
-    genes = ['A', 'C', 'G', 'T']
-
-    while queue:
-        gene, mutations = queue.popleft()
-
-        if gene == end:
-            return mutations
-
-        for i in range(8):  # Gene has 8 characters
-            for g in genes:
-                if g != gene[i]:
-                    new_gene = gene[:i] + g + gene[i+1:]
-
-                    if new_gene in bank_set and new_gene not in visited:
-                        visited.add(new_gene)
-                        queue.append((new_gene, mutations + 1))
-
-    return -1
-```
-
----
-
-## Pattern: Implicit Graph Recognition
-
-If you see:
-
-- States that transform into other states
-- Minimum steps/operations to reach goal
-- Valid intermediate states from a set
-
-Think: **BFS on implicit graph**
-
----
-
-## Complexity Analysis
-
-| Approach           | Time                 | Space     |
-| ------------------ | -------------------- | --------- |
-| Basic BFS          | O(M² × N)            | O(M × N)  |
-| With preprocessing | O(M² × N)            | O(M² × N) |
-| Bidirectional      | O(M² × N) but faster | O(M × N)  |
-
-M = word length, N = number of words
-
----
-
-## Common Mistakes
 
 ```python
 # WRONG: Not checking endWord in wordList

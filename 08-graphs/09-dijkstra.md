@@ -29,12 +29,29 @@ Step 3: D is closest (2), no outgoing
 Step 4: B unreachable (directed graph)
 ```
 
-**Why the greedy choice works**:
+**Why the greedy choice works (Optimal Substructure)**:
 
 - We always process the node with smallest known distance
 - All edge weights are non-negative
 - Therefore, no later path through unprocessed nodes can be shorter
 - This is the **optimal substructure** that makes Dijkstra correct
+
+### The Formal Proof of Optimal Substructure
+
+**Theorem**: When Dijkstra's algorithm extracts a vertex $u$ from the min-heap, its shortest path distance from the source $s$ is finalized. The distance value `dist[u]` equals the true shortest distance $\delta(s, u)$.
+
+**Proof by Contradiction**:
+1. **Assumption**: Suppose for contradiction that `dist[u]` is *not* the true shortest distance when $u$ is extracted. Therefore, the true shortest path must be shorter: $\delta(s, u) < \text{dist}[u]$.
+2. Let $P$ be the actual true shortest path from the source $s$ to $u$.
+3. As we trace along path $P$ from $s$, let $y$ be the first vertex on $P$ that has *not yet* been extracted from the heap (it's still in the queue). Let $x$ be the vertex just before $y$ on path $P$ (which has been extracted).
+4. Because $x$ was extracted, we relaxed its edges, which updated $y$'s distance. Thus, `dist[y]` represents the shortest path from $s$ to $y$ using only extracted vertices. This value is optimal for subpath $s \to y$: $\text{dist}[y] = \delta(s, y)$.
+5. Since all edge weights in the graph are non-negative, any additional edges beyond $y$ to reach $u$ can only add more distance (or 0). Therefore: $\delta(s, y) \le \delta(s, u)$.
+6. Combining step 4 and 5 gives: $\text{dist}[y] \le \delta(s, u)$.
+7. From our initial assumption in step 1, $\delta(s, u) < \text{dist}[u]$. Substituting this in gives: $\text{dist}[y] < \text{dist}[u]$.
+8. **The Contradiction**: If $\text{dist}[y] < \text{dist}[u]$, the min-heap should have popped $y$ *before* $u$! But the algorithm chose to pop $u$. This contradicts how min-heaps work.
+9. **Conclusion**: Therefore, our assumption in step 1 is false. When $u$ is extracted, `dist[u]` must equal the true shortest distance. $\blacksquare$
+
+> **Key Takeaway**: This proof breaks completely if negative weights exist because step 5 ($\delta(s, y) \le \delta(s, u)$) is no longer true. A negative edge after $y$ could make the path to $u$ shorter!
 
 **The priority queue insight**:
 
@@ -129,55 +146,7 @@ Shortest from 0:
 
 ## Dijkstra's Algorithm Template
 
-```python
-import heapq
-from collections import defaultdict
-
-def dijkstra(n: int, edges: list[list[int]], source: int) -> list[int]:
-    """
-    Dijkstra's algorithm for shortest paths from source.
-
-    Time: O((V + E) log V)
-    Space: O(V + E)
-
-    edges format: [u, v, weight]
-    Returns: distance array where dist[i] = shortest distance to i
-    """
-    # Build adjacency list
-    graph = defaultdict(list)
-    for u, v, w in edges:
-        graph[u].append((v, w))
-        graph[v].append((u, w))  # Remove for directed graph
-
-    # Distance array
-    dist = [float('inf')] * n
-    dist[source] = 0
-
-    # Min-heap: (distance, node)
-    heap = [(0, source)]
-
-    while heap:
-        d, node = heapq.heappop(heap)
-
-        # Skip if we've found a better path
-        if d > dist[node]:
-            continue
-
-        for neighbor, weight in graph[node]:
-            new_dist = dist[node] + weight
-
-            if new_dist < dist[neighbor]:
-                dist[neighbor] = new_dist
-                heapq.heappush(heap, (new_dist, neighbor))
-
-    return dist
-
-
-# Usage
-edges = [[0, 1, 2], [0, 2, 4], [1, 3, 1], [2, 3, 1]]
-dist = dijkstra(4, edges, 0)
-print(dist)  # [0, 2, 4, 3]
-```
+### Python
 
 ---
 
@@ -277,6 +246,8 @@ def dijkstra_with_path(n: int, edges: list[list[int]],
 ---
 
 ## Network Delay Time (Classic Problem)
+
+**FANG Context**: This is practically the "Hello World" of weighted graphs for FANG interviews. Often asked as a warm-up or screening question because it perfectly maps to standard Dijkstra. Usually dressed up as network packets, disease spread, or messages propagating across servers.
 
 ```python
 def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
@@ -393,13 +364,16 @@ Use Bellman-Ford for negative edges.
 
 ## Complexity Analysis
 
-| Implementation   | Time             | Space |
-| ---------------- | ---------------- | ----- |
-| Binary heap      | O((V + E) log V) | O(V)  |
-| Fibonacci heap   | O(E + V log V)   | O(V)  |
-| Adjacency matrix | O(V²)            | O(V)  |
+| Implementation   | Time             | Space | Notes                                 |
+| ---------------- | ---------------- | ----- | ------------------------------------- |
+| Binary heap      | O((V + E) log V) | O(V)  | Standard for interviews, most common. |
+| Fibonacci heap   | O(E + V log V)   | O(V)  | Theoretically faster for dense graphs.|
+| Adjacency matrix | O(V²)            | O(V)  | Good for very dense graphs (E ≈ V²).  |
 
-Binary heap is standard for interviews.
+**Deep Dive: Binary Heap vs Fibonacci Heap**
+
+- **Binary Heap**: Finding the minimum takes $O(\log V)$, and updating distances (inserting new ones in the standard implementation, or `decrease-key` if supported) takes $O(\log V)$. This happens up to $E$ times, yielding $O((V+E)\log V)$ overall. It is practical and cache-friendly, making it the standard choice in interviews and production code.
+- **Fibonacci Heap**: Extracting the minimum is $O(\log V)$ amortized (done $V$ times). However, `decrease-key` is strictly $O(1)$ amortized (done up to $E$ times). The total theoretical time is improved to $O(E + V \log V)$. While technically faster for dense graphs, Fibonacci heaps have huge constant factors, terrible cache locality, and are incredibly complex to implement. You will **never** need to write one in an interview, but mentioning the theoretical bound shows deep fundamental knowledge.
 
 ---
 
@@ -567,20 +541,7 @@ Proof:
 
 **Why the greedy choice is correct (optimality proof):**
 
-```
-Theorem: When Dijkstra extracts a node u, dist[u] is the true shortest distance.
-
-Proof by contradiction:
-1. Suppose dist[u] is NOT the shortest when extracted.
-2. Then there exists a shorter path P to u.
-3. Let v be the first unprocessed node on P.
-4. Since all edges have non-negative weight:
-   dist[v] ≤ length(P to v) ≤ length(P) < dist[u]
-5. But then v would have been extracted before u (min-heap property).
-6. Contradiction! ∎
-
-Key: This proof fails with negative edges because step 4 doesn't hold.
-```
+See the formal proof in the **Building Intuition** section.
 
 ---
 

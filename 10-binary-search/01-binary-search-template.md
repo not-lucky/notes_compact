@@ -64,7 +64,7 @@ def binary_search(nums: list[int], target: int) -> int:
 
     # Loop condition: <= because the search space is [left, right] inclusive
     while left <= right:
-        # Prevent integer overflow (crucial in C++/Java, good habit in Python)
+        # Prevent integer overflow (crucial in C++/Java, in Python 3 integers have arbitrary precision)
         mid = left + (right - left) // 2
 
         if nums[mid] == target:
@@ -102,6 +102,7 @@ def find_left_boundary(nums: list[int], target: int) -> int:
     left, right = 0, len(nums)
 
     while left < right:  # Terminate when left == right
+        # Prevent integer overflow (crucial in C++/Java, in Python 3 integers have arbitrary precision)
         mid = left + (right - left) // 2
 
         if nums[mid] < target:
@@ -133,8 +134,11 @@ Similar to Template 2, but the logic is mirrored.
 def find_right_boundary(nums: list[int], target: int) -> int:
     """
     Find the last occurrence of a target.
-    Returns the rightmost index where nums[i] <= target.
+    Returns the rightmost index where nums[i] == target.
     """
+    if not nums:
+        return -1
+
     left, right = 0, len(nums) - 1
 
     while left < right:
@@ -147,10 +151,8 @@ def find_right_boundary(nums: list[int], target: int) -> int:
         else:
             left = mid          # Mid is <= target. It COULD be the answer, so keep it in search space
 
-    # Check if we actually found the target
-    if left < len(nums) and nums[left] == target:
-        return left
-    return -1
+    # At the end of the loop, left == right
+    return left if nums[left] == target else -1
 ```
 
 **Key Signatures:**
@@ -167,18 +169,18 @@ Target = `5` in `[1, 2, 3, 5, 5, 5, 8, 9]`
 **Left boundary (finds first 5 using `bisect_left` template):**
 ```text
 [1, 2, 3, 5, 5, 5, 8, 9] (len=8)
- L           M           R   (left=0, right=8) mid=4, nums[4]=5 >= 5 -> right=mid=4
- L     M     R               (left=0, right=4) mid=2, nums[2]=3 < 5  -> left=mid+1=3
-          LM R               (left=3, right=4) mid=3, nums[3]=5 >= 5 -> right=mid=3
+ L           M           R   (left=0, right=8) mid=4 (0+(8-0)//2 = 4), nums[4]=5 >= 5 -> right=mid=4
+ L     M     R               (left=0, right=4) mid=2 (0+(4-0)//2 = 2), nums[2]=3 < 5  -> left=mid+1=3
+          LM R               (left=3, right=4) mid=3 (3+(4-3)//2 = 3), nums[3]=5 >= 5 -> right=mid=3
           LR                 (left=3, right=3) left==right, loop terminates. Return 3.
 ```
 
 **Right boundary (finds last 5 using Template 3):**
 ```text
 [1, 2, 3, 5, 5, 5, 8, 9] (len=8)
- L           M        R      (left=0, right=7) mid=4, nums[4]=5 <= 5 -> left=mid=4
-             L     M  R      (left=4, right=7) mid=6, nums[6]=8 > 5  -> right=mid-1=5
-             LM R            (left=4, right=5) mid=5, nums[5]=5 <= 5 -> left=mid=5
+ L           M        R      (left=0, right=7) mid=4 (0+(7-0+1)//2 = 4), nums[4]=5 <= 5 -> left=mid=4
+             L     M  R      (left=4, right=7) mid=6 (4+(7-4+1)//2 = 6), nums[6]=8 > 5  -> right=mid-1=5
+             LM R            (left=4, right=5) mid=5 (4+(5-4+1)//2 = 5), nums[5]=5 <= 5 -> left=mid=5
                 LR           (left=5, right=5) left==right, loop terminates. Return 5.
 ```
 
@@ -193,13 +195,15 @@ import bisect
 
 nums = [1, 2, 3, 5, 5, 5, 8, 9]
 
-# Find leftmost insertion point (first element >= 5)
+# bisect_left: Find leftmost insertion point
+# Returns the index of the FIRST element >= target
 bisect.bisect_left(nums, 5)   # Returns 3
 
-# Find rightmost insertion point (first element > 5)
+# bisect_right: Find rightmost insertion point
+# Returns the index of the FIRST element > target
 bisect.bisect_right(nums, 5)  # Returns 6
 
-# (Same as bisect_right)
+# bisect is an alias for bisect_right
 bisect.bisect(nums, 5)        # Returns 6
 ```
 
@@ -207,13 +211,16 @@ bisect.bisect(nums, 5)        # Returns 6
 ```python
 def first_occurrence(nums: list[int], target: int) -> int:
     idx = bisect.bisect_left(nums, target)
+    # Check if target is actually at the found index
     if idx < len(nums) and nums[idx] == target:
         return idx
     return -1
 
 def last_occurrence(nums: list[int], target: int) -> int:
-    # bisect_right gives the index AFTER the last occurrence
+    # bisect_right gives the index of the first element strictly > target
+    # The last occurrence of target will be immediately before this index
     idx = bisect.bisect_right(nums, target) - 1
+    # Check if target is actually at the preceding index
     if idx >= 0 and nums[idx] == target:
         return idx
     return -1
@@ -245,6 +252,7 @@ def solve(params):
     left, right = min_possible_k, max_possible_k
 
     while left < right:
+        # Prevent integer overflow
         mid = left + (right - left) // 2
 
         if is_valid(mid, params):
@@ -269,7 +277,10 @@ Total Time Complexity: $O(N \log M)$ where $N$ is array size and $M$ is the answ
 # Wrong (can overflow in C++/Java if left + right > 2^31 - 1)
 mid = (left + right) // 2
 
-# Correct (prevents overflow)
+# Correct (prevents overflow in C++/Java, equivalent in Python)
+# Note: Python 3 uses arbitrary-precision integers, so overflow does not happen.
+# However, this is still the standard way to write binary search and shows interviewers
+# you understand memory constraints in other languages.
 mid = left + (right - left) // 2
 ```
 
@@ -294,6 +305,7 @@ if condition:
 - [ ] Array with 1 element (walk through it manually)
 - [ ] Target is smaller than the 0th element
 - [ ] Target is larger than the last element
+- [ ] Array size is even vs. odd (does your mid calculation handle both correctly?)
 - [ ] Duplicates in the array (Do you need first, last, or any?)
 
 ---

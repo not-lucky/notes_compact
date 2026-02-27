@@ -9,6 +9,8 @@ Graphs are **among the most challenging and frequently tested topics** at FANG+ 
 3. **Pattern recognition**: Grid problems, implicit graphs, dependency resolution
 4. **Complexity depth**: Tests both coding and algorithmic thinking
 5. **Real applications**: Social networks, routing, dependencies, scheduling
+6. **Theoretical foundations**: Understanding graph properties (e.g., bipartite theorems) and deep complexity analysis (V vs E, dense vs sparse graphs)
+7. **Implementations**: Requires fluency to discuss trade-offs in representations (matrix vs list) and memory management
 
 At FANG+ companies, expect at least one graph problem, often disguised as a grid or dependency problem.
 
@@ -50,7 +52,7 @@ At FANG+ companies, expect at least one graph problem, often disguised as a grid
 | [13-grid-problems](./13-grid-problems.md)                           | Grid as Graph            | Islands, flood fill                   |
 | [14-rotting-oranges](./14-rotting-oranges.md)                       | Multi-source BFS         | Simultaneous expansion                |
 | [15-word-ladder](./15-word-ladder.md)                               | Implicit Graphs          | Word transformation                   |
-| [16-bipartite-check](./16-bipartite-check.md)                       | Bipartite Check          | Two-coloring                          |
+| [16-bipartite-check](./16-bipartite-check.md)                       | Bipartite Check          | Two-coloring (Theory)                 |
 | [17-alien-dictionary](./17-alien-dictionary.md)                     | Alien Dictionary         | Topological sort from constraints     |
 | [18-network-delay](./18-network-delay.md)                           | Network Delay            | Dijkstra application                  |
 
@@ -129,6 +131,7 @@ edges = [(0, 1), (0, 2), (1, 3)]
 | Bellman-Ford     | O(V × E)         | O(V)  | Edge relaxation           |
 | Topological Sort | O(V + E)         | O(V)  | Kahn's or DFS             |
 | Union-Find       | O(α(n)) per op   | O(V)  | Nearly constant           |
+| Bipartite Check  | O(V + E)         | O(V)  | Two-coloring (BFS or DFS) |
 
 V = vertices, E = edges
 

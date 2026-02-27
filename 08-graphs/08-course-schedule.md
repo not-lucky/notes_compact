@@ -81,11 +81,24 @@ Course Schedule is a FANG+ classic because:
 
 Expect to see this problem or a variant at Meta, Google, and Amazon.
 
+### FANG Context: Amazon Variations
+Amazon frequently tests topological sorting heavily but masks it in system design/ops scenarios:
+1. **Package Dependency Resolution**: Given packages and dependencies, output the valid installation order (same as Course Schedule II).
+2. **Parallel Task Execution**: What's the shortest time to finish all tasks if tasks without dependencies can be run concurrently? (See the *Minimum Semesters* variation below).
+3. **Circular Dependency Detection**: Find exactly which services are forming a circular dependency in a microservices mesh.
+
 ---
 
 ## Problem 1: Course Schedule I (Can Finish?)
 
 Given `numCourses` and prerequisites where `[a, b]` means course `b` is required before course `a`, determine if you can finish all courses.
+
+### Theory: Directed Acyclic Graphs (DAGs)
+A directed graph is a DAG if it contains no cycles. For course scheduling:
+- Courses are **vertices**
+- Dependencies (`[a, b]` meaning `b → a`) are directed **edges**
+- If a graph has a cycle (e.g., `A → B → A`), no topological order can exist.
+- Therefore, checking if we can finish all courses is exactly equivalent to **verifying the prerequisite graph is a DAG**.
 
 ```
 Example 1:
@@ -204,6 +217,12 @@ Graph:
 
 ## Course Schedule II: Kahn's Solution
 
+Kahn's algorithm (BFS) is the most intuitive approach for finding a topological ordering. It works by repeatedly finding nodes with no dependencies (in-degree 0) and removing them from the graph.
+
+**Why it works (Theory):**
+Every Directed Acyclic Graph (DAG) has at least one node with in-degree 0. If we process this node and remove its outgoing edges, the remaining graph is still a DAG. By repeating this process, we build a valid topological order. If the graph has a cycle, eventually all remaining nodes will have in-degree > 0, and we won't be able to process all `numCourses`.
+
+### Python
 ```python
 from collections import defaultdict, deque
 
@@ -235,6 +254,7 @@ def find_order(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
 
     return order if len(order) == numCourses else []
 ```
+
 
 ---
 
@@ -438,6 +458,18 @@ prerequisites = [[2, 0], [2, 1]]
 | Total       | O(V + E) | O(V + E) |
 
 V = numCourses, E = len(prerequisites)
+
+### Complexity Trade-offs: Recursive DFS vs BFS Kahn's
+
+| Trade-off aspect     | Kahn's Algorithm (BFS)                                             | Recursive DFS                                                      |
+|----------------------|--------------------------------------------------------------------|--------------------------------------------------------------------|
+| **Space Complexity** | Explicit `Queue` of size $O(V)$                                      | Implicit Call Stack depth of up to $O(V)$ in worst case              |
+| **Stack Overflow**   | Safe. Uses explicit data structures.                               | Risky. A linear chain of $10^5$ courses exceeds recursion limits.    |
+| **Ordering**         | Readily extended to lexicographical order using Min-Heap (`O(V \log V)`). | Difficult to enforce secondary ordering constraints.               |
+| **Parallel Tasks**   | Counts "semesters" naturally by processing the queue level by level. | Requires passing depths down recursion tree.                       |
+| **Cycle Reporting**  | Detects a cycle if nodes remain unprocessed. Identifying the *actual nodes* in the cycle is complex. | Easier to return the exact path making up a cycle.                   |
+
+In general, prefer Kahn's Algorithm for Course Schedule variations, as the level-by-level traversal solves "parallel courses" variations out-of-the-box and circumvents deep recursion issues common in large directed graphs.
 
 ---
 

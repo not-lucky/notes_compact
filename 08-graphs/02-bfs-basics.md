@@ -70,7 +70,11 @@ BFS is essential because:
 3. **Multi-source BFS**: Handle problems with multiple starting points
 4. **Foundation for Dijkstra**: Same pattern with priority queue
 
-BFS appears in almost every FANG+ interview loop involving graphs or grids.
+### FANG Context (Especially Amazon)
+- BFS appears in almost every FANG+ interview loop involving graphs or grids.
+- **Amazon strongly favors BFS**, specifically for their online assessment (OA) and onsite coding rounds.
+- Look out for problems framed as "Delivery routing", "Spreading infections", or "Minimum steps to reach a package in a warehouse".
+- Amazon interviewers frequently ask you to trace the shortest path, not just its length (e.g., using a `parent` pointer map).
 
 ---
 
@@ -93,9 +97,28 @@ Graph:          BFS from 0:
 Order visited: 0 → 1 → 2 → 3 → 4
 ```
 
+### Theory: Edge Types in BFS
+
+When performing BFS on a connected, undirected graph, the edges can be classified into two types:
+
+1. **Tree Edges**: Edges that discover new, unvisited vertices. These edges form the "BFS Tree" (a spanning tree of the graph).
+2. **Cross Edges**: Edges that connect two vertices that are already in the BFS Tree.
+   - Crucial property: In a standard BFS on an undirected graph, a cross edge only ever connects vertices at the same level (distance $d$) or at adjacent levels (distance $d$ and $d+1$). They never connect vertices skipping a level.
+
+### Theory: Grid Implicit Graphs
+
+Many BFS problems don't give you an explicit `Graph = (V, E)` representation (like an adjacency list). Instead, they give you a 2D grid (e.g., a maze, a matrix of 1s and 0s).
+
+- **Vertices**: Each cell `(r, c)` in the grid is a vertex.
+- **Edges**: Implicitly defined by the valid moves. Typically, an edge exists between `(r, c)` and its 4-direction neighbors `(r+1, c)`, `(r-1, c)`, `(r, c+1)`, `(r, c-1)` if the neighbor is within bounds and not an obstacle.
+
+In these "implicit" graphs, you don't build an adjacency list. You compute the neighbors "on the fly" during the BFS loop.
+
 ---
 
 ## BFS Template (Must Know!)
+
+### Python
 
 ```python
 from collections import deque
@@ -392,6 +415,16 @@ def bfs_all_components(graph: dict[int, list[int]],
 ---
 
 ## Complexity Analysis
+
+**Time Complexity: O(V + E)** for Adjacency List (Sparse Graph)
+- **O(V²)** for Adjacency Matrix (Dense Graph). When a graph is dense or we use an adjacency matrix, we must check all `V` possible neighbors for each of the `V` nodes, regardless of whether edges exist. This makes scanning neighbors an O(V) operation per node, resulting in total time complexity `V * O(V) = O(V²)`.
+- **O(rows × cols)** for Grid Implicit Graphs, assuming constant time checks of neighbors in 4 or 8 directions.
+
+**Space Complexity: O(V)**
+Space is primarily used by the `visited` data structure and the BFS `queue`.
+- **Sparse vs. Dense Representations**:
+  - `Adjacency List`: We only track actual edges in memory, and iterating neighbors is optimal `O(E)`.
+  - `Adjacency Matrix`: This representation forces us to scan the entire row (all `V` columns) for a node to find neighbors. Space taken is strictly O(V²).
 
 | Operation        | Time           | Space          |
 | ---------------- | -------------- | -------------- |

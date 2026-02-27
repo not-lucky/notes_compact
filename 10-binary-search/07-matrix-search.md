@@ -56,8 +56,8 @@ A Type 2 matrix is just a sorted 1D array displayed in rows. We can run standard
 For a matrix of dimensions `m x n` (m rows, n cols):
 - The conceptual 1D array has indices from `0` to `(m * n) - 1`.
 - Given a 1D index `mid`:
-  - `row = mid // n` (integer division by number of columns)
-  - `col = mid % n` (modulo by number of columns)
+  - `row = mid // n` (integer division by `n`, the number of columns)
+  - `col = mid % n` (modulo by `n`, the number of columns)
 
 ### Implementation (LeetCode 74: Search a 2D Matrix)
 
@@ -67,8 +67,8 @@ def searchMatrix(matrix: list[list[int]], target: int) -> bool:
     Search in a fully sorted (Type 2) matrix.
     Treat as 1D array with index conversion.
 
-    Time: O(log(m * n))
-    Space: O(1)
+    Time: \mathcal{O}(\log(m \cdot n))
+    Space: \mathcal{O}(1)
     """
     if not matrix or not matrix[0]:
         return False
@@ -93,7 +93,7 @@ def searchMatrix(matrix: list[list[int]], target: int) -> bool:
     return False
 ```
 
-*Note: You could also do two binary searches (one to find the row, one within the row), but treating it as a 1D array is cleaner and mathematically elegant. Both are $O(\log(m \cdot n))$.*
+*Note: You could also do two binary searches (one to find the row, one within the row). Treating it as a 1D array is often cleaner, but the two-search method avoids computing `m * n`, which could theoretically cause integer overflow in languages with fixed-size integers (like C++ or Java) for astronomically large matrices. Both approaches run in $\mathcal{O}(\log(m \cdot n))$ because the two-search method takes $\mathcal{O}(\log m)$ to find the row and $\mathcal{O}(\log n)$ to find the column, and $\mathcal{O}(\log m) + \mathcal{O}(\log n) = \mathcal{O}(\log m + \log n) = \mathcal{O}(\log(m \cdot n))$.*
 
 ---
 
@@ -115,14 +115,16 @@ If we start at the **Top-Right (0, n-1)**:
 
 ### Implementation (LeetCode 240: Search a 2D Matrix II)
 
+*Note: If the matrix is heavily skewed (e.g., $m \ll n$, like 10 rows and $10^5$ columns), doing a standard binary search on each row takes $\mathcal{O}(m \log n)$. This can be drastically faster than the $\mathcal{O}(m+n)$ staircase method. Always clarify dimensions before assuming the staircase approach is optimal.*
+
 ```python
 def searchMatrixII(matrix: list[list[int]], target: int) -> bool:
     """
     Search in a row-sorted AND col-sorted (Type 1) matrix.
     Start at Top-Right and eliminate row or col at each step.
 
-    Time: O(m + n) - in worst case we traverse one full row and col
-    Space: O(1)
+    Time: \mathcal{O}(m + n) - in worst case we traverse one full row and col
+    Space: \mathcal{O}(1)
     """
     if not matrix or not matrix[0]:
         return False
@@ -162,7 +164,7 @@ When you see a Type 1 Matrix (Row/Col sorted) AND you need to find an element ba
 1. Search space is `[matrix[0][0], matrix[m-1][n-1]]` (min and max values in the matrix).
 2. Given a `mid` value, count how many elements in the matrix are $\le$ `mid`.
 3. If count < K, `mid` is too small (search right). Else, search left.
-4. Counting takes $O(m+n)$ using the Staircase method!
+4. Counting takes $\mathcal{O}(m+n)$ using the Staircase method.
 
 ### Implementation (LeetCode 378: Kth Smallest Element in a Sorted Matrix)
 
@@ -172,8 +174,8 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
     Find the Kth smallest element in a Type 1 Matrix.
     Uses Binary Search on the value range + Staircase counting.
 
-    Time: O((m+n) * log(MAX_VAL - MIN_VAL))
-    Space: O(1)
+    Time: \mathcal{O}((m+n) \cdot \log(\text{MAX\_VAL} - \text{MIN\_VAL}))
+    Space: \mathcal{O}(1)
     """
     m, n = len(matrix), len(matrix[0])
 
@@ -195,13 +197,17 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
     left = matrix[0][0]
     right = matrix[m-1][n-1]
 
-    while left < right:
+    while left <= right:
+        # Note: In Python, `//` rounds towards negative infinity. This correctly
+        # handles negative numbers in binary search when computing `left + (right - left) // 2`.
+        # Even if left and right are negative, the difference is positive, so no negative
+        # division occurs.
         mid = left + (right - left) // 2
 
         if count_less_equal(mid) < k:
             left = mid + 1
         else:
-            right = mid  # mid could be the answer
+            right = mid - 1 # We use left <= right so we update right to mid - 1
 
     return left
 ```
@@ -215,12 +221,12 @@ def kthSmallest(matrix: list[list[int]], k: int) -> int:
 ### 1. Count Negatives in Sorted Matrix (LeetCode 1351)
 Matrix is sorted in non-increasing (descending) order both row-wise and col-wise.
 **Approach**: Staircase. Start top-right. If `grid[r][c] < 0`, then everything below it is also `< 0` (since it's sorted descending). Count `m - r` and move left. If `grid[r][c] >= 0`, move down.
-**Time**: $O(m+n)$
+**Time**: $\mathcal{O}(m+n)$
 
 ### 2. Leftmost Column with at Least a One (Premium)
 Binary matrix where rows are sorted (0s then 1s).
 **Approach**: Staircase from Top-Right. If `1`, record column and move left. If `0`, move down.
-**Time**: $O(m+n)$
+**Time**: $\mathcal{O}(m+n)$
 
 ---
 
@@ -230,7 +236,7 @@ Binary matrix where rows are sorted (0s then 1s).
 | :--- | :--- | :--- | :--- |
 | **Search (Type 2 - Fully Sorted)** | 1D mapping Binary Search | $\mathcal{O}(\log(m \cdot n))$ | $\mathcal{O}(1)$ |
 | **Search (Type 1 - Row/Col Sorted)** | Staircase from Corner (Top-R/Bot-L) | $\mathcal{O}(m + n)$ | $\mathcal{O}(1)$ |
-| **Kth Smallest / Median** | BS on Value + Staircase Counting | $\mathcal{O}((m+n) \log(\text{Range}))$ | $\mathcal{O}(1)$ |
+| **Kth Smallest / Median** | BS on Value + Staircase Counting | $\mathcal{O}((m+n) \cdot \log(\text{Range}))$ | $\mathcal{O}(1)$ |
 | **Count conditional elements** | Staircase (if monotonic) | $\mathcal{O}(m + n)$ | $\mathcal{O}(1)$ |
 
 ---
@@ -241,8 +247,8 @@ Binary matrix where rows are sorted (0s then 1s).
    - Flattening a Type 1 matrix does NOT yield a sorted array. Always verify strict row-major sorting before using 1D mapping.
 2. **Starting Staircase from the wrong corner**
    - Top-Left (0,0) and Bottom-Right (m-1, n-1) are traps. Both directions increase or decrease respectively. You MUST start where one direction increases and the other decreases (Top-Right or Bottom-Left).
-3. **Using $O(m \log n)$ when $O(m+n)$ is expected**
-   - For Type 1 search, binary searching each row takes $O(m \log n)$. This is usually considered suboptimal by interviewers compared to the elegant $O(m+n)$ staircase method.
+3. **Always assuming $\mathcal{O}(m+n)$ is optimal**
+   - If the matrix is heavily skewed (e.g., $m \ll n$, like 10 rows and $10^5$ columns), doing a standard binary search on each row takes $\mathcal{O}(m \log n)$. This can be drastically faster than the $\mathcal{O}(m+n)$ staircase method. Be ready to discuss the trade-off: $m \log n < m+n$ when $\log n < 1 + n/m$.
 4. **Getting the DivMod wrong**
    - `row = mid // cols`
    - `col = mid % cols`

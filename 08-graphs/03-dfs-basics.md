@@ -74,7 +74,19 @@ Each call adds a frame to the stack. When a call finishes, we pop and return to 
 
 ---
 
-## Interview Context
+## Interview Context: FANG Expectations
+
+**Amazon's Focus: 2D Grids**
+- Amazon heavily tests implicit graphs. You **must** master Grid DFS.
+- Problems like "Rotting Oranges", "Number of Islands", or "Word Search" are standard.
+- You are expected to code boundary checks elegantly (e.g., using `directions` arrays).
+- You are expected to know the exact time complexity: $O(R \times C)$, **not** $O(V + E)$ (although they are the same).
+- You are expected to optimize space by modifying the grid in-place (e.g., changing '1' to '0' instead of a `visited` set) if permitted.
+
+**Meta's Focus: Clone Graph & Components**
+- Meta often asks "Clone Graph" or "Alien Dictionary" (Topological Sort).
+- Meta candidates must know how to map an old node to a new node using a Hash Map.
+- If you use Python at Meta, explicitly address the recursion limit (`sys.setrecursionlimit()`). Meta interviewers look for this system-level awareness.
 
 DFS is essential because:
 
@@ -111,6 +123,7 @@ Order visited: 0 → 1 → 3 → 2 → 4
 
 ## DFS Template: Recursive (Most Common)
 
+### Python
 ```python
 def dfs_recursive(graph: dict[int, list[int]], start: int) -> list[int]:
     """
@@ -143,6 +156,7 @@ print(dfs_recursive(graph, 0))  # [0, 1, 3, 2, 4]
 
 ## DFS Template: Iterative (Using Stack)
 
+### Python
 ```python
 def dfs_iterative(graph: dict[int, list[int]], start: int) -> list[int]:
     """
@@ -210,6 +224,56 @@ def all_paths_dfs(graph: dict[int, list[int]],
 graph = {0: [1, 2], 1: [0, 3], 2: [0, 3], 3: [1, 2]}
 print(all_paths_dfs(graph, 0, 3))  # [[0, 1, 3], [0, 2, 3]]
 ```
+
+## Theory: Deep Dive into Edge Types
+
+When DFS runs on a graph, it categorizes all edges into four types based on the traversal. This theory is heavily tested in cycle detection and topological sorting.
+
+```
+Graph structure during DFS forms a "DFS Tree":
+
+      A (start)
+     / \
+    B   C
+    |    \
+    D     E
+```
+
+1. **Tree Edge**: Edges in the DFS forest. You discover a new, unvisited vertex.
+   - Example: A → B, A → C, B → D
+   - **Check**: `visited[v] == false`
+
+2. **Back Edge**: Edge from a vertex to one of its ancestors in the DFS tree.
+   - Example: D → A (if edge existed)
+   - **Check**: `visited[v] == true` AND `v` is currently in the recursion stack (usually tracked with an `in_path` or `color = GRAY` array).
+   - **Crucial application**: The presence of a Back Edge means the graph has a **cycle**.
+
+3. **Forward Edge**: Edge from a vertex to a non-child descendant.
+   - Example: A → D (if edge existed, A reaches D without going through B)
+   - **Check**: `visited[v] == true` AND `v` was fully processed (`color = BLACK`) AFTER the current vertex was discovered.
+
+4. **Cross Edge**: Edge between two nodes that don't have an ancestor/descendant relationship.
+   - Example: B → C or D → E
+   - **Check**: `visited[v] == true` AND `v` was fully processed BEFORE the current vertex was discovered.
+
+*Note: In undirected graphs, there are only Tree and Back edges. Forward and Cross edges only exist in directed graphs.*
+
+---
+
+## Theory: Grid Implicit Graphs
+
+In many interview problems, the graph isn't given as an adjacency list. Instead, it's a 2D grid.
+
+A 2D matrix is an **implicit graph**:
+- **Vertices (V)**: The cells in the grid.
+  - Number of vertices = `Rows × Cols`
+- **Edges (E)**: Adjacency between neighboring cells (usually 4-directional: up, down, left, right).
+  - Maximum edges = `4 × Rows × Cols`
+
+### Key Differences from Standard Graphs:
+1. **No need to build an adjacency list**: Building one takes $O(R \times C)$ extra space. You compute neighbors on the fly.
+2. **Boundary Checks**: You must explicitly check if `row` and `col` are within bounds `(0 <= r < R)` and `(0 <= c < C)`.
+3. **Space Complexity**: The recursion stack space is bounded by the grid size, which is $O(R \times C)$ worst-case (e.g., a grid shaped like a single winding snake path).
 
 ---
 
@@ -570,6 +634,17 @@ Comparison with BFS:
 - For deep narrow graphs: DFS may use more space
 - For wide shallow graphs: BFS may use more space
 ```
+
+### Recursion Stack Space Limits by Language
+
+This is a critical interview topic. When do you hit a **StackOverflowError**?
+
+| Language | Default Stack Size | Approx. Max Recursion Depth | Risk of Stack Overflow |
+|----------|-------------------|-----------------------------|------------------------|
+| **Python**| Implicit limit | `sys.getrecursionlimit()` (~1000 by default) | **HIGH**. Exceeds easily on large grids ($30 \times 40 = 1200$). Use `sys.setrecursionlimit()`. |
+
+**Interview Advice**:
+- If writing **Python** and solving a 2D Grid problem (e.g., $M, N \le 200$), strongly consider using the Iterative Stack approach, or explicitly state: *"I'm using recursive DFS, but in Python I would need to increase `sys.setrecursionlimit(40000)` to handle worst-case deep paths."*
 
 **Pre-order vs Post-order timing:**
 

@@ -8,10 +8,45 @@ BFS for shortest path is fundamental because:
 
 1. **Optimal for unweighted**: O(V + E) is the best we can do
 2. **Foundation for other algorithms**: Dijkstra extends this concept
-3. **Very common in interviews**: Grid shortest paths, word ladders
+3. **Very common in interviews**: Grid shortest paths, word ladders (especially Amazon)
 4. **Simpler than Dijkstra**: No heap needed
 
+> **FANG Focus: Amazon Grid Problems**
+> Amazon heavily favors grid-based shortest path problems in both phone screens and onsite interviews. Expect variations like "minimum steps to reach a target while avoiding obstacles," "shortest path with a given number of obstacle removals," or "multi-source BFS" (like rotting oranges). Mastery of the 4-directional and 8-directional BFS templates is non-negotiable for Amazon.
+
 When all edges have equal weight, BFS is the answer.
+
+---
+
+## Theory: Edge Types in BFS
+
+When performing BFS on a graph, the edges can be classified into two types based on the BFS tree generated:
+
+1. **Tree Edges**: Edges that belong to the BFS tree. These are the edges that lead to an unvisited node, discovering it for the first time.
+2. **Cross Edges**: Edges that connect two nodes in the BFS tree but do not form a parent-child relationship. In an undirected graph, cross edges always connect nodes that are either at the same level or at adjacent levels (difference in levels is exactly 1).
+
+**Why it matters:**
+- If a cross edge connects nodes at the same level, it creates an odd-length cycle.
+- If a cross edge connects nodes at adjacent levels, it creates an even-length cycle.
+- BFS cannot produce "back edges" or "forward edges" in undirected graphs (unlike DFS), which is why it's ideal for shortest paths.
+
+---
+
+## Complexity Analysis: Sparse vs Dense Representations
+
+The time complexity of BFS is $O(V + E)$, but the practical performance heavily depends on how the graph is represented:
+
+### 1. Adjacency List (Sparse Graphs)
+- **Structure**: Each vertex stores a list of its neighbors.
+- **Time Complexity**: $O(V + E)$. We visit each vertex once and iterate through each of its edges once.
+- **Space Complexity**: $O(V + E)$ to store the graph.
+- **When to use**: Almost always preferred in interviews, as most interview graphs (like grids, social networks, word ladders) are sparse ($E \ll V^2$).
+
+### 2. Adjacency Matrix (Dense Graphs)
+- **Structure**: A $V \times V$ matrix where `matrix[i][j]` is 1 if an edge exists, 0 otherwise.
+- **Time Complexity**: $O(V^2)$. For every dequeued vertex, we must scan the entire row of size $V$ to find neighbors, regardless of how few edges actually exist.
+- **Space Complexity**: $O(V^2)$ to store the graph.
+- **When to use**: Rarely used for BFS unless the graph is extremely dense ($E \approx V^2$) or you need constant-time edge existence lookups and $V$ is small (e.g., $V \le 1000$).
 
 ---
 
@@ -64,10 +99,6 @@ def shortest_path_bfs(graph: dict[int, list[int]],
 
     return -1
 ```
-
----
-
-## Grid Shortest Path
 
 ```python
 from collections import deque

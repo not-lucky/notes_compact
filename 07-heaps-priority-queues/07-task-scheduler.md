@@ -6,189 +6,96 @@
 
 Task scheduling problems are FANG+ favorites because:
 
-1. **Real-world relevance**: CPU scheduling, job queues, rate limiting
-2. **Greedy + Heap**: Shows understanding of greedy strategies
-3. **Cooldown constraint**: Adds complexity beyond basic heap
-4. **Multiple valid approaches**: Heap, formula, simulation
+1. **Real-world relevance**: CPU scheduling, job queues, rate limiting.
+2. **Greedy + Heap**: Demonstrates understanding of greedy strategies implemented via max-heaps.
+3. **Cooldown constraint**: Adds state management complexity beyond basic heap usage.
+4. **Multiple valid approaches**: Simulation (heap) vs. Math (formula).
 
-This problem appears frequently at Facebook and Amazon interviews.
+This problem (Leetcode 621) appears very frequently at Meta (Facebook) and Amazon interviews.
+
+---
+
+## The Problem Statement
+
+Given a list of `tasks` represented by characters and a cooling interval `n`, return the minimum time needed to complete all tasks.
+
+**Constraint**: Identical tasks must be separated by at least `n` intervals. If no tasks can be executed, the CPU remains idle.
+
+### Examples
+
+**Example 1:**
+```
+Input: tasks = ["A","A","A","B","B","B"], n = 2
+Output: 8
+Explanation: A -> B -> idle -> A -> B -> idle -> A -> B
+             1    2     3      4    5     6      7    8
+```
+
+**Example 2:**
+```
+Input: tasks = ["A","C","A","B","D","B"], n = 1
+Output: 6
+Explanation: A -> B -> C -> D -> A -> B (No idles needed)
+```
 
 ---
 
 ## Building Intuition
 
-**The Core Problem: Managing Cooldowns**
+### The Core Problem: Managing Cooldowns
 
 Tasks of the same type need separation. This creates "slots" that may be empty:
 
 ```
-Tasks: [A, A, A], cooldown n=2
+Tasks: [A, A, A], cooldown n = 2
 
-Without cooldown: A A A (3 slots)
-With cooldown:    A _ _ A _ _ A (7 slots)
+Without cooldown: A A A (3 units)
+With cooldown:    A _ _ A _ _ A (7 units)
                     ^-^   ^-^
                   2 slots between each A
 ```
 
-**Why Prioritize High-Frequency Tasks?**
+### Why Prioritize High-Frequency Tasks?
 
-High-frequency tasks are the bottleneck. If you don't handle them first, you'll have more idles at the end:
+High-frequency tasks are the bottleneck. If you don't handle them first, you'll be forced to insert more idles at the end.
+
+**Key Insight:** Always execute the most frequent available task. This is a **Greedy Strategy**.
 
 ```
-Tasks: [A, A, A, B], n=2
+Tasks: [A, A, A, B], n = 2
 
 Bad order (B first):
-B A _ _ A _ _ A  = 8 slots (2 idles)
+B A _ _ A _ _ A  = 8 units (2 idles)
 
 Good order (A first):
-A B _ A _ _ A    = 7 slots (2 idles)
-A _ B A _ _ A    = 7 slots
-
-Actually both have idles, but:
-A B _ A B _ A    Wait, we only have 1 B!
-
-Key: Always do the most frequent available task.
+A B _ A _ _ A    = 7 units (2 idles)
 ```
 
-**Mental Model: Radio Station Playlist**
+### Mental Model: The Radio Station
 
-Imagine a radio station that can't repeat a song within n songs. The DJ has a stack of requests:
+Imagine a DJ with a stack of song requests who cannot repeat a song within `n` tracks:
+- Prioritize the most-requested songs.
+- After playing a song, it goes on a "cooldown" for `n` tracks.
+- If no song is available, play an ad (idle).
 
-- Prioritize most-requested songs (highest frequency)
-- After playing a song, it goes on "cooldown" for n songs
-- If no song is available, play an ad (idle)
+---
 
-```
-Requests: A(3), B(2), n=2
-Play A → cooldown [A expires at song 3]
-Play B → cooldown [A:3, B:4]
-No available songs → idle
-A available again → Play A
-...
-```
+## Approach 1: Max-Heap + Cooldown Queue (Simulation)
 
-**The Two Approaches Deeply Explained**
+This approach simulates the execution of tasks tick by tick.
 
-**Approach 1: Simulation with Heap + Queue**
+### Data Structures Needed
+1. **Max-Heap**: Tracks the remaining frequencies of *available* tasks.
+2. **Cooldown Queue**: A `deque` storing `(remaining_count, available_time)`. This tracks tasks currently on cooldown.
 
-```
-Max Heap: Tracks frequencies of available tasks
-Cooldown Queue: Tracks (remaining_count, when_available)
-
+### Algorithm
 At each time step:
-1. If heap not empty → pop highest frequency, decrement, add to cooldown
-2. If queue front is ready → move back to heap
-3. If nothing to do → idle
-```
+1. Increment the `time`.
+2. **Execute**: If the heap has available tasks, pop the one with the highest frequency, decrement its count, and if it still has remaining executions, push it to the cooldown queue with `available_time = time + n`.
+3. **Restore**: Check if the task at the front of the cooldown queue has finished its cooldown (`available_time == time`). If so, move it back to the max-heap.
+4. If both heap and queue are empty, we are done.
 
-**Approach 2: Formula (Math)**
-
-```
-tasks = [A,A,A,B,B], n=2
-max_freq = 3 (A appears 3 times)
-num_at_max = 1 (only A)
-
-Visualize as a grid:
-A _ _
-A _ _
-A
-
-(max_freq - 1) complete rows of (n + 1) slots + final row with num_at_max tasks
-
-= (3-1) * (2+1) + 1 = 7
-
-But if we have many tasks:
-tasks = [A,A,A,B,B,B,C,C,C], n=2
-max_freq = 3, num_at_max = 3
-
-Grid:
-A B C
-A B C
-A B C
-
-= (3-1) * (2+1) + 3 = 9
-
-But we have 9 tasks, so max(9, 9) = 9. No idles!
-```
-
----
-
-## When NOT to Use Each Approach
-
-**Don't Use Heap When:**
-
-1. **n = 0 (no cooldown)**: Just return len(tasks)
-
-```python
-if n == 0:
-    return len(tasks)  # No scheduling needed
-```
-
-2. **Simple cases where formula works**: The formula is O(n) vs O(n log k) for heap
-
-3. **You need exact schedule, not just count**: Heap gives count; building actual schedule needs more work
-
-**Don't Use Formula When:**
-
-1. **You need the actual schedule (not just count)**:
-
-```python
-# Formula gives: 8 slots needed
-# But interviewer asks: "What's the actual order?"
-# Need heap approach to generate the sequence
-```
-
-2. **Tasks have different execution times**: Formula assumes 1 time unit per task
-
-3. **There are precedence constraints**: Tasks must execute in certain order
-
-**Don't Use Either When:**
-
-1. **Tasks have dependencies**: This becomes a topological sort + scheduling problem
-
-2. **Multiple processors/cores**: Becomes parallel scheduling problem
-
-3. **Tasks have deadlines**: Becomes real-time scheduling (EDF algorithm)
-
-**Red Flags:**
-
-- "What's the actual execution order?" → Need heap simulation
-- "Tasks take different amounts of time" → Modified problem
-- "Some tasks depend on others" → Topological sort
-- "Minimize idle time AND finish by deadline" → Different algorithm
-
----
-
-## Problem Statement
-
-Given a list of tasks represented by characters and a cooling interval `n`, return the minimum time needed to complete all tasks.
-
-**Constraint**: Same tasks must be separated by at least `n` intervals.
-
-```
-Example 1:
-tasks = ["A","A","A","B","B","B"], n = 2
-Output: 8
-
-Execution: A → B → idle → A → B → idle → A → B
-           1   2    3     4   5    6     7   8
-
-Example 2:
-tasks = ["A","A","A","B","B","B"], n = 0
-Output: 6 (no cooling needed, just do all tasks)
-```
-
----
-
-## Core Insight
-
-**Greedy Strategy**: Always execute the task with highest remaining count that's not on cooldown.
-
-Why? High-frequency tasks are the bottleneck. If we don't prioritize them, we'll have more idle slots at the end.
-
----
-
-## Approach 1: Max Heap + Cooldown Queue
+### Python Implementation
 
 ```python
 import heapq
@@ -196,379 +103,265 @@ from collections import Counter, deque
 
 def least_interval(tasks: list[str], n: int) -> int:
     """
-    Calculate minimum intervals to complete all tasks.
-
-    Time: O(total_tasks * log(unique_tasks))
-    Space: O(unique_tasks)
-
-    Strategy: Max heap for counts, queue for cooldown.
+    Time: O(T * log U) where T = total tasks, U = unique tasks
+    Space: O(U)
+    Note: Since U <= 26 (uppercase English letters), Time is effectively O(T) and Space is O(1).
     """
-    # Count task frequencies
+    # 1. Count frequencies
     count = Counter(tasks)
 
-    # Max heap of remaining counts (negate for max heap)
+    # 2. Max heap of remaining counts (Python has min-heap, so negate values)
     max_heap = [-cnt for cnt in count.values()]
     heapq.heapify(max_heap)
 
-    # Queue of (remaining_count, available_time)
+    time = 0
+    # Queue stores: (remaining_count, available_time)
     cooldown = deque()
 
-    time = 0
-
+    # Continue while we have tasks available or on cooldown
     while max_heap or cooldown:
         time += 1
 
+        # If tasks are available, execute the most frequent one
         if max_heap:
-            # Execute task with highest remaining count
-            remaining = heapq.heappop(max_heap) + 1  # +1 because negated
+            # Pop and increment (since values are negative)
+            remaining = heapq.heappop(max_heap) + 1
 
-            if remaining < 0:  # Still has tasks left
+            # If still tasks left of this type, put on cooldown
+            if remaining < 0:
                 cooldown.append((remaining, time + n))
-        # else: idle (nothing to execute)
 
-        # Check if any task finished cooldown
+        # Check if any task finished cooldown at current time
         if cooldown and cooldown[0][1] == time:
+            # Move back to heap
             heapq.heappush(max_heap, cooldown.popleft()[0])
 
     return time
-
-
-# Usage
-tasks = ["A", "A", "A", "B", "B", "B"]
-print(least_interval(tasks, 2))  # 8
 ```
 
----
-
-## Visual Walkthrough
+### Visual Walkthrough
 
 ```
 tasks = ["A","A","A","B","B","B"], n = 2
 
-Initial: max_heap = [-3, -3]  (A:3, B:3)
+Initial: max_heap = [-3(A), -3(B)]
          cooldown = []
 
-Time 1: Pop A(-3→-2), cooldown = [(-2, 3)]
+Time 1: Pop A(-3->-2), cooldown = [(-2, 3)]
         heap = [-3(B)]
-        Execute: A
+        Schedule: A
 
-Time 2: Pop B(-3→-2), cooldown = [(-2, 3), (-2, 4)]
+Time 2: Pop B(-3->-2), cooldown = [(-2, 3), (-2, 4)]
         heap = []
-        Execute: B
+        Schedule: B
 
 Time 3: heap empty, idle
-        cooldown[0] available at time 3 → push -2(A) to heap
+        Restore A: cooldown[0] available at 3 -> push -2(A) to heap
         cooldown = [(-2, 4)]
-        Execute: idle
+        Schedule: idle
 
-Time 4: Pop A(-2→-1), cooldown = [(-2, 4), (-1, 6)]
+Time 4: Pop A(-2->-1), cooldown = [(-2, 4), (-1, 6)]
+        Restore B: cooldown[0] available at 4 -> push -2(B) to heap
+        heap = [-2(B)]
+        Schedule: A
+
+Time 5: Pop B(-2->-1), cooldown = [(-1, 6), (-1, 7)]
         heap = []
-        Check: cooldown[0] available at time 4 → push -2(B)
-        Execute: A
+        Schedule: B
 
-Time 5: Pop B(-2→-1), cooldown = [(-1, 6), (-1, 7)]
-        Execute: B
+Time 6: heap empty, idle
+        Restore A: cooldown[0] available at 6 -> push -1(A)
+        Schedule: idle
 
-Time 6: heap empty
-        cooldown[0] available → push -1(A)
-        Pop A(-1→0), done with A
-        Execute: A
+Time 7: Pop A(-1->0), done with A
+        Restore B: cooldown[0] available at 7 -> push -1(B)
+        Schedule: A
 
-Time 7: heap empty
-        cooldown[0] available → push -1(B)
-        Pop B(-1→0), done with B
-        Execute: B
+Time 8: Pop B(-1->0), done with B
+        cooldown empty, heap empty -> Break.
+        Schedule: B
 
-Time 8: cooldown empty, heap empty
-        Wait, we need to check...
-
-Actually final: 8 intervals
-A → B → idle → A → B → idle → A → B
+Final time: 8
 ```
 
 ---
 
-## Approach 2: Formula (O(1) Space)
+## Approach 2: The Mathematical Formula (O(1) Space)
+
+If you only need the *minimum time* (and not the actual schedule), you can use a formula based on the most frequent task(s).
+
+### Key Insights
+1. The most frequent task acts as a "frame".
+2. If we arrange the most frequent task `A` (count = 3) with `n = 2`:
+   `A _ _ | A _ _ | A`
+3. We have `(max_count - 1)` complete cycles. Each cycle has length `(n + 1)`.
+4. The final cycle just contains the tasks that are tied for the maximum frequency.
+
+### The Formula
+`result = (max_count - 1) * (n + 1) + num_max`
+
+Where:
+- `max_count` = frequency of the most common task(s)
+- `num_max` = number of different tasks that appear `max_count` times
+
+**Wait, what if the formula gives a number smaller than `len(tasks)`?**
+This happens when there are many different tasks and `n` is small. We don't need any idles! Every slot naturally fills up, and we just process tasks without waiting. In this case, the answer is just `len(tasks)`.
+
+Thus: `return max(result, len(tasks))`
+
+### Python Implementation
 
 ```python
 from collections import Counter
 
 def least_interval_formula(tasks: list[str], n: int) -> int:
     """
-    Calculate using mathematical formula.
-
-    Time: O(tasks)
-    Space: O(26) = O(1)
-
-    Key insight: The task with max frequency determines minimum time.
+    Time: O(T) where T = total tasks
+    Space: O(1) (Counter takes at most 26 elements)
     """
+    # Quick exit
+    if n == 0:
+        return len(tasks)
+
     count = Counter(tasks)
     max_count = max(count.values())
 
-    # How many tasks have the max count?
+    # Count how many tasks share the maximum frequency
     num_max = sum(1 for c in count.values() if c == max_count)
 
-    # Formula: (max_count - 1) * (n + 1) + num_max
-    # Explanation:
-    # - We need (max_count - 1) complete cycles of (n + 1) slots
-    # - Plus one final round of tasks with max_count
+    # Calculate intervals using the formula
+    intervals = (max_count - 1) * (n + 1) + num_max
 
-    result = (max_count - 1) * (n + 1) + num_max
+    # If intervals < len(tasks), it means we have enough distinct tasks
+    # to fill all cooldown gaps without any idle time.
+    return max(intervals, len(tasks))
+```
 
-    # But if we have many different tasks, we might not need idle slots
-    return max(result, len(tasks))
+### Visualizing the Formula
 
+```
+Tasks: [A,A,A,A, B,B,B,B, C,C, D, E], n = 2
+max_count = 4 (for A and B)
+num_max = 2 (A and B)
 
-# Visual for tasks = [A,A,A,B,B,B], n = 2, max_count = 3, num_max = 2
-#
-# A _ _ | A _ _ | A     (max_count - 1 = 2 complete cycles)
-# A B _ | A B _ | A B   (fill with B)
-#
-# Formula: (3-1) * (2+1) + 2 = 2 * 3 + 2 = 8 ✓
+Formula: (4 - 1) * (2 + 1) + 2 = 3 * 3 + 2 = 11
+Layout framework:
+A B _ | A B _ | A B _ | A B
+
+Fill in the blanks with C, C, D, E:
+A B C | A B C | A B D | A B E
+Wait, we have 12 tasks total, but formula gave 11!
+Since 12 > 11, we return max(11, 12) = 12. No idles needed.
 ```
 
 ---
 
-## Why the Formula Works
+## When to Use Which Approach
 
-```
-For tasks = [A,A,A,A,B,B,C,C], n = 2
+**Use Max-Heap Simulation when:**
+1. The interviewer asks for the **actual execution order** (e.g., returning the string `"AB_AB_AB"`).
+2. The cooldown rule changes dynamically.
+3. You need to prove the logic constructively.
 
-max_count = 4 (A appears 4 times)
-num_max = 1 (only A has max count)
+**Use the Formula when:**
+1. You only need the **minimum time** (integer).
+2. You want the most optimal O(N) time, O(1) space solution.
 
-Minimum slots: (4-1) * (2+1) + 1 = 10
-
-Layout:
-A _ _ | A _ _ | A _ _ | A
-A B C | A B C | A _ _ | A    (fill with B, C)
-
-Still 10 slots (idle at position 9)
-
-But if we had more tasks:
-tasks = [A,A,A,A,B,B,B,B,C,C,D,D,E,E,F], n = 2
-num_max = 2 (A and B both have 4)
-
-Layout needed:
-A B _ | A B _ | A B _ | A B   = (4-1)*3 + 2 = 11
-
-But we have 15 tasks! And 11 slots isn't enough.
-So return max(11, 15) = 15
-
-Actually with many tasks, no idle needed:
-A B C D E A B C D F A B ... (all filled)
-```
+> **Interview Tip:** Always explain the Heap simulation first to prove you understand the greedy logic, then offer the Formula as an O(N) optimization!
 
 ---
 
-## Approach 3: Simulation with Round-Robin
+## Related Problems
 
-```python
-from collections import Counter
-
-def least_interval_simulation(tasks: list[str], n: int) -> int:
-    """
-    Simulate round-robin execution.
-
-    Time: O(total_time * unique_tasks)
-    Space: O(unique_tasks)
-    """
-    count = Counter(tasks)
-    counts = sorted(count.values(), reverse=True)
-
-    time = 0
-
-    while counts[0] > 0:
-        # Try to fill one cycle of n+1 slots
-        for i in range(n + 1):
-            if counts[0] == 0:
-                break
-
-            time += 1
-
-            # Execute task i if it exists and has remaining
-            if i < len(counts) and counts[i] > 0:
-                counts[i] -= 1
-
-        # Re-sort for next round
-        counts.sort(reverse=True)
-
-    return time
-```
-
-Less efficient but easier to understand.
-
----
-
-## Comparison of Approaches
-
-| Approach     | Time       | Space | Notes           |
-| ------------ | ---------- | ----- | --------------- |
-| Heap + Queue | O(T log U) | O(U)  | Most intuitive  |
-| Formula      | O(T)       | O(1)  | Fastest         |
-| Simulation   | O(T \* U)  | O(U)  | Simple but slow |
-
-T = total tasks, U = unique tasks (≤ 26)
-
----
-
-## Related: Task Scheduler II
-
-Different variant where each task has execution time:
+### 1. Reorganize String (Leetcode 767)
+**Problem:** Rearrange a string so no two adjacent characters are the same.
+**Relation:** This is exactly Task Scheduler with `n = 1`, but you must return the actual string.
 
 ```python
 import heapq
+from collections import Counter
 
-def task_scheduler_ii(tasks: list[int], space: int) -> int:
-    """
-    Each task type needs 'space' gap between executions.
+def reorganizeString(s: str) -> str:
+    count = Counter(s)
+    # Impossible if a char appears more than half the time (rounded up)
+    if max(count.values()) > (len(s) + 1) // 2:
+        return ""
 
-    Time: O(n)
-    Space: O(n)
-    """
-    last_executed = {}  # task_type -> last execution day
+    max_heap = [(-cnt, char) for char, cnt in count.items()]
+    heapq.heapify(max_heap)
+
+    res = []
+    # Cooldown queue of size 1, stores: (count, char)
+    prev = None
+
+    while max_heap or prev:
+        if prev and not max_heap:
+            return "" # Failed to reorganize
+
+        cnt, char = heapq.heappop(max_heap)
+        res.append(char)
+        cnt += 1 # Decrement magnitude
+
+        # If previous character still has count, it's off cooldown now
+        if prev:
+            heapq.heappush(max_heap, prev)
+            prev = None
+
+        # Put current char on cooldown if it still has count
+        if cnt < 0:
+            prev = (cnt, char)
+
+    return "".join(res)
+```
+
+### 2. Task Scheduler II (Leetcode 2365)
+**Problem:** Tasks must be executed in the given order. Same tasks must have `space` days between them.
+**Relation:** You CANNOT reorder tasks. No heap needed. Just use a Hash Map to track the next available day for each task type.
+
+```python
+def taskSchedulerII(tasks: list[int], space: int) -> int:
+    available_day = {} # task_type -> earliest day it can run
     day = 0
 
     for task in tasks:
         day += 1
+        # If task is on cooldown, fast-forward time
+        if task in available_day and day < available_day[task]:
+            day = available_day[task]
 
-        if task in last_executed:
-            # Must wait until cooldown ends
-            min_day = last_executed[task] + space + 1
-            day = max(day, min_day)
-
-        last_executed[task] = day
+        # Update when this task can run next
+        available_day[task] = day + space + 1
 
     return day
 ```
 
 ---
 
-## Related: Reorganize String
+## Edge Cases to Consider
 
-Related problem: Rearrange string so no two adjacent chars are same.
-
-```python
-import heapq
-from collections import Counter
-
-def reorganize_string(s: str) -> str:
-    """
-    Rearrange so no adjacent characters are same.
-
-    Time: O(n log k) where k = unique chars
-    Space: O(k)
-    """
-    count = Counter(s)
-
-    # If any char appears more than (n+1)/2 times, impossible
-    max_count = max(count.values())
-    if max_count > (len(s) + 1) // 2:
-        return ""
-
-    # Max heap of (-count, char)
-    max_heap = [(-cnt, char) for char, cnt in count.items()]
-    heapq.heapify(max_heap)
-
-    result = []
-    prev = (0, '')  # Previous char (cooldown of 1)
-
-    while max_heap:
-        cnt, char = heapq.heappop(max_heap)
-        result.append(char)
-
-        # Push previous back (if still has count)
-        if prev[0] < 0:
-            heapq.heappush(max_heap, prev)
-
-        prev = (cnt + 1, char)  # Current becomes previous
-
-    return ''.join(result)
-```
-
----
-
-## Edge Cases
-
-```python
-# 1. No cooldown needed (n = 0)
-least_interval(["A", "A", "B"], 0)  # 3
-
-# 2. Single task type
-least_interval(["A", "A", "A"], 2)
-# A _ _ A _ _ A = 7
-
-# 3. Many task types, short cooldown
-least_interval(["A", "B", "C", "D", "E", "F"], 1)  # 6 (no idle)
-
-# 4. All same task
-least_interval(["A", "A", "A", "A"], 3)
-# A _ _ _ A _ _ _ A _ _ _ A = 13
-
-# 5. n larger than unique tasks
-least_interval(["A", "B", "A", "B"], 3)
-# A B _ _ A B = 6
-```
+1. **`n = 0` (No cooldown)**: Just return `len(tasks)`.
+2. **All tasks are identical**: Heaviest reliance on idles `(count - 1) * (n + 1) + 1`.
+3. **Many unique tasks**: Cooldowns naturally fill up, resulting in `len(tasks)`.
+4. **`n` is very large**: Handled flawlessly by both heap and formula.
 
 ---
 
 ## Common Mistakes
 
-```python
-# WRONG: Not using max heap
-count = Counter(tasks)
-for task in sorted(count, key=count.get):  # Min frequency first!
-    ...
-
-# CORRECT: Max heap or sorted by -count
-
-
-# WRONG: Forgetting to check cooldown
-while max_heap:
-    task = heapq.heappop(max_heap)
-    # Execute... but what if still on cooldown?
-
-# CORRECT: Use cooldown queue
-
-
-# WRONG: Off-by-one in formula
-result = max_count * (n + 1)  # Wrong!
-
-# CORRECT:
-result = (max_count - 1) * (n + 1) + num_max
-```
-
----
-
-## Interview Tips
-
-1. **Explain greedy choice**: Why prioritize highest frequency?
-2. **Know both approaches**: Heap for simulation, formula for efficiency
-3. **Walk through example**: Show cooldown queue state changes
-4. **Discuss edge cases**: n=0, single task type, many task types
-5. **Mention formula**: Shows mathematical thinking
+1. **Forgetting to put the heap item back**: In simulation, remembering to push tasks back to the heap once they exit the cooldown queue.
+2. **Formula off-by-one**: Forgetting the `+ num_max` at the end of the formula, or forgetting `(n + 1)` instead of just `n`.
+3. **Not using `max(result, len(tasks))`**: The formula can undercount if there are many distinct tasks filling the gaps.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem             | Difficulty | Key Variation         |
-| --- | ------------------- | ---------- | --------------------- |
-| 1   | Task Scheduler      | Medium     | Core problem          |
-| 2   | Reorganize String   | Medium     | Cooldown of 1         |
-| 3   | Task Scheduler II   | Medium     | Different formulation |
-| 4   | Distant Barcodes    | Medium     | Reorganize array      |
-| 5   | Course Schedule III | Hard       | Heap + greedy         |
-
----
-
-## Key Takeaways
-
-1. **Greedy strategy**: Always do highest-frequency task not on cooldown
-2. **Max heap + cooldown queue**: Track remaining counts and availability
-3. **Formula approach**: (max_count - 1) \* (n + 1) + num_max
-4. **Must take max**: Result could be just len(tasks) if many unique tasks
-5. **Related patterns**: Reorganize string, distant barcodes
+| Problem | Difficulty | Key Variation |
+| ------- | ---------- | ------------- |
+| [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | Medium | Core problem (Return count) |
+| [Reorganize String](https://leetcode.com/problems/reorganize-string/) | Medium | `n = 1`, return actual schedule |
+| [Task Scheduler II](https://leetcode.com/problems/task-scheduler-ii/) | Medium | Cannot reorder, track days |
+| [Distant Barcodes](https://leetcode.com/problems/distant-barcodes/) | Medium | Reorganize array, return array |
 
 ---
 

@@ -18,6 +18,22 @@ Round 2: Their neighbors learn (2 hops via relay)
 Round V-1: Everyone within V-1 hops knows (covers all possible paths)
 ```
 
+**Dijkstra's Optimal Substructure vs Bellman-Ford's Exhaustive Search**:
+To understand Bellman-Ford, it helps to contrast it with Dijkstra's algorithm.
+Dijkstra relies on an **optimal substructure** property: when a node is extracted from the min-heap, its shortest path is finalized because *no path through unexplored nodes can be shorter*. This strictly requires non-negative weights.
+
+Bellman-Ford discards this assumption entirely. It doesn't trust that any node's distance is "final" until the very end. Instead of carefully picking the next best node, Bellman-Ford brute-forces the relaxation of *all* edges, repeatedly.
+
+```
+Dijkstra's logic: "Node X is the closest unvisited node. Since all edges are ≥ 0,
+                   no alternate route can reach X faster. X is finalized."
+                   (Fails with negative weights!)
+
+Bellman-Ford's logic: "I don't know which nodes are finalized. I will just try to
+                       improve ALL paths. If I do this enough times (V-1), I guarantee
+                       all shortest paths are found, regardless of weight signs."
+```
+
 **Why V-1 iterations?**
 
 ```
@@ -96,6 +112,12 @@ for i in range(k+1):
 
 ## Interview Context
 
+**FANG Context**: Bellman-Ford is rarely asked directly as a full implementation problem in top tech interviews. It's almost always a follow-up question. The typical pattern is:
+- **Interviewer**: "Solve this shortest path problem." (You use BFS or Dijkstra)
+- **Interviewer**: "Great. What if the edge weights could be negative?" (You answer: "Dijkstra fails because it relies on optimal substructure. I'd need Bellman-Ford, which runs in O(VE).")
+
+However, understanding the *mechanics* of Bellman-Ford (iterating over all edges $k$ times) is crucial for constrained shortest path problems, like **Cheapest Flights Within K Stops**. That problem is fundamentally a Bellman-Ford variant.
+
 Bellman-Ford is important because:
 
 1. **Handles negative edges**: Unlike Dijkstra
@@ -124,46 +146,7 @@ Why V-1 iterations?
 
 ## Algorithm Template
 
-```python
-def bellman_ford(n: int, edges: list[list[int]], source: int) -> list[float]:
-    """
-    Bellman-Ford algorithm for shortest paths.
-    Handles negative edge weights.
-
-    Time: O(V × E)
-    Space: O(V)
-
-    edges format: [u, v, weight]
-    Returns: distance array, or None if negative cycle exists
-    """
-    dist = [float('inf')] * n
-    dist[source] = 0
-
-    # Relax all edges V-1 times
-    for _ in range(n - 1):
-        updated = False
-        for u, v, w in edges:
-            if dist[u] != float('inf') and dist[u] + w < dist[v]:
-                dist[v] = dist[u] + w
-                updated = True
-
-        # Early termination if no updates
-        if not updated:
-            break
-
-    # Check for negative cycles
-    for u, v, w in edges:
-        if dist[u] != float('inf') and dist[u] + w < dist[v]:
-            return None  # Negative cycle exists
-
-    return dist
-
-
-# Usage
-edges = [[0, 1, 4], [0, 2, 5], [1, 2, -3], [2, 3, 4]]
-dist = bellman_ford(4, edges, 0)
-print(dist)  # [0, 4, 1, 5]
-```
+### Python
 
 ---
 
@@ -327,10 +310,44 @@ def spfa(n: int, edges: list[list[int]], source: int) -> list[float]:
 | Aspect                   | Dijkstra             | Bellman-Ford              |
 | ------------------------ | -------------------- | ------------------------- |
 | Time                     | O((V+E) log V)       | O(V × E)                  |
+| Space                    | O(V)                 | O(V)                      |
+| Strategy                 | Greedy exploration   | Exhaustive relaxation     |
 | Negative edges           | No                   | Yes                       |
 | Negative cycle detection | No                   | Yes                       |
-| Implementation           | Heap-based           | Simple iteration          |
+| Implementation           | Heap-based           | Simple nested iteration   |
 | When to use              | Non-negative weights | Negative weights possible |
+
+---
+
+## Complexity: Deep Dive
+
+**Time Complexity: O(V × E)**
+
+```
+Proof:
+1. Outer Loop: Runs exactly V - 1 times.
+2. Inner Loop: Iterates over all E edges.
+3. Total Time = (V - 1) * E = O(V * E)
+
+Note on SPFA variation:
+Using a queue (SPFA) dramatically improves the average case time complexity to O(E),
+as only nodes with updated distances are pushed to the queue to relax their neighbors.
+However, in the worst case (e.g., highly crafted dense graphs or bellman-ford killer graphs),
+SPFA still degrades to O(V × E).
+```
+
+**Space Complexity: O(V)**
+
+```
+Proof:
+1. We only need a `dist` array of size V to store the shortest distance to each node.
+2. The algorithm doesn't require an adjacency list or any complex data structures;
+   it just iterates directly over the `edges` list.
+3. Total Space = O(V)
+
+Note: For the "cheapest flights with K stops" variation, we might need O(V) extra space
+for a `temp` array during edge relaxation. It remains O(V) overall.
+```
 
 ---
 

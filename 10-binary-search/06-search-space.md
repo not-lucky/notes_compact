@@ -70,9 +70,9 @@ If "works at X" doesn't guarantee "works at X+1", binary search fails:
 - Binary search relies on discarding half the search space. Without monotonicity, you can't confidently discard a half.
 
 **2. Expensive Feasibility Check**
-If `is_feasible(X)` takes $O(n^2)$ time:
-- Total time = $O(\log(\text{range}) \times n^2)$.
-- Depending on the constraints, this might be worse than a smart $O(n \times \text{range})$ algorithm.
+If `is_feasible(X)` takes $O(N^2)$ time:
+- Total time = $O(\log(\text{range}) \cdot N^2)$.
+- Depending on the constraints, this might be worse than a smart $O(N \cdot \text{range})$ algorithm.
 
 **3. Small Answer Range**
 If the range is only 10-20 values:
@@ -91,11 +91,12 @@ There are two primary variations: finding the **minimum** feasible value and fin
 
 ### 1. Minimizing (Find smallest feasible value)
 
-Looking for the first `True` in `[F, F, F, T, T, T]`.
+Looking for the first `True` in `[F, F, F, T, T, T]`. This maps to **Template 2** (find left boundary).
 
 ```python
 def minimize_answer(left: int, right: int) -> int:
     while left < right:
+        # Prevent integer overflow
         mid = left + (right - left) // 2
 
         if is_feasible(mid):
@@ -103,17 +104,22 @@ def minimize_answer(left: int, right: int) -> int:
         else:
             left = mid + 1     # Not feasible. We MUST increase the value.
 
-    return left  # left == right is the minimum feasible value
+    # After the loop, left == right, which is the minimum feasible value
+    # as long as a valid answer exists in the initial [left, right] range.
+    # Otherwise, you might need an additional check: return left if is_feasible(left) else -1
+    return left
 ```
 
 ### 2. Maximizing (Find largest feasible value)
 
-Looking for the last `True` in `[T, T, T, F, F, F]`.
+Looking for the last `True` in `[T, T, T, F, F, F]`. This maps to **Template 3** (find right boundary).
 
 ```python
 def maximize_answer(left: int, right: int) -> int:
     while left < right:
         # IMPORTANT: Use upper mid to avoid infinite loops when right = left + 1
+        # E.g., if left=4, right=5. If we used standard mid, mid=4.
+        # If is_feasible(4) is True, left = mid = 4. Infinite loop!
         mid = left + (right - left + 1) // 2
 
         if is_feasible(mid):
@@ -121,7 +127,10 @@ def maximize_answer(left: int, right: int) -> int:
         else:
             right = mid - 1    # Not feasible. We MUST decrease the value.
 
-    return left  # left == right is the maximum feasible value
+    # After the loop, left == right, which is the maximum feasible value
+    # assuming a valid answer exists.
+    # Note: If no valid answer exists, it might return left, so check is_feasible(left)
+    return left
 ```
 
 ---
@@ -136,7 +145,7 @@ LeetCode 875: Koko Eating Bananas
 ```python
 def min_eating_speed(piles: list[int], h: int) -> int:
     """
-    Time: O(N * log(max(piles))) where N is len(piles)
+    Time: O(N log(max(piles))) where N is len(piles)
     Space: O(1)
     """
     def can_finish(speed: int) -> bool:
@@ -152,6 +161,7 @@ def min_eating_speed(piles: list[int], h: int) -> int:
     left, right = 1, max(piles)
 
     while left < right:
+        # Prevent integer overflow
         mid = left + (right - left) // 2
 
         if can_finish(mid):
@@ -170,7 +180,7 @@ LeetCode 1011: Capacity To Ship Packages Within D Days
 ```python
 def ship_within_days(weights: list[int], days: int) -> int:
     """
-    Time: O(N * log(sum(weights) - max(weights)))
+    Time: O(N log(sum(weights) - max(weights)))
     Space: O(1)
     """
     def can_ship(capacity: int) -> bool:
@@ -191,12 +201,13 @@ def ship_within_days(weights: list[int], days: int) -> int:
     left, right = max(weights), sum(weights)
 
     while left < right:
+        # Prevent integer overflow
         mid = left + (right - left) // 2
 
         if can_ship(mid):
-            right = mid
+            right = mid        # Capacity is sufficient, try smaller
         else:
-            left = mid + 1
+            left = mid + 1     # Capacity is too small, must increase
 
     return left
 ```
@@ -209,7 +220,7 @@ LeetCode 1552: Magnetic Force Between Two Balls
 ```python
 def max_distance(position: list[int], m: int) -> int:
     """
-    Time: O(N log N + N * log(max_pos - min_pos))
+    Time: O(N log N + N log(max_pos - min_pos))
     Space: O(N) for sorting (Timsort in Python)
     """
     position.sort()
@@ -233,6 +244,7 @@ def max_distance(position: list[int], m: int) -> int:
 
     while left < right:
         # Maximizing, so use UPPER mid!
+        # mid = left + (right - left + 1) // 2 prevents infinite loops
         mid = left + (right - left + 1) // 2
 
         if can_place(mid):
@@ -278,6 +290,8 @@ def minmax_gas_dist(stations: list[int], k: int) -> float:
         else:
             left = mid    # Need more than k stations. Must allow larger distance.
 
+    # After 60 iterations, left and right are practically equal.
+    # We want the minimum max_dist, which is where they converge.
     return left
 ```
 
@@ -285,15 +299,15 @@ def minmax_gas_dist(stations: list[int], k: int) -> float:
 
 ## Complexity Analysis
 
-| Problem       | Search Range | Feasibility Check | Total Time    | Space |
-| ------------- | ------------ | ----------------- | ------------- | ----- |
-| Koko Bananas  | $O(\log M)$    | $O(N)$              | $O(N \log M)$   | $O(1)$  |
-| Ship Packages | $O(\log S)$    | $O(N)$              | $O(N \log S)$   | $O(1)$  |
-| Split Array   | $O(\log S)$    | $O(N)$              | $O(N \log S)$   | $O(1)$  |
-| Mag Force     | $O(\log D)$    | $O(N)$              | $O(N \log D)$*  | $O(N)$  |
+| Problem | Search Range | Feasibility Check | Total Time | Space |
+| :--- | :--- | :--- | :--- | :--- |
+| **Koko Bananas** | $O(\log M)$ | $O(N)$ | $O(N \log M)$ | $O(1)$ |
+| **Ship Packages** | $O(\log S)$ | $O(N)$ | $O(N \log S)$ | $O(1)$ |
+| **Split Array** | $O(\log S)$ | $O(N)$ | $O(N \log S)$ | $O(1)$ |
+| **Mag Force** | $O(\log D)$ | $O(N)$ | $O(N \log N + N \log D)$* | $O(N)$ |
 
-*Where $M$ = max element, $S$ = sum of elements, $D$ = distance range, $N$ = size of array.
-*Magnetic force requires initial sorting: $O(N \log N)$ time, $O(N)$ space in Python.
+*\*Where $M$ = max element, $S$ = sum of elements, $D$ = distance range, $N$ = size of array.*
+*\*Magnetic force requires initial sorting: $O(N \log N)$ time, $O(N)$ space in Python (Timsort) or $O(\log N)$ in C++ (`std::sort`) / Java (`Arrays.sort`).*
 
 ---
 
@@ -306,7 +320,7 @@ def minmax_gas_dist(stations: list[int], k: int) -> float:
 
 ### 2. Setting Incorrect Answer Range Boundaries
 **Mistake**: Automatically starting `left = 0` or `left = 1` for everything.
-**Fix**: Think critically about the domain. In the "Ship Packages" problem, a ship's capacity **cannot be less than the heaviest package**, otherwise that single package can never ship. `left = max(weights)`.
+**Fix**: Think critically about the domain. In the "Ship Packages" problem, a ship's capacity **cannot be less than the heaviest package**, otherwise that single package can never ship. `left = max(weights)`. On the other hand, the maximum capacity `right = sum(weights)` (shipping everything in 1 day). Shrinking boundaries tightly makes the code more robust and potentially slightly faster.
 
 ### 3. Floating Point Precision Infinite Loops
 **Mistake**: `while right - left > 1e-6:` can infinite loop if float representation cannot accurately represent the gap.
@@ -316,15 +330,15 @@ def minmax_gas_dist(stations: list[int], k: int) -> float:
 
 ## Practice Problems
 
-| #   | Problem                                 | Difficulty | Key Insight              |
-| --- | --------------------------------------- | ---------- | ------------------------ |
-| 1   | Koko Eating Bananas                     | Medium     | Min speed feasibility    |
-| 2   | Capacity To Ship Packages               | Medium     | Min capacity feasibility |
-| 3   | Split Array Largest Sum                 | Hard       | Min max-sum feasibility  |
-| 4   | Minimize Max Distance to Gas Station    | Hard       | Float binary search      |
-| 5   | Magnetic Force Between Two Balls        | Medium     | Max min-distance         |
-| 6   | Find the Smallest Divisor Given a Threshold | Medium | Min divisor feasibility  |
-| 7   | Minimum Time to Complete Trips          | Medium     | Min time feasibility     |
+| # | Problem | Difficulty | Key Insight |
+| :--- | :--- | :---: | :--- |
+| 875 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Medium | Min speed feasibility |
+| 1011| [Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/) | Medium | Min capacity feasibility |
+| 410 | [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/) | Hard | Min max-sum feasibility |
+| 774 | [Minimize Max Distance to Gas Station](https://leetcode.com/problems/minimize-max-distance-to-gas-station/) | Hard | Float binary search |
+| 1552| [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/) | Medium | Max min-distance |
+| 1283| [Find the Smallest Divisor Given a Threshold](https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/) | Medium | Min divisor feasibility |
+| 2187| [Minimum Time to Complete Trips](https://leetcode.com/problems/minimum-time-to-complete-trips/) | Medium | Min time feasibility |
 
 ---
 

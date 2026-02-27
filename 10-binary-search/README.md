@@ -36,9 +36,9 @@ Many candidates struggle because they try to force every problem into a single b
 Use this when you are searching for a specific target and can terminate early if you find it. This is the classic textbook template.
 
 - **Loop Condition**: `while left <= right:`
-- **Mid Calculation**: `mid = left + (right - left) // 2`
+- **Mid Calculation**: `mid = left + (right - left) // 2` (Prevents integer overflow in C++/Java, though Python handles arbitrarily large integers automatically).
 - **Updates**: `left = mid + 1`, `right = mid - 1`
-- **Post-Loop**: `left` will be `right + 1`.
+- **Post-Loop**: `left` will be `right + 1`. The loop ends when `left > right`.
 
 ```python
 def binary_search_exact(nums: list[int], target: int) -> int:
@@ -50,21 +50,21 @@ def binary_search_exact(nums: list[int], target: int) -> int:
         if nums[mid] == target:
             return mid  # Found exact match
         elif nums[mid] < target:
-            left = mid + 1
+            left = mid + 1  # Target must be strictly to the right
         else:
-            right = mid - 1
+            right = mid - 1 # Target must be strictly to the left
 
     return -1  # Target not found
 ```
 
 ### Template 2: `left < right` (Find Boundary / First True)
 
-Use this when you are searching for a boundary (e.g., the *first* element that satisfies a condition) and you *cannot* terminate early. This is the most important template for **Binary Search on Answer** and **Boundary Finding**.
+Use this when you are searching for a boundary (e.g., the *first* element that satisfies a condition) and you *cannot* or *do not want to* terminate early. This is the most important template for **Binary Search on Answer Space** and **Boundary Finding**.
 
 - **Loop Condition**: `while left < right:`
-- **Mid Calculation**: `mid = left + (right - left) // 2` (Biased left)
-- **Updates**: `right = mid` (Keep `mid` as it might be the answer), `left = mid + 1`
-- **Post-Loop**: `left == right`. No need to decide which to return.
+- **Mid Calculation**: `mid = left + (right - left) // 2` (Biased left, naturally handles `left = mid + 1` updates).
+- **Updates**: `right = mid` (Keep `mid` in search space as it might be the answer), `left = mid + 1` (Exclude `mid` as it's definitely not the answer).
+- **Post-Loop**: `left == right`. You have narrowed down the search space to exactly one element. You must check if this single element actually satisfies the condition (post-processing).
 
 ```python
 from typing import Callable
@@ -73,48 +73,63 @@ def binary_search_first_true(left: int, right: int, condition: Callable[[int], b
     # Example: Finding the FIRST occurrence or FIRST valid answer
     # Boolean array looks like: [False, False, True, True, True]
 
+    # Store the original bounds in case no element satisfies the condition
+    # For binary search on an array, right would normally be len(nums) - 1
+    # For binary search on answer space, it would be the max possible answer
+    original_right = right
+
     while left < right:
         mid = left + (right - left) // 2
 
         if condition(mid):
-            right = mid  # mid might be the first True, keep it in the search space
+            # mid satisfies the condition, so it could be the first True
+            # The answer is at mid or to the left of mid
+            right = mid
         else:
-            left = mid + 1 # mid is False, answer must be strictly to the right
+            # mid does NOT satisfy the condition
+            # The answer must be strictly to the right of mid
+            left = mid + 1
 
-    # After loop, left == right. Check if the element actually satisfies the condition
+    # After loop, left == right. Check if the element actually satisfies the condition.
+    # If the original right bound didn't satisfy it, then none did.
     return left if condition(left) else -1
 ```
 
-> **Warning:** If you use `left < right` to find the *last* `True` (e.g., `[True, True, False]`), you must bias `mid` to the right: `mid = left + (right - left + 1) // 2`. If you don't, `left` and `right` can get stuck infinitely when `left + 1 == right`!
+> **Warning:** If you need to find the *last* `True` (e.g., `[True, True, False]`), you must **bias `mid` to the right**: `mid = left + (right - left + 1) // 2`.
+> If you don't do this, and your logic is `left = mid` and `right = mid - 1`, the loop will run infinitely when the search space is exactly 2 elements (e.g., `left + 1 == right`)!
 
-### Template 3: `left + 1 < right` (Compare with Neighbors)
+### Template 3: `left + 1 < right` (Compare with Neighbors / Open Boundary)
 
-Use this when you need to access `mid - 1` or `mid + 1` inside the loop without going out of bounds. Great for **Peak Finding** or heavily rotated array problems.
+Use this when you need to safely access `mid - 1` or `mid + 1` inside the loop without going out of bounds, or when the problem doesn't easily map to the first two templates. Great for **Peak Finding** or heavily rotated array problems.
 
-- **Loop Condition**: `while left + 1 < right:`
+- **Loop Condition**: `while left + 1 < right:` (Loop exits when 2 elements remain).
 - **Mid Calculation**: `mid = left + (right - left) // 2`
-- **Updates**: `left = mid` or `right = mid`
-- **Post-Loop**: You are left with two elements (`left` and `right`). You must check both manually.
+- **Updates**: `left = mid` or `right = mid` (No `+ 1` or `- 1` needed).
+- **Post-Loop**: You are left with two adjacent elements (`left` and `right`). You must check both manually in post-processing.
 
 ```python
-def binary_search_neighbors(nums: list[int]) -> int:
-    if not nums: return -1
+def find_peak_element(nums: list[int]) -> int:
+    if not nums:
+        return -1
+    if len(nums) == 1:
+        return 0
 
     left, right = 0, len(nums) - 1
 
     while left + 1 < right:
         mid = left + (right - left) // 2
 
-        # Condition logic here. Example: checking peak
-        if nums[mid] > nums[mid - 1]:
+        # Compare mid with its right neighbor safely
+        if nums[mid] < nums[mid + 1]:
+            # Peak must be strictly to the right
             left = mid
         else:
+            # Peak must be at mid or to the left
             right = mid
 
-    # Post-processing: manually check the remaining two elements
-    if condition(left): return left
-    if condition(right): return right
-    return -1
+    # Post-processing: check which of the remaining two elements is the peak
+    # (Since we're looking for ANY peak, we just pick the larger one)
+    return left if nums[left] >= nums[right] else right
 ```
 
 ---
@@ -123,18 +138,20 @@ def binary_search_neighbors(nums: list[int]) -> int:
 
 This is the most common "Hard" or tricky "Medium" pattern at Google, Amazon, and Meta.
 
-Instead of searching an array, you search a range of possible *answers* (e.g., $1$ to $\text{max\_val}$). For each mid-point, you run a feasibility function to check: "Is it possible to achieve the goal with this value?"
+Instead of searching an index in an array, you search a range of possible *answers* (e.g., from $1$ to $\text{max\_val}$). For each mid-point, you run a feasibility function to check: "Is it possible to achieve the goal with this value?"
 
 **The Pattern:**
 1. Identify the absolute minimum possible answer (`left`).
 2. Identify the absolute maximum possible answer (`right`).
-3. Create a `can_achieve(k)` function that returns `True` or `False`.
-4. Use **Template 2** (`left < right`) to find the boundary.
+3. Create a `can_achieve(mid)` function that returns a boolean `True` or `False`. This function should establish a monotonic boundary.
+4. Use **Template 2** (`left < right`) to find the exact transition boundary.
 
 **Classic Example:** *Koko Eating Bananas*.
-`left` = 1 (minimum eating speed)
-`right` = max(piles) (maximum useful eating speed)
-`can_achieve(speed)` iterates through piles in $O(N)$ to see if total time $\le H$.
+- **Problem**: Koko loves to eat bananas. There are `n` piles of bananas, the `i`th pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours. Find the minimum integer eating speed `k` such that she can eat all the bananas within `h` hours.
+- `left = 1` (Minimum eating speed is 1 banana/hour).
+- `right = max(piles)` (Maximum useful eating speed; eating faster than the largest pile doesn't save any more time since she only eats one pile per hour).
+- `can_achieve(speed)` iterates through `piles` in $O(N)$ time to see if the total time taken $\le h$.
+- Since we want the *minimum* speed, we use Template 2 to find the first `True` condition.
 
 ---
 
@@ -144,46 +161,52 @@ Instead of searching an array, you search a range of possible *answers* (e.g., $
 | :--- | :--- | :--- |
 | Classic Binary Search | $O(\log N)$ | $O(1)$ iterative, $O(\log N)$ recursive |
 | Search in 2D Matrix | $O(\log(M \cdot N))$ | $O(1)$ |
-| Binary Search on Answer Space | $O(\log(\text{Range}) \cdot O(\text{cost}))$* | $O(1)$ auxiliary |
+| Binary Search on Answer Space | $O(\text{cost} \cdot \log(\text{Range}))$* | $O(1)$ auxiliary |
 | Find Peak / Rotated Minimum | $O(\log N)$ | $O(1)$ |
 
-*\* Where $O(\text{cost})$ is the time complexity of the feasibility check function `condition(mid)` (usually $O(N)$).*
+*\*Where $\text{cost}$ is the time complexity of the feasibility check function `can_achieve(mid)` (usually $O(N)$).*
 
 ---
 
 ## Common Interview Pitfalls
 
-1. **Integer Overflow:** In Python, integers automatically scale, so `(left + right) // 2` is safe. However, FANG interviewers often code in C++, Java, or Go. ALWAYS write `left + (right - left) // 2` to show you understand overflow limits.
-2. **Infinite Loops:**
-   - Occurs when `left` and `right` are adjacent (e.g., `left=3, right=4`).
-   - `mid` calculates to `3`. If your logic updates `left = mid`, then `left` remains `3`. The loop never terminates.
-   - *Fix:* Ensure search space ALWAYS shrinks. If `left = mid` is possible, bias `mid` to the right: `mid = left + (right - left + 1) // 2`.
-3. **Off-By-One Indexing:** Confusing whether you want `left = mid` vs `left = mid + 1`. Ask yourself: "Can `mid` possibly be the final answer?" If yes, include it (`left/right = mid`). If no, exclude it (`mid +/- 1`).
+1. **Integer Overflow:** While Python automatically scales integers making `(left + right) // 2` perfectly safe, FANG interviewers often code in strongly-typed languages like C++, Java, or Go. ALWAYS write `left + (right - left) // 2` to demonstrate your understanding of memory limits and integer overflow.
+2. **Infinite Loops (The Deadliest Trap):**
+   - Typically occurs in Template 2 when `left` and `right` are adjacent (e.g., `left=3, right=4`).
+   - `mid` calculates to `3` (due to integer truncation). If your logic branches to an update of `left = mid`, then `left` remains `3`. The search space didn't shrink, and the loop never terminates.
+   - *The Fix:* Ensure the search space ALWAYS shrinks. If your logic requires `left = mid`, you **must** bias `mid` to the right: `mid = left + (right - left + 1) // 2`.
+3. **Off-By-One Errors:** Confusing whether you want `left = mid` vs `left = mid + 1` (or `right = mid` vs `right = mid - 1`).
+   - *The Fix:* Ask yourself: "Can `mid` possibly be the final answer?"
+     - If **yes**, you must include it in the remaining search space (`left = mid` or `right = mid`).
+     - If **no** (because it definitely fails the condition), you can safely exclude it (`left = mid + 1` or `right = mid - 1`).
 
 ---
 
 ## Quick Reference: Algorithm Selection Flowchart
 
 ```text
-Is the data already sorted?
+Is the dataset sorted or mostly sorted (e.g., rotated)?
     │
-    ├── Yes → Do you need to find an element, boundary, or insertion point?
+    ├── Yes → Do you need to find an exact element, a boundary, or an insertion point?
     │         │
-    │         └── Yes → Use standard Binary Search Templates.
+    │         ├── Yes → Use standard Binary Search (Templates 1 or 2).
+    │         │
+    │         └── No → Consider Two Pointers (e.g., finding pairs that sum to target).
     │
-    └── No → Is the problem asking for a "minimum max" or "maximum min"?
-              │ (e.g., minimize the maximum load, maximize the minimum distance)
-              │
-              ├── Yes → Binary Search on Answer Space (Google/Amazon favorite).
-              │         1. Define the range [min_ans, max_ans].
-              │         2. Write an O(N) `is_valid(mid)` function.
-              │
-              └── No → Can you define a boolean condition that is monotonic?
-                       │
-                       ├── Yes → Binary Search for the boundary.
-                       │
-                       └── No → Binary search won't work. Consider Two Pointers,
-                                DP, Sliding Window, or Sorting first.
+    └── No → Is the problem asking to find a "minimum max" or "maximum min"?
+             │ (e.g., minimize the maximum load, maximize the minimum distance)
+             │
+             ├── Yes → Binary Search on Answer Space (Google/Amazon favorite).
+             │         1. Define the search space [min_ans, max_ans].
+             │         2. Write an O(N) `is_valid(mid)` function.
+             │         3. Use Template 2.
+             │
+             └── No → Does the problem have a monotonic property or local peaks?
+                      │
+                      ├── Yes → Binary Search works (e.g., Find Peak Element using Template 3).
+                      │
+                      └── No → Binary search won't work. Consider Two Pointers,
+                               DP, Sliding Window, or Sorting first.
 ```
 
 ---
@@ -192,17 +215,17 @@ Is the data already sorted?
 
 | # | Topic | Key Concepts |
 | :--- | :--- | :--- |
-| 01 | [Binary Search Template](./01-binary-search-template.md) | Standard templates, iterative vs recursive |
-| 02 | [First/Last Occurrence](./02-first-last-occurrence.md) | Boundary finding, handling duplicates |
-| 03 | [Search Rotated Array](./03-search-rotated-array.md) | Finding sorted halves, nested conditions |
-| 04 | [Find Minimum Rotated](./04-find-minimum-rotated.md) | Minimum in rotated arrays, monotonic checks |
-| 05 | [Peak Element](./05-peak-element.md) | Local optimization, comparing with neighbors |
-| 06 | [Search Space](./06-search-space.md) | **Crucial:** Binary search on answer space |
-| 07 | [Matrix Search](./07-matrix-search.md) | Flattening 2D arrays, stair-step search |
+| 01 | [Binary Search Template](./01-binary-search-template.md) | Standard templates, iterative vs recursive, boundary logic |
+| 02 | [First/Last Occurrence](./02-first-last-occurrence.md) | Boundary finding, handling duplicates, `bisect` module |
+| 03 | [Search Rotated Array](./03-search-rotated-array.md) | Finding sorted halves, nested conditions, monotonicity |
+| 04 | [Find Minimum Rotated](./04-find-minimum-rotated.md) | Minimum in rotated arrays, monotonic checks, template 2/3 |
+| 05 | [Peak Element](./05-peak-element.md) | Local optimization, comparing with neighbors, template 3 |
+| 06 | [Search Space](./06-search-space.md) | **Crucial:** Binary search on answer space, Koko, capacity |
+| 07 | [Matrix Search](./07-matrix-search.md) | Flattening 2D arrays, stair-step search, $O(M+N)$ optimization |
 | 08 | [Median Two Arrays](./08-median-two-arrays.md) | Partitioning two sorted arrays, $O(\log(\min(M, N)))$ |
 
 ---
 
-## Start: [01-binary-search-template.md](./01-binary-search-template.md)
+## Start Here: [01-binary-search-template.md](./01-binary-search-template.md)
 
 Begin by solidifying your mastery of the exact templates.

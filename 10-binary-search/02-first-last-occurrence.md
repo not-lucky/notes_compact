@@ -6,7 +6,7 @@
 
 Finding boundaries in sorted arrays is a classic interview pattern. It frequently appears in FANG interviews because it:
 
-1. **Tests template mastery**: Requires modifying standard binary search logic.
+1. **Tests template mastery**: Requires modifying standard binary search logic, specifically Template 2 and Template 3.
 2. **Proves edge-case awareness**: Exposes off-by-one errors and infinite loop traps when handling duplicates.
 3. **Common building block**: Used as a subroutine in many complex problems (e.g., counting elements, finding ranges).
 4. **LeetCode classic**: "Find First and Last Position of Element in Sorted Array" (LC 34) is a highly-tested question.
@@ -42,24 +42,24 @@ Imagine you're a detective looking for the *first* person in a line who matches 
 - **Thorough Detective** (Boundary BS): Finds a match at index 5, records it, but says "Let me check indices 0-4 to see if there's an earlier match."
 
 To find boundaries, we run two separate modified binary searches:
-- **First occurrence (Left Boundary)**: If `nums[mid] == target`, record `mid` and keep searching **left** (`right = mid - 1`).
-- **Last occurrence (Right Boundary)**: If `nums[mid] == target`, record `mid` and keep searching **right** (`left = mid + 1`).
+- **First occurrence (Left Boundary)**: If `nums[mid] >= target`, we know the first occurrence is at `mid` or to the left, so we search left (`right = mid`).
+- **Last occurrence (Right Boundary)**: If `nums[mid] <= target`, we know the last occurrence is at `mid` or to the right, so we search right (`left = mid`).
 
 **Visual: The Search Space Shrinks Toward the Boundary**
 
 ```text
 Finding FIRST 2 in [1, 2, 2, 2, 2, 2, 3]:
 
-Round 1: [1, 2, 2, 2, 2, 2, 3]
-                     M           nums[3] == 2. Record it (res=3). Search LEFT.
+Round 1: [1, 2, 2, 2, 2, 2, 3] (L=0, R=6)
+                     M           nums[3]=2 >= 2. Search LEFT (R=M=3)
 
-Round 2: [1, 2, 2, 2, 2, 2, 3]
-             M                   nums[1] == 2. Record it (res=1). Search LEFT.
+Round 2: [1, 2, 2, 2]          (L=0, R=3)
+             M                   nums[1]=2 >= 2. Search LEFT (R=M=1)
 
-Round 3: [1, 2, 2, 2, 2, 2, 3]
-          M                      nums[0] == 1 < 2. Search RIGHT.
+Round 3: [1, 2]                (L=0, R=1)
+          M                      nums[0]=1 < 2. Search RIGHT (L=M+1=1)
 
-Done: Answer is the last recorded match = index 1
+Done: L=1, R=1. First occurrence is at index 1.
 ```
 
 ---
@@ -104,30 +104,34 @@ We can write two distinct helper functions to find the left and right boundaries
 
 ### 1. Finding First Occurrence (Left Boundary)
 
+This uses Template 2 (Find Left Boundary). We search for the first index where `nums[i] >= target`.
+
 ```python
 def find_first(nums: list[int], target: int) -> int:
     """
     Find leftmost index of target.
     Time: O(log n) | Space: O(1)
     """
-    left, right = 0, len(nums) - 1
-    first_pos = -1
+    if not nums:
+        return -1
 
-    while left <= right:
+    left, right = 0, len(nums) - 1
+
+    while left < right:
         mid = left + (right - left) // 2
 
-        if nums[mid] == target:
-            first_pos = mid    # Record match
-            right = mid - 1    # Keep searching LEFT
-        elif nums[mid] < target:
-            left = mid + 1
+        if nums[mid] >= target:
+            right = mid  # Answer could be mid, keep searching left
         else:
-            right = mid - 1
+            left = mid + 1 # Answer must be to the right of mid
 
-    return first_pos
+    # Check if target actually exists
+    return left if nums[left] == target else -1
 ```
 
 ### 2. Finding Last Occurrence (Right Boundary)
+
+This uses Template 3 (Find Right Boundary). We search for the last index where `nums[i] <= target`.
 
 ```python
 def find_last(nums: list[int], target: int) -> int:
@@ -135,21 +139,23 @@ def find_last(nums: list[int], target: int) -> int:
     Find rightmost index of target.
     Time: O(log n) | Space: O(1)
     """
+    if not nums:
+        return -1
+
     left, right = 0, len(nums) - 1
-    last_pos = -1
 
-    while left <= right:
-        mid = left + (right - left) // 2
+    while left < right:
+        # CRITICAL: We round UP for right boundary search (mid = left + (right - left + 1) // 2)
+        # Without + 1, we get an infinite loop when left = right - 1
+        mid = left + (right - left + 1) // 2
 
-        if nums[mid] == target:
-            last_pos = mid     # Record match
-            left = mid + 1     # Keep searching RIGHT
-        elif nums[mid] < target:
-            left = mid + 1
+        if nums[mid] <= target:
+            left = mid     # Answer could be mid, keep searching right
         else:
-            right = mid - 1
+            right = mid - 1 # Answer must be to the left of mid
 
-    return last_pos
+    # Check if target actually exists
+    return left if nums[left] == target else -1
 ```
 
 ### Complete Solution
@@ -181,7 +187,11 @@ In a FANG interview, you should *always* code the binary search from scratch unl
 import bisect
 
 def search_range_bisect(nums: list[int], target: int) -> list[int]:
+    if not nums:
+        return [-1, -1]
+
     # bisect_left returns the FIRST position where target could be inserted
+    # It tells us where the left boundary is (or would be)
     left_idx = bisect.bisect_left(nums, target)
 
     # Validate the target actually exists at the left_idx
@@ -223,30 +233,33 @@ To avoid repeating code, you can combine the two searches into one function usin
 ```python
 def searchRange(nums: list[int], target: int) -> list[int]:
     def find_boundary(find_first: bool) -> int:
-        left, right = 0, len(nums) - 1
-        boundary = -1
+        if not nums:
+            return -1
 
-        while left <= right:
-            mid = left + (right - left) // 2
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            # Round down for first, up for last
+            mid = left + (right - left + (0 if find_first else 1)) // 2
 
             if nums[mid] == target:
-                boundary = mid
                 if find_first:
-                    right = mid - 1  # Search left for first occurrence
+                    right = mid      # Keep searching left for first
                 else:
-                    left = mid + 1   # Search right for last occurrence
+                    left = mid       # Keep searching right for last
             elif nums[mid] < target:
-                left = mid + 1
+                left = mid + 1       # Target must be right
             else:
-                right = mid - 1
+                right = mid - 1      # Target must be left
 
-        return boundary
+        return left if nums[left] == target else -1
 
     first = find_boundary(True)
     if first == -1:
         return [-1, -1]
 
-    return [first, find_boundary(False)]
+    last = find_boundary(False)
+    return [first, last]
 ```
 
 ---
@@ -262,22 +275,20 @@ def nextGreatestLetter(letters: list[str], target: str) -> str:
     """Time: O(log n) | Space: O(1)"""
     left, right = 0, len(letters) - 1
 
-    # If target is >= the last letter, it wraps around to the first letter
-    if target >= letters[-1]:
-        return letters[0]
-
-    result_idx = 0
-
     while left <= right:
         mid = left + (right - left) // 2
 
         if letters[mid] > target:
-            result_idx = mid   # Potential answer found
-            right = mid - 1    # But try to find a smaller valid letter (search left)
+            # mid might be the answer, but there could be a smaller valid letter to the left
+            right = mid - 1
         else:
-            left = mid + 1     # Target is greater or equal, must search right
+            # mid is smaller or equal to target, so we must search right
+            left = mid + 1
 
-    return letters[result_idx]
+    # After the loop, 'left' points to the first element strictly greater than target.
+    # If target is >= the last letter, 'left' will be len(letters).
+    # The modulo operator gracefully handles the wrap-around requirement!
+    return letters[left % len(letters)]
 ```
 
 ### 2. Single Element in a Sorted Array (LC 540)
@@ -285,8 +296,11 @@ def nextGreatestLetter(letters: list[str], target: str) -> str:
 Every element appears twice except for one. The array is sorted. Find the single element in $O(\log n)$ time.
 
 **Key Insight:** Index parity.
-Before the single element, pairs start at even indices: `nums[even] == nums[even+1]`
-After the single element, pairs start at odd indices: `nums[odd] == nums[odd+1]`
+Because elements appear in pairs, they naturally start at even indices.
+- **Before the single element:** Pairs start at even indices, so `nums[even] == nums[even+1]`.
+- **After the single element:** The sequence is shifted by one, so pairs start at odd indices, meaning `nums[even] != nums[even+1]`.
+
+This gives us a clear binary condition to search for the first element that violates the `nums[even] == nums[even+1]` rule.
 
 ```python
 def singleNonDuplicate(nums: list[int]) -> int:
@@ -296,16 +310,15 @@ def singleNonDuplicate(nums: list[int]) -> int:
     while left < right:
         mid = left + (right - left) // 2
 
-        # Ensure mid is always an even index
-        # This simplifies our comparison logic
-        if mid % 2 == 1:
-            mid -= 1
-
-        # If the pair is intact, the single element is to the right
-        if nums[mid] == nums[mid + 1]:
-            left = mid + 2
+        # A common bitwise trick: mid ^ 1 toggles the last bit
+        # If mid is even, mid ^ 1 is mid + 1
+        # If mid is odd, mid ^ 1 is mid - 1
+        # This elegantly pairs every even index with its subsequent odd index
+        if nums[mid] == nums[mid ^ 1]:
+            # The pair is intact, so the single element is to the right
+            left = mid + 1
         else:
-            # The pair is broken, the single element is here or to the left
+            # The pair is broken, so the single element is at mid or to the left
             right = mid
 
     return nums[left]
@@ -342,8 +355,8 @@ When writing your code or tracing an example, test these cases:
 ## Interview Tips
 
 1. **Optimize out the second search:** If `find_first` returns `-1`, don't bother running `find_last`. Mention this optimization to your interviewer.
-2. **Explain the continuous search:** Clearly articulate *why* you are moving `right = mid - 1` even after finding the target. "I found a match, but I need to make sure there isn't an earlier match to its left."
-3. **Be prepared to write it modularly:** It's usually better to write a `findBound(nums, target, isFirst)` helper rather than duplicating the binary search loop, but only if you are confident you won't introduce bugs with the boolean logic. If in doubt, write two separate functions.
+2. **Explain the continuous search:** Clearly articulate *why* you are moving `right = mid` or `left = mid` even after finding the target. "I found a match, but I need to make sure there isn't an earlier/later match to its left/right."
+3. **Be prepared to write it modularly:** It's usually better to write a `findBound(nums, target, isFirst)` helper rather than duplicating the binary search loop, but only if you are confident you won't introduce bugs with the boolean logic and integer rounding (`mid = ... + 1`). If in doubt, write two separate functions.
 4. **Never use `.index()` or `.count()`**: In Python, these are $O(n)$ operations. Using them immediately fails the $O(\log n)$ constraint.
 
 ---

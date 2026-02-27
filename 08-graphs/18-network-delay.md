@@ -2,16 +2,18 @@
 
 > **Prerequisites:** [09-dijkstra](./09-dijkstra.md)
 
-## Interview Context
+## FANG Interview Context
 
-Network Delay Time is a classic Dijkstra application because:
+Network Delay Time serves as the quintessential "Dijkstra Screening Question" at top tech companies and is a classic application because:
 
 1. **Clean problem statement**: Time for signal to reach all nodes
 2. **Weighted shortest paths**: Edge weights represent delay
 3. **Single source, all destinations**: Classic Dijkstra use case
-4. **Interview favorite**: Appears at Amazon, Google, Meta
 
-This is often the first Dijkstra problem in interview prep.
+**Why FANG Loves It:**
+*   **Google & Meta (Screening):** Frequently used as a direct phone screen question. Interviewers look for flawless execution of the priority queue boilerplate and correct graph representations.
+*   **Amazon (OAs & Onsite):** Highly common in Amazon Online Assessments (often disguised as "package delivery times" or "warehouse signal propagation").
+*   **Signal to Noise:** This problem effectively filters out candidates who rely solely on BFS/DFS but haven't mastered weighted graphs. It's considered a "must-know" pattern; failing to recognize Dijkstra here is typically a strong negative signal.
 
 ---
 
@@ -47,46 +49,25 @@ Answer: 2 (time when last node receives signal)
 
 ## Solution: Dijkstra's Algorithm
 
-```python
-import heapq
-from collections import defaultdict
+### Python Implementation
 
-def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
-    """
-    Find time for signal from k to reach all nodes.
+---
 
-    Time: O((V + E) log V)
-    Space: O(V + E)
-    """
-    # Build adjacency list
-    graph = defaultdict(list)
-    for u, v, w in times:
-        graph[u].append((v, w))
+## Theory: Optimal Substructure Proof
 
-    # Dijkstra's algorithm
-    dist = {k: 0}
-    heap = [(0, k)]  # (time, node)
+Why does Dijkstra's Algorithm guarantee finding the shortest path? It relies on two key principles: non-negative weights and optimal substructure.
 
-    while heap:
-        time, node = heapq.heappop(heap)
+**1. Optimal Substructure:**
+The shortest path from node A to node C via node B consists of the shortest path from A to B combined with the shortest path from B to C.
+*   **Proof by Contradiction:** Assume we have a path A → ... → B → ... → C that is the shortest path from A to C. Suppose there exists an alternative, shorter path from A to B (let's call it path P'). If we substitute P' into our overall path, the total distance from A to C would decrease. But we already stated our original path was the shortest path to C. This is a contradiction. Therefore, sub-paths of shortest paths must themselves be shortest paths.
 
-        # Skip if we've found a better path
-        if time > dist.get(node, float('inf')):
-            continue
-
-        for neighbor, weight in graph[node]:
-            new_time = time + weight
-
-            if new_time < dist.get(neighbor, float('inf')):
-                dist[neighbor] = new_time
-                heapq.heappush(heap, (new_time, neighbor))
-
-    # Check if all nodes are reachable
-    if len(dist) != n:
-        return -1
-
-    return max(dist.values())
-```
+**2. The Greedy Choice Property (Non-Negative Edge Requirement):**
+When Dijkstra extracts a node `u` from the priority queue, the distance to `u` (`dist[u]`) is finalized and guaranteed to be minimal.
+*   **Proof:** The algorithm always picks the unvisited node with the smallest current distance. Let's say we pick node `u` with distance `D`. Could we reach `u` via a different, currently unvisited node `v` to get a shorter path?
+    *   Since `v` is unvisited and still in the queue, its current distance must be `>= D` (because we picked `u`, the minimum).
+    *   Any path going through `v` to get to `u` would have a total distance of `dist[v] + weight(v -> u)`.
+    *   Since edge weights are non-negative (`weight(v -> u) >= 0`), the total distance `dist[v] + weight(v -> u)` must be `>= D + 0 = D`.
+    *   Therefore, no shorter path to `u` can be found via other unvisited nodes. The current minimal distance `D` is indeed the absolute shortest path to `u`.
 
 ---
 
@@ -347,13 +328,38 @@ dist = [INF] * (n + 1)  # 1-indexed
 
 ---
 
-## Complexity Analysis
+## Complexity Analysis: Deep Dive
+
+Let $V$ be the number of vertices (nodes) and $E$ be the number of edges.
+
+### 1. Time Complexity: $O((V + E) \log V)$
+
+*   **Graph Construction:** $O(E)$ time to iterate through the given `times` array and build the adjacency list.
+*   **Initialization:** $O(V)$ time to initialize the distance array to infinity.
+*   **Priority Queue Operations:**
+    *   In the worst case, every edge could lead to a newly found shorter path, resulting in an insertion into the priority queue (`heapq.heappush()`).
+    *   Since there are at most $E$ edges, we could potentially push $E$ pairs into the heap.
+    *   Extracting the minimum element (`heapq.heappop()`) takes $O(\log(\text{heap size}))$ time. The maximum size of the heap is $O(E)$.
+    *   Therefore, popping and pushing operations take bounded by $O(E \log E)$.
+    *   Wait, $O(E \log E)$ can be simplified. In a simple graph (no parallel edges between same nodes), the maximum number of edges $E$ is bounded by $V^2$ (i.e., $E \le V^2$).
+    *   So, $\log E \le \log(V^2) = 2 \log V$, which means $O(\log E)$ is equivalent to $O(\log V)$.
+    *   Thus, the total time spent pushing and popping is $O(E \log V)$.
+    *   *(Note: Using an advanced Fibonacci heap, we could optimize this to $O(V \log V + E)$, but the standard binary heap implementation remains $O((V + E) \log V)$.)*
+*   **Final Output:** $O(V)$ to iterate over the `dist` array/hashmap to find the maximum distance.
+*   **Total Time:** $O(E) + O(V) + O(E \log V) + O(V) = O((V + E) \log V)$.
+
+### 2. Space Complexity: $O(V + E)$
+
+*   **Graph Storage:** $O(V + E)$ memory to store the adjacency list representation of the graph. We have $V$ lists containing a total of $E$ entries.
+*   **Distance Array (`dist`):** $O(V)$ memory to track the minimum distance to each node.
+*   **Priority Queue:** In the worst-case scenario (like a dense graph), we might push many duplicate node updates before we pop them. The heap can store up to $O(E)$ elements simultaneously.
+*   **Total Space:** $O(V + E) + O(V) + O(E) = O(V + E)$.
 
 | Algorithm        | Time             | Space    |
 | ---------------- | ---------------- | -------- |
-| Dijkstra         | O((V + E) log V) | O(V + E) |
-| Bellman-Ford     | O(V × E)         | O(V)     |
-| BFS (unweighted) | O(V + E)         | O(V)     |
+| Dijkstra         | $O((V + E) \log V)$ | $O(V + E)$ |
+| Bellman-Ford     | $O(V \times E)$         | $O(V)$     |
+| BFS (unweighted) | $O(V + E)$         | $O(V)$     |
 
 ---
 

@@ -69,6 +69,7 @@ Why must following the uphill direction lead to a peak?
    - Keeps increasing monotonically until the rightmost boundary.
 3. At the rightmost boundary `n-1`, by definition, `nums[n] = -∞`.
 4. Therefore, if the sequence only increases, the last element before the boundary `nums[n-1]` IS a peak because `nums[n-1] > nums[n-2]` (it was increasing) and `nums[n-1] > -∞`.
+5. The same logic applies if we move left. If `nums[mid] > nums[mid+1]`, the slope goes up to the left, guaranteeing a peak exists at or to the left of `mid`.
 
 ### Multiple Peaks Don't Matter
 
@@ -119,8 +120,9 @@ def find_peak_element(nums: list[int]) -> int:
     """
     left, right = 0, len(nums) - 1
 
-    # Standard template for finding an index where a condition is met
-    # Notice the condition `left < right`
+    # We use Template 2 (left < right) because we are comparing mid with mid + 1.
+    # If we used Template 1 (left <= right), when left == right, mid would be the
+    # last element, and nums[mid + 1] would cause an out-of-bounds error.
     while left < right:
         mid = left + (right - left) // 2
 
@@ -191,6 +193,7 @@ def peak_index_in_mountain_array(arr: list[int]) -> int:
     """
     left, right = 0, len(arr) - 1
 
+    # Using Template 2 (left < right) because we compare mid with mid + 1
     while left < right:
         mid = left + (right - left) // 2
 
@@ -214,11 +217,16 @@ To search for a target in a bitonic array:
 3. If not found, binary search the strictly descending right half `[peak + 1, n - 1]`.
 
 ```python
+# Assuming MountainArray is defined externally
+class MountainArray:
+    def get(self, index: int) -> int: pass
+    def length(self) -> int: pass
+
 class Solution:
     def findInMountainArray(self, target: int, mountain_arr: 'MountainArray') -> int:
         n = mountain_arr.length()
 
-        # 1. Find the peak
+        # 1. Find the peak (using Template 2, comparing mid to mid + 1)
         left, right = 0, n - 1
         while left < right:
             mid = left + (right - left) // 2
@@ -228,37 +236,34 @@ class Solution:
                 right = mid
         peak = left
 
-        # 2. Binary search ascending left half
-        def search_asc(left, right):
+        # 2. Binary search ascending left half (using Template 1)
+        def binary_search(left: int, right: int, is_ascending: bool) -> int:
             while left <= right:
                 mid = left + (right - left) // 2
                 val = mountain_arr.get(mid)
+
                 if val == target:
                     return mid
-                elif val < target:
-                    left = mid + 1
+
+                if is_ascending:
+                    if val < target:
+                        left = mid + 1
+                    else:
+                        right = mid - 1
                 else:
-                    right = mid - 1
+                    if val > target: # Note the flipped comparison for descending
+                        left = mid + 1
+                    else:
+                        right = mid - 1
             return -1
 
-        res = search_asc(0, peak)
+        # Search left side
+        res = binary_search(0, peak, True)
         if res != -1:
             return res
 
-        # 3. Binary search descending right half
-        def search_desc(left, right):
-            while left <= right:
-                mid = left + (right - left) // 2
-                val = mountain_arr.get(mid)
-                if val == target:
-                    return mid
-                elif val > target: # Note the flipped comparison for descending
-                    left = mid + 1
-                else:
-                    right = mid - 1
-            return -1
-
-        return search_desc(peak + 1, n - 1)
+        # 3. Search descending right side
+        return binary_search(peak + 1, n - 1, False)
 ```
 
 ### 3. Peak in a 2D Matrix
@@ -267,12 +272,14 @@ class Solution:
 
 Find a peak in an $m \times n$ matrix where an element is strictly greater than its adjacent (top, bottom, left, right) neighbors. No two adjacent cells are equal.
 
-**Insight:** Apply binary search on the *columns*.
+**Insight:** Apply binary search on the *columns* (or rows).
 1. Pick middle column `mid_col`.
 2. Find the global maximum element in this column at `row = max_row`.
 3. Compare `mat[max_row][mid_col]` with its left and right neighbors `mat[max_row][mid_col-1]` and `mat[max_row][mid_col+1]`.
 4. Because we chose the maximum element in the column, it is guaranteed to be greater than its top and bottom neighbors. We only need to resolve the left/right condition.
-5. If the left neighbor is greater, search the left half of columns. Otherwise, search the right half.
+5. If the left neighbor is greater, the slope goes up to the left, so a peak MUST exist in the left half of columns.
+6. If the right neighbor is greater, the slope goes up to the right, so a peak MUST exist in the right half of columns.
+7. Otherwise, it is greater than all neighbors and is a peak.
 
 ```python
 def findPeakGrid(mat: list[list[int]]) -> list[int]:
@@ -283,6 +290,8 @@ def findPeakGrid(mat: list[list[int]]) -> list[int]:
     Space: O(1)
     """
     rows, cols = len(mat), len(mat[0])
+
+    # We do binary search on columns
     left_col, right_col = 0, cols - 1
 
     while left_col <= right_col:
@@ -295,18 +304,20 @@ def findPeakGrid(mat: list[list[int]]) -> list[int]:
                 max_row = r
 
         # Compare with left and right neighbors
+        # We assume out-of-bounds cells contain -1 (since constraints say 1 <= mat[i][j])
         left_val = mat[max_row][mid_col - 1] if mid_col > 0 else -1
         right_val = mat[max_row][mid_col + 1] if mid_col < cols - 1 else -1
 
         current_val = mat[max_row][mid_col]
 
+        # If it's a peak, return it
         if current_val > left_val and current_val > right_val:
             return [max_row, mid_col]
+        # Slope goes up to the left; Peak must be in the left columns
         elif left_val > current_val:
-            # Peak must be in the left columns
             right_col = mid_col - 1
+        # Slope goes up to the right; Peak must be in the right columns
         else:
-            # Peak must be in the right columns
             left_col = mid_col + 1
 
     return [-1, -1] # Unreachable if array follows constraints
@@ -319,9 +330,10 @@ def findPeakGrid(mat: list[list[int]]) -> list[int]:
 | Problem | Approach | Time Complexity | Space Complexity |
 | :--- | :--- | :--- | :--- |
 | **Find One Peak (1D)** | Binary Search | $O(\log n)$ | $O(1)$ |
-| **Find All Peaks (1D)** | Linear Scan | $O(n)$ | $O(k)$ for $k$ peaks |
+| **Find All Peaks (1D)** | Linear Scan | $O(n)$ | $O(1)$ |
 | **Search in Bitonic Array**| 3 Binary Searches | $O(\log n)$ | $O(1)$ |
 | **Find Peak Element II (2D)** | Binary Search on Columns | $O(m \log n)$ | $O(1)$ |
+*Note: For the 2D Peak Element problem, we can also perform binary search on rows instead of columns, achieving $O(n \log m)$ time complexity, which is optimal when $n < m$.*
 
 ---
 
@@ -330,7 +342,8 @@ def findPeakGrid(mat: list[list[int]]) -> list[int]:
 ### 1. Wrong Loop Condition & Out-of-Bounds Error
 
 **The Error:** Using `while left <= right:` and then checking `nums[mid] < nums[mid+1]`. If `left == right`, `mid` is the last element, and `mid + 1` causes an IndexError.
-**The Fix:** Use `while left < right:` when checking `mid + 1`. This guarantees `mid` can never be the last index of the search space.
+
+**The Fix:** Use `while left < right:` when comparing with `mid + 1`. This guarantees `mid` can never be the last index of the search space.
 
 ```python
 # WRONG
@@ -341,7 +354,7 @@ while left <= right:
 # CORRECT
 while left < right:
     # Safe: left < right implies right >= left + 1, so mid <= right - 1.
-    # Therefore mid + 1 <= right, preventing out-of-bounds access.
+    # Therefore mid + 1 <= right <= len(nums) - 1, preventing out-of-bounds access.
     if nums[mid] < nums[mid+1]: ...
 ```
 

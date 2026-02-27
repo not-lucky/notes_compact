@@ -79,6 +79,10 @@ Connected components problems are common because:
 3. **Union-Find preview**: Alternative solution method
 4. **Real applications**: Social networks, clustering
 
+**FANG Context:**
+- **Amazon** heavily favors grid-based "Island" problems. They love testing if you can traverse a 2D matrix efficiently and handle boundaries correctly without using extra space (modifying the grid in-place).
+- **Google** prefers abstract graph representations (adjacency lists/matrices) and will often frame Connected Components as finding clusters of related users, machines, or events. They might also push for Union-Find to handle dynamic connectivity streams.
+
 "Number of Islands" is one of the most frequently asked FANG+ problems.
 
 ---
@@ -98,6 +102,15 @@ Component 1: {0, 1, 2, 3}
 Component 2: {4, 5, 6}
 Component 3: {7}
 ```
+
+### Deep Dive: Edge Types in DFS
+When traversing to find components using DFS, understanding edge types can help debug cycle detection and understand graph structure:
+1. **Tree Edges**: Edges that discover new vertices during DFS. They form the "DFS tree" or component backbone.
+2. **Back Edges**: Edges connecting a node to an ancestor in the DFS tree. A back edge indicates a **cycle** within the component.
+3. **Forward Edges**: Edges connecting a node to a descendant (non-child) in the DFS tree. (Primarily relevant in directed graphs).
+4. **Cross Edges**: All other edges. They can connect nodes in the same tree (without ancestor/descendant relationship) or across different DFS trees. (Common in directed graphs, cross-component edges don't exist in valid connected components of undirected graphs).
+
+*Note: In an undirected graph DFS, edges are strictly either Tree Edges or Back Edges.*
 
 ---
 
@@ -262,16 +275,6 @@ def num_islands(grid: list[list[str]]) -> int:
                 count += 1
 
     return count
-
-
-# Usage
-grid = [
-    ['1', '1', '0', '0', '0'],
-    ['1', '1', '0', '0', '0'],
-    ['0', '0', '1', '0', '0'],
-    ['0', '0', '0', '1', '1']
-]
-print(num_islands(grid))  # 3
 ```
 
 ---
@@ -488,6 +491,24 @@ def count_components_uf(n: int, edges: list[list[int]]) -> int:
 | Grid DFS   | O(rows × cols) | O(rows × cols) |
 
 α(n) is inverse Ackermann, effectively constant.
+
+### Sparse vs Dense Complexity Details
+The graph structure significantly impacts the practical performance of connectivity algorithms:
+
+*   **Sparse Graphs (E ≈ V)**: These are graphs with few edges per node (like trees or long linear chains).
+    *   DFS & BFS are highly efficient, performing closer to `O(V)`.
+    *   Union-Find handles sparse graphs well, effectively linear time.
+*   **Dense Graphs (E ≈ V²)**: These graphs have many edges between nodes, nearing a complete graph.
+    *   DFS & BFS can hit their worst-case `O(E) = O(V²)` bounds as they iterate through numerous connections. Adjacency lists vs Adjacency matrices become crucial here.
+    *   Union-Find performance starts to bottleneck on the edge unions `O(E)`.
+
+### Recursion Stack Space Limits
+While DFS provides elegant and simple component counting, it suffers from a major real-world drawback: **Call Stack Limits**.
+
+*   **Linear Chains**: The worst-case for recursion is a graph formatted like a long linked-list. Finding the connected component requires recursive calls equal to `V`.
+*   **Grid "Snakes"**: In "Islands" problems, a zig-zagging island can hit depth `rows * cols`.
+*   **Consequence**: Python has a default recursion limit of `1000`. An exceptionally long, thin island *will* crash your DFS implementation.
+*   **Solution**: For production code or interviews where maximum grid size exceeds `10,000` cells, **always use BFS or Iterative DFS**.
 
 ---
 

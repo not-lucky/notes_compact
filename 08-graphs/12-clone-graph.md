@@ -11,7 +11,7 @@ Clone Graph is a FANG+ favorite because:
 3. **HashMap for mapping**: Old node → new node
 4. **Clean code skills**: Handling the recursive structure
 
-This problem appears frequently at Meta and Google.
+**FANG Context**: This problem is particularly emphasized at **Meta**, where it frequently appears in phone screens and onsites. Meta loves it because it perfectly tests core CS fundamentals (pointers, recursion, hash maps, graph traversal) in a compact, 15-minute implementation window. Google also asks variations of this, often involving distributed graphs or more complex node structures.
 
 ---
 
@@ -111,6 +111,24 @@ def clone_graph_bfs(node: 'Node') -> 'Node':
 
     return cloned[node]
 ```
+
+---
+
+## Edge Types (Theory Deep Dive)
+
+When performing Graph DFS or BFS, there are four types of edges we might encounter. This is critical theory when traversing graphs and detecting cycles.
+
+1. **Tree Edge**: Discovers a new unvisited node during DFS/BFS. These edges form the DFS/BFS spanning tree.
+   - Example: Visiting neighbor `2` from node `1` for the first time.
+2. **Back Edge**: Connects a node to an ancestor in the DFS tree. This edge type always indicates a cycle.
+   - Example: Exploring node `1` (which is already on the current DFS path stack) from node `4`.
+3. **Forward Edge**: Connects a node to a descendant in the DFS tree that is *not* a direct child.
+   - Note: Forward edges don't exist in undirected graphs, only directed.
+4. **Cross Edge**: Connects two nodes where neither is an ancestor of the other (e.g., branching across different subtrees).
+   - Note: In an undirected graph, every edge is either a Tree Edge or a Back Edge. Forward and Cross edges are essentially identical to Back Edges because the graph is bidirectional.
+
+**Why this matters for Clone Graph**:
+Since Clone Graph operates on undirected graphs, every time we see an already-visited node in `cloned`, we are traversing a **Back Edge** (cycle detection). The `HashMap` prevents us from falling into an infinite loop caused by these Back Edges.
 
 ---
 
@@ -383,7 +401,11 @@ def dfs(node):
 | BFS               | O(V + E) | O(V)  |
 | Three-pass (list) | O(n)     | O(1)  |
 
-Space is for the HashMap (or interleaved list structure).
+**Space Complexity Deep Dive (Recursion Stack Limits):**
+In the recursive DFS approach, the recursion stack depth is equal to the length of the longest path in the graph.
+- In the worst case (a linear chain of `V` nodes: `1 - 2 - 3 - ... - V`), the recursion stack reaches a depth of `V`.
+- **System Limits**: Python's default recursion limit is often 1000. A graph with thousands of nodes in a straight line will cause a **RecursionError** in the recursive DFS solution.
+- **FANG Mitigation**: If an interviewer at Meta asks about large graphs, point out this stack overflow risk. The iterative BFS or iterative DFS approaches are strictly superior for extremely deep graphs because they use heap memory (the `Queue` or explicit `Stack`) rather than the call stack, avoiding stack overflow crashes.
 
 ---
 

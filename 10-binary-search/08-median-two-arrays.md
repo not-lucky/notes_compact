@@ -119,16 +119,12 @@ This is the standard expected solution for the hard problem.
 def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
     # Ensure nums1 is the smaller array to guarantee valid j indices and optimize time
     if len(nums1) > len(nums2):
-        nums1, nums2 = nums2, nums1
+        return findMedianSortedArrays(nums2, nums1)
 
     m, n = len(nums1), len(nums2)
-    total_len = m + n
-    # (total_len + 1) // 2 works perfectly for both even and odd total lengths
-    # Odd: gives exactly the middle index (1-based)
-    # Even: gives the end of the left half
-    half_len = (total_len + 1) // 2
-
     left, right = 0, m
+    # (m + n + 1) // 2 ensures left half always has equal or 1 more element than right half
+    half_len = (m + n + 1) // 2
 
     while left <= right:
         # i is the number of elements from nums1 in the left partition
@@ -147,12 +143,15 @@ def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
         # Check if the partition is perfectly valid
         if nums1_left <= nums2_right and nums2_left <= nums1_right:
             # We found the correct partition!
-            if total_len % 2 == 1:
-                # Odd length: median is the maximum of the left partition
-                return max(nums1_left, nums2_left)
+            max_left = max(nums1_left, nums2_left)
+
+            if (m + n) % 2 == 1:
+                # Odd total length: median is the maximum of the left partition
+                return float(max_left)
             else:
-                # Even length: median is average of max(left) and min(right)
-                return (max(nums1_left, nums2_left) + min(nums1_right, nums2_right)) / 2.0
+                # Even total length: median is average of max(left) and min(right)
+                min_right = min(nums1_right, nums2_right)
+                return (max_left + min_right) / 2.0
 
         elif nums1_left > nums2_right:
             # nums1's left side is too large. We need to shrink nums1's contribution.
@@ -230,21 +229,29 @@ def findMedianSortedArrays_Kth(nums1: list[int], nums2: list[int]) -> float:
 
         # We want to compare the (k/2)th element of both arrays to discard half of k
         mid = k // 2
-        a_val = nums1[a_start + mid - 1] if a_start + mid - 1 < len(nums1) else float('inf')
-        b_val = nums2[b_start + mid - 1] if b_start + mid - 1 < len(nums2) else float('inf')
 
-        # If a_val is smaller, we can safely discard the first (k/2) elements of nums1
+        # Determine the index we want to check in both arrays
+        # If the array is too short, we assign infinity so we don't discard from it
+        a_idx = a_start + mid - 1
+        b_idx = b_start + mid - 1
+
+        a_val = nums1[a_idx] if a_idx < len(nums1) else float('inf')
+        b_val = nums2[b_idx] if b_idx < len(nums2) else float('inf')
+
+        # If a_val is smaller, we can safely discard the first mid elements of nums1
+        # because the kth smallest element MUST be greater than or equal to a_val.
         if a_val < b_val:
             return get_kth(k - mid, a_start + mid, b_start)
         else:
             return get_kth(k - mid, a_start, b_start + mid)
 
+    # Calculate k for both odd and even cases
+    left = get_kth((total_len + 1) // 2, 0, 0)
     if total_len % 2 == 1:
-        return get_kth(total_len // 2 + 1, 0, 0)
+        return float(left)
     else:
-        left_median = get_kth(total_len // 2, 0, 0)
-        right_median = get_kth(total_len // 2 + 1, 0, 0)
-        return (left_median + right_median) / 2.0
+        right = get_kth(total_len // 2 + 1, 0, 0)
+        return (left + right) / 2.0
 ```
 
 ### Complexity Analysis
@@ -256,10 +263,10 @@ def findMedianSortedArrays_Kth(nums1: list[int], nums2: list[int]) -> float:
 ## Common Interview Pitfalls
 
 1. **Forgetting to Swap for Smaller Array**
-   If you don't ensure `nums1` is the smaller array, `j` could become negative during the binary search, causing `IndexError`.
+   If you don't ensure `nums1` is the smaller array, `j` could become negative during the binary search, causing `IndexError` (or incorrect out of bounds access in languages that support negative indexing like Python).
    ```python
    if len(nums1) > len(nums2):
-       nums1, nums2 = nums2, nums1
+       return findMedianSortedArrays(nums2, nums1)
    ```
 
 2. **Mishandling Infinity at Boundaries**
@@ -288,6 +295,10 @@ import heapq
 def median_k_arrays(arrays: list[list[int]]) -> float:
     # Time: O(total * log K) where K is number of arrays
     total_elements = sum(len(arr) for arr in arrays)
+    if total_elements == 0:
+        return 0.0
+
+    # target is the 1-based index of the middle element
     target = (total_elements + 1) // 2
 
     heap = []

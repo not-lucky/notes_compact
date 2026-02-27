@@ -11,6 +11,9 @@ Alien Dictionary is a FANG+ hard problem because:
 3. **Edge cases**: Many tricky cases to handle
 4. **Character ordering**: Different from typical node problems
 
+**FANG Context (Why Google Loves This):**
+Google frequently asks this problem because it perfectly tests a candidate's ability to translate an abstract requirement ("derive an alphabet") into a concrete graph algorithm (Directed Acyclic Graph + Topological Sort). It also heavily tests edge case handling (prefixes, cycles, disconnected components) and allows for follow-up questions about lexicographically smallest orderings or memory optimization (arrays vs HashMaps).
+
 This problem appears frequently at Facebook, Google, and Airbnb.
 
 ---
@@ -47,6 +50,27 @@ Compare adjacent words to find ordering constraints:
 
 This gives edge: t → f
 ```
+
+---
+
+## Theory: Formalizing DAG Concepts & Kahn's Algorithm
+
+Before implementing the solution, we need to formalize what we're building: a **Directed Acyclic Graph (DAG)**.
+
+1. **Nodes**: Represent unique characters in the alien language.
+2. **Directed Edges ($u \rightarrow v$)**: Represent a strict ordering constraint where character $u$ must appear before character $v$ in the alphabet.
+3. **Acyclic requirement**: For a valid alphabet to exist, the graph cannot contain cycles (e.g., $a \rightarrow b \rightarrow c \rightarrow a$ implies $a$ comes before itself, which is impossible).
+
+### Why Kahn's Algorithm Works
+
+Kahn's Algorithm is a Breadth-First Search (BFS) approach to topological sorting:
+
+1. **In-degree Tracking**: For each character, we track its *in-degree* (the number of prerequisite characters that must appear before it).
+2. **Zero In-degree Source Nodes**: Any character with an in-degree of `0` has no remaining prerequisites. It is guaranteed safe to place next in our final ordering.
+3. **Peeling Edges**: Once we process a character, we logically "remove" it from the graph by decrementing the in-degrees of all its neighbors.
+4. **Iterative Resolution**: If a neighbor's in-degree drops to `0`, all its prerequisites have been fulfilled, and it becomes a new source node.
+
+**Cycle Detection**: If the algorithm finishes and we haven't processed all unique characters, it means the remaining characters are locked in a cycle where they endlessly wait for each other (their in-degrees never reached `0`). This definitively proves the input is invalid.
 
 ---
 
@@ -109,6 +133,57 @@ def alien_order(words: list[str]) -> str:
         return ""  # Cycle detected
 
     return ''.join(result)
+```
+
+class Solution {
+public:
+    string alienOrder(vector<string>& words) {
+        unordered_map<char, vector<char>> adjList;
+        unordered_map<char, int> in_degree;
+
+        for (const string& word : words) {
+            for (char c : word) {
+                in_degree[c] = 0;
+            }
+        }
+
+        for (int i = 0; i < words.size() - 1; ++i) {
+            string w1 = words[i];
+            string w2 = words[i + 1];
+
+            if (w1.length() > w2.length() && w1.substr(0, w2.length()) == w2) {
+                return "";
+            }
+
+            for (int j = 0; j < min(w1.length(), w2.length()); ++j) {
+                if (w1[j] != w2[j]) {
+                    adjList[w1[j]].push_back(w2[j]);
+                    in_degree[w2[j]]++;
+                    break;
+                }
+            }
+        }
+
+        queue<char> q;
+        for (auto const& [node, degree] : in_degree) {
+            if (degree == 0) q.push(node);
+        }
+
+        string result = "";
+        while (!q.empty()) {
+            char current = q.front();
+            q.pop();
+            result += current;
+
+            for (char neighbor : adjList[current]) {
+                in_degree[neighbor]--;
+                if (in_degree[neighbor] == 0) q.push(neighbor);
+            }
+        }
+
+        return result.length() == in_degree.size() ? result : "";
+    }
+};
 ```
 
 ---
@@ -358,6 +433,26 @@ def alien_order_lex(words: list[str]) -> str:
 | Total            | O(total chars)         | O(unique chars) |
 
 V = unique characters, E = ordering constraints
+
+### Trade-offs: Kahn's Algorithm (BFS) vs DFS Topological Sort
+
+Both approaches achieve the same $O(V+E)$ time complexity, but there are practical differences.
+
+**Kahn's Algorithm (BFS)**
+* **Pros**:
+    * Intuitive to trace for in-degrees iteratively.
+    * Trivial to convert for finding lexicographical orderings by swapping the `Queue` with a `Min-Heap` (Priority Queue).
+    * Space complexity is entirely on the heap; no deep function calls risking stack overflow.
+* **Cons**:
+    * Requires tracking an extra `in_degree` map or array alongside the adjacency list.
+
+**Recursive DFS**
+* **Pros**:
+    * Very concise to write conceptually: traverse nodes fully and append to result upon function exit, then reverse it.
+    * Only requires an adjacency list and a three-state `color` (visited/visiting/unvisited) tracker map.
+* **Cons**:
+    * Cycle detection relies on the recursive call stack checking the three-state array (visiting a node currently labeled as "Gray"/visiting). It can be trickier to intuitively reason about during an interview.
+    * Recursive depth can technically exceed standard stack limits on enormously long cyclic graphs.
 
 ---
 

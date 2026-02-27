@@ -6,12 +6,12 @@
 
 Grid problems are FANG+ favorites because:
 
-1. **Very common**: Number of Islands appears constantly
+1. **Very common**: Number of Islands appears constantly (especially at Amazon)
 2. **Multiple patterns**: DFS, BFS, Union-Find all applicable
 3. **Edge case testing**: Bounds checking, visited tracking
 4. **Real-world analogy**: Image processing, game maps
 
-Expect at least one grid problem in most interview loops.
+Expect at least one grid problem in most interview loops, particularly for Amazon OAs and onsites where grid traversal is a core competency.
 
 ---
 
@@ -21,6 +21,19 @@ A grid is an **implicit graph** where:
 
 - Each cell is a vertex
 - Adjacent cells (up, down, left, right) are connected
+
+### Edge Types in Grids
+
+Understanding edge types is crucial for grid problems, especially in FANG interviews where constraints matter:
+
+1.  **4-Directional (Von Neumann Neighborhood)**: The most common type. Connects up, down, left, and right. Used in standard island and maze problems.
+    *   **Max Edges/Vertex**: 4
+    *   **Total Edges**: $\approx 2V$ (where $V$ is number of cells)
+2.  **8-Directional (Moore Neighborhood)**: Connects all 8 surrounding cells, including diagonals. Used in games (e.g., Minesweeper) and pathfinding where diagonal movement is allowed.
+    *   **Max Edges/Vertex**: 8
+    *   **Total Edges**: $\approx 4V$
+    *   *Caution*: Increases branching factor significantly in BFS/DFS.
+3.  **Custom/Knight's Moves**: Specific movement rules (e.g., Chess Knight `(±1, ±2)` or `(±2, ±1)`). Requires defining a custom `dirs` array.
 
 ```
 Grid:               Implicit Graph:
@@ -338,6 +351,20 @@ def largest_island(grid: list[list[int]]) -> int:
 ---
 
 ## BFS for Grid (Avoids Stack Overflow)
+
+### Space Complexity Nuance: DFS vs BFS
+
+When traversing a grid of $M \times N$, the space complexity diverges significantly between recursion (DFS) and queues (BFS), an analysis heavily scrutinized in interviews.
+
+1.  **DFS (Recursion)**:
+    *   **Worst-case space**: $O(M \times N)$
+    *   **Scenario**: The grid forms a long winding path (e.g., a snake shape filling the grid). The recursive stack depth equals the total number of cells.
+    *   *FANG Callout*: In languages like Python without tail-call optimization, a large grid (e.g., $1000 \times 1000$) will trigger a `RecursionError` due to default limits (usually ~1000 frames).
+
+2.  **BFS (Queue)**:
+    *   **Worst-case space**: $O(\min(M, N))$
+    *   **Scenario**: The queue stores nodes at the frontier. The largest frontier occurs when processing a dense, filled grid, bounded by the diagonal's length.
+    *   *FANG Callout*: Always highlight this difference. For massive grids where recursion limits are a concern, BFS is structurally safer.
 
 ```python
 from collections import deque

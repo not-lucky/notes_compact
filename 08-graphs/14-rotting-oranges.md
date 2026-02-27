@@ -13,6 +13,26 @@ Rotting Oranges is a FANG+ classic because:
 
 This problem appears frequently at Amazon, Meta, and Google.
 
+### FANG Context: The Quintessential Amazon Grid Problem
+
+This is arguably the most recognizable "Amazon Grid Problem." Amazon heavily favors 2D grid matrix problems because they test graph traversal without the need to parse complex graph representations (like adjacency lists). If you interview at Amazon, you are highly likely to encounter a variation of this problem (e.g., zombie matrix, package delivery times, server cluster updates). Expect follow-ups about scaling to massive grids where the matrix doesn't fit in memory (requiring chunking or Spark/Hadoop-style map-reduce approaches) or sparse matrices.
+
+---
+
+## Theory Deep Dive: Multi-Source vs Single-Source BFS
+
+In a standard BFS, you start at a single node and expand outwards layer by layer. The time taken to reach a node is its shortest path distance from that single source.
+
+But what if you want the shortest distance to a set of targets, starting from *any* of multiple sources?
+If you run single-source BFS from each source independently, the time complexity becomes `O(K × (V+E))` where `K` is the number of sources. In a grid, this degrades to `O((R×C)²)` in the worst case (e.g., half the grid is rotten oranges, half is fresh).
+
+**Multi-source BFS** solves this elegantly by pushing *all* sources into the queue at distance 0 before starting the loop.
+You can think of it in two ways mathematically:
+1. **The "Super Source" concept**: Imagine a dummy node "Super Source" connected to all your starting nodes with directed edges of weight 0. A standard BFS from this Super Source is mathematically equivalent to multi-source BFS.
+2. **Parallel wave propagation**: Like dropping multiple stones in a pond simultaneously. The ripples expand together, and a point is covered by whichever ripple reaches it first.
+
+Because the queue only ever contains nodes at distance `d` and `d+1` (monotonicity), the first time you visit a node, it is guaranteed to be via the shortest possible path from *any* source. This keeps the time complexity strictly `O(V+E)` regardless of the number of sources.
+
 ---
 
 ## Problem Statement
@@ -87,10 +107,6 @@ def oranges_rotting(grid: list[list[int]]) -> int:
 
     return max_time if fresh_count == 0 else -1
 ```
-
----
-
-## Level-by-Level BFS Alternative
 
 ```python
 from collections import deque
@@ -411,7 +427,23 @@ return time if fresh_count == 0 else -1
 | BFS          | O(rows × cols) | O(rows × cols) |
 | Total        | O(rows × cols) | O(rows × cols) |
 
-Each cell is visited at most once.
+### Deep Dive into Complexity
+
+**Time Complexity**: Let $N = \text{rows} \times \text{cols}$.
+- **Graph vs Grid Representation**: In a standard graph, BFS takes $O(V + E)$. Here, our grid represents an implicit graph.
+- The number of vertices $V = N$.
+- The number of edges $E$ is at most $4N$ (since each cell has at most 4 neighbors).
+- So, $O(V + E) = O(N + 4N) = O(N)$.
+- The initial scan to find all rotten oranges takes exactly $O(N)$.
+- In the BFS phase, each fresh orange is added to the queue at most once and popped at most once. For each popped orange, we check 4 adjacent cells. This means we process each cell a constant number of times.
+- Therefore, the total time complexity is strictly bounded by $O(N)$ or $O(rows \times cols)$.
+
+**Space Complexity**:
+- The only extra space we use (besides a few variables) is the BFS `queue`.
+- **Worst-Case Space Scenario**: What is the maximum number of items in the queue at any given time?
+- Consider a scenario where all edge cells of the grid are rotten and the inner cells are fresh. Or consider a worst-case dense graph scenario where the grid is filled with rotten oranges initially. The queue would instantly take $O(N)$ space.
+- Another worst-case scenario is a checkerboard pattern of rotten and fresh oranges. However, the true max queue size for a BFS wave spreading in a 2D grid is bounded by the perimeter of the "wavefront", which scales with the grid's dimensions, but in the absolute worst case (e.g., completely filled with rotten oranges at the start), the queue stores $O(N)$ elements.
+- We do an in-place modification of the `grid` (changing `1` to `2`). If the input matrix was immutable (e.g., read-only or we are forbidden from modifying it), we would need an auxiliary $O(N)$ `visited` set or matrix, doubling the space footprint but keeping it asymptotically $O(N)$.
 
 ---
 

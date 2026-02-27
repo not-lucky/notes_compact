@@ -225,7 +225,7 @@ This converges to an infinite geometric series that bounds to **$O(n)$**.
 
 While you should almost always use the built-in library (`heapq` in Python), understanding how to build it from scratch demonstrates deep knowledge.
 
-```python
+```pythonPrim'
 class MinHeap:
     """Min heap implementation for interview understanding."""
     def __init__(self):

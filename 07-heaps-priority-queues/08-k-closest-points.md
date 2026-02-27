@@ -193,8 +193,9 @@ For K closest, use **max heap** of size K. Evict furthest point.
 
 ```python
 import heapq
+from typing import List
 
-def k_closest(points: list[list[int]], k: int) -> list[list[int]]:
+def k_closest(points: List[List[int]], k: int) -> List[List[int]]:
     """
     Find k closest points to origin using max heap.
 
@@ -246,8 +247,9 @@ Less efficient but simpler:
 
 ```python
 import heapq
+from typing import List
 
-def k_closest_min_heap(points: list[list[int]], k: int) -> list[list[int]]:
+def k_closest_min_heap(points: List[List[int]], k: int) -> List[List[int]]:
     """
     Build min heap of all points, pop k times.
 
@@ -267,18 +269,19 @@ def k_closest_min_heap(points: list[list[int]], k: int) -> list[list[int]]:
 
 ```python
 import heapq
+from typing import List
 
-def k_closest_nsmallest(points: list[list[int]], k: int) -> list[list[int]]:
+def k_closest_nsmallest(points: List[List[int]], k: int) -> List[List[int]]:
     """
-    Use heapq.nsmallest with key function.
+    Use heapq.nsmallest with a key function.
 
-    Time: O(n log k)
+    Time: O(n log k) internally if k << n (Python does quick optimizations)
     Space: O(k)
     """
     return heapq.nsmallest(k, points, key=lambda p: p[0]**2 + p[1]**2)
 ```
 
-Cleanest solution, internally uses a heap.
+Cleanest solution, internally uses a heap (and falls back to sorting if k is close to n, or min() if k=1).
 
 ---
 
@@ -288,42 +291,56 @@ Average O(n) time:
 
 ```python
 import random
+from typing import List
 
-def k_closest_quickselect(points: list[list[int]], k: int) -> list[list[int]]:
+def k_closest_quickselect(points: List[List[int]], k: int) -> List[List[int]]:
     """
-    QuickSelect to partition by distance.
+    QuickSelect to partition points by distance.
 
     Time: O(n) average, O(n²) worst
     Space: O(1) excluding output
     """
-    def dist(point):
+    def dist(point: List[int]) -> int:
         return point[0]**2 + point[1]**2
 
-    def partition(left, right, pivot_idx):
+    def partition(left: int, right: int, pivot_idx: int) -> int:
         pivot_dist = dist(points[pivot_idx])
+        # Move pivot to end
         points[pivot_idx], points[right] = points[right], points[pivot_idx]
 
-        store = left
+        # store_idx keeps track of where the next element smaller than pivot should go
+        store_idx = left
         for i in range(left, right):
             if dist(points[i]) < pivot_dist:
-                points[i], points[store] = points[store], points[i]
-                store += 1
+                points[i], points[store_idx] = points[store_idx], points[i]
+                store_idx += 1
 
-        points[store], points[right] = points[right], points[store]
-        return store
+        # Move pivot to its final place
+        points[store_idx], points[right] = points[right], points[store_idx]
+        return store_idx
 
     left, right = 0, len(points) - 1
 
-    while left < right:
+    while left <= right:
+        # Choose a random pivot index between left and right inclusive
         pivot_idx = random.randint(left, right)
-        pivot_idx = partition(left, right, pivot_idx)
 
-        if pivot_idx == k:
+        # Partition the array and get the final position of the pivot
+        true_pivot_idx = partition(left, right, pivot_idx)
+
+        # If the pivot is exactly at position k, we have our k closest points
+        # in the first k positions of the array (0 to k-1)
+        if true_pivot_idx == k:
             break
-        elif pivot_idx < k:
-            left = pivot_idx + 1
+        # If pivot is at position k-1, we also have exactly k elements (0 to k-1)
+        elif true_pivot_idx == k - 1:
+            break
+        elif true_pivot_idx < k:
+            # We need more elements, search in the right half
+            left = true_pivot_idx + 1
         else:
-            right = pivot_idx - 1
+            # We have too many elements, search in the left half
+            right = true_pivot_idx - 1
 
     return points[:k]
 ```
@@ -335,7 +352,7 @@ def k_closest_quickselect(points: list[list[int]], k: int) -> list[list[int]]:
 | Approach     | Time           | Space | Notes                            |
 | ------------ | -------------- | ----- | -------------------------------- |
 | Max Heap K   | O(n log k)     | O(k)  | Best for streaming               |
-| nsmallest    | O(n log k)     | O(k)  | Cleanest code                    |
+| nsmallest    | O(n log k)     | O(k)  | Cleanest code, fast in Python    |
 | Min Heap all | O(n + k log n) | O(n)  | Simple but more space            |
 | Sort         | O(n log n)     | O(n)  | Simple, not optimal              |
 | QuickSelect  | O(n) avg       | O(1)  | Best average, but modifies input |
@@ -346,9 +363,10 @@ def k_closest_quickselect(points: list[list[int]], k: int) -> list[list[int]]:
 
 ```python
 import heapq
+from typing import List
 
-def k_closest_to_point(points: list[list[int]], k: int,
-                       target: list[int]) -> list[list[int]]:
+def k_closest_to_point(points: List[List[int]], k: int,
+                       target: List[int]) -> List[List[int]]:
     """
     Find k closest points to target (not origin).
 
@@ -357,7 +375,7 @@ def k_closest_to_point(points: list[list[int]], k: int,
     """
     tx, ty = target
 
-    def dist(p):
+    def dist(p: List[int]) -> int:
         return (p[0] - tx)**2 + (p[1] - ty)**2
 
     return heapq.nsmallest(k, points, key=dist)
@@ -369,6 +387,7 @@ def k_closest_to_point(points: list[list[int]], k: int,
 
 ```python
 import heapq
+from typing import List
 
 class KClosestStream:
     """
@@ -382,7 +401,7 @@ class KClosestStream:
         self.k = k
         self.heap = []  # Max heap: (-dist, point)
 
-    def add(self, point: list[int]) -> list[list[int]]:
+    def add(self, point: List[int]) -> List[List[int]]:
         x, y = point
         dist = x*x + y*y
 
@@ -401,7 +420,9 @@ class KClosestStream:
 Different problem, different approach:
 
 ```python
-def find_closest_elements(arr: list[int], k: int, x: int) -> list[int]:
+from typing import List
+
+def find_closest_elements(arr: List[int], k: int, x: int) -> List[int]:
     """
     Find k closest elements to x in sorted array.
 
@@ -416,6 +437,8 @@ def find_closest_elements(arr: list[int], k: int, x: int) -> list[int]:
         mid = (left + right) // 2
 
         # Compare distances of window edges to x
+        # If right edge is closer or same distance but we prefer left, move right
+        # (Since x - arr[mid] > arr[mid + k] - x means arr[mid + k] is strictly closer to x than arr[mid])
         if x - arr[mid] > arr[mid + k] - x:
             left = mid + 1
         else:
@@ -430,36 +453,33 @@ def find_closest_elements(arr: list[int], k: int, x: int) -> list[int]:
 
 ```python
 import heapq
+from typing import List
 
-def k_smallest_pairs(nums1: list[int], nums2: list[int],
-                     k: int) -> list[list[int]]:
+def k_smallest_pairs(nums1: List[int], nums2: List[int],
+                     k: int) -> List[List[int]]:
     """
     Find k pairs with smallest sums from two sorted arrays.
 
     Time: O(k log k)
-    Space: O(k)
+    Space: O(k) for the heap
     """
     if not nums1 or not nums2:
         return []
 
     result = []
-    # Min heap: (sum, i, j)
-    heap = [(nums1[0] + nums2[0], 0, 0)]
-    visited = {(0, 0)}
+    # Min heap: (sum, index1, index2)
+    # We only push elements paired with nums2[0] initially to avoid O(N*M) space
+    heap = []
+    for i in range(min(k, len(nums1))):
+        heapq.heappush(heap, (nums1[i] + nums2[0], i, 0))
 
     while heap and len(result) < k:
         _, i, j = heapq.heappop(heap)
         result.append([nums1[i], nums2[j]])
 
-        # Add (i+1, j) if valid
-        if i + 1 < len(nums1) and (i + 1, j) not in visited:
-            heapq.heappush(heap, (nums1[i + 1] + nums2[j], i + 1, j))
-            visited.add((i + 1, j))
-
-        # Add (i, j+1) if valid
-        if j + 1 < len(nums2) and (i, j + 1) not in visited:
+        # If there's another element in nums2 to pair with nums1[i], add it to heap
+        if j + 1 < len(nums2):
             heapq.heappush(heap, (nums1[i] + nums2[j + 1], i, j + 1))
-            visited.add((i, j + 1))
 
     return result
 ```

@@ -48,6 +48,23 @@ Edge 2-0: 2 and 0 already in SAME set → CYCLE!
 
 ---
 
+## Theory: Formalizing Edge Types in Undirected DFS
+
+When we perform a DFS on an undirected graph, every edge falls into one of two categories relative to the DFS traversal tree:
+
+1.  **Tree Edge**: An edge that leads to an unvisited node. These edges form the DFS spanning tree (or forest, if disconnected).
+2.  **Back Edge**: An edge that connects a node to an ancestor in the DFS tree. *Finding a back edge is the necessary and sufficient condition for a cycle to exist.*
+
+*(Note: Unlike directed graphs, undirected DFS does not produce "Forward Edges" or "Cross Edges". If an edge connects two branches, it would have been traversed as a tree edge or back edge depending on which branch explored it first.)*
+
+### Why Parent Tracking Works
+
+Because edges in an undirected graph are bidirectional, when we traverse a tree edge from $u \to v$, the adjacency list for $v$ will contain an edge back to $u$.
+This edge $(v, u)$ is trivial; it just points back to the immediate parent in the DFS tree.
+A true **back edge** must point to a visited node that is *not* the immediate parent.
+
+---
+
 ## When NOT to Use
 
 **Parent-tracking DFS is wrong when:**
@@ -82,16 +99,11 @@ Solution: Track edge INDEX as parent, not node ID
 
 ---
 
-## Interview Context
+### Interview Context: FANG Variations
 
-Cycle detection in undirected graphs is important because:
+**Amazon Context**: Amazon heavily favors graph problems where the graph is *not* given explicitly as an adjacency list. You often have to build it from a 2D grid or a list of constraints. A common variation is cycle detection in a grid (e.g., "Is there a cycle of the same color?"), where you can move in 4 directions. In this grid variation, the "parent" is simply the previous $(r, c)$ coordinate you came from.
 
-1. **Graph Valid Tree**: A tree is a connected acyclic graph
-2. **Redundant Connection**: Find edge that creates cycle
-3. **Union-Find practice**: Classic use case
-4. **Different from directed**: Simpler algorithm
-
-"Graph Valid Tree" is a frequently asked FANG+ problem.
+**Google Context**: Google often tests cycle detection implicitly. They might ask "Can we remove one edge to make this graph a tree?" (Redundant Connection) or "Is this sequence of connections valid without creating a loop?" which forces you to use Union-Find on a stream of edges.
 
 ---
 
@@ -387,13 +399,13 @@ print(find_redundant_connection(edges))  # [2, 3]
 
 ---
 
-## Comparison of Approaches
+## Comparison of Approaches & Complexity Trade-offs
 
-| Approach     | Time        | Space | Best For                 |
-| ------------ | ----------- | ----- | ------------------------ |
-| DFS + Parent | O(V + E)    | O(V)  | General use              |
-| BFS + Parent | O(V + E)    | O(V)  | Avoid recursion          |
-| Union-Find   | O(E × α(V)) | O(V)  | Edge processing, dynamic |
+| Approach     | Time        | Space | Best For                 | Pros/Cons |
+| ------------ | ----------- | ----- | ------------------------ | --------- |
+| DFS + Parent | O(V + E)    | O(V)  | General use              | **Pros:** Extremely short, simple to write. Native call stack. <br> **Cons:** Recursion depth = $O(V)$. Stack Overflow risk on deep lines (e.g. 100,000 nodes in a chain). |
+| BFS + Parent | O(V + E)    | O(V)  | Avoid recursion          | **Pros:** Immune to Stack Overflow. Level-order processing finds shortest cycles early. <br> **Cons:** slightly more verbose (managing the queue). Memory spike if the tree is wide. |
+| Union-Find   | O(E × α(V)) | O(V)  | Edge processing, dynamic | **Pros:** Best for "online" algorithms where edges are streamed. Don't need to build adjacency list. <br> **Cons:** Slower asymptotically than O(V+E) if E is huge. Hard to extract the actual cycle path. |
 
 ---
 
