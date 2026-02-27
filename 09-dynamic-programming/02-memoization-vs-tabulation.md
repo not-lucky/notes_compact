@@ -4,322 +4,172 @@
 
 ## Overview
 
-Both memoization (top-down) and tabulation (bottom-up) are techniques for implementing DP. They achieve the same asymptotic complexity but differ in implementation style, space optimization potential, and debugging ease.
+Dynamic Programming can be implemented using two main techniques: **Memoization (Top-Down)** and **Tabulation (Bottom-Up)**. Both approaches solve problems by breaking them into overlapping subproblems and storing the results to avoid redundant work. While they achieve the same asymptotic time complexity, they differ significantly in implementation style, memory usage, and potential for space optimization.
 
-## Building Intuition
-
-**Why do two approaches exist?**
-
-1. **Memoization mirrors human thinking**: When you think about Fibonacci(10), you naturally think "I need Fibonacci(9) and Fibonacci(8) first." This top-down, recursive decomposition is intuitive. Memoization simply adds caching to avoid recomputation.
-
-2. **Tabulation mirrors computation order**: Computers execute sequentially. Tabulation explicitly builds solutions from smallest subproblems up, making dependencies clear and enabling space optimization.
-
-3. **The Trade-off**:
-   - **Memoization**: Easier to write (just add caching to recursion), only solves needed subproblems, but uses call stack and is harder to space-optimize.
-   - **Tabulation**: Requires understanding dependency order upfront, solves all subproblems, but avoids stack overflow and enables O(1) space optimizations.
-
-4. **Mental Model**: Think of memoization as "lazy evaluation with caching"—you only compute what you need. Tabulation is "eager evaluation"—you systematically build the entire solution table.
-
-5. **When each shines**:
-   - Memoization: When many subproblems are never needed (sparse state space), or when the recursive structure is complex.
-   - Tabulation: When you need space optimization, or when the iteration order is straightforward.
-
-## Interview Context
-
-Understanding both approaches is essential because:
-
-1. **Different problems favor different approaches**: Some easier top-down, others bottom-up
-2. **Space optimization**: Tabulation often easier to optimize
-3. **Interview flexibility**: Solve both ways to impress
-4. **Debugging**: Memoization easier to debug initially
+Understanding when and how to use each approach is critical for technical interviews.
 
 ---
 
-## When NOT to Use Each
+## 1. Memoization (Top-Down)
 
-### When NOT to use DP at all
+### Mental Model: "Lazy Evaluation with Caching"
+Memoization starts with the original, large problem and recursively breaks it down into smaller subproblems. Whenever a subproblem is solved, its result is stored in a cache (usually a hash map or an array). Before computing any subproblem, we check the cache; if the result is already there, we return it immediately.
 
-Before choosing memoization or tabulation, confirm DP is the right tool:
-
-1. **When Greedy works (Overlapping Subproblems missing):** If making a locally optimal choice always leads to a globally optimal solution, DP is overkill.
-   *   **Counter-example:** Finding minimum coins for standard US denominations (1, 5, 10, 25). Greedy works perfectly ($O(1)$ per coin type). DP ($O(n \cdot C)$) is unnecessary.
-2. **When there are no overlapping subproblems:** If subproblems are independent, use Divide and Conquer.
-   *   **Counter-example:** Merge Sort breaks an array into halves and sorts them. Sorting the left half doesn't share computations with sorting the right half.
-
-### When NOT to Use Memoization
-
-1. **Deep Recursion Risk**: Python has a default recursion limit of ~1000. For n = 10,000, memoization will stack overflow. Use `sys.setrecursionlimit()` cautiously or switch to tabulation.
-
-2. **Space Optimization Needed**: When you only need the last few states (like Fibonacci needing only prev2 and prev1), tabulation allows O(1) space. Memoization inherently stores all computed states.
-
-3. **Cache Overhead Matters**: Hash table lookups (O(1) average) have constant overhead. For very tight time constraints or simple recurrences, tabulation's array indexing is faster.
-
-4. **Predictable Memory Usage**: Memoization's cache grows unpredictably. Tabulation allocates exactly what's needed upfront.
-
-### When NOT to Use Tabulation
-
-1. **Sparse State Space**: If only a small fraction of states are actually needed (e.g., subset sum with large capacity but few items), memoization avoids wasted computation.
-
-2. **Complex Dependency Order**: When it's hard to determine which states to fill first (e.g., recursive tree structures), memoization's natural recursion handles dependencies automatically.
-
-3. **Quick Prototyping**: Memoization is faster to write and debug. Use it first, then convert to tabulation if needed.
-
-4. **Multi-dimensional States**: With 3+ dimensions, figuring out the correct loop nesting for tabulation is error-prone. Memoization handles this naturally.
-
----
-
-## Overview Comparison
-
-| Aspect             | Memoization (Top-Down)            | Tabulation (Bottom-Up)    |
-| ------------------ | --------------------------------- | ------------------------- |
-| Direction          | Start from problem, recurse down  | Start from base, build up |
-| Implementation     | Recursive + cache                 | Iterative + table         |
-| Subproblems        | Solves only needed ones           | Solves all subproblems    |
-| Stack              | Uses call stack (recursion limit) | No stack issues           |
-| Space optimization | Harder                            | Easier                    |
-| Debugging          | Often easier                      | State transitions clearer |
-
----
-
-## Memoization (Top-Down)
+It is called "top-down" because we start from the top (the target state) and move down towards the base cases.
 
 ### How It Works
+1. Write a standard recursive solution.
+2. Add a cache (dictionary/hash map or array) to store results.
+3. Before doing any computation in the recursive function, check if the state's result is in the cache.
+4. After computing a result, save it in the cache before returning.
 
-1. Start with the original problem
-2. Recursively break into subproblems
-3. Before computing, check if already solved
-4. Store result after computing
+### When to Use Memoization
+- **Sparse State Space:** When you don't need to evaluate all possible subproblems to find the answer. Memoization only computes exactly what is needed.
+- **Complex Transitions/Dependencies:** When the sequence of subproblems is hard to define iteratively (e.g., recursive operations on trees or graphs).
+- **Prototyping:** It is usually much faster to write and debug because it closely follows the natural recursive mathematical definition of the problem.
 
-### Template
+### Drawbacks
+- **Recursion Overhead:** Function calls add overhead to the call stack, making it slightly slower than iteration by a constant factor.
+- **Stack Overflow:** Deep recursion can exceed the maximum recursion depth limits in languages like Python (default ~1000).
+- **Harder to Space-Optimize:** Because the recursion stack and cache persist throughout the execution, it's very difficult to reduce the memory complexity below $O(N)$.
 
-```python
-def solve_memo(params):
-    """
-    Top-down DP with memoization.
-    """
-    memo = {}
-
-    def dp(state):
-        # Base case
-        if is_base_case(state):
-            return base_value
-
-        # Check cache
-        if state in memo:
-            return memo[state]
-
-        # Compute and cache
-        result = compute_from_subproblems(state)
-        memo[state] = result
-        return result
-
-    return dp(initial_state)
-```
-
-### Example: Fibonacci
+### Example: Fibonacci Sequence
 
 **Mathematical Recurrence:**
 $$
-dp[i] = \begin{cases}
-0 & \text{if } i = 0 \\
-1 & \text{if } i = 1 \\
-dp[i-1] + dp[i-2] & \text{if } i \ge 2
+F(n) = \begin{cases}
+0 & \text{if } n = 0 \\
+1 & \text{if } n = 1 \\
+F(n-1) + F(n-2) & \text{if } n \ge 2
 \end{cases}
 $$
 
-**Base Cases Explained:**
-- `dp[0] = 0`: The 0th Fibonacci number is 0 by definition.
-- `dp[1] = 1`: The 1st Fibonacci number is 1 by definition.
-
+**Python Implementation:**
 ```python
 def fib_memo(n: int) -> int:
     """
-    Memoized Fibonacci.
-
-    Time: O(n)
-    Space: O(n) for memo + O(n) for call stack
+    Top-Down DP with Memoization.
+    Time: O(n) | Space: O(n) for cache + O(n) for call stack
     """
+    # Using an array for the cache is often faster than a dictionary
+    # if the state space is dense and integer-based (0 to n)
     memo = {}
-
+    
     def dp(i: int) -> int:
+        # 1. Base cases
         if i <= 1:
             return i
-
+            
+        # 2. Check cache
         if i in memo:
             return memo[i]
-
+            
+        # 3. Compute, store, and return
         memo[i] = dp(i - 1) + dp(i - 2)
         return memo[i]
-
+        
     return dp(n)
 ```
 
-### Using @lru_cache (Python)
-
-```python
-from functools import lru_cache
-
-def fib_lru(n: int) -> int:
-    """
-    Python's built-in memoization.
-
-    Note: Clear cache with fib.cache_clear() if needed.
-    """
-    @lru_cache(maxsize=None)
-    def dp(i: int) -> int:
-        if i <= 1:
-            return i
-        return dp(i - 1) + dp(i - 2)
-
-    return dp(n)
-```
+*(Note: In Python, you can also use `@functools.lru_cache(None)` or `@functools.cache` to automatically memoize a recursive function).*
 
 ---
 
-## Tabulation (Bottom-Up)
+## 2. Tabulation (Bottom-Up)
+
+### Mental Model: "Eager Evaluation"
+Tabulation starts at the base cases and systematically builds up to the target problem. It uses an iterative approach (loops) to fill a table (array or matrix) with solutions to subproblems, ensuring that by the time you need to compute a state, all its dependencies have already been computed.
+
+It is called "bottom-up" because we start at the bottom (base cases) and work our way up to the target state.
 
 ### How It Works
+1. Initialize a table (array/matrix) to hold the results of all subproblems.
+2. Initialize the base cases directly in the table.
+3. Use loops to iterate through the remaining states.
+4. Compute the current state using the previously computed values in the table.
+5. Return the final answer, usually located at the end of the table.
 
-1. Create a table to store all subproblem solutions
-2. Fill table starting from base cases
-3. Use previously computed values for new entries
-4. Final answer is in a specific table position
+### When to Use Tabulation
+- **Dense State Space:** When you know you will have to compute almost all subproblems anyway.
+- **Strict Performance Limits:** Iteration is generally faster than recursion because there is no function call overhead.
+- **Avoiding Stack Overflow:** Iteration does not use the call stack, allowing it to handle massive inputs safely.
+- **Space Optimization:** Tabulation often allows for dramatic space optimization (e.g., reducing $O(N)$ space to $O(1)$) by discarding old states that are no longer needed.
 
-### Template
+### Drawbacks
+- **Computes Unnecessary States:** Tabulation evaluates *every* state up to the target, even if some of those states are never actually needed for the final answer.
+- **Harder to Formulate:** Determining the correct order to fill the table (especially for multi-dimensional DP) can be non-intuitive.
 
-```python
-def solve_tab(params):
-    """
-    Bottom-up DP with tabulation.
-    """
-    # Initialize table
-    dp = [initial_value] * (size + 1)
+### Example: Fibonacci Sequence
 
-    # Base cases
-    dp[0] = base_value_0
-    # dp[1] = base_value_1, etc.
-
-    # Fill table
-    for i in range(start, end + 1):
-        dp[i] = compute_from_previous(dp, i)
-
-    return dp[answer_index]
-```
-
-### Example: Fibonacci
-
-**Mathematical Recurrence:**
-$$
-dp[i] = \begin{cases}
-0 & \text{if } i = 0 \\
-1 & \text{if } i = 1 \\
-dp[i-1] + dp[i-2] & \text{if } i \ge 2
-\end{cases}
-$$
-
-**Base Cases Explained:**
-- `dp[0] = 0`: The 0th Fibonacci number is 0 by definition.
-- `dp[1] = 1`: The 1st Fibonacci number is 1 by definition.
-
+**Python Implementation:**
 ```python
 def fib_tab(n: int) -> int:
     """
-    Tabulated Fibonacci.
-
-    Time: O(n)
-    Space: O(n)
+    Bottom-Up DP with Tabulation.
+    Time: O(n) | Space: O(n)
     """
     if n <= 1:
         return n
-
+        
+    # 1. Initialize table
     dp = [0] * (n + 1)
+    
+    # 2. Base cases
     dp[0] = 0
     dp[1] = 1
-
+    
+    # 3. Fill the table iteratively
     for i in range(2, n + 1):
         dp[i] = dp[i - 1] + dp[i - 2]
-
+        
+    # 4. Return final answer
     return dp[n]
 ```
 
 ---
 
-## Space Optimization
+## 3. The Power of Tabulation: Space Optimization
 
-Tabulation often allows space reduction when only recent states are needed. **The core logic:** If calculating `dp[i]` only requires looking back `k` steps (e.g., `dp[i-1]`, `dp[i-2]`), you only need to store those `k` previous values, not the entire array of size `n`.
+One of the biggest advantages of tabulation is the ability to optimize space. 
 
-### Fibonacci: O(n) → O(1) Space
+**The Core Concept:** If calculating the current state `dp[i]` only requires looking back a fixed number of steps (e.g., `dp[i-1]` and `dp[i-2]`), we don't need to store the entire `dp` array. We only need to keep track of the most recent steps.
 
-**Logic:** Computing `fib(i)` only requires `fib(i-1)` and `fib(i-2)`. Once `fib(i)` is computed, `fib(i-2)` is never needed again. We can maintain just two variables instead of an array.
+### Fibonacci: $O(N)$ Space $\rightarrow$ $O(1)$ Space
+
+In Fibonacci, `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. Once `dp[i]` is computed, `dp[i-2]` is never needed again. We can replace the $O(N)$ array with just two variables.
 
 ```python
 def fib_optimized(n: int) -> int:
     """
-    Only need last two values.
-
-    Time: O(n)
-    Space: O(1)
+    Space-Optimized Bottom-Up DP.
+    Time: O(n) | Space: O(1)
     """
     if n <= 1:
         return n
-
-    prev2, prev1 = 0, 1
-
+        
+    # We only need to track the last two states
+    prev2 = 0  # represents dp[i-2]
+    prev1 = 1  # represents dp[i-1]
+    
     for i in range(2, n + 1):
         curr = prev1 + prev2
         prev2 = prev1
         prev1 = curr
-
+        
     return prev1
 ```
 
-### 2D to 1D: Row-by-Row Processing
+### 2D DP: $O(N \times M)$ Space $\rightarrow$ $O(M)$ Space
 
-**Logic:** If computing `dp[i][j]` only requires values from the current row `dp[i]` and the immediate previous row `dp[i-1]`, we don't need to store all `n` rows. We only need an array representing the previous row (and sometimes a temporary array for the current row, which can often be optimized into a single array updated in place).
-
-```python
-# Original: O(n × m) space
-dp = [[0] * m for _ in range(n)]
-for i in range(n):
-    for j in range(m):
-        dp[i][j] = dp[i-1][j] + dp[i][j-1]
-
-# Optimized: O(m) space
-dp = [0] * m
-for i in range(n):
-    for j in range(m):
-        # dp[j] on right side is previous row's value dp[i-1][j]
-        # dp[j-1] on right side is current row's newly updated value dp[i][j-1]
-        dp[j] = dp[j] + dp[j-1]  # Overwrites dp[j] with new value for current row
-```
+A similar logic applies to 2D DP problems (like grids or string comparisons). If computing a cell `dp[i][j]` only requires values from the *current row* `dp[i]` and the *previous row* `dp[i-1]`, we don't need an $N \times M$ matrix. We only need two rows of size $M$ (or sometimes just a single 1D array of size $M$ updated in-place). We will explore this further in the 2D DP sections.
 
 ---
 
-## When to Use Which?
+## 4. Side-by-Side Comparison: Unique Paths
 
-### Use Memoization When:
+To see how the approaches differ on a real problem, let's look at counting paths from the top-left to the bottom-right in an $m \times n$ grid, moving only right or down.
 
-1. **Not all subproblems needed**: Only computes what's required
-2. **Natural recursive structure**: Problem is naturally recursive
-3. **Quick prototyping**: Easier to implement and debug
-4. **Sparse subproblem space**: Many subproblems unused
-
-### Use Tabulation When:
-
-1. **All subproblems needed**: No waste in computing all
-2. **Space optimization needed**: Easier to reduce space
-3. **Avoiding stack overflow**: Large n causes recursion limits
-4. **Clear iteration order**: Natural left-to-right or top-to-bottom
-
----
-
-## Side-by-Side Comparison: Unique Paths
-
-### Problem
-
-Count paths from top-left to bottom-right in m×n grid, moving only right or down.
-
-**Mathematical Recurrence:**
+**Recurrence:**
 $$
 dp[i][j] = \begin{cases}
 1 & \text{if } i = 0 \text{ or } j = 0 \\
@@ -327,175 +177,75 @@ dp[i-1][j] + dp[i][j-1] & \text{if } i > 0 \text{ and } j > 0
 \end{cases}
 $$
 
-**Base Cases Explained:**
-- `dp[0][j] = 1`: There is only 1 way to reach any cell in the top row (by continually moving right).
-- `dp[i][0] = 1`: There is only 1 way to reach any cell in the left column (by continually moving down).
-
-**DP Table Visualization (3x3 grid):**
-|   | 0 | 1 | 2 |
-|---|---|---|---|
-| **0** | 1 | 1 | 1 |
-| **1** | 1 | 2 | 3 |
-| **2** | 1 | 3 | 6 |
-*Cell `dp[i][j]` is the sum of the cell above `dp[i-1][j]` and the cell to the left `dp[i][j-1]`.*
-
-### Memoization
-
+### Top-Down (Memoization)
 ```python
 def unique_paths_memo(m: int, n: int) -> int:
-    """
-    Top-down with memoization.
-    """
     memo = {}
-
-    def dp(i: int, j: int) -> int:
-        # Base cases
-        if i == 0 or j == 0:
+    
+    def dp(r, c):
+        # Base case: edges
+        if r == 0 or c == 0:
             return 1
-
-        if (i, j) in memo:
-            return memo[(i, j)]
-
-        # Recurrence
-        memo[(i, j)] = dp(i - 1, j) + dp(i, j - 1)
-        return memo[(i, j)]
-
+            
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        # Recursive step
+        memo[(r, c)] = dp(r - 1, c) + dp(r, c - 1)
+        return memo[(r, c)]
+        
+    # Start from bottom-right, recurse up to top-left
     return dp(m - 1, n - 1)
 ```
 
-### Tabulation
-
+### Bottom-Up (Tabulation)
 ```python
 def unique_paths_tab(m: int, n: int) -> int:
-    """
-    Bottom-up with tabulation.
-    """
+    # Initialize full table
     dp = [[1] * n for _ in range(m)]
-
-    for i in range(1, m):
-        for j in range(1, n):
-            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
-
+    
+    # Fill iteratively (base cases are already 1)
+    for r in range(1, m):
+        for c in range(1, n):
+            dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
+            
     return dp[m - 1][n - 1]
 ```
 
-### Space Optimized
+---
 
-```python
-def unique_paths_opt(m: int, n: int) -> int:
-    """
-    O(n) space.
-    """
-    dp = [1] * n
+## 5. Summary Cheat Sheet
 
-    for i in range(1, m):
-        for j in range(1, n):
-            dp[j] = dp[j] + dp[j - 1]
-
-    return dp[n - 1]
-```
+| Feature | Memoization (Top-Down) | Tabulation (Bottom-Up) |
+| :--- | :--- | :--- |
+| **Strategy** | Start at target, break into subproblems. | Start at bases, build up to target. |
+| **Implementation** | Recursion + Caching (Hash map/Array) | Iteration (Loops) + Array/Matrix |
+| **Evaluation** | **Lazy**: Computes only needed states. | **Eager**: Computes all states. |
+| **Speed** | Fast, but has recursion overhead. | Faster (no call stack overhead). |
+| **Space** | $O(N)$ (Cache + Call Stack). | $O(N)$, but easily optimized to $O(1)$. |
+| **Stack Overflow?** | Yes, risk for large inputs. | No. |
+| **Ease of Writing** | Very intuitive, mimics math formula. | Harder to define state dependencies. |
 
 ---
 
-## Handling Recursion Limits (Python)
+## Interview Strategy Guide
 
-```python
-import sys
-sys.setrecursionlimit(10000)  # Increase if needed
-
-# Or use tabulation for very large n
-```
+1. **Start Top-Down:** In an interview, it is almost always best to start by discovering the recursive relation and writing the Memoized solution. It is faster to write and easier to verify correctness.
+2. **Discuss Trade-offs:** Mention to the interviewer: *"This top-down approach is $O(N)$ space due to the call stack. For massive inputs, we could hit recursion limits. We could convert this to bottom-up tabulation."*
+3. **Convert to Bottom-Up (If Asked):** If the interviewer asks to optimize, rewrite it iteratively.
+4. **Space Optimize:** If you write a tabulated solution, always look for space optimization. If your loop only looks back $k$ steps, reduce your $O(N)$ array to $k$ variables!
 
 ---
 
-## Common Pitfalls
+## Common Pitfalls & Mistakes
 
-### Memoization
-
-```python
-# WRONG: Mutable default argument
-def dp(n, memo={}):  # Shared across calls!
-    ...
-
-# CORRECT: Initialize inside or pass explicitly
-def dp(n, memo=None):
-    if memo is None:
-        memo = {}
-    ...
-```
-
-### Tabulation
-
-```python
-# WRONG: Off-by-one in loop bounds
-for i in range(n):  # Missing dp[n]!
-    dp[i] = ...
-
-# CORRECT: Include the target
-for i in range(n + 1):
-    dp[i] = ...
-```
+- **Python Default Arguments for Memo:** Never use `def dp(n, memo={}):`. Default mutable arguments in Python persist across completely separate function calls! Always initialize `memo = {}` *inside* the outer wrapper function.
+- **Index Out of Bounds in Tabulation:** When writing tabulation loops, pay close attention to `range(n)` vs `range(n + 1)`. Often, DP arrays are sized `n + 1` to account for a base case at index 0.
 
 ---
 
-## Converting Between Approaches
+## Next Steps
 
-### Memoization → Tabulation
+Now that you understand the two core implementations of DP, we will apply them to real patterns.
 
-1. Identify all unique states from memoization keys
-2. Determine the order states should be filled (dependencies)
-3. Create table of appropriate dimensions
-4. Fill base cases
-5. Iterate in dependency order
-
-### Tabulation → Memoization
-
-1. Identify the recurrence relation
-2. Convert to recursive function
-3. Add memoization cache
-4. Handle base cases in recursion
-
----
-
-## Performance Comparison
-
-```python
-import time
-
-def benchmark(func, n):
-    start = time.time()
-    result = func(n)
-    elapsed = time.time() - start
-    return result, elapsed
-
-# For n = 35:
-# Naive recursion: ~3.5 seconds
-# Memoization: ~0.00005 seconds
-# Tabulation: ~0.00003 seconds
-```
-
----
-
-## Interview Tips
-
-1. **Start with memoization**: Easier to derive from recursion
-2. **Optimize if asked**: Convert to tabulation, then space-optimize
-3. **Know both**: Some problems easier one way or another
-4. **Mention tradeoffs**: Shows depth of understanding
-5. **Watch recursion limits**: Mention when tabulation is necessary
-
----
-
-## Key Takeaways
-
-1. **Memoization**: Recursive, cache results, natural thinking
-2. **Tabulation**: Iterative, build table, easier to optimize
-3. **Both achieve same time complexity**: Just different approaches
-4. **Space optimization**: Usually only with tabulation
-5. **Choose based on problem**: Not one-size-fits-all
-
----
-
-## Next: [03-1d-dp-basics.md](./03-1d-dp-basics.md)
-
-Learn the fundamental 1D DP patterns with classic problems.
+**Next:** [03-1d-dp-basics](./03-1d-dp-basics.md)
