@@ -26,17 +26,17 @@ The true power of this pattern is **Sorting + Early Termination**. If candidates
 **The Spending Tree (`target=7, candidates=[2,3,6,7]`)**:
 
 ```text
-State: (start_idx, remaining_target)
+State: (start_idx, remaining)
 
                            (0, 7)
-                 /           |          \
-           (0, 5)          (1, 4)      (2, 1)
-           /    \           |             |
-      (0, 3)    (1, 2)    (1, 1)       ✗ (6 > 1, break)
-      /    \       |        |
-  (0, 1)  (1, 0) ✗ (3>2) ✗ (3>1)
-   /        ✓
-✗ (2>1)
+                 /           |         \        \
+           (0, 5)          (1, 4)     (2, 1)   (3, 0) ✓
+          /      \           |           |
+      (0, 3)    (1, 2)     (1, 1)        ✗ (6 > 1)
+      /    \       |         |
+  (0, 1) (1, 0)✓   ✗ (3>2)   ✗ (3>1)
+    |
+    ✗ (2>1)
 ```
 
 *Notice the pruning logic: Once `remaining` is 1, candidate `2` is too big. Since the array `[2,3,6,7]` is sorted, we immediately `break` because `3, 6, 7` will also be too big.*
@@ -124,35 +124,36 @@ Given `candidates = [1, 1, 6], target = 8`:
 
 ```text
 State: (start, path)
+
                           (0, [])
-               /             |             \
-            (1, [1])      (2, [1])       (3, [6])
-            /                |              |
-      (2, [1,1])         ✗ (duplicate,    ✗ (6 > 8-6)
-         |               i=1, start=0)
-      (3, [1,1,6])
-         ✓ (target=8)
+                 /           |            \
+           (1, [1])       (2, [1])      (3, [6])
+           /      \          |             |
+    (2, [1,1])  (3, [1,6])   ✗ (duplicate  ✗ (6 > 2)
+       /          ✗ (6 > 1)     skip)
+  (3, [1,1,6])
+     ✓ (sum=8)
 ```
 
-*If we didn't skip the second `1` at the root level, we would generate `[1, 6]` twice.*
+*If we didn't skip the second `1` at the root level, we would generate `[1, 6]` twice. The condition `i > start` ensures we only skip duplicates horizontally (siblings), allowing vertical duplicates like `[1, 1]`.*
 
 ## Complexity Analysis
 
-Let $n$ be the number of candidates, $T$ be the target, and $M$ be the minimum candidate value.
+Let $N$ be the number of candidates, $T$ be the target, and $M$ be the minimum candidate value.
 
 ### Combination Sum I (Unlimited Reuse)
 
-- **Time Complexity**: Loose upper bound $\mathcal{O}(N^{\frac{T}{M}})$. The maximum depth of the recursion tree is $\frac{T}{M}$ (if we repeatedly pick the smallest element). At each level, we have at most $N$ choices. Pruning significantly reduces this.
-- **Space/Memory Complexity**: $\mathcal{O}(\frac{T}{M})$. The call stack and the `path` list can grow up to $\frac{T}{M}$ deep. (This is Auxiliary Space, excluding the output array).
+- **Time Complexity**: Loose upper bound $\mathcal{O}(N^{\frac{T}{M}})$. The maximum depth of the recursion tree is $\frac{T}{M}$ (if we repeatedly pick the smallest element). At each level, we have at most $N$ choices. Early pruning drastically reduces the actual branching factor.
+- **Auxiliary Space**: $\mathcal{O}(\frac{T}{M})$ for the call stack and the `path` list.
 
 ### Combination Sum II (No Reuse)
 
-- **Time Complexity**: Loose upper bound $\mathcal{O}(2^n)$. Each element is either included or excluded. Sorting takes $\mathcal{O}(n \log n)$. Pruning and duplicate skipping drastically reduce the actual branching factor.
-- **Space/Memory Complexity**: $\mathcal{O}(n)$. The call stack and `path` list can grow up to $n$ deep (if we select every element).
+- **Time Complexity**: Loose upper bound $\mathcal{O}(2^N)$. In the worst case, each element is either included or excluded. Sorting takes $\mathcal{O}(N \log N)$. Duplicate skipping and early pruning drastically reduce actual branches.
+- **Auxiliary Space**: $\mathcal{O}(N)$ for the call stack and the `path` list.
 
 ## Common Pitfalls
 
-1. **Passing Sliced Arrays**: Do NOT use `backtrack(candidates[i+1:])` or similar $O(N)$ slicing operations. This generates massive memory overhead and destroys the time complexity. Always pass a `start` index pointer.
+1. **Passing Sliced Arrays**: Do NOT use `backtrack(candidates[i+1:])` or similar $\mathcal{O}(N)$ slicing operations. This generates massive memory overhead and destroys the time complexity. Always pass a `start` index pointer.
 2. **Incorrect Duplicate Logic**: A common mistake is using `if candidates[i] == candidates[i-1]: continue` without the `i > start` check. This aggressively prunes valid vertical branches where the same number is used across different levels (e.g., `[1, 1, 6]`). The `i > start` condition correctly restricts the skipping to horizontal siblings.
 3. **Forgetting to Sort**: Duplicate skipping (`candidates[i] == candidates[i-1]`) and early termination (`candidates[i] > remaining`) completely fail if the input array is not sorted first.
 4. **Mutating State Variables Incorrectly**: Ensure you subtract directly in the recursive call (`remaining - candidates[i]`) rather than mutating `remaining -= candidates[i]` before the call. If you mutate it before, you must carefully restore it (`remaining += candidates[i]`) afterward. Passing it inline is cleaner and less error-prone.
