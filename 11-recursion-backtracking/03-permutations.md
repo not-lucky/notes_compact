@@ -28,13 +28,13 @@ In **Permutations**, we *want* both `[1,2]` and `[2,1]`. Therefore, we do not us
 ### The Permutation Tree
 
 ```text
-                         []
-                    /    |    \
-               [1]      [2]     [3]
-              /   \    /   \   /   \
-          [1,2] [1,3] [2,1] [2,3] [3,1] [3,2]
-           |     |     |     |     |     |
-        [1,2,3] [1,3,2] [2,1,3] [2,3,1] [3,1,2] [3,2,1]
+                              []
+                    /         |         \
+                  [1]        [2]        [3]
+                 /   \      /   \      /   \
+             [1,2] [1,3]  [2,1] [2,3]  [3,1] [3,2]
+               |     |      |     |      |     |
+          [1,2,3] [1,3,2] [2,1,3] [2,3,1] [3,1,2] [3,2,1]
 ```
 
 At each step, we look at the array `[1, 2, 3]` and pick any element that isn't already used in the current branch.
@@ -54,8 +54,8 @@ def permute(nums: list[int]) -> list[list[int]]:
             result.append(path[:])  # Explicitly copy the path!
             return
 
-        # Suffix Selection model DOES NOT use a start_index here!
-        # We always iterate through the whole array.
+        # Unlike Subsets, we do NOT use a start_index here!
+        # We always iterate through the whole array from index 0.
         for i in range(len(nums)):
             # Skip elements we've already placed in our current permutation
             if used[i]:
@@ -123,12 +123,17 @@ def permute_unique(nums: list[int]) -> list[list[int]]:
 ```text
 nums = [1, 1, 2] (sorted)
 
-At the first slot (level 0):
-- Pick nums[0]=1: valid. Branches down to create [1, 1, 2], etc.
-- Pick nums[1]=1: wait. nums[1] == nums[0]. Is nums[0] used?
-  No, we just backtracked from it. That means we are at the SAME level.
-  Skip it! Otherwise, we'd generate all the [1, ...] permutations again.
-- Pick nums[2]=2: valid. Branches down to create [2, 1, 1].
+                              []
+                    /         |         \
+                  [1]        [1]*       [2]
+                 /   \                  / \
+             [1,1]   [1,2]          [2,1] [2,1]*
+               |       |              |
+            [1,1,2] [1,2,1]        [2,1,1]
+
+* Pruned: Duplicate element (nums[i] == nums[i-1]) AND the previous identical
+  element is NOT currently in use (not used[i-1]), meaning we are at the exact
+  same level and have just backtracked from it.
 ```
 
 ## Complexity Analysis
@@ -145,8 +150,9 @@ At the first slot (level 0):
 ## Common Pitfalls
 
 1. **Confusing Subsets and Permutations**: Subsets use a `start_index` parameter in the `backtrack` function to avoid looking backward. Permutations do not use a `start_index`; they loop `for i in range(len(nums))` every time and use a `used` array to skip previously picked elements.
-2. **Forgetting the Base Case**: Unlike Subsets (where every node is a valid subset), in Permutations, only the **leaf nodes** (where `len(path) == len(nums)`) are valid results.
-3. **The Duplicates Pruning Condition**: For `permute_unique`, the condition is `if i > 0 and nums[i] == nums[i-1] and not used[i-1]`.
+2. **O(N) Lookups for Visited Elements**: Do not use `if nums[i] in path:` to check if an element is used. `in` is an $\mathcal{O}(N)$ operation on a list, making your algorithm unnecessarily slow. Using a boolean `used` array provides $\mathcal{O}(1)$ lookups.
+3. **Forgetting the Base Case**: Unlike Subsets (where every node is a valid subset), in Permutations, only the **leaf nodes** (where `len(path) == len(nums)`) are valid results.
+4. **The Duplicates Pruning Condition**: For `permute_unique`, the condition is `if i > 0 and nums[i] == nums[i-1] and not used[i-1]`.
    - `i > 0`: Prevents index out of bounds.
    - `nums[i] == nums[i-1]`: Checks if the value is a duplicate.
    - `not used[i-1]`: Crucial part. It ensures we only skip if the previous identical element was just *un-chosen* (meaning we are at the exact same level of the tree). If `used[i-1]` is true, the previous duplicate was chosen at an *earlier/higher* level of the tree, which is allowed.
