@@ -18,25 +18,25 @@
   - [x] Improve DP Table Visualization readability and walkthrough.
 - [x] Improve `12-palindrome-dp.md`
 - [x] Improve `13-word-break.md`
-- [ ] Improve `14-regex-matching.md`
-  - [ ] Rewrite "Building Intuition" to clearly explain why this is a DP problem (overlapping subproblems from branching).
-  - [ ] Fix DP Recurrence formulation for Regex (it mentions $dp[i][j]$ is `True` if prefix matches, but base cases mix up string vs pattern indices). Clarify $i$ is string index, $j$ is pattern index.
-  - [ ] Improve the "Star Match" explanation. It says we drop `x*` from pattern for zero occurrences, which is `dp[i][j-2]`. Correct. But for one or more occurrences it says we check `match` and `dp[i-1][j]`. Let's verify `dp[i-1][j]` vs `dp[i-1][j-1]` or other options. If `a` matches `a`, we consume `a` from string but keep `a*` in pattern, so we check `dp[i-1][j]`. Yes.
-  - [ ] Fix tabulation python code readability. Use clearer variable names.
-  - [ ] Fix the space optimization python code logic.
-  - [ ] Fix Wildcard DP Transitions: $dp[i][j] = dp[i][j-1] \lor dp[i-1][j]$. This is correct. `*` matches empty sequence (`dp[i][j-1]`) or matches current char (`dp[i-1][j]`).
-  - [ ] Make the Visual Walkthrough tables more readable and intuitive. Add explanations of how we trace back.
-  - [ ] Update Complexity table. The notes for Tabulation and Memoization and 1D are a bit weirdly formatted.
-- [ ] Improve `15-buy-sell-stock.md`
-  - [ ] Add explicit state machine diagrams for all variants (not just cooldown).
-  - [ ] Clearly define what "State Machine DP" actually is.
-  - [ ] Improve variable naming (`hold` and `cash` are okay, but `held` and `sold`/`empty` might be better or clearly explained).
-  - [ ] Explain the Space Optimization from O(N) to O(1) explicitly.
-  - [ ] Fix the explanation of `hold` and `cash` for stock 2.
-  - [ ] Add explicit time/space complexity blocks.
-  - [ ] Improve Python examples with better comments and typing.
-  - [ ] Clarify the reverse iteration for Stock III and IV.
-  - [ ] Make the DP table/state transition clearer.
+- [x] Improve `14-regex-matching.md`
+  - [x] Rewrite "Building Intuition" to clearly explain why this is a DP problem (overlapping subproblems from branching).
+  - [x] Fix DP Recurrence formulation for Regex (it mentions $dp[i][j]$ is `True` if prefix matches, but base cases mix up string vs pattern indices). Clarify $i$ is string index, $j$ is pattern index.
+  - [x] Improve the "Star Match" explanation. It says we drop `x*` from pattern for zero occurrences, which is `dp[i][j-2]`. Correct. But for one or more occurrences it says we check `match` and `dp[i-1][j]`. Let's verify `dp[i-1][j]` vs `dp[i-1][j-1]` or other options. If `a` matches `a`, we consume `a` from string but keep `a*` in pattern, so we check `dp[i-1][j]`. Yes.
+  - [x] Fix tabulation python code readability. Use clearer variable names.
+  - [x] Fix the space optimization python code logic.
+  - [x] Fix Wildcard DP Transitions: $dp[i][j] = dp[i][j-1] \lor dp[i-1][j]$. This is correct. `*` matches empty sequence (`dp[i][j-1]`) or matches current char (`dp[i-1][j]`).
+  - [x] Make the Visual Walkthrough tables more readable and intuitive. Add explanations of how we trace back.
+  - [x] Update Complexity table. The notes for Tabulation and Memoization and 1D are a bit weirdly formatted.
+- [x] Improve `15-buy-sell-stock.md`
+  - [x] Add explicit state machine diagrams for all variants (not just cooldown).
+  - [x] Clearly define what "State Machine DP" actually is.
+  - [x] Improve variable naming (`hold` and `cash` are okay, but `held` and `sold`/`empty` might be better or clearly explained).
+  - [x] Explain the Space Optimization from O(N) to O(1) explicitly.
+  - [x] Fix the explanation of `hold` and `cash` for stock 2.
+  - [x] Add explicit time/space complexity blocks.
+  - [x] Improve Python examples with better comments and typing.
+  - [x] Clarify the reverse iteration for Stock III and IV.
+  - [x] Make the DP table/state transition clearer.
 - [x] Improve `16-matrix-chain.md`
 - [ ] Improve `17-burst-balloons.md`
 - [x] Improve `18-dp-on-strings.md`
