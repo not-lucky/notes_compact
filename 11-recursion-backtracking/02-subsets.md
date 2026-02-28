@@ -135,11 +135,12 @@ nums = [1, 2, 2] (sorted)
 - **Time Complexity**: $\mathcal{O}(N \cdot 2^N)$
   - There are $2^N$ possible subsets.
   - For each subset, copying `path[:]` into the result array takes $\mathcal{O}(N)$ time.
-- **Auxiliary Space**: $\mathcal{O}(N)$
-  - The maximum depth of the call stack is $N$.
-  - The `path` array takes $\mathcal{O}(N)$ space.
-- **Total Space**: $\mathcal{O}(N \cdot 2^N)$
-  - We store $2^N$ subsets, each of up to size $N$, in the `result` array.
+- **Space Complexity**:
+  - **Auxiliary Space (Call Stack + State)**: $\mathcal{O}(N)$
+    - The maximum depth of the call stack is $N$.
+    - The `path` array takes $\mathcal{O}(N)$ space.
+  - **Total Space (including Output)**: $\mathcal{O}(N \cdot 2^N)$
+    - We store $2^N$ subsets, each of up to size $N$, in the `result` array.
 
 ## Common Pitfalls
 
@@ -160,7 +161,7 @@ nums = [1, 2, 2] (sorted)
    # WRONG: Creates a new array every call, adding O(N) time and space overhead
    backtrack(nums[1:], path)
 
-   # CORRECT: Use an index pointer
+   # CORRECT: Use an O(1) index pointer
    backtrack(start_index + 1, path)
    ```
 
