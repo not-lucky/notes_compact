@@ -109,7 +109,7 @@ Given a set of activities with start and end times, select the **maximum number 
 
 ```
 Input: activities = [(1,4), (3,5), (0,6), (5,7), (3,8), (5,9), (6,10), (8,11), (8,12), (2,13), (12,14)]
-Output: 4 (e.g., activities (1,4), (5,7), (8,11), (12,14))
+Output: 4 (e.g., activities [(1,4), (5,7), (8,11), (12,14)])
 ```
 
 This is the classic **Activity Selection Problem**.
@@ -122,8 +122,8 @@ This is the classic **Activity Selection Problem**.
 
 Why end time, not start time?
 
-- Earliest end time leaves maximum room for future activities
-- Starting early doesn't help if the activity runs long
+- Earliest end time leaves maximum room for future activities.
+- Starting early doesn't help if the activity runs long.
 
 ```
 Example showing why start time fails:
@@ -131,7 +131,7 @@ Example showing why start time fails:
 Activities: [(0, 10), (1, 2), (3, 4)]
 
 Sort by start time: [(0, 10), (1, 2), (3, 4)]
-Greedy picks (0, 10) → only 1 activity
+Greedy picks (0, 10) → blocks (1, 2) and (3, 4) → only 1 activity
 
 Sort by end time: [(1, 2), (3, 4), (0, 10)]
 Greedy picks (1, 2), then (3, 4) → 2 activities ✓
@@ -198,24 +198,24 @@ def count_max_activities(activities: list[tuple[int, int]]) -> int:
 Activities: [(1,4), (3,5), (0,6), (5,7), (3,8), (5,9), (6,10), (8,11)]
 
 Sorted by end time:
-(1,4): |---|
-(3,5):   |--|
-(0,6): |-----|
-(5,7):     |--|
-(3,8):   |----|
-(5,9):     |---|
-(6,10):      |---|
-(8,11):        |--|
+(1,4):  |---|
+(3,5):    |--|
+(0,6): |------|
+(5,7):      |--|
+(3,8):    |-----|
+(5,9):      |----|
+(6,10):       |----|
+(8,11):         |---|
 
 Greedy selection:
-1. Pick (1,4): |===|              last_end = 4
+1. Pick (1,4):  |===|              last_end = 4
 2. (3,5) starts at 3 < 4: SKIP
 3. (0,6) starts at 0 < 4: SKIP
-4. Pick (5,7):     |==|           last_end = 7
+4. Pick (5,7):      |==|           last_end = 7
 5. (3,8) starts at 3 < 7: SKIP
 6. (5,9) starts at 5 < 7: SKIP
 7. (6,10) starts at 6 < 7: SKIP
-8. Pick (8,11):        |==|       last_end = 11
+8. Pick (8,11):         |==|       last_end = 11
 
 Result: [(1,4), (5,7), (8,11)] - 3 activities
 ```
@@ -230,21 +230,21 @@ Result: [(1,4), (5,7), (8,11)] - 3 activities
 
 **Proof**:
 
-1. Let G = {g₁, g₂, ..., gₖ} be greedy's selection (sorted by end time)
-2. Let O = {o₁, o₂, ..., oₘ} be any optimal solution (sorted by end time)
+1. Let $G = \{g_1, g_2, \dots, g_k\}$ be greedy's selection (sorted by end time)
+2. Let $O = \{o_1, o_2, \dots, o_m\}$ be any optimal solution (sorted by end time)
 
-**Lemma**: end(gᵢ) ≤ end(oᵢ) for all i ≤ min(k, m)
+**Lemma**: $end(g_i) \le end(o_i)$ for all $i \le \min(k, m)$
 
 **By induction**:
 
-- **Base (i=1)**: g₁ has earliest end time by construction, so end(g₁) ≤ end(o₁) ✓
-- **Inductive step**: Assume end(gᵢ) ≤ end(oᵢ)
-  - oᵢ₊₁ starts after end(oᵢ) ≥ end(gᵢ)
-  - So oᵢ₊₁ is a valid choice after gᵢ
-  - Greedy picks earliest-ending valid activity
-  - Therefore end(gᵢ₊₁) ≤ end(oᵢ₊₁) ✓
+- **Base (i=1)**: $g_1$ has the earliest end time by construction, so $end(g_1) \le end(o_1)$ ✓
+- **Inductive step**: Assume $end(g_i) \le end(o_i)$
+  - $o_{i+1}$ starts after $end(o_i) \ge end(g_i)$
+  - So $o_{i+1}$ is a valid choice after $g_i$
+  - Greedy picks the earliest-ending valid activity
+  - Therefore $end(g_{i+1}) \le end(o_{i+1})$ ✓
 
-**Conclusion**: Since greedy never falls behind, k ≥ m. Since O is optimal, k ≤ m. Therefore k = m.
+**Conclusion**: Since greedy never falls behind, $k \ge m$. Since $O$ is optimal, $k \le m$. Therefore $k = m$.
 
 ---
 
@@ -342,16 +342,15 @@ def weighted_interval_scheduling(intervals: list[tuple[int, int, int]]) -> int:
     def find_last_non_overlapping(i):
         # Binary search for rightmost j where end[j] <= start[i]
         lo, hi = 0, i - 1
+        last_valid = -1
         while lo <= hi:
             mid = (lo + hi) // 2
             if intervals[mid][1] <= intervals[i][0]:
-                if mid + 1 <= i - 1 and intervals[mid + 1][1] <= intervals[i][0]:
-                    lo = mid + 1
-                else:
-                    return mid
+                last_valid = mid
+                lo = mid + 1
             else:
                 hi = mid - 1
-        return -1
+        return last_valid
 
     # dp[i] = max value using intervals 0..i
     dp = [0] * n
@@ -384,6 +383,9 @@ def max_meetings(start: list[int], end: list[int]) -> list[int]:
     Time: O(n log n)
     Space: O(n)
     """
+    if not start:
+        return []
+
     n = len(start)
     # Create meetings with original indices
     meetings = [(start[i], end[i], i + 1) for i in range(n)]
