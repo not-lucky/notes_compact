@@ -1,29 +1,48 @@
-# Chapter 09: Dynamic Programming Notes Review and Improvement Plan
+# Implementation Plan: Recursion & Backtracking Standardization
 
-## 13-word-break.md
-- [x] Read and analyze `09-dynamic-programming/13-word-break.md`.
-- [x] Ensure formatting consistency.
-- [x] Make the DP recurrence explanation cleaner.
-- [x] Clarify the time complexity explanation in Tabulation (string slicing `O(n)`).
+## Objective
+Upgrade all markdown files in the `11-recursion-backtracking` directory to meet senior-engineer standards. The refactoring will focus on correctness (eliminating Python anti-patterns), rigorous complexity analysis, and consistent pedagogical mental models.
 
-## 14-regex-matching.md
-- [x] Read and analyze `09-dynamic-programming/14-regex-matching.md`.
-- [x] Improve readability of the 2D DP Recurrence relation.
-- [x] Standardize the time/space complexity notation ($O(m \times n)$ instead of $O(M \times N)$).
-- [x] Ensure consistent heading styles.
+## Context
+The current notes have some suboptimal Python patterns (like $O(n)$ slicing in recursive calls, e.g., `s[1:]`), lack some precision in space complexity (not distinguishing between call stack vs output storage), and could use more unified mental models for backtracking (like explicitly comparing the "Binary Include/Exclude" tree vs the "Loop-based Suffix Selection" tree). This plan addresses these issues across all 15 files in the chapter to make them top-tier interview prep material.
 
-## Final Review
-- [ ] Ensure consistent tone and formatting across files.
-- [ ] Add summary review to this file.
+## Pedagogical Structure Standards
+Every file will be restructured to strictly follow this logical flow:
+1. **Core Concept**: Brief definition of the problem class.
+2. **Intuition & Mental Models**: Consistent use of frameworks:
+   - *State vs. Level* for backtracking trees.
+   - *Include/Exclude* (binary choice) vs. *Suffix Selection* (iterating through remaining choices via loops).
+3. **Visualizations**:
+   - Mandatory ASCII trees illustrating the recursive call stack.
+   - Explicit visual indication of pruning (e.g., `✗ (overspent)` or `(pruned due to duplicate)`).
+4. **Basic Implementation**: Clean, well-commented Python code avoiding anti-patterns.
+5. **Optimized/Alternative Implementation**: (If applicable) In-place swapping, bit manipulation, or mathematical pruning.
+6. **Complexity Analysis**:
+   - Explicit distinction between **Auxiliary Space** (call stack depth) and **Total Space** (storing the resulting arrays).
+   - Mathematical justification for Time Complexity (e.g., explaining that the $N$ in $O(N \cdot 2^N)$ comes from the $O(N)$ operation of explicitly copying the path).
+7. **Common Pitfalls**: A dedicated section for frequent interview mistakes.
 
-### Summary Review:
-- **01-dp-fundamentals.md:** Corrected variable casing $O(N) \to O(n)$ for consistency. Standardized headings. Fixed typos and improved explanations for `Constraints` and `@functools.lru_cache` usage in interviews.
-- **02-memoization-vs-tabulation.md:** Corrected variable casing $O(N) \to O(n)$ and $M \times N \to m \times n$. Added "Chapter 09:" to the title. Improved the explanation for boundary conditions under the pitfalls section.
-- **07-2d-dp-basics.md:** Made python code standard with snake case variable names. Rewrote Visual sections using nice ascii boxes. Fixed boundary cases with finding max and padding.
-- **08-longest-common-subsequence.md:** Fixed some markdown formatting for inline code blocks. Made some ascii box visualizations. Standardized variable names. Added next link to edit distance.
-- **13-word-break.md:** Updated python style casing, improved markdown structure, formatting. Rewrote time complexity to properly explain strings slicing logic. Fixed some notation issues.
-- **14-regex-matching.md:** Switched $O(N \times M)$ variable names to properly be $O(n \times m)$ like other files. Cleaned up markdown.
-- **11-knapsack-unbounded.md:** Standardized variable naming in code and math formulas ($W \to w$, $wt \to weight$, $val \to value$). Fixed typo in alternative loop explanation. Improved explanation of forward versus backward traversal to align better with code.
-- **12-palindrome-dp.md:** Fixed typo `is_palindromedrome`, renamed `is_palin` to `is_palindrome` for clarity. Aligned complexity annotations with standard style (`Time: O(...)` vs `Time Complexity:`).
-- **17-burst-balloons.md:** Clarified explanation for virtual boundaries. Improved `dfs` and tabulation loop comments. Restructured "Visual Walkthrough" using markdown tables. Enhanced `removeBoxes` inline comments. Standardized big-O notation.
-- **18-dp-on-strings.md:** Clarified 1D state optimization in `num_distinct`. Fixed base case logic explanations in `is_interleave`. Rewrote `is_scramble` string slicing logic to highlight Python `Counter` vs sorting speedups and correct Big-O analysis. Extracted complex index math in `longest_valid_parentheses` into a readable variable. Standardized big-O notation.
+## Code Correctness & Performance Standards
+- **Eradicate $O(n)$ Slicing**: Replace all instances of `arr[1:]` passed in recursive calls with $O(1)$ index-based pointers (e.g., `start_index`, `idx`).
+- **Explicit Copying**: Highlight `result.append(path[:])` and explicitly warn against `result.append(path)`, explaining *why* reference types mutate.
+- **State Management**: Clear differentiation between passing state implicitly via arguments vs. backtracking by explicitly mutating and restoring a shared list (`path.append()` -> `backtrack()` -> `path.pop()`).
+- **Duplicate Handling & Pruning**: Standardize sorting requirements for duplicate handling (`if i > start and nums[i] == nums[i-1]: continue`) and visually explain the difference between input duplicates and same-level duplicates.
+
+## Execution Batches
+- [x] **Batch 1: The Foundations**
+  - `01-recursion-basics.md`, `02-subsets.md`, `03-permutations.md`
+  - *Focus*: Establish the *Include/Exclude* and *Suffix Selection* mental models. Replace any slicing with index pointers.
+- [x] **Batch 2: Combinatorics & Sums**
+  - `04-combinations.md`, `05-combination-sum.md`
+  - *Focus*: Solidify pruning logic and ASCII trees demonstrating duplicate handling.
+- [x] **Batch 3: Grid & State Backtracking**
+  - `06-n-queens.md`, `07-sudoku-solver.md`, `08-word-search.md`
+  - *Focus*: 2D matrix state mutation/restoration and bounding box optimizations.
+- [ ] **Batch 4: Strings & Trees**
+  - `09-generate-parentheses.md`, `10-letter-combinations.md`, `README.md`
+  - *Focus*: Path building, mapping logic, and strict string concatenation performance notes.
+
+## Verification
+- [ ] Review the markdown files to ensure they render correctly and code syntax blocks are valid.
+- [ ] Ensure the complexity analysis is strictly differentiated (Auxiliary vs Total space).
+- [ ] Check that all slicing anti-patterns have been removed.
