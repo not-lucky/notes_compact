@@ -6,7 +6,7 @@
 
 Regex and Wildcard Matching are classic 2D Dynamic Programming string problems. Given a string and a pattern, the task is to determine if the string fully matches the pattern.
 
-If we only had literal characters and a single-character wildcard (like `.`), we could just use two pointers and scan left-to-right in $O(N)$ time. The difficulty—and the reason we need DP—comes entirely from the `*` character.
+If we only had literal characters and a single-character wildcard (like `.`), we could just use two pointers and scan left-to-right in $O(n)$ time. The difficulty—and the reason we need DP—comes entirely from the `*` character.
 
 The `*` symbol introduces **branching choices** and **overlapping subproblems**:
 - Should this `*` match zero characters so we can move on?
@@ -66,10 +66,10 @@ For $i > 0$ (string length) and $j > 0$ (pattern length):
 Memoization often feels more natural for string matching because the branching logic mimics how we mentally evaluate a regex left-to-right.
 
 ```python
-def isMatch(s: str, p: str) -> bool:
+def is_match(s: str, p: str) -> bool:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(M * N)
+    Time Complexity: O(m * n)
+    Space Complexity: O(m * n)
     """
     memo = {}
 
@@ -105,8 +105,8 @@ def isMatch(s: str, p: str) -> bool:
 ```python
 def is_match_regex(s: str, p: str) -> bool:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(M * N)
+    Time Complexity: O(m * n)
+    Space Complexity: O(m * n)
     """
     m, n = len(s), len(p)
     # dp[i][j] represents if s[0..i-1] matches p[0..j-1]
@@ -148,13 +148,13 @@ def is_match_regex(s: str, p: str) -> bool:
 
 ### Space Optimization (1D DP)
 
-Notice that to compute `dp[i][j]`, we only ever need values from the current row `dp[i][...]` and the previous row `dp[i-1][...]`. We can reduce the space complexity to $O(N)$ by keeping just two rows.
+Notice that to compute `dp[i][j]`, we only ever need values from the current row `dp[i][...]` and the previous row `dp[i-1][...]`. We can reduce the space complexity to $O(n)$ by keeping just two rows.
 
 ```python
 def is_match_regex_optimized(s: str, p: str) -> bool:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(N) using two rows.
+    Time Complexity: O(m * n)
+    Space Complexity: O(n) using two rows.
     """
     m, n = len(s), len(p)
 
@@ -247,8 +247,8 @@ Notice how much simpler the `*` transition is compared to Regex Matching! We don
 ```python
 def is_match_wildcard(s: str, p: str) -> bool:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(M * N)
+    Time Complexity: O(m * n)
+    Space Complexity: O(m * n)
     """
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -305,10 +305,10 @@ Let `s = "adceb"`, `p = "*a*b"`
 
 | Approach | Time Complexity | Space Complexity |
 | :--- | :--- | :--- |
-| **2D Tabulation** | $O(M \times N)$ | $O(M \times N)$ |
-| **Memoization** | $O(M \times N)$ | $O(M \times N)$ |
-| **1D Tabulation** | $O(M \times N)$ | $O(N)$ |
+| **2D Tabulation** | $O(m \times n)$ | $O(m \times n)$ |
+| **Memoization** | $O(m \times n)$ | $O(m \times n)$ |
+| **1D Tabulation** | $O(m \times n)$ | $O(n)$ |
 
-Where $M$ is the length of string `s` and $N$ is the length of pattern `p`.
+Where $m$ is the length of string `s` and $n$ is the length of pattern `p`.
 
 **Note:** Memoization has recursive overhead but might avoid computing unreachable states, making it practically faster on average for inputs that fail early. 1D Tabulation is the optimal space solution and highly recommended to know for interviews.

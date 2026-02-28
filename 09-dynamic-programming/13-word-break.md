@@ -41,7 +41,7 @@ For a given length $i$, we check all possible split points $j$ where $0 \le j < 
 If $dp[j]$ is `True` (meaning the prefix of length $j$ is valid), we only need to check if the remaining substring $s[j \dots i-1]$ is in the dictionary.
 
 $$
-dp[i] = \bigvee_{j=0}^{i-1} \big( dp[j] \text{ AND } (s[j \dots i-1] \in \text{wordDict}) \big)
+dp[i] = \bigvee_{j=0}^{i-1} \big( dp[j] \text{ AND } (s[j \dots i-1] \in \text{word\_dict}) \big)
 $$
 
 **Base Case:**
@@ -57,14 +57,16 @@ An empty string can be trivially "segmented" into 0 words. This base case acts a
 This approach is intuitive as it closely mirrors the recursive thought process. We define a function that checks if a suffix starting at index `start` can be segmented.
 
 ```python
-def wordBreak_memo(s: str, wordDict: list[str]) -> bool:
+def word_break_memo(s: str, word_dict: list[str]) -> bool:
     """
-    Time Complexity: O(N^3) - For every start index (N), we try every end index (N).
-                     Slicing the string `s[start:end]` and hashing it takes O(N) time.
-    Space Complexity: O(N) for the recursion stack and memoization dictionary.
+    Time Complexity: O(n^3)
+    - For every start index (n), we try every end index (n), taking O(n^2).
+    - Inside the loop, string slicing `s[start:end]` and hashing it takes O(n) time.
+    - Thus, total time is O(n^3).
+    Space Complexity: O(n) for the recursion stack and memoization dictionary.
     """
     # Use a set for O(1) average time complexity lookups
-    word_set = set(wordDict)
+    word_set = set(word_dict)
     memo = {}
 
     def dfs(start: int) -> bool:
@@ -93,12 +95,16 @@ def wordBreak_memo(s: str, wordDict: list[str]) -> bool:
 This is the standard DP approach. We build an array $dp$ of size $n+1$.
 
 ```python
-def wordBreak_tabulation(s: str, wordDict: list[str]) -> bool:
+def word_break_tabulation(s: str, word_dict: list[str]) -> bool:
     """
-    Time Complexity: O(N^3) - Outer loop O(N), inner loop O(N), substring slicing O(N).
-    Space Complexity: O(N) for the DP array.
+    Time Complexity: O(n^3)
+    - Outer loop runs n times.
+    - Inner loop runs up to n times.
+    - Slicing `s[j:i]` takes O(n) time.
+    - Thus, total time is O(n^3).
+    Space Complexity: O(n) for the DP array.
     """
-    word_set = set(wordDict)
+    word_set = set(word_dict)
     n = len(s)
 
     # dp[i] represents whether s[0...i-1] can be segmented
@@ -120,18 +126,19 @@ def wordBreak_tabulation(s: str, wordDict: list[str]) -> bool:
 The inner loop in the standard tabulation checks all $j$ from $0$ to $i-1$. However, the suffix $s[j \dots i-1]$ can never be a valid dictionary word if its length ($i-j$) is greater than the longest word in the dictionary. We can optimize the inner loop by only looking back up to the maximum word length.
 
 ```python
-def wordBreak_optimized(s: str, wordDict: list[str]) -> bool:
+def word_break_optimized(s: str, word_dict: list[str]) -> bool:
     """
-    Time Complexity: O(N * M^2) where N is len(s) and M is max word length.
-                     Outer loop O(N), inner loop bounded by O(M), substring O(M).
-                     If M << N, this is significantly faster than O(N^3).
-    Space Complexity: O(N) for the DP array.
+    Time Complexity: O(n * m^2) where n is len(s) and m is max word length.
+    - Outer loop n times, inner loop bounded by O(m).
+    - Substring slicing takes O(m).
+    - If m << n, this is significantly faster than O(n^3).
+    Space Complexity: O(n) for the DP array.
     """
-    if not wordDict:
+    if not word_dict:
         return False
 
-    word_set = set(wordDict)
-    max_len = max(len(w) for w in wordDict)
+    word_set = set(word_dict)
+    max_len = max(len(w) for w in word_dict)
     n = len(s)
 
     dp = [False] * (n + 1)
@@ -154,7 +161,7 @@ def wordBreak_optimized(s: str, wordDict: list[str]) -> bool:
 
 ## DP Table Visualization
 
-Let's trace `s = "leetcode"`, `wordDict = ["leet", "code"]`.
+Let's trace `s = "leetcode"`, `word_dict = ["leet", "code"]`.
 Max word length is 4.
 
 | `i` | String Prefix $s[0\dots i-1]$ | Checked Suffixes $s[j\dots i-1]$ | `dp[i]` | Reason |
@@ -178,13 +185,13 @@ Result is `dp[8] = True`.
 Sometimes you don't just want to know *if* it can be segmented, but you want to return *all possible* sentences. For this, DP tabulation is cumbersome because you have to reconstruct paths. The standard approach is Backtracking with Memoization.
 
 ```python
-def wordBreakII(s: str, wordDict: list[str]) -> list[str]:
+def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
     """
-    Time Complexity: O(2^N + N^3) worst case (e.g. s="aaaa", dict=["a","aa"]).
-                     Output size can be exponential.
-    Space Complexity: O(2^N * N) for storing all valid sentences in the worst case.
+    Time Complexity: O(2^n + n^3) worst case (e.g., s="aaaa", dict=["a","aa"]).
+    - The output size can be exponential, thus constructing it takes exponential time.
+    Space Complexity: O(2^n * n) for storing all valid sentences in the worst case.
     """
-    word_set = set(wordDict)
+    word_set = set(word_dict)
     memo = {}
 
     def backtrack(start: int) -> list[str]:
@@ -235,12 +242,12 @@ def wordBreakII(s: str, wordDict: list[str]) -> list[str]:
 3. **Optimizing length without handling empty dictionaries:**
    ```python
    # WRONG: max() throws an error on an empty sequence
-   max_len = max(len(w) for w in wordDict)
+   max_len = max(len(w) for w in word_dict)
 
    # CORRECT
-   max_len = max((len(w) for w in wordDict), default=0)
+   max_len = max((len(w) for w in word_dict), default=0)
    # Or handle early:
-   if not wordDict: return False
+   if not word_dict: return False
    ```
 
 4. **Iterating the inner loop forward instead of backward:**
@@ -252,8 +259,8 @@ def wordBreakII(s: str, wordDict: list[str]) -> list[str]:
 
 | Approach | Time Complexity | Space Complexity | Notes |
 | :------- | :-------------- | :--------------- | :---- |
-| Top-Down Memoization | $O(N^3)$ | $O(N)$ | $O(N^2)$ states, $O(N)$ slicing/hashing |
-| Bottom-Up DP (Standard) | $O(N^3)$ | $O(N)$ | $O(N^2)$ loops, $O(N)$ slicing/hashing |
-| Bottom-Up DP (Optimized) | $O(N \cdot M^2)$ | $O(N)$ | $M$ is max word length. Best for most cases. |
-| Trie + DP | $O(N^2 + \text{dict\_chars})$ | $O(N + \text{dict\_chars})$ | Avoids string slicing overhead entirely. |
-| Word Break II (All Paths)| $O(2^N + N^3)$ | $O(2^N \cdot N)$ | Output size can be exponential. |
+| Top-Down Memoization | $O(n^3)$ | $O(n)$ | $O(n^2)$ states, $O(n)$ slicing/hashing |
+| Bottom-Up DP (Standard) | $O(n^3)$ | $O(n)$ | $O(n^2)$ loops, $O(n)$ slicing/hashing |
+| Bottom-Up DP (Optimized) | $O(n \cdot m^2)$ | $O(n)$ | $m$ is max word length. Best for most cases. |
+| Trie + DP | $O(n^2 + \text{dict\_chars})$ | $O(n + \text{dict\_chars})$ | Avoids string slicing overhead entirely. |
+| Word Break II (All Paths)| $O(2^n + n^3)$ | $O(2^n \cdot n)$ | Output size can be exponential. |
