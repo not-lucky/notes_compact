@@ -52,8 +52,8 @@ DP is powerful but not a silver bullet. Avoid it when:
    *Example:* Activity selection (finding max non-overlapping intervals) can be solved optimally in $O(N \log N)$ by sorting by end times and picking greedily.
 
 3. **State Space Explodes:**
-   If tracking the state requires exponential memory (e.g., tracking subsets, bitmasks, or permutations of large sets), DP becomes unfeasible.
-   *Example:* Traveling Salesperson Problem on 100 cities. Tracking the set of visited cities requires $2^{100}$ states.
+   If tracking the state requires exponential memory (e.g., tracking subsets, bitmasks, or permutations of large sets), standard DP might become unfeasible without advanced techniques or might not be the right approach.
+   *Example:* Traveling Salesperson Problem on 100 cities. Tracking the set of visited cities requires $2^{100}$ states, which is computationally impossible to store.
 
 4. **No Optimal Substructure:**
    If combining optimal subproblem solutions doesn't yield the global optimal.
@@ -87,7 +87,7 @@ Where will the final answer be stored once the computation is complete?
 
 ## The Four Stages of DP Solutions (Fibonacci Example)
 
-Most DP problems can be solved in these four stages. In an interview, progressing through these shows deep understanding.
+Most DP problems can be solved by progressing through these four stages. In an interview, explaining this progression demonstrates a deep understanding of the concepts.
 
 ### Stage 1: Naive Recursion (Top-Down)
 Translate the recurrence relation directly into code. Usually times out (TLE) due to overlapping subproblems.
@@ -97,6 +97,7 @@ def fib_naive(n: int) -> int:
     # Base cases
     if n <= 1:
         return n
+
     # Recurrence
     return fib_naive(n - 1) + fib_naive(n - 2)
 
@@ -124,9 +125,10 @@ def fib_memo(n: int, memo: dict = None) -> int:
     memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
     return memo[n]
 
-# Time Complexity: O(n) - Each state computed once
+# Time Complexity: O(n) - Each state computed exactly once
 # Space Complexity: O(n) - Call stack + Memo dictionary
 ```
+*Note: In modern Python, you can achieve this easily using `@functools.cache` or `@functools.lru_cache`, but understanding the underlying mechanism is crucial.*
 
 ### Stage 3: Tabulation (Bottom-Up DP)
 Eliminate recursion overhead by building a table (array) iteratively from the base cases up to `n`.
@@ -136,7 +138,7 @@ def fib_tab(n: int) -> int:
     if n <= 1:
         return n
 
-    # Initialize DP table
+    # Initialize DP table (size n + 1 to include index n)
     dp = [0] * (n + 1)
 
     # Base cases
@@ -162,8 +164,8 @@ def fib_optimized(n: int) -> int:
         return n
 
     # Only store the two previous states needed
-    prev2 = 0 # dp[i-2]
-    prev1 = 1 # dp[i-1]
+    prev2 = 0  # Represents dp[i-2]
+    prev1 = 1  # Represents dp[i-1]
 
     for _ in range(2, n + 1):
         curr = prev1 + prev2
@@ -199,10 +201,10 @@ Look for these strong signals:
 
 If your DP solution is failing, check these common mistakes:
 
-1. **Incorrect Base Cases:** Are you starting with the right values? Did you account for `i=0` or empty string cases?
+1. **Incorrect Base Cases:** Are you starting with the right values? Did you account for `i=0` or empty string cases? Ensure your base cases cover all scenarios required by your recurrence.
 2. **Off-by-One Array Bounds:** When defining a DP array `dp = [0] * n`, remember the indices are `0` to `n-1`. Often, it's easier to use `dp = [0] * (n + 1)` so `dp[n]` represents the answer for length `n`.
-3. **Missing State Transitions:** Did you consider *all* possible choices at the current state?
-4. **Initialization:** Is your DP array initialized with `0`, `-1`, `float('inf')`, or `float('-inf')`? Choosing the wrong initial value (e.g., initializing with `0` when looking for a minimum) will break the logic.
+3. **Missing State Transitions:** Did you consider *all* possible choices at the current state? Make sure your recurrence handles every option.
+4. **Initialization Values:** Is your DP array initialized with `0`, `-1`, `float('inf')`, or `float('-inf')`? Choosing the wrong initial value (e.g., initializing with `0` when looking for a minimum) will break the logic. For minimums, use `float('inf')`; for maximums, use `float('-inf')`.
 
 ## Summary
 

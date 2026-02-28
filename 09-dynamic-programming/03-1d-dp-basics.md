@@ -4,7 +4,7 @@
 
 ## Overview
 
-1D Dynamic Programming involves solving problems where the state can be represented by a single variable, typically an index `i`. This state, `dp[i]`, usually represents the optimal solution for the problem up to index `i`, the solution starting at index `i`, or the solution specifically ending at index `i`.
+1D Dynamic Programming involves solving problems where the state can be represented by a single variable, typically an index `i`. This state, `dp[i]`, usually represents the optimal solution up to index `i`, the solution starting at index `i`, or the solution specifically ending at index `i`.
 
 ## Building Intuition
 
@@ -42,29 +42,33 @@ The current state depends on a fixed number of immediately preceding states.
 ### Climbing Stairs
 You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
 
+**State Definition:**
+Let `dp[i]` be the total number of distinct ways to reach step `i`.
+
 **Recurrence Relation:**
 To reach step `i`, you must have come from either step `i-1` (taking a 1-step) or step `i-2` (taking a 2-step).
 Therefore, the total ways to reach `i` is the sum of ways to reach `i-1` and `i-2`.
 $$dp[i] = dp[i-1] + dp[i-2]$$
 
 *Base Cases:*
-$dp[1] = 1$ (1 way: [1])
-$dp[2] = 2$ (2 ways: [1,1], [2])
+- $dp[0] = 1$ (1 way to stay at the ground: do nothing)
+- $dp[1] = 1$ (1 way to reach the first step: take 1 step)
 
-**Space Optimization:** We only ever need the last two values.
+**Space Optimization:** We only ever need the last two values, so we can use two variables.
 
 ```python
 def climb_stairs(n: int) -> int:
     """
     Time: O(n) | Space: O(1)
     """
-    if n <= 2:
-        return n
+    if n <= 1:
+        return 1
 
     # prev2 represents dp[i-2], prev1 represents dp[i-1]
-    prev2, prev1 = 1, 2
+    # Starting from step 2, dp[0] = 1, dp[1] = 1
+    prev2, prev1 = 1, 1
 
-    for _ in range(3, n + 1):
+    for i in range(2, n + 1):
         curr = prev1 + prev2
         # Shift the window forward
         prev2 = prev1
@@ -76,14 +80,16 @@ def climb_stairs(n: int) -> int:
 ### Min Cost Climbing Stairs
 You are given an integer array `cost` where `cost[i]` is the cost of $i^{th}$ step. Once you pay the cost, you can climb one or two steps. You can start from step 0 or step 1. Return the minimum cost to reach the top of the floor (beyond the last element).
 
-**Recurrence Relation:**
+**State Definition:**
 Let `dp[i]` be the minimum cost to *reach* step `i`.
-To reach step `i`, you came from `i-1` (and paid `cost[i-1]`) OR from `i-2` (and paid `cost[i-2]`).
+
+**Recurrence Relation:**
+To reach step `i`, you came from `i-1` (and paid `cost[i-1]`) OR from `i-2` (and paid `cost[i-2]`). We want the minimum of these two paths.
 $$dp[i] = \min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2])$$
 
 *Base Cases:*
-$dp[0] = 0$ (Start here for free)
-$dp[1] = 0$ (Start here for free)
+- $dp[0] = 0$ (Start here for free)
+- $dp[1] = 0$ (Start here for free)
 
 ```python
 def min_cost_climbing_stairs(cost: list[int]) -> int:
@@ -113,12 +119,27 @@ At each position, you decide whether including the current element yields a bett
 ### House Robber
 You are a robber planning to rob houses. `nums[i]` is the amount of money in the $i^{th}$ house. You cannot rob adjacent houses. Return the maximum amount of money you can rob.
 
+**State Definition:**
+Let `dp[i]` be the maximum profit you can rob from the first `i` houses.
+
 **Recurrence Relation:**
 At house `i`, you have two choices:
 1. **Skip it**: Keep the max profit up to house `i-1`. ($dp[i-1]$)
 2. **Take it**: Add its value to the max profit up to house `i-2` (since you can't rob `i-1`). ($dp[i-2] + nums[i]$)
 
+We take the maximum of these choices:
 $$dp[i] = \max(dp[i-1], dp[i-2] + nums[i])$$
+
+**Visual: State Transitions**
+`nums = [2, 7, 9, 3, 1]`
+
+| i | House Value | Choice 1: Skip (take `dp[i-1]`) | Choice 2: Take (`dp[i-2] + val`) | Best `dp[i]` |
+| :--- | :--- | :--- | :--- | :--- |
+| **0** | `2` | 0 | 0 + 2 | **2** |
+| **1** | `7` | 2 | 0 + 7 | **7** |
+| **2** | `9` | 7 | 2 + 9 | **11** |
+| **3** | `3` | 11 | 7 + 3 | **11** |
+| **4** | `1` | 11 | 11 + 1 | **12** |
 
 ```python
 def rob(nums: list[int]) -> int:
@@ -131,7 +152,7 @@ def rob(nums: list[int]) -> int:
     for amount in nums:
         # dp[i] = max(skip, take)
         curr = max(rob2, rob1 + amount)
-        # Shift variables
+        # Shift variables forward
         rob1 = rob2
         rob2 = curr
 
@@ -141,7 +162,7 @@ def rob(nums: list[int]) -> int:
 ### Delete and Earn
 Given an integer array `nums`, you can pick an element `x`, earn `x` points, but you must delete *all* occurrences of `x - 1` and `x + 1`. Maximize points.
 
-**Insight:** This is House Robber in disguise! If we transform the input into an array where the index is the number and the value is the total sum of that number, the rule "deleting `x-1` and `x+1`" is identical to "cannot rob adjacent houses".
+**Insight:** This is House Robber in disguise! If we transform the input into an array where the index is the number itself and the value is the total sum of that number in `nums`, the rule "deleting `x-1` and `x+1`" is identical to the House Robber rule "cannot rob adjacent houses".
 
 ```python
 def delete_and_earn(nums: list[int]) -> int:
@@ -169,14 +190,19 @@ def delete_and_earn(nums: list[int]) -> int:
     return rob2
 ```
 
+*(Note: If `max(nums)` is extremely large and the array is sparse, you can use a Hash Map to count sums, sort the unique keys, and adjust the transition logic to check if `keys[i] == keys[i-1] + 1`.)*
+
 ---
 
 ## Pattern 3: "Best Ending Here" (Kadane's)
 
-Used for contiguous subarrays. The state `dp[i]` represents the optimal subarray that *must end at index `i`*.
+Used for contiguous subarrays. The state `dp[i]` represents the optimal subarray that *must end exactly at index `i`*.
 
 ### Maximum Subarray
 Given an integer array `nums`, find the contiguous subarray with the largest sum.
+
+**State Definition:**
+Let `dp[i]` be the maximum subarray sum ending at index `i`.
 
 **Recurrence Relation:**
 At index `i`, you have a choice:
@@ -186,7 +212,7 @@ At index `i`, you have a choice:
 You choose the maximum of these two.
 $$dp[i] = \max(nums[i], dp[i-1] + nums[i])$$
 
-The global maximum is the maximum value found in the entire `dp` array.
+The global maximum is the maximum value found anywhere in the `dp` array.
 
 ```python
 def max_subarray(nums: list[int]) -> int:
@@ -227,15 +253,14 @@ def max_product(nums: list[int]) -> int:
     for i in range(1, len(nums)):
         num = nums[i]
 
-        # We need to compute candidates before reassigning
         # The candidates are:
         # 1. The number itself (starting a new subarray)
         # 2. Extend the max product so far
         # 3. Extend the min product so far (if num is negative)
+        candidates = (num, curr_max * num, curr_min * num)
 
-        tmp_max = max(num, curr_max * num, curr_min * num)
-        curr_min = min(num, curr_max * num, curr_min * num)
-        curr_max = tmp_max
+        curr_max = max(candidates)
+        curr_min = min(candidates)
 
         res = max(res, curr_max)
 
@@ -251,11 +276,13 @@ Counting the total number of ways to reach a state.
 ### Decode Ways
 A message containing letters 'A'-'Z' is encoded as '1'-'26'. Given a string `s` of digits, return the number of ways to decode it.
 
+**State Definition:**
+Let `dp[i]` be the number of ways to decode the prefix of `s` of length `i` (i.e., `s[0...i-1]`).
+
 **Recurrence Relation:**
-At index `i` (representing string length `i`):
-`dp[i]` = ways to decode string of length `i`.
-- If the single character at `s[i-1]` is valid ('1'-'9'), we can append it to all decodings of length `i-1`. Add `dp[i-1]`.
-- If the two characters ending at `s[i-1]` form a valid number ('10'-'26'), we can append it to all decodings of length `i-2`. Add `dp[i-2]`.
+To find `dp[i]`:
+- If the single character `s[i-1]` is valid ('1'-'9'), we can append it to all decodings of length `i-1`. Add `dp[i-1]`.
+- If the two characters ending at `s[i-1]` (i.e., `s[i-2:i]`) form a valid number ('10'-'26'), we can append it to all decodings of length `i-2`. Add `dp[i-2]`.
 
 ```python
 def num_decodings(s: str) -> int:
@@ -266,22 +293,22 @@ def num_decodings(s: str) -> int:
         return 0
 
     # prev2 = dp[i-2], prev1 = dp[i-1]
-    # Base cases for empty string and length 1
+    # Length 0 has 1 way (empty string), Length 1 has 1 way (we checked it's not '0')
     prev2, prev1 = 1, 1
 
     for i in range(2, len(s) + 1):
         curr = 0
 
-        # Single digit decode (1-9)
-        # s is 0-indexed, so s[i-1] is the current character
+        # Check single digit decode (1-9)
         if s[i-1] != '0':
             curr += prev1
 
-        # Two digit decode (10-26)
+        # Check two digit decode (10-26)
         two_digit = int(s[i-2:i])
         if 10 <= two_digit <= 26:
             curr += prev2
 
+        # Shift variables
         prev2 = prev1
         prev1 = curr
 
@@ -297,8 +324,11 @@ Sometimes `dp[i]` depends on all previous states `dp[0]...dp[i-1]`, not just a c
 ### Perfect Squares
 Given `n`, return the least number of perfect square numbers that sum to `n`.
 
+**State Definition:**
+Let `dp[i]` be the minimum number of perfect squares that sum to `i`.
+
 **Recurrence Relation:**
-To find `dp[i]`, we can try subtracting every valid perfect square $j^2 \le i$. The answer is 1 (for the square we just subtracted) plus the optimal answer for the remainder $i - j^2$.
+To find `dp[i]`, we can try subtracting every valid perfect square $j^2 \le i$. The answer is 1 (for the square we just subtracted) plus the optimal answer for the remainder $i - j^2$. We want the minimum over all valid $j$.
 $$dp[i] = 1 + \min_{j^2 \le i}(dp[i - j^2])$$
 
 ```python
@@ -306,14 +336,15 @@ def num_squares(n: int) -> int:
     """
     Time: O(n * sqrt(n)) | Space: O(n)
     """
-    # Initialize with worst case: sum of 1s (e.g., n=4 -> 1+1+1+1)
-    dp = [i for i in range(n + 1)]
+    # Initialize with infinity for minimum problems
+    dp = [float('inf')] * (n + 1)
+    dp[0] = 0  # Base case: 0 requires 0 squares
 
     for target in range(1, n + 1):
         # Check all possible squares less than or equal to current target
         j = 1
         while j * j <= target:
-            dp[target] = min(dp[target], 1 + dp[target - j*j])
+            dp[target] = min(dp[target], 1 + dp[target - j * j])
             j += 1
 
     return dp[n]
@@ -321,27 +352,12 @@ def num_squares(n: int) -> int:
 
 ---
 
-## Visual: 1D DP State Transitions
-
-**House Robber DP Table:**
-`nums = [2, 7, 9, 3, 1]`
-
-| i | House Value | Choice 1: Skip (take `dp[i-1]`) | Choice 2: Take (`dp[i-2] + val`) | Best `dp[i]` |
-| :--- | :--- | :--- | :--- | :--- |
-| **0** | `2` | 0 | 0 + 2 | **2** |
-| **1** | `7` | 2 | 0 + 7 | **7** |
-| **2** | `9` | 7 | 2 + 9 | **11** |
-| **3** | `3` | 11 | 7 + 3 | **11** |
-| **4** | `1` | 11 | 11 + 1 | **12** |
-
----
-
 ## Key Takeaways
 
 1. **State Definition is King**: Clearly define what `dp[i]` represents in plain English before writing code. (e.g., "The max profit robbing houses up to index i").
 2. **Find the Recurrence**: Ask yourself, "If I already knew the answers for smaller subproblems, how would I calculate the answer for the current step?"
-3. **Check Space Optimization**: If your `for` loop only looks at `dp[i-1]` and `dp[i-2]`, throw away the array and use variables.
-4. **Identify the Base Cases**: What are the trivial answers for `n=0`, `n=1`, etc.?
+3. **Check Space Optimization**: If your `for` loop only looks at `dp[i-1]` and `dp[i-2]`, throw away the array and use variables to achieve $O(1)$ space.
+4. **Identify the Base Cases**: What are the trivial answers for `n=0`, `n=1`, etc.? Remember to initialize DP arrays with `float('inf')` for "minimum" problems.
 5. **Beware "Best Ending Here"**: For contiguous subarrays, the state *must* include the current element, and you track a separate global variable for the overall best answer.
 
 ---

@@ -4,13 +4,13 @@
 
 ## Overview
 
-The House Robber problem is the canonical "take or skip" Dynamic Programming (DP) problem. The goal is to maximize the sum of elements chosen from an array while respecting a constraint: you cannot pick adjacent elements.
+The House Robber problem is the canonical "take or skip" Dynamic Programming (DP) problem. The goal is to maximize the sum of elements chosen from an array while respecting a constraint: **you cannot pick adjacent elements.**
 
-It's an essential pattern because it introduces the concept of making decisions that have localized consequences (choosing index `i` only affects your ability to choose `i-1` and `i+1`).
+It is an essential pattern because it introduces the concept of making decisions that have localized consequences. Choosing an element at index `i` only affects your ability to choose elements at `i-1` and `i+1`.
 
 ## Problem Statement
 
-You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and **it will automatically contact the police if two adjacent houses were broken into on the same night.**
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. The only constraint stopping you from robbing each of them is that adjacent houses have security systems connected, and **it will automatically contact the police if two adjacent houses were broken into on the same night.**
 
 Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.
 
@@ -18,9 +18,7 @@ Given an integer array `nums` representing the amount of money of each house, re
 ```text
 Input: nums = [2, 7, 9, 3, 1]
 Output: 12
-Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
-Total amount you can rob = 2 + 9 + 1 = 12.
-(Wait, house 1 is index 0... let's use 0-indexed terms to match the code!)
+Explanation:
 Rob house 0 (money = 2), rob house 2 (money = 9) and rob house 4 (money = 1).
 Total amount you can rob = 2 + 9 + 1 = 12.
 ```
@@ -36,11 +34,11 @@ At any given house `i`, you have exactly two choices:
 2. **Skip it**: If you skip house `i`, the maximum money you can have is just the maximum money you could have robbed up to house `i-1`.
 
 **Why Greedy Fails:**
-You might think "always rob the higher-value house." But consider `[2, 10, 3, 11]`. A greedy approach might pick 10 (which forces you to skip 2 and 3), leaving you with `10 + 11` wait, you can't pick 11 if you picked 10. Wait, 10 and 11 are adjacent in `[..., 10, 3, 11]`? No, they are separated by 3.
-Let's trace: pick 11 (skip 3), pick 10 (skip 2). `10 + 11 = 21`.
-Let's try a better example where greedy fails: `[2, 1, 1, 2]`. Greedy picks 2 (index 0) and 2 (index 3). Total 4. Wait, greedy works here.
-Let's try: `[100, 1, 1, 100]`. Picks 100 and 100.
-Let's try: `[2, 7, 9, 3, 1]`. Greedy picks 9 (skip 7, 3), then picks 2. Total 11. But optimal is `2 + 9 + 1 = 12`. Here greedy (pick max available) fails!
+You might think "always pick the largest available house." But consider the array `[2, 7, 9, 3, 1]`.
+- A greedy approach picks `9` (forcing you to skip `7` and `3`), then picks `2`, resulting in `11`.
+- However, the optimal approach skips `7` and `3` implicitly by picking `2`, `9`, and `1`, yielding `12`.
+
+Greedy fails because taking a locally optimal large number might lock you out of taking multiple slightly smaller numbers that sum to a greater total.
 
 **The Recurrence Relation:**
 Let `dp[i]` be the maximum money you can rob from houses `0` to `i`.
@@ -98,15 +96,17 @@ def rob(nums: list[int]) -> int:
     rob2 = 0
 
     for n in nums:
-        # temp is our new dp[i]
-        temp = max(n + rob1, rob2)
+        # Calculate the max if we rob the current house vs if we skip it
+        current_max = max(rob1 + n, rob2)
+
+        # Shift variables forward for the next iteration
         rob1 = rob2
-        rob2 = temp
+        rob2 = current_max
 
     return rob2
 ```
 
-*Note on the clean logic:* Using `rob1 = 0, rob2 = 0` and iterating over the entire array simplifies the base case handling. For the first house `n`, `temp = max(n + 0, 0) = n`. Then `rob1 = 0, rob2 = n`. For the second house, `temp = max(n2 + 0, n1) = max(n1, n2)`. It naturally handles `len(nums) == 1` and `len(nums) == 2` without explicit `if` checks!
+*Note on the clean logic:* Using `rob1 = 0, rob2 = 0` allows us to avoid explicit `if len(nums) == 1` checks. On the first iteration (where `n = nums[0]`), `current_max = max(0 + n, 0) = n`. Thus, `rob2` naturally becomes `nums[0]`. On the second iteration, `current_max = max(0 + nums[1], nums[0]) = max(nums[1], nums[0])`. This cleanly mimics our base cases.
 
 ---
 
@@ -115,8 +115,8 @@ def rob(nums: list[int]) -> int:
 **Problem:** Houses are arranged in a circle. That means the first house is adjacent to the last house.
 
 **Insight:** Because the first and last houses are adjacent, you cannot rob both of them. Therefore, the optimal solution must fall into one of two scenarios:
-1. You rob from houses `0` to `n-2` (excluding the last house).
-2. You rob from houses `1` to `n-1` (excluding the first house).
+1. You rob from houses `0` to `n-2` (excluding the last house entirely).
+2. You rob from houses `1` to `n-1` (excluding the first house entirely).
 
 The answer is simply the maximum of these two scenarios!
 
@@ -161,7 +161,7 @@ def rob_circular(nums: list[int]) -> int:
 
 **Insight:** This combines Tree Traversal (DFS/Post-order) with DP. For any given node, we want to return two values to its parent:
 1. The max money we can get if we **rob** this node.
-2. The max money we can get if we **do not rob** this node.
+2. The max money we can get if we **skip** this node.
 
 At node `curr`:
 - If we **rob** `curr`, we cannot rob its children. Thus, `rob_curr = curr.val + skip_left + skip_right`.
@@ -182,22 +182,22 @@ def rob_tree(root: TreeNode) -> int:
     Space: O(h) where h is height of tree (for recursion stack)
     """
     def dfs(node) -> tuple[int, int]:
-        # Returns (max_with_node, max_without_node)
+        # Returns (max_if_robbed, max_if_skipped)
         if not node:
             return (0, 0)
 
         # Post-order traversal: process children first
-        left_with, left_without = dfs(node.left)
-        right_with, right_without = dfs(node.right)
+        rob_left, skip_left = dfs(node.left)
+        rob_right, skip_right = dfs(node.right)
 
         # Choice 1: Rob this node. Cannot rob children.
-        with_node = node.val + left_without + right_without
+        rob_curr = node.val + skip_left + skip_right
 
         # Choice 2: Skip this node. Can either rob or skip children.
-        # We take the max of (with, without) for each child independently!
-        without_node = max(left_with, left_without) + max(right_with, right_without)
+        # We take the max of (rob, skip) for each child independently!
+        skip_curr = max(rob_left, skip_left) + max(rob_right, skip_right)
 
-        return (with_node, without_node)
+        return (rob_curr, skip_curr)
 
     # Return the max of robbing or not robbing the root
     return max(dfs(root))
@@ -211,7 +211,7 @@ def rob_tree(root: TreeNode) -> int:
 
 **Insight:** If you take a number `x`, you get points equal to `x * count(x)`. But you are forbidden from taking `x - 1` and `x + 1`. This is exactly House Robber!
 1. Group the numbers by frequency/total value.
-2. The "houses" are the unique numbers `0` through `max(nums)`.
+2. The "houses" are the unique numbers.
 3. Robbing house `x` means taking `x * count(x)` and skipping houses `x-1` and `x+1`.
 
 ```python
@@ -221,33 +221,43 @@ def delete_and_earn(nums: list[int]) -> int:
     """
     Transform array into a House Robber problem.
 
-    Time: O(n + max_val)
-    Space: O(max_val)
+    Time: O(n log n) due to sorting unique keys
+    Space: O(n) for the hash map
     """
     if not nums:
         return 0
 
     # Count how much points we can get for each specific number
     points = collections.Counter()
-    max_val = 0
     for num in nums:
         points[num] += num
-        max_val = max(max_val, num)
 
-    # Standard House Robber logic
-    rob1 = 0
-    rob2 = 0
+    # Sort the unique numbers to process them in order
+    unique_nums = sorted(points.keys())
 
-    # We must iterate from 0 up to max_val to handle adjacent values correctly
-    for i in range(max_val + 1):
-        temp = max(points[i] + rob1, rob2)
-        rob1 = rob2
-        rob2 = temp
+    earn1 = 0 # Similar to rob1
+    earn2 = 0 # Similar to rob2
 
-    return rob2
+    for i in range(len(unique_nums)):
+        curr_val = unique_nums[i]
+        curr_points = points[curr_val]
+
+        # If this number is NOT strictly 1 greater than the previous,
+        # it's like a disconnected street segment. We can safely add
+        # it to our previous max without skipping anything.
+        if i > 0 and unique_nums[i] == unique_nums[i-1] + 1:
+            temp = max(curr_points + earn1, earn2)
+            earn1 = earn2
+            earn2 = temp
+        else:
+            # Not adjacent, so we don't have to skip the previous value
+            earn1 = earn2
+            earn2 = curr_points + earn2
+
+    return earn2
 ```
 
-*(Note: If `max_val` is huge and `n` is small, you can optimize this by sorting the unique keys of the counter, but the basic logic remains the same: if `keys[i] == keys[i-1] + 1`, apply the robber recurrence; otherwise, you can safely add `keys[i]` points to the total without skipping).*
+*(Note: If the maximum value in `nums` is small, you can just iterate from `0` to `max(nums)`. However, the sorting approach shown above is safer for sparse arrays where `max(nums)` could be very large.)*
 
 ---
 
@@ -255,13 +265,16 @@ def delete_and_earn(nums: list[int]) -> int:
 
 Sometimes an interviewer asks: *"What is the maximum profit AND which houses did you rob to get it?"*
 
-To do this, we can't just use $O(1)$ space. We need the full `dp` array, and we trace backwards.
+To do this, we can't just use $O(1)$ space. We need the full `dp` array to track our decisions, and then we trace backward.
 
 ```python
 def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
-    if not nums: return 0, []
-    if len(nums) == 1: return nums[0], [0]
+    if not nums:
+        return 0, []
+    if len(nums) == 1:
+        return nums[0], [0]
 
+    # Standard O(n) space DP
     dp = [0] * len(nums)
     dp[0] = nums[0]
     dp[1] = max(nums[0], nums[1])
@@ -274,23 +287,21 @@ def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
     i = len(nums) - 1
 
     while i >= 0:
+        # If we're at index 0, we must have taken it
         if i == 0:
             path.append(0)
             break
-        if i == 1:
-            if nums[1] > nums[0]:
-                path.append(1)
-            else:
-                path.append(0)
-            break
 
-        # If dp[i] comes from dp[i-1], we skipped house i
-        # If dp[i] comes from dp[i-2] + nums[i], we robbed house i
-        if dp[i] == dp[i-1]:
-            i -= 1 # Move to the house we actually took
-        else:
+        # If taking the current house + dp[i-2] equals our optimal dp[i]
+        # Then it was part of an optimal solution to take this house!
+        # (Handling i == 1 safely by treating dp[-1] as 0)
+        prev_max = dp[i-2] if i >= 2 else 0
+
+        if dp[i] == nums[i] + prev_max:
             path.append(i)
-            i -= 2 # Skip the adjacent house
+            i -= 2 # We took house i, so we must skip house i-1
+        else:
+            i -= 1 # We skipped house i
 
     return dp[-1], path[::-1] # Reverse path to be in ascending order
 ```
