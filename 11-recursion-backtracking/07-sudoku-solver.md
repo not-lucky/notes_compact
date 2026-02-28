@@ -119,9 +119,9 @@ def solve_sudoku(board: list[list[str]]) -> None:
     backtrack()
 ```
 
-## Optimized Implementation: O(1) Checks and Pruning
+## Optimized Implementation: $\mathcal{O}(1)$ Checks and Pruning
 
-Pre-compute and maintain sets for $O(1)$ validity checking, and keep track of empty cells to avoid scanning the board repeatedly.
+Pre-compute and maintain sets for $\mathcal{O}(1)$ validity checking, and keep track of empty cells to avoid scanning the board repeatedly.
 
 ```python
 def solve_sudoku_optimized(board: list[list[str]]) -> None:
@@ -155,7 +155,7 @@ def solve_sudoku_optimized(board: list[list[str]]) -> None:
         box_idx = (r // 3) * 3 + c // 3
 
         for digit in '123456789':
-            # O(1) constraint check
+            # \mathcal{O}(1) constraint check
             if digit in rows[r] or digit in cols[c] or digit in boxes[box_idx]:
                 continue
 
@@ -182,9 +182,9 @@ def solve_sudoku_optimized(board: list[list[str]]) -> None:
 
 ## Complexity Analysis
 
-- **Time Complexity:** $O(9^M)$, where $M$ is the number of empty cells (max 81). For each empty cell, there are up to 9 choices. Pruning makes it extremely fast in practice, but the upper bound is exponential.
-- **Auxiliary Space:** $O(M)$ for the recursion depth and the `empty_cells` array, plus $O(81)$ space for the constraint sets, yielding an overall $O(81)$ strictly.
-- **Total Space:** $O(1)$ modification space since the 2D grid is mutated **in-place** directly.
+- **Time Complexity:** $\mathcal{O}(9^M)$, where $M$ is the number of empty cells (max 81). For each empty cell, there are up to 9 choices. Pruning makes it extremely fast in practice, but the upper bound is exponential.
+- **Auxiliary Space:** $\mathcal{O}(M)$ for the recursion depth and the `empty_cells` array, plus $\mathcal{O}(81)$ space for the constraint sets, yielding an overall $\mathcal{O}(81)$ strictly.
+- **Total Space:** $\mathcal{O}(1)$ modification space since the 2D grid is mutated **in-place** directly.
 
 ## Common Pitfalls
 
