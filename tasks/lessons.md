@@ -10,6 +10,7 @@
 - **First/Last Occurrence Tracking**: When writing documentation or guides, prefer strict bounds tracing.
 - **Edit Distance Recurrence Intuition**: Prefix lengths vs array indices are a massive source of confusion for learners. Always clearly distinguish between "length of prefix `i`" and "character index `i-1`".
 - **Edit Distance 1D Optimization**: The logic for maintaining the `prev_diagonal` (which represents `dp[i-1][j-1]`) in the 1D space-optimized DP matrix is notoriously tricky to understand and explain. Break it down explicitly.
+- **Burst Balloons Interval Boundaries**: Using exclusive bounds (e.g. `strictly between left and right`) and tracking `length = right - left` makes interval DP logic, tabulation iterations, and visual walkthroughs vastly clearer for learners than using inclusive bounds.
 
 ## Python DP Style
 - Add explicit type hints (e.g., `coins: list[int]`).
