@@ -179,11 +179,11 @@ def merge(intervals: list[list[int]]) -> list[list[int]]:
     merged = [intervals[0]]
 
     for start, end in intervals[1:]:
-        last = merged[-1]
+        last_end = merged[-1][1]
 
-        if start <= last[1]:  # Overlapping
+        if start <= last_end:  # Overlapping
             # Extend the last interval
-            last[1] = max(last[1], end)
+            merged[-1][1] = max(last_end, end)
         else:
             # No overlap, add new interval
             merged.append([start, end])
@@ -207,13 +207,21 @@ Timeline:
 [15,18]:                    |---|
 
 Step-by-step:
-1. merged = [[1,3]]
-2. [2,6]: start=2 <= merged[-1][1]=3, overlap!
-   → merged[-1][1] = max(3, 6) = 6
+1. Initialize: merged = [[1,3]]
+
+2. Process [2,6]:
+   start=2 <= merged[-1][1]=3 (overlap!)
+   → update merged[-1][1] = max(3, 6) = 6
    → merged = [[1,6]]
-3. [8,10]: start=8 > merged[-1][1]=6, no overlap
+
+3. Process [8,10]:
+   start=8 > merged[-1][1]=6 (no overlap)
+   → append [8,10]
    → merged = [[1,6], [8,10]]
-4. [15,18]: start=15 > merged[-1][1]=10, no overlap
+
+4. Process [15,18]:
+   start=15 > merged[-1][1]=10 (no overlap)
+   → append [15,18]
    → merged = [[1,6], [8,10], [15,18]]
 
 Output: [[1,6], [8,10], [15,18]]
@@ -251,9 +259,9 @@ Case 3: Contained (c <= b and d <= b)
 Insert a new interval into sorted non-overlapping intervals.
 
 ```python
-def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:
+def insert(intervals: list[list[int]], new_interval: list[int]) -> list[list[int]]:
     """
-    Insert interval and merge if necessary.
+    Insert new_interval into sorted non-overlapping intervals and merge if necessary.
 
     Time: O(n)
     Space: O(n) for output
@@ -262,19 +270,19 @@ def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:
     i = 0
     n = len(intervals)
 
-    # Add all intervals that come before new interval
-    while i < n and intervals[i][1] < new[0]:
+    # 1. Add all intervals that end before new_interval starts
+    while i < n and intervals[i][1] < new_interval[0]:
         result.append(intervals[i])
         i += 1
 
-    # Merge overlapping intervals with new
-    while i < n and intervals[i][0] <= new[1]:
-        new[0] = min(new[0], intervals[i][0])
-        new[1] = max(new[1], intervals[i][1])
+    # 2. Merge all overlapping intervals with new_interval
+    while i < n and intervals[i][0] <= new_interval[1]:
+        new_interval[0] = min(new_interval[0], intervals[i][0])
+        new_interval[1] = max(new_interval[1], intervals[i][1])
         i += 1
-    result.append(new)
+    result.append(new_interval)
 
-    # Add remaining intervals
+    # 3. Add all remaining intervals
     while i < n:
         result.append(intervals[i])
         i += 1
@@ -399,35 +407,85 @@ so they can "cover" shorter ones.
 Find common free time across all employees.
 
 ```python
+import heapq
+
 def employee_free_time(schedules: list[list[list[int]]]) -> list[list[int]]:
     """
-    Find intervals where all employees are free.
+    Find common intervals where ALL employees are free.
+    Optimal approach using a min-heap to merge k sorted lists of intervals.
 
-    Time: O(n log n) where n = total intervals
-    Space: O(n)
+    Time: O(n log k) where n = total intervals, k = number of employees
+    Space: O(k) for the heap
     """
-    # Flatten all schedules
+    heap = []
+
+    # 1. Initialize heap with the first interval of each employee
+    # Store: (start_time, employee_index, interval_index)
+    for emp_i, schedule in enumerate(schedules):
+        if schedule:
+            heapq.heappush(heap, (schedule[0][0], emp_i, 0))
+
+    free_times = []
+    if not heap:
+        return free_times
+
+    # 2. Track the end of the current merged block
+    _, emp_i, int_i = heap[0]
+    prev_end = schedules[emp_i][int_i][1]
+
+    # 3. Process intervals in chronological order
+    while heap:
+        start, emp_i, int_i = heapq.heappop(heap)
+
+        # If this interval starts after our current merged block ends,
+        # we've found a gap where NO ONE is working!
+        if start > prev_end:
+            free_times.append([prev_end, start])
+
+        # Update the end of our current merged block
+        prev_end = max(prev_end, schedules[emp_i][int_i][1])
+
+        # Push the next interval for this employee into the heap
+        if int_i + 1 < len(schedules[emp_i]):
+            next_interval = schedules[emp_i][int_i + 1]
+            heapq.heappush(heap, (next_interval[0], emp_i, int_i + 1))
+
+    return free_times
+```
+
+### Alternative: Flatten & Merge
+
+While the heap solution is mathematically optimal $O(n \log k)$, flattening all schedules into one list and sorting is often accepted and easier to write.
+
+```python
+def employee_free_time_flatten(schedules: list[list[list[int]]]) -> list[list[int]]:
+    """
+    Time: O(n log n) where n = total intervals across all employees
+    Space: O(n) to store the flattened list
+    """
     all_intervals = []
     for schedule in schedules:
         all_intervals.extend(schedule)
 
+    if not all_intervals:
+        return []
+
     # Sort by start time
     all_intervals.sort(key=lambda x: x[0])
 
-    # Merge intervals to find busy times
-    merged = [all_intervals[0]]
+    # Find the end times of continuous merged blocks
+    free_times = []
+    prev_end = all_intervals[0][1]
+
     for start, end in all_intervals[1:]:
-        if start <= merged[-1][1]:
-            merged[-1][1] = max(merged[-1][1], end)
-        else:
-            merged.append([start, end])
+        if start > prev_end:
+            # We found a gap
+            free_times.append([prev_end, start])
 
-    # Gaps between merged intervals = free time
-    free = []
-    for i in range(1, len(merged)):
-        free.append([merged[i-1][1], merged[i][0]])
+        # Update the running end boundary
+        prev_end = max(prev_end, end)
 
-    return free
+    return free_times
 ```
 
 ---
@@ -440,7 +498,7 @@ def employee_free_time(schedules: list[list[list[int]]]) -> list[list[int]]:
 | Insert interval       | O(n)       | O(n)  | Already sorted    |
 | Interval intersection | O(n + m)   | O(1)  | Two pointers      |
 | Remove covered        | O(n log n) | O(1)  | Special sort      |
-| Employee free time    | O(n log n) | O(n)  | Flatten + merge   |
+| Employee free time    | O(n log k) | O(k)  | Min-Heap          |
 
 ---
 
