@@ -8,6 +8,8 @@
 - **House Robber II Logic**: Explain how separating the problem into `nums[:-1]` and `nums[1:]` transforms the circular constraint into two simple linear problems.
 - **House Robber III DP on Trees**: Clarify that it's just post-order traversal where each step returns `(max_if_robbed, max_if_skipped)`, and taking the current node STRICTLY means skipping children, while skipping the current node allows taking the MAX of robbing or skipping each child.
 - **First/Last Occurrence Tracking**: When writing documentation or guides, prefer strict bounds tracing.
+- **Edit Distance Recurrence Intuition**: Prefix lengths vs array indices are a massive source of confusion for learners. Always clearly distinguish between "length of prefix `i`" and "character index `i-1`".
+- **Edit Distance 1D Optimization**: The logic for maintaining the `prev_diagonal` (which represents `dp[i-1][j-1]`) in the 1D space-optimized DP matrix is notoriously tricky to understand and explain. Break it down explicitly.
 
 ## Python DP Style
 - Add explicit type hints (e.g., `coins: list[int]`).
