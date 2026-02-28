@@ -1,4 +1,4 @@
-# Memoization vs Tabulation
+# Chapter 09: Memoization vs Tabulation
 
 > **Prerequisites:** [01-dp-fundamentals](./01-dp-fundamentals.md)
 
@@ -31,7 +31,7 @@ It is called **"top-down"** because we start from the "top" (the target state we
 ### Drawbacks
 - **Recursion Overhead:** Function calls add overhead to the call stack, making it slightly slower than iteration by a constant factor.
 - **Stack Overflow:** Deep recursion can exceed the maximum recursion depth limits in languages like Python (which defaults to exactly 1000 frames).
-- **Harder to Space-Optimize:** Because the recursion stack and cache persist throughout the execution, it's very difficult to reduce the memory complexity below $O(N)$.
+- **Harder to Space-Optimize:** Because the recursion stack and cache persist throughout the execution, it's very difficult to reduce the memory complexity below $O(n)$.
 
 ### Example: Fibonacci Sequence
 
@@ -94,7 +94,7 @@ It is called **"bottom-up"** because we start at the "bottom" (base cases) and w
 - **Dense State Space:** When you know you will have to compute almost all subproblems anyway (which is true for most array/string DP problems).
 - **Strict Performance Limits:** Iteration is generally faster than recursion because there is no function call overhead.
 - **Avoiding Stack Overflow:** Iteration does not use the call stack, allowing it to handle massive inputs safely.
-- **Space Optimization:** Tabulation often allows for dramatic space optimization (e.g., reducing $O(N)$ space to $O(1)$) by discarding old states that are no longer needed.
+- **Space Optimization:** Tabulation often allows for dramatic space optimization (e.g., reducing $O(n)$ space to $O(1)$) by discarding old states that are no longer needed.
 
 ### Drawbacks
 - **Computes Unnecessary States:** Tabulation evaluates *every* state up to the target. If the problem space is sparse, this wastes time.
@@ -137,9 +137,9 @@ One of the biggest advantages of tabulation is the ability to optimize space.
 
 **The Core Concept:** If calculating the current state `dp[i]` only requires looking back a fixed number of steps (e.g., `dp[i-1]` and `dp[i-2]`), we don't need to store the entire `dp` array. We only need to keep track of a "sliding window" of the most recent steps.
 
-### Fibonacci: $O(N)$ Space $\rightarrow$ $O(1)$ Space
+### Fibonacci: $O(n)$ Space $\rightarrow$ $O(1)$ Space
 
-In Fibonacci, `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. Once `dp[i]` is computed, `dp[i-2]` is never needed again. We can replace the $O(N)$ array with just two variables that update as we iterate.
+In Fibonacci, `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. Once `dp[i]` is computed, `dp[i-2]` is never needed again. We can replace the $O(n)$ array with just two variables that update as we iterate.
 
 ```python
 def fib_optimized(n: int) -> int:
@@ -165,15 +165,15 @@ def fib_optimized(n: int) -> int:
     return prev1
 ```
 
-### 2D DP: $O(M \times N)$ Space $\rightarrow$ $O(N)$ Space
+### 2D DP: $O(m \times n)$ Space $\rightarrow$ $O(n)$ Space
 
-A similar logic applies to 2D DP problems (like grids or string comparisons). If computing a cell `dp[r][c]` only requires values from the *current row* `dp[r]` and the *previous row* `dp[r-1]`, we don't need an $M \times N$ matrix. We only need two rows of size $N$ (or sometimes just a single 1D array of size $N$ updated in-place). We will explore this further in the 2D DP sections.
+A similar logic applies to 2D DP problems (like grids or string comparisons). If computing a cell `dp[r][c]` only requires values from the *current row* `dp[r]` and the *previous row* `dp[r-1]`, we don't need an $m \times n$ matrix. We only need two rows of size $n$ (or sometimes just a single 1D array of size $n$ updated in-place). We will explore this further in the 2D DP sections.
 
 ---
 
 ## 4. Side-by-Side Comparison: Unique Paths
 
-To see how the approaches differ on a real 2D problem, let's look at counting paths from the top-left to the bottom-right in an $M \times N$ grid, moving only right or down.
+To see how the approaches differ on a real 2D problem, let's look at counting paths from the top-left to the bottom-right in an $m \times n$ grid, moving only right or down.
 
 **Recurrence:**
 $$
@@ -236,7 +236,7 @@ def unique_paths_tab(m: int, n: int) -> int:
 | **Implementation** | Recursion + Caching (Array/Hash map) | Iteration (Loops) + Array/Matrix |
 | **Evaluation** | **Lazy**: Computes only needed states. | **Eager**: Computes all states. |
 | **Speed** | Fast, but has recursion overhead. | Faster (no call stack overhead, better cache locality). |
-| **Space** | $O(N)$ (Cache + Call Stack). | $O(N)$, but easily optimized to $O(1)$ or $O(M)$. |
+| **Space** | $O(n)$ (Cache + Call Stack). | $O(n)$, but easily optimized to $O(1)$ or $O(m)$. |
 | **Stack Overflow?** | Yes, risk for large inputs. | No. |
 | **Ease of Writing** | Very intuitive, mimics math formula. | Harder to define state dependencies and loop bounds. |
 
@@ -245,16 +245,16 @@ def unique_paths_tab(m: int, n: int) -> int:
 ## Interview Strategy Guide
 
 1. **Start Top-Down:** In an interview, it is almost always best to start by discovering the recursive relation and writing the Memoized solution. It is faster to write, easier to reason about, and easier to verify correctness.
-2. **Discuss Trade-offs:** Always mention to the interviewer: *"This top-down approach is $O(N)$ space due to the call stack. For massive inputs, we could hit recursion limits. We could convert this to bottom-up tabulation."*
+2. **Discuss Trade-offs:** Always mention to the interviewer: *"This top-down approach is $O(n)$ space due to the call stack. For massive inputs, we could hit recursion limits. We could convert this to bottom-up tabulation."*
 3. **Convert to Bottom-Up (If Asked):** If the interviewer asks to optimize for stack space, rewrite it iteratively.
-4. **Always Look for Space Optimization:** If you write a tabulated solution, always look for space optimization. If your loop only looks back $k$ steps, reduce your $O(N)$ array to $k$ variables! Tell the interviewer: *"I notice we only need the last two states, so we don't need to store the whole array."*
+4. **Always Look for Space Optimization:** If you write a tabulated solution, always look for space optimization. If your loop only looks back $k$ steps, reduce your $O(n)$ array to $k$ variables! Tell the interviewer: *"I notice we only need the last two states, so we don't need to store the whole array."*
 
 ---
 
 ## Common Pitfalls & Mistakes
 
 - **Python Default Arguments for Memo:** Never use `def dp(n, memo={}):`. Default mutable arguments in Python persist across completely separate function calls! Always initialize `memo = {}` *inside* the outer wrapper function.
-- **Index Out of Bounds in Tabulation:** When writing tabulation loops, pay close attention to `range(n)` vs `range(n + 1)`. Often, DP arrays are sized `n + 1` to account for a base case at index 0.
+- **Index Out of Bounds in Tabulation:** When writing tabulation loops, pay close attention to `range(n)` vs `range(n + 1)`. Often, DP arrays are sized `n + 1` to account for a base case at index 0 or similar boundary conditions.
 - **Cache Initialization:** When using arrays for memoization, make sure to initialize them with a value that cannot be a valid answer (like `-1` or `float('inf')`), not `0` (if `0` can be a valid answer).
 
 ---

@@ -1,4 +1,4 @@
-# DP Fundamentals
+# Chapter 09: DP Fundamentals
 
 ## Overview
 
@@ -10,10 +10,10 @@ Think of DP as **"smart recursion with memory."**
 
 ### The Redundancy Problem
 In naive recursion, we often solve the exact same subproblems exponentially many times.
-For example, computing `Fibonacci(50)` naively would calculate `Fibonacci(25)` over 75,000 times! The time complexity becomes $O(2^N)$.
+For example, computing `Fibonacci(50)` naively would calculate `Fibonacci(25)` over 75,000 times! The time complexity becomes $O(2^n)$.
 
 ### The Memory Solution
-If we store (memoize) the answer to each subproblem the *first* time we compute it, subsequent lookups take $O(1)$ time. This "state compression" transforms exponential-time algorithms into polynomial-time ones (like $O(N)$ or $O(N^2)$).
+If we store (memoize) the answer to each subproblem the *first* time we compute it, subsequent lookups take $O(1)$ time. This "state compression" transforms exponential-time algorithms into polynomial-time ones (like $O(n)$ or $O(n^2)$).
 
 ## The Two Essential Properties of DP
 
@@ -48,8 +48,8 @@ DP is powerful but not a silver bullet. Avoid it when:
    *Example:* Merge Sort splits an array in half, but sorting the left half shares no work with sorting the right half.
 
 2. **Greedy is Optimal:**
-   If making the locally optimal choice at each step guarantees a globally optimal solution, a Greedy algorithm is simpler and often faster ($O(N)$ or $O(N \log N)$ vs DP's $O(N^2)$).
-   *Example:* Activity selection (finding max non-overlapping intervals) can be solved optimally in $O(N \log N)$ by sorting by end times and picking greedily.
+   If making the locally optimal choice at each step guarantees a globally optimal solution, a Greedy algorithm is simpler and often faster ($O(n)$ or $O(n \log n)$ vs DP's $O(n^2)$).
+   *Example:* Activity selection (finding max non-overlapping intervals) can be solved optimally in $O(n \log n)$ by sorting by end times and picking greedily.
 
 3. **State Space Explodes:**
    If tracking the state requires exponential memory (e.g., tracking subsets, bitmasks, or permutations of large sets), standard DP might become unfeasible without advanced techniques or might not be the right approach.
@@ -128,7 +128,7 @@ def fib_memo(n: int, memo: dict = None) -> int:
 # Time Complexity: O(n) - Each state computed exactly once
 # Space Complexity: O(n) - Call stack + Memo dictionary
 ```
-*Note: In modern Python, you can achieve this easily using `@functools.cache` or `@functools.lru_cache`, but understanding the underlying mechanism is crucial.*
+*Note: In modern Python, you can achieve this easily using `@functools.cache` or `@functools.lru_cache(maxsize=None)`, but understanding the underlying mechanism is crucial for interviews.*
 
 ### Stage 3: Tabulation (Bottom-Up DP)
 Eliminate recursion overhead by building a table (array) iteratively from the base cases up to `n`.
@@ -193,7 +193,7 @@ Look for these strong signals:
 3. **The problem asks for feasibility:**
    - "**Is it possible** to reach/make/partition..."
 4. **Constraints:**
-   - Array/String length is typically $1000 \le N \le 10^5$ (pointing to $O(N)$ or $O(N \log N)$ DP) or $10 \le N \le 1000$ (pointing to $O(N^2)$ or $O(N^3)$ DP).
+   - Array/String length is typically $1000 \le n \le 10^5$ (pointing to $O(n)$ or $O(n \log n)$ DP) or $10 \le n \le 1000$ (pointing to $O(n^2)$ or $O(n^3)$ DP).
 
 ---
 
@@ -208,7 +208,7 @@ If your DP solution is failing, check these common mistakes:
 
 ## Summary
 
-1. **Identify:** Optimal substructure + Overlapping subproblems.
+1. **Identify:** Optimal substructure and overlapping subproblems.
 2. **State:** Define what a subproblem represents.
 3. **Transition:** Figure out how to build the current state from previous states.
 4. **Optimize:** Recursion $\to$ Memoization $\to$ Tabulation $\to$ Space Optimization.
