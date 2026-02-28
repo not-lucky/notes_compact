@@ -4,3 +4,4 @@
 - Avoid modifying objects by reference directly in the argument call (`path + [cands[i]]` is fine for simple prints, but in actual code `path.append` and `path.pop()` is correct).
 - Make sure `i > start` logic in loops for deduplication is well-explained (it restricts skipping to horizontal siblings).
 - For grid-based backtracking problems (like N-Queens, Sudoku), always clarify state mutation, constraint tracking sets (`\mathcal{O}(1)` checks), and state restoration properly in the recursive call cycle.
+- Explain explicit vs implicit state restoration clearly (e.g. passing `string + '('` vs appending and popping from a list).
