@@ -50,7 +50,7 @@ Before jumping to a 2D array, consider if it's the right tool:
 
 ## Pattern 1: Grid Path Problems
 
-Grid path problems are the classic introduction to 2D DP. You are typically asked to find the number of paths, the minimum/maximum path sum, or whether a path exists from the top-left to the bottom-right.
+Grid path problems are the classic introduction to 2D DP. You are asked to find the number of paths, the optimal path sum, or whether a path exists from top-left to bottom-right.
 
 ### Unique Paths (LeetCode 62)
 
@@ -58,11 +58,7 @@ Count the number of unique paths from the top-left corner `(0, 0)` to the bottom
 
 **Formal Recurrence Relation:**
 - **State:** Let $dp[i][j]$ be the number of unique paths to reach cell $(i, j)$.
-- **Base Case:**
-  - $dp[i][0] = 1$ for all $i$ (there is only one way to move straight down the left edge).
-  - $dp[0][j] = 1$ for all $j$ (there is only one way to move straight right along the top edge).
-- **Recurrence:** $dp[i][j] = dp[i-1][j] + dp[i][j-1]$
-  - Paths to the current cell come from the cell directly above + the cell directly to the left.
+- **Recurrence:** $dp[i][j] = dp[i-1][j] + dp[i][j-1]$ (Paths from above + paths from left).
 
 #### Top-Down (Memoization)
 
@@ -94,61 +90,58 @@ def unique_paths_memo(m: int, n: int) -> int:
     return dfs(m - 1, n - 1)
 ```
 
-#### Bottom-Up (Tabulation) with Space Optimization
+#### Bottom-Up (Tabulation) with Array Padding
+
+Instead of writing `if/else` checks for the boundaries, we can pad the array to size `n + 1` and let the out-of-bounds cells be `0`.
 
 ```python
 def uniquePaths(m: int, n: int) -> int:
     """
-    Count unique paths in m x n grid. Space optimized.
+    Count unique paths in m x n grid. Space optimized with padding.
 
     Time: O(m * n)
-    Space: O(n) - we only need the previous row's values
+    Space: O(n) - using a 1D padded array
     """
-    # Initialize the DP array for the first row
-    # There is only 1 path to reach any cell in the first row (move right)
-    dp = [1] * n
+    # Pad array with 0s. dp[1] will simulate the start point.
+    dp = [0] * (n + 1)
+    dp[1] = 1
 
-    for _ in range(1, m):
-        # We start j from 1 because dp[0] (the first column) is always 1
-        for j in range(1, n):
-            # dp[j] before update represents dp[i-1][j] (cell above)
-            # dp[j-1] represents the newly calculated cell to the left
-            dp[j] = dp[j] + dp[j - 1]
+    for _ in range(m):
+        for j in range(n):
+            # dp[j+1] (above) + dp[j] (left)
+            dp[j + 1] += dp[j]
 
-    return dp[n - 1]
+    return dp[n]
 ```
 
 ### Unique Paths II (With Obstacles) (LeetCode 63)
 
 Similar to the previous problem, but the grid contains obstacles (`1` represents an obstacle, `0` is empty). Paths cannot pass through obstacles.
 
+Notice how easily the padding trick adapts to obstacles without any boundary-checking spaghetti code:
+
 ```python
 def uniquePathsWithObstacles(obstacleGrid: list[list[int]]) -> int:
     """
-    Count paths avoiding obstacles.
+    Count paths avoiding obstacles. Space optimized with padding.
 
     Time: O(m * n)
     Space: O(n)
     """
     m, n = len(obstacleGrid), len(obstacleGrid[0])
 
-    # If the starting cell has an obstacle, there are no paths
-    if obstacleGrid[0][0] == 1:
-        return 0
-
-    dp = [0] * n
-    dp[0] = 1 # 1 path to start cell
+    # Pad with 0s. dp[1] represents paths to start cell.
+    dp = [0] * (n + 1)
+    dp[1] = 1
 
     for i in range(m):
         for j in range(n):
             if obstacleGrid[i][j] == 1:
-                dp[j] = 0 # Cannot reach an obstacle cell
-            elif j > 0:
-                # Same logic: paths from above (dp[j]) + paths from left (dp[j-1])
-                # Note: if j == 0, dp[j] just retains its previous value (from the row above)
-                dp[j] += dp[j - 1]
+                dp[j + 1] = 0 # Obstacle blocks all paths
+            else:
+                dp[j + 1] += dp[j]
 
-    return dp[n - 1]
+    return dp[n]
 ```
 
 ### Minimum Path Sum (LeetCode 64)
@@ -164,24 +157,18 @@ def minPathSum(grid: list[list[int]]) -> int:
     Space: O(n)
     """
     m, n = len(grid), len(grid[0])
-    dp = [float('inf')] * n
-    dp[0] = 0 # Start with 0 accumulated sum before entering the grid
+
+    # Pad with infinity to handle boundaries cleanly
+    dp = [float('inf')] * (n + 1)
+    # Dummy base case: reaching the start of the grid costs 0
+    dp[1] = 0
 
     for i in range(m):
         for j in range(n):
-            if i == 0 and j == 0:
-                dp[j] = grid[0][0]
-            elif i == 0:
-                # First row: can only come from the left
-                dp[j] = dp[j - 1] + grid[i][j]
-            elif j == 0:
-                # First column: can only come from above
-                dp[j] = dp[j] + grid[i][j]
-            else:
-                # Normal case: minimum of coming from above or left
-                dp[j] = min(dp[j], dp[j - 1]) + grid[i][j]
+            # Take the min of coming from above (dp[j+1]) or left (dp[j])
+            dp[j + 1] = min(dp[j + 1], dp[j]) + grid[i][j]
 
-    return dp[n - 1]
+    return dp[n]
 ```
 
 ---
@@ -208,9 +195,7 @@ def minimumTotal(triangle: list[list[int]]) -> int:
     # Start from the second to last row, moving upwards
     for i in range(n - 2, -1, -1):
         for j in range(len(triangle[i])):
-            # To reach (i, j), we must come from either (i+1, j) or (i+1, j+1)
-            # Since we are going upwards, the value at (i, j) is its own value
-            # plus the minimum of the two possible choices below it.
+            # Current cell + min of the two possible choices below it
             dp[j] = triangle[i][j] + min(dp[j], dp[j + 1])
 
     # The top element now holds the minimum path sum
@@ -230,10 +215,12 @@ If `matrix[i][j] == '1'`, it can only form a larger square if the cells to its l
 
 **Recurrence:** `dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1`
 
+By using array padding, we eliminate boundary conditions completely:
+
 ```python
 def maximalSquare(matrix: list[list[str]]) -> int:
     """
-    Find largest square of 1s.
+    Find largest square of 1s using padded array.
 
     Time: O(m * n)
     Space: O(n)
@@ -242,25 +229,22 @@ def maximalSquare(matrix: list[list[str]]) -> int:
         return 0
 
     m, n = len(matrix), len(matrix[0])
-    dp = [0] * n
+    dp = [0] * (n + 1)
     max_side = 0
-    prev_diagonal = 0 # Tracks dp[i-1][j-1]
 
     for i in range(m):
+        # Reset diagonal for new row (represents out-of-bounds top-left)
+        prev_diagonal = 0
         for j in range(n):
-            # Save the current dp[j] before it's updated, as it will become
-            # the dp[i-1][j-1] (prev_diagonal) for the next cell (i, j+1)
-            temp = dp[j]
+            # Save top element before overwriting
+            temp = dp[j + 1]
 
             if matrix[i][j] == '1':
-                if i == 0 or j == 0:
-                    dp[j] = 1 # Base case: first row or column can at most form a 1x1 square
-                else:
-                    # dp[j] = above, dp[j-1] = left, prev_diagonal = top-left
-                    dp[j] = min(dp[j], dp[j - 1], prev_diagonal) + 1
-                max_side = max(max_side, dp[j])
+                # dp[j] is left, dp[j+1] is top, prev_diagonal is top-left
+                dp[j + 1] = min(dp[j], dp[j + 1], prev_diagonal) + 1
+                max_side = max(max_side, dp[j + 1])
             else:
-                dp[j] = 0 # Reset to 0 if the cell is '0'
+                dp[j + 1] = 0
 
             prev_diagonal = temp
 
@@ -285,21 +269,20 @@ def calculateMinimumHP(dungeon: list[list[int]]) -> int:
     Space: O(n)
     """
     m, n = len(dungeon), len(dungeon[0])
-    # Initialize with infinity. We use n+1 to handle boundaries easily.
+    # Pad with infinity
     dp = [float('inf')] * (n + 1)
-
-    # Base case: to survive after reaching the destination, we need at least 1 HP
-    dp[n - 1] = 1
 
     # Iterate backwards from bottom-right to top-left
     for i in range(m - 1, -1, -1):
         for j in range(n - 1, -1, -1):
-            # Minimum health needed to step to the next cell (either right or down)
-            min_hp_needed = min(dp[j], dp[j + 1])
+            if i == m - 1 and j == n - 1:
+                # Base case: to survive after reaching the destination, we need at least 1 HP
+                min_hp_needed = 1
+            else:
+                # Minimum health needed to step to the next cell (either right or down)
+                min_hp_needed = min(dp[j], dp[j + 1])
 
             # The health we need at current cell = health needed for next steps - current cell's effect
-            # If current cell is a potion (+), we need less health now.
-            # If current cell is a demon (-), we need more health now.
             current_needed = min_hp_needed - dungeon[i][j]
 
             # We must ALWAYS have at least 1 HP at any given cell to stay alive
@@ -314,128 +297,88 @@ def calculateMinimumHP(dungeon: list[list[int]]) -> int:
 
 Two robots start from opposite corners and collect cherries. Find the maximum cherries they can collect. This is equivalent to two robots moving simultaneously from top-left to bottom-right.
 
-**Key Insight:** We need to track the state of *both* robots. A naive state would be `dp[r1][c1][r2][c2]` (4D, $O(N^4)$).
-However, since they move simultaneously down/right, they always take the same number of steps. Thus, `r1 + c1 = r2 + c2 = steps`.
-We can deduce `r1 = steps - c1` and `r2 = steps - c2`. Therefore, the state only needs 3 dimensions: `dp[steps][c1][c2]` or just keeping the previous step's DP array to reduce to 2 dimensions space: `dp[c1][c2]`.
+**Key Insight:** We need to track the state of *both* robots. A naive state would be `dp[r1][c1][r2][c2]` (4D). Since they move simultaneously, they take the same number of steps. Thus, `r1 + c1 = r2 + c2 = steps`. We can deduce rows from columns and steps, reducing the required state to `dp[steps][c1][c2]`.
+
+We can further optimize this to use a strict $O(N^2)$ space by updating the 2D array **in-place** while iterating backwards, ensuring we don't overwrite values needed for the current step.
 
 ```python
 def cherryPickup(grid: list[list[int]]) -> int:
     """
     Two robots moving simultaneously from top-left to bottom-right.
+    Fully space optimized in-place 2D DP.
 
     Time: O(N^3)
     Space: O(N^2)
     """
     n = len(grid)
-    # State: dp[c1][c2] represents max cherries when robot 1 is at column c1
-    # and robot 2 is at column c2.
-    # We initialize with -infinity because some states might be unreachable (obstacles).
+    # State: dp[c1][c2] represents max cherries collected when
+    # robot 1 is at column c1 and robot 2 is at column c2.
     dp = [[float('-inf')] * n for _ in range(n)]
-
-    # Start position: step 0. Both robots at (0, 0). Column is 0 for both.
     dp[0][0] = grid[0][0]
 
     # Total steps from (0,0) to (n-1, n-1) is 2 * (n - 1)
     for step in range(1, 2 * n - 1):
-        # We need a new DP array for the current step
-        new_dp = [[float('-inf')] * n for _ in range(n)]
+        # Iterate backwards to safely update in-place using values from the previous step
+        for c1 in range(min(n - 1, step), max(-1, step - n), -1):
+            for c2 in range(min(n - 1, step), max(-1, step - n), -1):
+                r1 = step - c1
+                r2 = step - c2
 
-        # Iterate over all possible columns for robot 1
-        for c1 in range(max(0, step - n + 1), min(n, step + 1)):
-            r1 = step - c1 # Calculate row for robot 1
-            if grid[r1][c1] == -1: # Obstacle
-                continue
-
-            # Iterate over all possible columns for robot 2
-            for c2 in range(max(0, step - n + 1), min(n, step + 1)):
-                r2 = step - c2 # Calculate row for robot 2
-                if grid[r2][c2] == -1: # Obstacle
+                if grid[r1][c1] == -1 or grid[r2][c2] == -1: # Obstacle
+                    dp[c1][c2] = float('-inf')
                     continue
 
-                # Cherries collected at this step
                 cherries = grid[r1][c1]
                 if c1 != c2: # If they are on different cells, collect both
                     cherries += grid[r2][c2]
 
-                # Transition: to reach (c1, c2) at `step`, where could they have been at `step-1`?
-                # R1 could come from top (c1) or left (c1-1)
-                # R2 could come from top (c2) or left (c2-1)
-                # Four possible previous states:
-                # 1. Both came from top: dp[c1][c2]
-                # 2. R1 from left, R2 from top: dp[c1-1][c2]
-                # 3. R1 from top, R2 from left: dp[c1][c2-1]
-                # 4. Both came from left: dp[c1-1][c2-1]
+                # Transition: to reach (c1, c2), check 4 possible previous states
+                # dp[c1][c2] already holds the value for both coming from top
+                res = dp[c1][c2]
+                if c1 > 0:
+                    res = max(res, dp[c1 - 1][c2])     # R1 from left, R2 from top
+                if c2 > 0:
+                    res = max(res, dp[c1][c2 - 1])     # R1 from top, R2 from left
+                if c1 > 0 and c2 > 0:
+                    res = max(res, dp[c1 - 1][c2 - 1]) # Both came from left
 
-                max_prev = float('-inf')
-                for prev_c1 in (c1, c1 - 1):
-                    for prev_c2 in (c2, c2 - 1):
-                        if 0 <= prev_c1 < n and 0 <= prev_c2 < n:
-                            max_prev = max(max_prev, dp[prev_c1][prev_c2])
-
-                new_dp[c1][c2] = max_prev + cherries if max_prev != float('-inf') else float('-inf')
-
-        dp = new_dp
+                if res != float('-inf'):
+                    dp[c1][c2] = res + cherries
+                else:
+                    dp[c1][c2] = float('-inf')
 
     return max(0, dp[n - 1][n - 1])
 ```
 
 ---
 
-## Deep Dive: Space Optimization Techniques
+## Deep Dive: DP Elegance
 
 ### The Logic Behind 2D → 1D Reduction
 
-Why does Space Optimization work in Grid Path / 2D problems?
-If we carefully analyze the recurrence relation for problems like Unique Paths:
+Why does Space Optimization work in 2D problems?
+If we carefully analyze the recurrence relation:
 `dp[i][j] = dp[i-1][j] + dp[i][j-1]`
 
-To compute the values for the current row `i`, we **ONLY** need values from the *immediately preceding row* `i-1`. Any rows calculated before `i-1` (like `i-2`, `i-3`) are completely obsolete and can be discarded. By tracking just a `current_row` and `previous_row`, we immediately drop the space complexity from $O(M \times N)$ to $O(N)$.
+To compute the values for the current row `i`, we **ONLY** need values from the *immediately preceding row* `i-1`. Any older rows are obsolete.
 
-Even better, we can often achieve this with a **single 1D array** by overwriting values in-place as we iterate left-to-right.
-- When we are about to update `dp[j]`, its current value is the result from the row above (`dp[i-1][j]`).
-- The value at `dp[j-1]` has *already* been updated in the current loop, so it represents the cell directly to the left in the current row (`dp[i][j-1]`).
+Even better, we can achieve this with a **single 1D array** by overwriting values in-place as we iterate left-to-right:
+- When we evaluate `dp[j]`, its value is the result from the row above (`dp[i-1][j]`).
+- The value at `dp[j-1]` has *already* been updated in the current loop, representing the cell to the left (`dp[i][j-1]`).
 
-```python
-# Original O(m * n) space approach
-dp = [[0] * n for _ in range(m)]
-for i in range(m):
-    for j in range(n):
-        # We need the full 2D grid
-        dp[i][j] = f(dp[i-1][j], dp[i][j-1])
+### The Padding Trick (Dummy Cells)
 
-# Optimized O(n) space approach using a single array
-dp_row = [0] * n
-for i in range(m):
-    for j in range(n):
-        # dp_row[j] (before assignment) IS dp[i-1][j] (the cell above)
-        # dp_row[j-1] IS dp[i][j-1] (the cell to the left, already updated)
-        dp_row[j] = f(dp_row[j], dp_row[j-1])
-```
+A common source of bugs and messy code in 2D DP is boundary handling (checking `if i == 0` or `j == 0`). We can elegantly bypass this by adding an extra column/row of "dummy" values—often referred to as padding.
 
-### When We Need `dp[i-1][j-1]` (The Diagonal Element)
+By shifting our 1D DP array 1-index to the right (making it size `n + 1`), we let `dp[0]` act as an out-of-bounds boundary.
+- For finding minimums, pad with `float('inf')`.
+- For finding sums or paths, pad with `0`.
 
-For problems like Maximum Square, Longest Common Subsequence (LCS), or Edit Distance, the recurrence relation relies on the diagonal element `dp[i-1][j-1]`.
+Then, we carefully seed a single initial value (e.g., `dp[1] = 1`) that naturally flows into the `(0, 0)` cell calculation. This completely removes the need for boundary checks inside your loops, resulting in incredibly clean, readable code.
 
-If we blindly overwrite `dp_row[j]`, we lose the diagonal value needed for the *next* calculation at `j+1`. We must cache this value in a temporary variable before overwriting.
+### When We Need `dp[i-1][j-1]` (The Diagonal Cache)
 
-```python
-# Need to save dp[i-1][j-1] before overwriting
-dp_row = [0] * n
-for i in range(m):
-    prev_diagonal = 0  # Initialize variable to hold dp[i-1][j-1]
-
-    for j in range(n):
-        # Save the current value before it gets overwritten.
-        # This value is dp[i-1][j] now, but in the next iteration (when we process j+1),
-        # it will be the top-left diagonal element.
-        temp = dp_row[j]
-
-        # Calculate new value using current above (dp_row[j]), left (dp_row[j-1]), and diagonal (prev_diagonal)
-        dp_row[j] = f(dp_row[j], dp_row[j-1], prev_diagonal)
-
-        # Pass the saved value to the next iteration
-        prev_diagonal = temp
-```
+For problems like Maximum Square or Longest Common Subsequence, the recurrence relies on the diagonal element. If we blindly overwrite `dp[j]`, we lose the diagonal value needed for the *next* calculation at `j+1`. We must cache this value in a temporary variable (`prev_diagonal`).
 
 ---
 
@@ -443,34 +386,10 @@ for i in range(m):
 
 1. **Incorrect Iteration Direction for Space Optimization**:
    If a recurrence depends on `dp[i][j+1]` (the cell to the right), you **must** iterate backwards (right-to-left). If you iterate left-to-right, you will overwrite the old value before you need it.
-   ```python
-   # WRONG if current cell needs the unupdated cell to its right:
-   for j in range(n):
-       dp[j] = dp[j] + dp[j+1] # dp[j+1] hasn't been updated for the current row yet!
-
-   # CORRECT: Iterate right to left
-   for j in range(n-2, -1, -1):
-       dp[j] = dp[j] + dp[j+1]
-   ```
-
-2. **Forgetting Boundary Initialization**:
-   Failing to handle the first row or first column leads to `IndexError` or incorrect calculations.
-   ```python
-   # WRONG:
-   for i in range(m):
-       for j in range(n):
-           dp[i][j] = dp[i-1][j] + dp[i][j-1]  # IndexError at i=0 or j=0
-
-   # CORRECT:
-   if i == 0 and j == 0:
-       dp[i][j] = grid[0][0]
-   elif i == 0:
-       dp[i][j] = dp[i][j-1] + grid[i][j]
-   elif j == 0:
-       dp[i][j] = dp[i-1][j] + grid[i][j]
-   else:
-       dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]
-   ```
+2. **Forgetting to Reset Variables**:
+   When using the Diagonal Cache trick (`prev_diagonal`), always remember to reset it to the appropriate boundary value at the start of every new row.
+3. **Over-complicating Boundaries**:
+   Using `if/else` inside the tight loop for `i==0` and `j==0` slows down logic and breeds errors. Prefer the array padding technique instead.
 
 ---
 
@@ -515,7 +434,7 @@ DP Table:
 | Minimum Path Sum | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
 | Maximum Square | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
 | Triangle | $O(N^2)$ | $O(N^2)$ | $O(N)$ |
-| Cherry Pickup | $O(N^3)$ | $O(N^4)$ | $O(N^2)$ |
+| Cherry Pickup | $O(N^3)$ | $O(N^3)$ | $O(N^2)$ |
 
 *(Where N is typically the number of columns, and M is the number of rows).*
 
@@ -525,8 +444,8 @@ DP Table:
 
 1. **Draw the grid**: Always visualize the grid and manually trace the state transitions for a small example (e.g., 3x3).
 2. **Identify dependencies**: Clearly state to the interviewer: "To calculate cell `(i, j)`, I need the values from..." This proves you understand the recurrence.
-3. **Handle boundaries first**: Explicitly mention how you handle the first row, first column, and `(0, 0)`.
-4. **Solve 2D first, then optimize**: Always write the $O(M \times N)$ space solution first unless you are extremely confident. Mention space optimization as a follow-up, then implement it if asked.
+3. **Pad the array**: Inform your interviewer you will use a padded array to avoid messy boundary logic. It demonstrates high-level coding maturity.
+4. **Solve 2D first, then optimize**: It is usually safer to write the $O(M \times N)$ space solution first unless you are extremely comfortable with 1D optimization.
 5. **Consider processing backwards**: If the state feels overly complex or requires knowing the future, try defining the state as "cost to reach the end from here" instead of "cost to reach here from the start".
 
 ---
@@ -548,9 +467,9 @@ DP Table:
 ## Key Takeaways
 
 1. **Grid DP**: `dp[i][j]` generally depends on its immediate neighbors (above, left, diagonal).
-2. **Space optimization**: 2D DP arrays can almost always be reduced to 1D arrays by keeping only the active rows.
-3. **Direction matters**: Sometimes it is significantly easier to process the state backwards (from destination to start).
-4. **Boundary handling**: The first row and column often require specific initialization outside the main nested loop.
+2. **Space optimization**: 2D DP arrays can almost always be reduced to 1D arrays by only keeping the active row.
+3. **The Padding Trick**: Pad your arrays with `0` or `infinity` to dramatically simplify your code and remove `if/else` boundaries.
+4. **Direction matters**: Sometimes it is significantly easier to process the state backwards (from destination to start).
 5. **Diagonal Cache**: If space-optimizing a recurrence that uses `dp[i-1][j-1]`, you must cache it in a temporary variable.
 
 ---
