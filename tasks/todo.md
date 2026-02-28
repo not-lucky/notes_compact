@@ -38,11 +38,19 @@ Every file will be restructured to strictly follow this logical flow:
 - [x] **Batch 3: Grid & State Backtracking**
   - `06-n-queens.md`, `07-sudoku-solver.md`, `08-word-search.md`
   - *Focus*: 2D matrix state mutation/restoration and bounding box optimizations.
-- [ ] **Batch 4: Strings & Trees**
+- [x] **Batch 4: Strings & Trees**
   - `09-generate-parentheses.md`, `10-letter-combinations.md`, `README.md`
   - *Focus*: Path building, mapping logic, and strict string concatenation performance notes.
 
 ## Verification
-- [ ] Review the markdown files to ensure they render correctly and code syntax blocks are valid.
-- [ ] Ensure the complexity analysis is strictly differentiated (Auxiliary vs Total space).
-- [ ] Check that all slicing anti-patterns have been removed.
+- [x] Review the markdown files to ensure they render correctly and code syntax blocks are valid.
+- [x] Ensure the complexity analysis is strictly differentiated (Auxiliary vs Total space).
+- [x] Check that all slicing anti-patterns have been removed.
+
+### Review Summary
+- Replaced recursive array slicing `nums[1:]` with $O(1)$ `index` pointers in all files.
+- Separated Auxiliary Space vs. Total Space in all complexity analyses across the 11 `recursion-backtracking` markdown files.
+- Re-structured `README.md` to emphasize mental models like *Include/Exclude* vs *Suffix Selection*.
+- Enhanced visualization using detailed ASCII trees indicating pruned states (e.g., `✗`).
+- Addressed mutation anti-patterns, specifically focusing on path copies via `result.append(path[:])`.
+- Checked all markdown headers and tables for syntax issues using `markdownlint`.

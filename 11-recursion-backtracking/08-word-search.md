@@ -2,219 +2,129 @@
 
 > **Prerequisites:** [Recursion Basics](./01-recursion-basics.md), grid traversal concepts
 
-## Overview
+## Core Concept
 
-Word Search applies backtracking to **grid-based path finding**. Given a 2D grid of characters and a target word, you determine if the word can be formed by sequentially adjacent cells. This pattern is fundamental for any problem involving exploring paths through a grid.
+Word Search applies backtracking to **grid-based path finding**. Given a 2D grid of characters and a target word, you determine if the word can be formed by sequentially adjacent cells. This pattern is fundamental for any problem involving exploring paths through a grid, emphasizing **in-place matrix state mutation**, bounding box early termination, and recursive depth management.
 
-## Building Intuition
+## Intuition & Mental Models
 
 **Why does DFS with visited-marking work?**
 
 Think of it as exploring a maze where you need to find a specific sequence of checkpoints.
 
-1. **The Trail-Blazing Model**: Imagine you're in a letter forest. You need to spell a word by stepping on letters in sequence. You can't step on the same spot twice in one path, and you can only move to adjacent tiles (up/down/left/right).
+1. **The Trail-Blazing Model (Level)**: Imagine you're in a letter forest. You need to spell a word by stepping on letters in sequence. You can't step on the same spot twice in one path, and you can only move to adjacent tiles (up/down/left/right). The index of the character we're trying to match acts as our depth/level.
 
-2. **The Key Mental Model**: At each cell, you're asking: "Is this letter correct? If yes, mark it as visited, try all four neighbors for the next letter, then unmark it (backtrack)."
+2. **Suffix Selection (Choices)**: At each cell, our choices are the four valid adjacent neighbors. We iterate through each neighbor and try to match the next character in the word.
 
-3. **Why Mark and Unmark?**: The visited marker prevents cycles in the current path. But after exploring one path, you unmark so other paths can use that cell. This is the essence of backtracking in grids.
+3. **State Mutation & Restoration**: To prevent cycles in the current path, we temporarily mark the current cell as "visited" by mutating it to a non-letter (e.g., `#`). But after exploring one path, we restore it to its original character so other paths can use that cell. This is the essence of grid backtracking.
 
-4. **Visual Intuition—Path Exploration**:
+4. **Early Termination (Pruning)**: Check for character mismatch before recursing. If `board[r][c] != word[index]`, return `False` immediately—don't waste time exploring neighbors.
 
-```
+## Visualizations
+
+### Decision Tree and Grid Path Exploration
+
+```text
 Grid:           Word: "ABCCED"
 A B C E
 S F C S
 A D E E
 
 Starting at A(0,0), looking for "ABCCED":
-(0,0)A → mark, need "BCCED"
+(0,0)A → mark as '#', need "BCCED"
   ↓
-(0,1)B → mark, need "CCED"
+(0,1)B → mark as '#', need "CCED"
   ↓
-(0,2)C → mark, need "CED"
+(0,2)C → mark as '#', need "CED"
   ↓
-(1,2)C → mark, need "ED"
+(1,2)C → mark as '#', need "ED"
   ↓
-(2,2)E → mark, need "D"
+(2,2)E → mark as '#', need "D"
   ↓
-(2,1)D → mark, need "" ← Empty! Found it!
+(2,1)D → mark as '#', need "" ← Empty! Found it!
 
 Path: A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)
 ```
 
-5. **The Four Directions Pattern**: Use a directions array `[(0,1), (0,-1), (1,0), (-1,0)]` for cleaner code. This represents right, left, down, up movements.
+## Basic Implementation: State Mutation and Restoration
 
-6. **In-Place Marking**: Instead of a separate visited set, temporarily change the cell to '#' (or any non-letter), then restore it. This saves O(m×n) space and is a common interview optimization.
-
-7. **Early Termination**: Check character mismatch before recursing. If `board[r][c] != word[index]`, return False immediately—don't waste time exploring neighbors.
-
-## When NOT to Use DFS Backtracking for Grid Search
-
-This pattern isn't always optimal:
-
-1. **When Finding Shortest Path**: DFS finds _any_ path, not the _shortest_. For shortest path, use BFS. DFS may explore long winding paths before finding short ones.
-
-2. **When Searching for Multiple Words**: For Word Search II (find all words from a dictionary), naive DFS per word is slow. Use a Trie to search all words simultaneously.
-
-3. **When the Grid Is Huge**: A 1000×1000 grid with a long word could have very deep recursion. Consider iterative DFS with an explicit stack.
-
-4. **When Cells Can Be Revisited**: Some problems allow revisiting cells. In that case, don't mark visited (but beware of infinite loops).
-
-5. **When Movement Rules Are Different**: Some grids allow diagonal movement (8 directions) or have blocked cells. Adapt the directions array accordingly.
-
-**Red Flags for DFS Word Search:**
-
-- Need shortest path → use BFS
-- Multiple words to find → use Trie
-- Grid is very large → watch stack depth
-- Need all occurrences → different algorithm
-
-**Better Alternatives:**
-| Situation | Use Instead |
-|-----------|-------------|
-| Shortest path | BFS |
-| Multiple words | Trie + DFS |
-| Count all paths | DP on DAG (if applicable) |
-| Very large grid | Iterative DFS |
-| 8-directional | Modify directions array |
-
----
-
-## Interview Context
-
-Word search problems test:
-
-1. **Grid-based backtracking**: Navigate 2D arrays with constraints
-2. **Path marking**: Avoid revisiting cells in current path
-3. **4-directional movement**: Up, down, left, right
-4. **Early termination**: Prune when word can't be completed
-
----
-
-## Problem Statement
-
-Given an m×n board and a word, determine if the word exists in the grid. The word can be constructed from letters of sequentially adjacent cells (horizontally or vertically).
-
-```
-Input:
-board = [
-  ['A','B','C','E'],
-  ['S','F','C','S'],
-  ['A','D','E','E']
-]
-word = "ABCCED"
-
-Output: True (A→B→C→C→E→D)
-
-Path visualization:
-[A][B][C] E
- S  F [C] S
- A [D][E] E
-```
-
----
-
-## The Core Insight
-
-From each cell that matches the first letter, try to build the word by moving to adjacent cells. Mark visited cells to avoid reuse, then unmark when backtracking.
-
-```
-Start at each cell matching word[0]:
-├── Match? → Try all 4 directions for word[1]
-│   ├── Match? → Continue for word[2...]
-│   └── No match → Backtrack
-└── No match → Try next starting cell
-```
-
----
-
-## Approach 1: DFS Backtracking
+Instead of a separate `visited` set, we temporarily mutate the cell to `#`, then restore it. This saves $O(M \times N)$ space and is a common interview optimization.
 
 ```python
 def exist(board: list[list[str]], word: str) -> bool:
     """
-    Check if word exists in grid.
-
-    Time: O(m × n × 4^L) where L = len(word)
-    Space: O(L) - recursion depth
+    Check if word exists in the 2D grid using DFS backtracking.
     """
     if not board or not board[0] or not word:
         return False
 
     rows, cols = len(board), len(board[0])
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # right, left, down, up
 
     def dfs(row: int, col: int, index: int) -> bool:
-        # Base case: found all characters
+        # Base case: Found all characters
         if index == len(word):
             return True
 
-        # Boundary check
-        if row < 0 or row >= rows or col < 0 or col >= cols:
+        # Boundary check and character mismatch pruning
+        if (row < 0 or row >= rows or
+            col < 0 or col >= cols or
+            board[row][col] != word[index]):
             return False
 
-        # Character mismatch
-        if board[row][col] != word[index]:
-            return False
-
-        # Mark as visited (modify in place)
+        # 1. Mutate State (Mark as visited in-place)
         temp = board[row][col]
         board[row][col] = '#'
 
-        # Explore all 4 directions
-        found = (
-            dfs(row + 1, col, index + 1) or
-            dfs(row - 1, col, index + 1) or
-            dfs(row, col + 1, index + 1) or
-            dfs(row, col - 1, index + 1)
-        )
+        # 2. Recurse (Explore all 4 directions)
+        for dr, dc in directions:
+            if dfs(row + dr, col + dc, index + 1):
+                return True
 
-        # Backtrack: restore cell
+        # 3. Restore State (Backtrack: Unmark cell)
         board[row][col] = temp
 
-        return found
+        return False
 
-    # Try each cell as starting point
+    # Try each cell as a starting point
     for r in range(rows):
         for c in range(cols):
-            if dfs(r, c, 0):
+            # Start DFS if the first character matches
+            if board[r][c] == word[0] and dfs(r, c, 0):
                 return True
 
     return False
 ```
 
-### Visual Trace
+## Optimized Implementation: Early Termination via Character Frequency
 
-```
-board:       word = "ABCCED"
-A B C E
-S F C S
-A D E E
-
-Start at (0,0) 'A' = word[0] ✓
-├── Mark (0,0) as '#'
-├── Try (1,0) 'S' ≠ 'B' ✗
-├── Try (0,1) 'B' = word[1] ✓
-│   ├── Mark (0,1) as '#'
-│   ├── Try (0,2) 'C' = word[2] ✓
-│   │   ├── Mark (0,2) as '#'
-│   │   ├── Try (1,2) 'C' = word[3] ✓
-│   │   │   ├── Mark (1,2) as '#'
-│   │   │   ├── Try (2,2) 'E' = word[4] ✓
-│   │   │   │   ├── Try (2,1) 'D' = word[5] ✓
-│   │   │   │   │   └── index == len(word), return True!
-```
-
----
-
-## Approach 2: Using Direction Array
-
-Cleaner code with direction constants.
+We can pre-check if the board contains all the required characters. If the word needs three 'A's and the board only has two, we can instantly return `False`. Furthermore, we can search the word backwards if its last character is rarer than its first character, dramatically pruning the search tree.
 
 ```python
-def exist_v2(board: list[list[str]], word: str) -> bool:
-    """Word search with direction array."""
+def exist_optimized(board: list[list[str]], word: str) -> bool:
+    """
+    Optimized Word Search with character frequency checking and reversed search.
+    """
+    from collections import Counter
+
+    # Count characters in board
+    board_count = Counter()
+    for row in board:
+        board_count.update(row)
+
+    # Fast failure: check if word characters exist in board
+    word_count = Counter(word)
+    for char, count in word_count.items():
+        if board_count[char] < count:
+            return False
+
+    # Optimization: if last char is rarer than first, search backwards!
+    # This prevents expanding a massive tree if the start of the word is extremely common.
+    if board_count[word[0]] > board_count[word[-1]]:
+        word = word[::-1]
+
     rows, cols = len(board), len(board[0])
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # right, left, down, up
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
     def dfs(row: int, col: int, index: int) -> bool:
         if index == len(word):
@@ -225,317 +135,79 @@ def exist_v2(board: list[list[str]], word: str) -> bool:
             board[row][col] != word[index]):
             return False
 
+        # 1. Mutate State
         temp = board[row][col]
         board[row][col] = '#'
 
+        # 2. Recurse
         for dr, dc in directions:
             if dfs(row + dr, col + dc, index + 1):
                 return True
 
+        # 3. Restore State
         board[row][col] = temp
         return False
 
+    # Search
     for r in range(rows):
         for c in range(cols):
-            if dfs(r, c, 0):
+            if board[r][c] == word[0] and dfs(r, c, 0):
                 return True
+
     return False
 ```
-
----
-
-## Approach 3: With Early Termination
-
-Pre-check if board contains all required characters.
-
-```python
-def exist_optimized(board: list[list[str]], word: str) -> bool:
-    """Optimized with character frequency check."""
-    from collections import Counter
-
-    # Count characters in board
-    board_count = Counter()
-    for row in board:
-        board_count.update(row)
-
-    # Check if word characters are available
-    word_count = Counter(word)
-    for char, count in word_count.items():
-        if board_count[char] < count:
-            return False
-
-    # Optimization: if last char is rarer than first, search backwards
-    if board_count[word[0]] > board_count[word[-1]]:
-        word = word[::-1]
-
-    rows, cols = len(board), len(board[0])
-
-    def dfs(row: int, col: int, index: int) -> bool:
-        if index == len(word):
-            return True
-        if (row < 0 or row >= rows or col < 0 or col >= cols or
-            board[row][col] != word[index]):
-            return False
-
-        temp = board[row][col]
-        board[row][col] = '#'
-
-        result = (dfs(row + 1, col, index + 1) or
-                  dfs(row - 1, col, index + 1) or
-                  dfs(row, col + 1, index + 1) or
-                  dfs(row, col - 1, index + 1))
-
-        board[row][col] = temp
-        return result
-
-    for r in range(rows):
-        for c in range(cols):
-            if dfs(r, c, 0):
-                return True
-    return False
-```
-
----
-
-## Word Search II: Find All Words
-
-Find all words from a list that exist in the board.
-
-```python
-def find_words(board: list[list[str]], words: list[str]) -> list[str]:
-    """
-    Find all words from list in board using Trie.
-
-    Time: O(m × n × 4^L × W) naive, O(m × n × 4^L) with Trie
-    Space: O(total characters in words) for Trie
-    """
-
-    # Build Trie
-    class TrieNode:
-        def __init__(self):
-            self.children = {}
-            self.word = None  # Store complete word at end
-
-    root = TrieNode()
-    for word in words:
-        node = root
-        for char in word:
-            if char not in node.children:
-                node.children[char] = TrieNode()
-            node = node.children[char]
-        node.word = word
-
-    rows, cols = len(board), len(board[0])
-    result = []
-
-    def dfs(row: int, col: int, node: TrieNode):
-        if row < 0 or row >= rows or col < 0 or col >= cols:
-            return
-
-        char = board[row][col]
-        if char == '#' or char not in node.children:
-            return
-
-        next_node = node.children[char]
-
-        # Found a word
-        if next_node.word:
-            result.append(next_node.word)
-            next_node.word = None  # Avoid duplicates
-
-        # Mark visited
-        board[row][col] = '#'
-
-        # Explore all directions
-        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            dfs(row + dr, col + dc, next_node)
-
-        # Backtrack
-        board[row][col] = char
-
-        # Optimization: prune empty branches
-        if not next_node.children:
-            del node.children[char]
-
-    # Start from each cell
-    for r in range(rows):
-        for c in range(cols):
-            dfs(r, c, root)
-
-    return result
-```
-
----
-
-## Marking Visited: Different Approaches
-
-### 1. Modify Board In-Place
-
-```python
-temp = board[row][col]
-board[row][col] = '#'
-# ... recurse ...
-board[row][col] = temp
-```
-
-### 2. Use Visited Set
-
-```python
-def dfs(row, col, index, visited):
-    if (row, col) in visited:
-        return False
-    visited.add((row, col))
-    # ... recurse ...
-    visited.remove((row, col))
-```
-
-### 3. Use Visited Matrix
-
-```python
-visited = [[False] * cols for _ in range(rows)]
-
-def dfs(row, col, index):
-    if visited[row][col]:
-        return False
-    visited[row][col] = True
-    # ... recurse ...
-    visited[row][col] = False
-```
-
-**In-place modification** is most common in interviews (space efficient).
-
----
-
-## Related Problem: Find All Paths
-
-Return all valid paths (not just existence check).
-
-```python
-def find_all_paths(board: list[list[str]], word: str) -> list[list[tuple[int, int]]]:
-    """Find all paths that form the word."""
-    rows, cols = len(board), len(board[0])
-    result = []
-
-    def dfs(row: int, col: int, index: int, path: list):
-        if index == len(word):
-            result.append(path[:])
-            return
-
-        if (row < 0 or row >= rows or col < 0 or col >= cols or
-            board[row][col] != word[index]):
-            return
-
-        temp = board[row][col]
-        board[row][col] = '#'
-        path.append((row, col))
-
-        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            dfs(row + dr, col + dc, index + 1, path)
-
-        path.pop()
-        board[row][col] = temp
-
-    for r in range(rows):
-        for c in range(cols):
-            dfs(r, c, 0, [])
-
-    return result
-```
-
----
 
 ## Complexity Analysis
 
-| Problem                | Time               | Space          | Notes               |
-| ---------------------- | ------------------ | -------------- | ------------------- |
-| Word Search            | O(m × n × 4^L)     | O(L)           | L = word length     |
-| Word Search II (naive) | O(m × n × 4^L × W) | O(L)           | W = number of words |
-| Word Search II (Trie)  | O(m × n × 4^L)     | O(total chars) | Trie optimization   |
+- **Time Complexity:** $O(M \times N \times 3^L)$ where $M \times N$ is the size of the board and $L$ is the length of the word. We iterate through every cell on the board ($M \times N$). For each cell, we explore up to 3 directions (we don't go back where we came from, hence 3, not 4) for a maximum depth of $L$.
+- **Auxiliary Space:** $O(L)$ for the recursion depth representing the call stack when the path hits the length of the word.
+- **Total Space:** $O(1)$ modification space since the 2D grid is mutated **in-place** directly.
 
----
+## Common Pitfalls
 
-## Edge Cases
+### 1. Forgetting to Restore State (Backtrack)
 
-- [ ] Empty board or empty word
-- [ ] Word longer than total cells
-- [ ] Single cell board
-- [ ] Word not in board
-- [ ] Word requiring all cells
-
----
-
-## Common Mistakes
-
-### 1. Forgetting to Backtrack
+If you don't reset the grid cell back to its original character, subsequent searches starting from other cells will encounter the `#` marker and fail, leading to an incorrect `False` answer.
 
 ```python
+# WRONG: forgetting to restore
 board[row][col] = '#'
 result = dfs(...)
-# WRONG: forgetting to restore
+return result
+
 # CORRECT:
+board[row][col] = '#'
+result = dfs(...)
 board[row][col] = temp
 return result
 ```
 
-### 2. Not Checking All Starting Points
+### 2. Slicing the String (Anti-Pattern)
+
+Many candidates slice the string as they traverse (`word[1:]`). This takes $O(L)$ time per recursive call, worsening the time complexity from $O(3^L)$ to $O(L \cdot 3^L)$. Use an `index` pointer instead.
 
 ```python
-# WRONG: only checking (0,0)
-return dfs(0, 0, 0)
+# WRONG: O(L) operation inside recursion
+dfs(row + 1, col, word[1:])
 
-# CORRECT: try all cells
-for r in range(rows):
-    for c in range(cols):
-        if dfs(r, c, 0):
-            return True
+# CORRECT: O(1) index increment
+dfs(row + 1, col, index + 1)
 ```
 
-### 3. Modifying Board Permanently
+### 3. Early Termination Short-Circuiting Error
+
+Avoid assigning variables locally for each recursive call if they aren't short-circuited properly. Using `or` ensures we break out the moment `True` is returned.
 
 ```python
-# WRONG: not saving original
-board[row][col] = '#'
+# WRONG: Continues to explore even if a path is already found
+res1 = dfs(row + 1, col, index + 1)
+res2 = dfs(row - 1, col, index + 1)
+res3 = dfs(row, col + 1, index + 1)
+res4 = dfs(row, col - 1, index + 1)
+return res1 or res2 or res3 or res4
 
-# CORRECT: save and restore
-temp = board[row][col]
-board[row][col] = '#'
-# ... recurse ...
-board[row][col] = temp
+# CORRECT: Early termination with short-circuiting
+for dr, dc in directions:
+    if dfs(row + dr, col + dc, index + 1):
+        return True
 ```
-
----
-
-## Practice Problems
-
-| #   | Problem                              | Difficulty | Key Insight             |
-| --- | ------------------------------------ | ---------- | ----------------------- |
-| 1   | Word Search                          | Medium     | Basic grid backtracking |
-| 2   | Word Search II                       | Hard       | Trie + backtracking     |
-| 3   | Longest Word in Dictionary           | Medium     | Trie variant            |
-| 4   | Search Word in Matrix (8 directions) | Medium     | 8 directions            |
-
----
-
-## Interview Tips
-
-1. **Clarify movement**: 4 directions (typical) or 8 directions?
-2. **Can cells be reused?**: Usually no within one word
-3. **Modify in place**: Saves space, mention it explicitly
-4. **Mention Trie**: For multiple words, Trie is expected
-5. **Early termination**: Check character frequencies first
-
----
-
-## Key Takeaways
-
-1. Mark visited cells to avoid reuse in current path
-2. Always restore (backtrack) after exploring
-3. Try all cells as starting points
-4. For multiple words, use Trie for efficiency
-5. Direction array makes code cleaner
-
----
-
-## Next: [09-generate-parentheses.md](./09-generate-parentheses.md)
-
-Learn to generate all valid parentheses combinations.

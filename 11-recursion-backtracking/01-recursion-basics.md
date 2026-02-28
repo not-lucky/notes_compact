@@ -45,6 +45,7 @@ def factorial(n):
 ```
 
 **Trace of `factorial(4)`**:
+
 ```text
 Stack: [factorial(4)]
 Stack: [factorial(4), factorial(3)]
@@ -72,6 +73,7 @@ Many recursive problems form a **recursion tree**, especially when there are mul
 ```
 
 This visualization helps:
+
 - Understand the total number of calls (time complexity).
 - Identify overlapping subproblems (hint for Dynamic Programming).
 - Debug recursive logic.
@@ -81,6 +83,7 @@ This visualization helps:
 ### The Three Components
 
 #### 1. Base Case
+
 The condition where recursion stops. Without it, you get an infinite loop (Stack Overflow).
 
 ```python
@@ -92,6 +95,7 @@ def factorial(n: int) -> int:
 ```
 
 #### 2. Recursive Case
+
 The part where the function calls itself with a smaller/simpler input.
 
 ```python
@@ -105,6 +109,7 @@ def sum_list(nums: list[int], index: int = 0) -> int:
 ```
 
 #### 3. Progress Toward Base Case
+
 Each recursive call must move closer to the base case.
 
 ```python
@@ -123,6 +128,7 @@ def countdown(n: int) -> None:
 ## Complexity Analysis
 
 When analyzing recursion, we must distinguish between:
+
 1. **Auxiliary Space**: Memory used by the call stack.
 2. **Total Space**: Auxiliary Space + Memory used to store the output/results.
 
@@ -158,4 +164,5 @@ Recursion is elegant but not always the best choice. Avoid it when:
 ---
 
 ## Next: [02-subsets.md](./02-subsets.md)
+
 Learn how to generate all subsets using recursion and backtracking.

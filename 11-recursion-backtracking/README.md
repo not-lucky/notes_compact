@@ -2,244 +2,105 @@
 
 ## Overview
 
-Recursion is a problem-solving technique where a function solves a problem by calling itself with simpler inputs. Backtracking extends recursion by **exploring possibilities and undoing choices** when they don't lead to solutions. Together, they're essential tools for solving constraint satisfaction problems, generating combinations, and searching through solution spaces.
+Recursion is a problem-solving technique where a function solves a problem by calling itself with simpler inputs. Backtracking extends recursion by **exploring possibilities and undoing choices** when they do not lead to valid solutions. Together, they are essential tools for solving constraint satisfaction problems, generating combinations, and systematically searching through complex solution spaces.
 
-## Building Intuition
+## Mental Models
 
-**Why are recursion and backtracking so powerful?**
+A backtracking problem is simply a Depth-First Search (DFS) on an implicit tree. The tree isn't stored in memory—it's defined dynamically by your choices.
 
-1. **The Power of Self-Similarity**: Many problems have structure that repeats at different scales. A binary tree is made of smaller binary trees. A maze is solved by solving smaller sub-mazes. When you recognize this self-similarity, recursion becomes natural.
+Two primary mental models dictate how you map a problem to a recursive tree:
 
-2. **The Explore-Backtrack Pattern**: Think of backtracking as navigating a maze:
-   - At each intersection (choice point), pick a path
-   - Walk until you hit a dead end or find the goal
-   - If dead end, return to the last intersection and try a different path
-   - Repeat until you've found all solutions or exhausted all paths
+### 1. Include/Exclude (Binary Choices)
 
-3. **Why "Make Choice, Explore, Undo" Works**: By systematically trying every possibility and undoing choices that don't work, you guarantee finding all solutions without missing any. The key insight: **undoing is what makes exploration reusable**.
+At each step, you make a binary decision about a single element: do I include it, or do I exclude it?
 
-4. **Visual Intuition—The Decision Tree**:
+- **Tree Structure:** Every node has exactly 2 branches (Yes or No).
+- **Depth (Level):** Corresponds to the index of the element being considered.
+- **Best for:** Subsets, 0/1 Knapsack equivalents.
 
-```
-Every backtracking problem is a tree traversal:
+### 2. Suffix Selection (Iterating Through Choices)
 
-                [Start]
-               /   |   \
-          Choice1 Choice2 Choice3
-            /        |        \
-        [State1] [State2]  [State3]
-           ✓        ✗          ...
-         (valid)  (dead end→backtrack)
+At each step, you use a `for` loop to try every valid remaining option for the *current position*.
 
-You're doing DFS on a tree of possible states.
-```
+- **Tree Structure:** A node can have $N$ branches (one for each valid choice).
+- **Depth (Level):** Corresponds to the size of the partial solution being built.
+- **Best for:** Permutations, Combinations, N-Queens.
 
-5. **When It "Clicks"**: Backtracking clicks when you realize you're searching an implicit tree. The tree isn't stored in memory—it's defined by your choices. Each recursive call goes down one level; each return goes back up.
+## Complexity & Strict Definitions
 
-## When NOT to Use Backtracking
+To analyze backtracking correctly in interviews, distinguish between:
 
-Backtracking is powerful but not always optimal:
-
-1. **When Greedy Works**: If locally optimal choices lead to globally optimal solutions, greedy is O(n) vs backtracking's exponential. Example: activity selection.
-
-2. **When DP Applies**: If subproblems overlap significantly and you only need optimal value (not all solutions), DP is polynomial vs backtracking's exponential.
-
-3. **When BFS Finds It Faster**: For shortest path or minimum steps, BFS guarantees finding the shortest solution first. DFS/backtracking might explore long paths first.
-
-4. **When Constraints Propagate Well**: Some constraint satisfaction problems (like Sudoku) benefit more from constraint propagation than brute backtracking.
-
-5. **When n Is Large**: Backtracking is often O(2^n), O(n!), or worse. For n > 20, reconsider the approach.
-
-**Red Flags Against Backtracking:**
-
-- Problem asks for minimum/maximum → probably DP
-- Only need one solution → BFS or greedy may be faster
-- n > 20 in constraints → exponential won't work
-- No "generate all" or "find all" in problem → likely not backtracking
-
----
-
-## Why Recursion & Backtracking Matter
-
-1. **Interview frequency**: Backtracking problems appear in ~25% of coding interviews
-2. **Pattern recognition**: Many problems reduce to "generate all X" or "find all valid Y"
-3. **Skill indicator**: Shows ability to think systematically about solution spaces
-4. **Foundation for DP**: Understanding recursion is essential for dynamic programming
-
----
-
-## The Core Insight
-
-**Recursion** breaks a problem into smaller subproblems of the same type:
-
-```
-solve(problem) = combine(solve(smaller_problem_1), solve(smaller_problem_2), ...)
-```
-
-**Backtracking** explores all possibilities by making choices and undoing them:
-
-```
-for each choice:
-    make choice
-    if valid: explore further
-    undo choice (backtrack)
-```
-
----
-
-## Recursion vs Backtracking
-
-| Aspect    | Recursion            | Backtracking                |
-| --------- | -------------------- | --------------------------- |
-| Goal      | Compute result       | Find all solutions          |
-| Structure | Divide and conquer   | Explore and undo            |
-| State     | Usually return value | Usually modify shared state |
-| Example   | Factorial, Fibonacci | N-Queens, Subsets           |
-
----
-
-## Backtracking Patterns Overview
-
-| Pattern                 | Problems               | Key Insight                  |
-| ----------------------- | ---------------------- | ---------------------------- |
-| Subsets                 | All subsets, power set | Include/exclude each element |
-| Permutations            | All orderings          | Use remaining elements       |
-| Combinations            | Choose k from n        | Order doesn't matter         |
-| Constraint Satisfaction | N-Queens, Sudoku       | Place and validate           |
-| Path Finding            | Word search, maze      | Explore grid with backtrack  |
-
----
+1. **Auxiliary Space:** The memory consumed by the recursive call stack. This is directly proportional to the **max depth of the recursion tree**.
+2. **Total Space:** The memory needed to store all final answers in your `result` array.
+3. **Index Pointers over Slicing:** Never pass `array[1:]` or `string[1:]` in recursive calls, as this creates hidden $O(N)$ operations at every node. Always pass the reference to the original array/string and a `start_index` pointer.
 
 ## Chapter Contents
 
-| #   | Topic                                                | Key Concepts                                 |
-| --- | ---------------------------------------------------- | -------------------------------------------- |
-| 01  | [Recursion Basics](./01-recursion-basics.md)         | Call stack, base cases, thinking recursively |
-| 02  | [Subsets](./02-subsets.md)                           | Generate all subsets, power set              |
-| 03  | [Permutations](./03-permutations.md)                 | Generate all orderings                       |
-| 04  | [Combinations](./04-combinations.md)                 | Choose k elements from n                     |
-| 05  | [Combination Sum](./05-combination-sum.md)           | Sum variants, duplicates                     |
-| 06  | [N-Queens](./06-n-queens.md)                         | Classic constraint satisfaction              |
-| 07  | [Sudoku Solver](./07-sudoku-solver.md)               | 9x9 constraint propagation                   |
-| 08  | [Word Search](./08-word-search.md)                   | Grid-based path finding                      |
-| 09  | [Generate Parentheses](./09-generate-parentheses.md) | Valid sequence generation                    |
-| 10  | [Letter Combinations](./10-letter-combinations.md)   | Phone keypad combinations                    |
+| #   | Topic                                                | Key Concepts                                   |
+| --- | ---------------------------------------------------- | ---------------------------------------------- |
+| 01  | [Recursion Basics](./01-recursion-basics.md)         | Call stack, base cases, recursion vs iteration |
+| 02  | [Subsets](./02-subsets.md)                           | Include/exclude model, power sets              |
+| 03  | [Permutations](./03-permutations.md)                 | Suffix selection, state tracking (visited)     |
+| 04  | [Combinations](./04-combinations.md)                 | Suffix selection with a monotonic `start_idx`  |
+| 05  | [Combination Sum](./05-combination-sum.md)           | Subsets with duplicates and infinite reuse     |
+| 06  | [N-Queens](./06-n-queens.md)                         | 2D grid constraint propagation                 |
+| 07  | [Sudoku Solver](./07-sudoku-solver.md)               | 2D grid backtracking with early exit pruning   |
+| 08  | [Word Search](./08-word-search.md)                   | 2D matrix pathfinding and restoring visited    |
+| 09  | [Generate Parentheses](./09-generate-parentheses.md) | Balanced sequence string generation            |
+| 10  | [Letter Combinations](./10-letter-combinations.md)   | Pure Cartesian product mappings                |
 
 ---
 
-## The Backtracking Template
+## The Backtracking Blueprint
+
+Every optimal backtracking solution mutates a shared state variable (usually a list) and explicitly restores it after returning from the recursive call.
 
 ```python
-from typing import Any, List
+def solve_backtracking(nums: list[int]) -> list[list[int]]:
+    result = []
 
-def backtrack(state: List[Any], options: List[Any], result: List[List[Any]]) -> None:
-    """
-    Generic backtracking template.
+    def backtrack(start_idx: int, current_path: list[int]):
+        # 1. Base Case: Add a COPY of the path to results
+        if is_solution(current_path):
+            result.append(current_path[:])
+            return
 
-    Args:
-        state: Current partial solution (usually a list)
-        options: Available choices at this point
-        result: Collection of all valid solutions
-    """
-    # Base case: found a valid solution
-    if is_solution(state):
-        result.append(state.copy())  # ALWAYS save a copy of the state
-        return
+        # 2. Iterate through possible choices (Suffix Selection Model)
+        for i in range(start_idx, len(nums)):
 
-    # Try each choice
-    for option in get_valid_options(state, options):
-        # Make choice
-        state.append(option)
+            # 3. Pruning: Skip invalid choices or duplicates
+            if not is_valid(nums[i]):
+                continue
 
-        # Explore further
-        backtrack(state, options, result)
+            # 4. Make the choice
+            current_path.append(nums[i])
 
-        # Undo choice (backtrack)
-        state.pop()
-```
+            # 5. Explore further down the tree
+            backtrack(i + 1, current_path)  # Pass i+1, NOT nums[i+1:]
 
----
+            # 6. Undo the choice (Backtrack)
+            current_path.pop()
 
-## Common Mistakes
-
-1. **Forgetting to backtrack**: Always undo your choice after exploring
-2. **Not copying state**: When saving solutions, copy the state (lists are mutable)
-3. **Wrong pruning**: Pruning too aggressively misses solutions; too little wastes time
-4. **Infinite recursion**: Ensure progress toward base case
-5. **Duplicate solutions**: Handle duplicates by sorting and skipping
-
----
-
-## Time Complexity
-
-| Problem Type | Time      | Space | Why                           |
-| ------------ | --------- | ----- | ----------------------------- |
-| Subsets      | $O(n \cdot 2^n)$| $O(n)$  | 2 choices per element         |
-| Permutations | $O(n \cdot n!)$ | $O(n)$  | n choices, then n-1, etc.     |
-| Combinations | $O(k \cdot \binom{n}{k})$| $O(k)$  | Binomial coefficient          |
-| N-Queens     | $O(n!)$     | $O(n)$  | Worst case, all placements    |
-| Sudoku       | $O(9^{81})$   | $O(81)$ | Worst case, but pruning helps |
-
----
-
-## Common Interview Problems by Company
-
-| Company   | Favorite Backtracking Problems                        |
-| --------- | ----------------------------------------------------- |
-| Google    | Word Search II, N-Queens, Generate Parentheses        |
-| Meta      | Subsets, Permutations, Letter Combinations            |
-| Amazon    | Combination Sum, Word Search, Palindrome Partitioning |
-| Microsoft | Sudoku Solver, N-Queens, Restore IP Addresses         |
-| Apple     | Combinations, Generate Parentheses, Subsets II        |
-
----
-
-## Quick Reference: When to Use Backtracking
-
-```
-Does the problem ask for "all" solutions or "generate all"?
-    │
-    ├── Yes → Likely backtracking
-    │         │
-    │         ├── Order matters? → Permutations pattern
-    │         │
-    │         ├── Order doesn't matter? → Subsets/Combinations pattern
-    │         │
-    │         └── Constraints to satisfy? → Constraint satisfaction
-    │
-    └── No → Consider DP or greedy first
-              │
-              └── But can I use backtracking to verify? → Sometimes useful
-```
-
----
-
-## Recursion vs Iteration
-
-While most backtracking uses recursion, know that:
-
-```python
-# Recursive (cleaner, but uses call stack)
-def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)
-
-# Iterative (explicit stack, saves call stack space)
-def factorial_iter(n):
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
+    backtrack(0, [])
     return result
 ```
 
-For interviews, recursive solutions are usually preferred for clarity unless:
+## Common Mistakes
 
-- Recursion depth exceeds stack limit (Python default: ~1000)
-- Interviewer specifically asks for iterative
+1. **Not passing index pointers:** Passing slices `nums[i:]` instead of an index `i` degrades time complexity due to hidden $O(N)$ copies.
+2. **Forgetting to append a copy:** `result.append(path)` stores a reference. Since `path` is mutated and eventually popped back to empty, `result` will just be a list of empty arrays. Always use `result.append(path[:])`.
+3. **Missing the `.pop()`:** If you append to the shared list but forget to pop it off after `backtrack()` returns, state will leak across branches.
 
 ---
 
-## Start: [01-recursion-basics.md](./01-recursion-basics.md)
+## Quick Reference: Time & Space Complexities
 
-Begin with mastering recursion fundamentals before diving into backtracking.
+| Problem                       | Time Complexity           | Auxiliary Space (Stack) | Total Output Space                  |
+| ----------------------------- | ------------------------- | ----------------------- | ----------------------------------- |
+| Subsets                       | $O(N \cdot 2^N)$          | $O(N)$                  | $O(N \cdot 2^N)$                    |
+| Permutations                  | $O(N \cdot N!)$           | $O(N)$                  | $O(N \cdot N!)$                     |
+| Combinations ($N$ choose $K$) | $O(K \cdot \binom{N}{K})$ | $O(K)$                  | $O(K \cdot \binom{N}{K})$           |
+| N-Queens                      | $O(N!)$                   | $O(N)$                  | $O(N^3)$ (for grid representations) |
+| Phone Letters                 | $O(N \cdot 4^N)$          | $O(N)$                  | $O(N \cdot 4^N)$                    |
+
+*Note: The multiplier (like $N$ or $K$) often comes from the cost of copying the `path` array at the base case.*

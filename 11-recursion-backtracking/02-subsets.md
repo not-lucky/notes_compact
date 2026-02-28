@@ -88,7 +88,7 @@ What if the input has duplicates, like `[1, 2, 2]`? The standard algorithm will 
 
 To fix this, we sort the array and skip same-level duplicates.
 
-### Code
+### Code (Subsets II)
 
 ```python
 def subsets_with_dup(nums: list[int]) -> list[list[int]]:
@@ -144,6 +144,7 @@ nums = [1, 2, 2] (sorted)
 ## Common Pitfalls
 
 1. **Forgetting to Copy the Path**:
+
    ```python
    # WRONG: Appends a reference to the mutable list.
    # By the end, result will be a list of empty arrays: [[], [], []]
@@ -152,7 +153,9 @@ nums = [1, 2, 2] (sorted)
    # CORRECT: Creates a shallow copy of the list at this exact moment in time.
    result.append(path[:])
    ```
+
 2. **Slicing Arrays in Recursive Calls**:
+
    ```python
    # WRONG: Creates a new array every call, adding O(N) time and space overhead
    backtrack(nums[1:], path)
@@ -160,6 +163,7 @@ nums = [1, 2, 2] (sorted)
    # CORRECT: Use an index pointer
    backtrack(start_index + 1, path)
    ```
+
 3. **Using `start_index` vs `i + 1`**:
    Inside the loop, the recursive call must be `backtrack(i + 1, path)`, NOT `backtrack(start_index + 1, path)`. The next level must only consider elements strictly after the one we just picked (`i`).
 
@@ -172,4 +176,5 @@ nums = [1, 2, 2] (sorted)
 ---
 
 ## Next: [03-permutations.md](./03-permutations.md)
+
 Learn how to generate all permutations (orderings) of elements.
