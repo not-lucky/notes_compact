@@ -139,9 +139,7 @@ def rob_circular(nums: list[int]) -> int:
     def rob_linear(houses: list[int]) -> int:
         rob1, rob2 = 0, 0
         for n in houses:
-            temp = max(n + rob1, rob2)
-            rob1 = rob2
-            rob2 = temp
+            rob1, rob2 = rob2, max(n + rob1, rob2)
         return rob2
 
     # Case 1: Exclude the last house
@@ -246,13 +244,10 @@ def delete_and_earn(nums: list[int]) -> int:
         # it's like a disconnected street segment. We can safely add
         # it to our previous max without skipping anything.
         if i > 0 and unique_nums[i] == unique_nums[i-1] + 1:
-            temp = max(curr_points + earn1, earn2)
-            earn1 = earn2
-            earn2 = temp
+            earn1, earn2 = earn2, max(curr_points + earn1, earn2)
         else:
             # Not adjacent, so we don't have to skip the previous value
-            earn1 = earn2
-            earn2 = curr_points + earn2
+            earn1, earn2 = earn2, curr_points + earn2
 
     return earn2
 ```

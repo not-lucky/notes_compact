@@ -69,10 +69,8 @@ def climb_stairs(n: int) -> int:
     prev2, prev1 = 1, 1
 
     for i in range(2, n + 1):
-        curr = prev1 + prev2
         # Shift the window forward
-        prev2 = prev1
-        prev1 = curr
+        prev2, prev1 = prev1, prev1 + prev2
 
     return prev1
 ```
@@ -103,9 +101,8 @@ def min_cost_climbing_stairs(cost: list[int]) -> int:
 
     # We want to reach the "top", which is index n
     for i in range(2, n + 1):
-        curr = min(prev1 + cost[i-1], prev2 + cost[i-2])
-        prev2 = prev1
-        prev1 = curr
+        # Shift variables
+        prev2, prev1 = prev1, min(prev1 + cost[i-1], prev2 + cost[i-2])
 
     return prev1
 ```
@@ -151,10 +148,8 @@ def rob(nums: list[int]) -> int:
 
     for amount in nums:
         # dp[i] = max(skip, take)
-        curr = max(rob2, rob1 + amount)
         # Shift variables forward
-        rob1 = rob2
-        rob2 = curr
+        rob1, rob2 = rob2, max(rob2, rob1 + amount)
 
     return rob2
 ```
@@ -183,9 +178,7 @@ def delete_and_earn(nums: list[int]) -> int:
     # Standard House Robber logic on sum_array
     rob1, rob2 = 0, 0
     for amount in sum_array:
-        curr = max(rob2, rob1 + amount)
-        rob1 = rob2
-        rob2 = curr
+        rob1, rob2 = rob2, max(rob2, rob1 + amount)
 
     return rob2
 ```
@@ -253,14 +246,14 @@ def max_product(nums: list[int]) -> int:
     for i in range(1, len(nums)):
         num = nums[i]
 
-        # The candidates are:
+        # We must store the previous max to correctly calculate the new min
+        # Candidates:
         # 1. The number itself (starting a new subarray)
         # 2. Extend the max product so far
         # 3. Extend the min product so far (if num is negative)
-        candidates = (num, curr_max * num, curr_min * num)
-
-        curr_max = max(candidates)
-        curr_min = min(candidates)
+        temp_max = max(num, curr_max * num, curr_min * num)
+        curr_min = min(num, curr_max * num, curr_min * num)
+        curr_max = temp_max
 
         res = max(res, curr_max)
 
@@ -309,8 +302,7 @@ def num_decodings(s: str) -> int:
             curr += prev2
 
         # Shift variables
-        prev2 = prev1
-        prev1 = curr
+        prev2, prev1 = prev1, curr
 
     return prev1
 ```
