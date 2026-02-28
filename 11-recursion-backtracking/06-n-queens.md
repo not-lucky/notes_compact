@@ -12,7 +12,7 @@ N-Queens is the classic **constraint satisfaction** backtracking problem. You pl
 
 Think of it as a systematic search with early rejection of invalid paths.
 
-1. **The Row-by-Row Strategy (Level):** Since each row must have exactly one queen (otherwise they'd attack each other horizontally), we place one queen per row. This reduces the search space from $N^2$ positions down to $N$ choices per row. The `row` index acts as the depth/level in our recursive tree.
+1. **The Row-by-Row Strategy (Level):** Since each row must have exactly one queen (otherwise they would attack each other horizontally), we place one queen per row. This reduces the search space from $N^2$ positions down to $N$ choices per row. The `row` index acts as the depth/level in our recursive tree.
 
 2. **Suffix Selection (Choices):** At each row, our choices are the $N$ columns. We iterate through each column and try to place a queen.
 
@@ -41,7 +41,7 @@ row↓
 
 If two queens have the same diagonal ID, they attack each other.
 
-1. **Pruning via Constraint Checking:** Before placing a queen at `(row, col)`, check if the `col`, `row-col` diagonal, or `row+col` diagonal is taken. This $O(1)$ check (with sets) prunes entire invalid subtrees instantly.
+5. **Pruning via Constraint Checking:** Before placing a queen at `(row, col)`, check if the `col`, `row-col` diagonal, or `row+col` diagonal is taken. This $\mathcal{O}(1)$ check (with sets) prunes entire invalid subtrees instantly.
 
 ## Visualizations
 
@@ -58,7 +58,7 @@ Level 2:                                   (2,0) ✗         ...
                                          (same diag)
 ```
 
-By eagerly pruning choices that violate constraints, we prevent the tree from growing to an unmanageable $O(N^N)$ size.
+By eagerly pruning choices that violate constraints, we prevent the tree from growing to an unmanageable $\mathcal{O}(N^N)$ size.
 
 ## Basic Implementation: State Mutation and Restoration
 
@@ -113,14 +113,14 @@ def solve_n_queens(n: int) -> list[list[str]]:
     return result
 ```
 
-## Optimized Implementation: O(1) Constraint Checking
+## Optimized Implementation: $\mathcal{O}(1)$ Constraint Checking
 
-Using sets to track attacked columns and diagonals drops the validation step from $O(N)$ to $O(1)$.
+Using sets to track attacked columns and diagonals drops the validation step from $\mathcal{O}(N)$ to $\mathcal{O}(1)$.
 
 ```python
 def solve_n_queens_optimized(n: int) -> list[list[str]]:
     """
-    Optimized N-Queens using sets for O(1) conflict checking.
+    Optimized N-Queens using sets for $\mathcal{O}(1)$ conflict checking.
     """
     def backtrack(row: int):
         if row == n:
@@ -129,7 +129,7 @@ def solve_n_queens_optimized(n: int) -> list[list[str]]:
             return
 
         for col in range(n):
-            # O(1) check if position is attacked
+            # \mathcal{O}(1) check if position is attacked
             if col in cols or (row - col) in diag1 or (row + col) in diag2:
                 continue
 
@@ -139,7 +139,7 @@ def solve_n_queens_optimized(n: int) -> list[list[str]]:
             diag1.add(row - col)
             diag2.add(row + col)
 
-            # 2. Recurse
+            # 2. Recurse to next row
             backtrack(row + 1)
 
             # 3. Remove queen and constraints (Restore State)
@@ -159,9 +159,14 @@ def solve_n_queens_optimized(n: int) -> list[list[str]]:
 
 ## Complexity Analysis
 
-- **Time Complexity:** $O(N!)$. For the first row, we have $N$ choices. For the second, $N-1$ choices, and so on. Pruning makes this much faster in practice, but the upper bound is $N!$. Building each valid board string takes $O(N^2)$, making the total time $O(N! + S \cdot N^2)$ where $S$ is the number of solutions.
-- **Auxiliary Space:** $O(N)$. The recursion call stack goes up to $N$ frames deep. The `board` array and sets (`cols`, `diag1`, `diag2`) also use $O(N)$ space.
-- **Total Space:** $O(S \cdot N^2)$ where $S$ is the number of valid solutions. Each solution requires an $N \times N$ string representation.
+- **Time Complexity**: $\mathcal{O}(N!)$
+  - For the first row, we have $N$ choices. For the second, $N-1$ choices, and so on. Pruning makes this much faster in practice, but the upper bound is $N!$.
+  - Building each valid board string takes $\mathcal{O}(N^2)$, making the total time $\mathcal{O}(N! + S \cdot N^2)$ where $S$ is the number of solutions.
+- **Space Complexity**:
+  - **Auxiliary Space (Call Stack + State)**: $\mathcal{O}(N)$
+    - The recursion call stack goes up to $N$ frames deep. The `board` array and sets (`cols`, `diag1`, `diag2`) also use $\mathcal{O}(N)$ space.
+  - **Total Space (including Output)**: $\mathcal{O}(S \cdot N^2)$
+    - We store $S$ valid solutions, where each solution requires an $N \times N$ string representation.
 
 ## Common Pitfalls
 
@@ -185,8 +190,8 @@ cols.remove(col)
 Mixing up the math for the main and anti-diagonals.
 
 ```python
-# Main diagonal (↘): row - col (constant along ↘)
-# Anti-diagonal (↙): row + col (constant along ↙)
+# Main diagonal ($\searrow$): row - col (constant along $\searrow$)
+# Anti-diagonal ($\swarrow$): row + col (constant along $\swarrow$)
 
 # WRONG: mixing them up
 diag1.add(row + col)  # This tracks the anti-diagonal!
