@@ -48,12 +48,14 @@ The problem states that out-of-bounds indices are treated as if they have a ball
 
 `padded_nums = [1] + original_nums + [1]`
 
+These boundaries also serve a crucial mathematical purpose: they represent the indestructible "walls" that remain when all actual balloons between them have been burst.
+
 ### 2. State Definition
 We use an **exclusive** range definition. This is the secret to making the math clean.
 
 Let `dp[left][right]` be the maximum coins obtained by bursting ALL balloons **strictly between** index `left` and index `right`.
 
-*Crucial Note: Balloons at index `left` and index `right` are NOT burst in this subproblem. They act as the indestructible walls (the final neighbors) for the very last balloon to burst in the range `(left, right)`.*
+*Crucial Note: Balloons at index `left` and index `right` are **NOT** burst in this subproblem. They act as the indestructible walls (the final neighbors) for the very last balloon to burst in the range `(left, right)`. They represent the balloons that will be adjacent to `k` precisely because everything between `left` and `k`, and everything between `k` and `right`, has already been removed.*
 
 ### 3. Transitions
 To find `dp[left][right]`, we guess which balloon `k` (where `left < k < right`) is the **last** to burst.
@@ -82,8 +84,8 @@ from typing import List
 
 def maxCoins_memo(nums: List[int]) -> int:
     """
-    Time Complexity: O(N^3)
-    Space Complexity: O(N^2) for the memoization dictionary
+    Time Complexity: O(n^3)
+    Space Complexity: O(n^2) for the memoization dictionary
     """
     # 1. Add virtual boundaries
     nums = [1] + nums + [1]
@@ -94,6 +96,7 @@ def maxCoins_memo(nums: List[int]) -> int:
         """
         Returns max coins obtained by bursting all balloons
         strictly between index 'left' and 'right'.
+        'left' and 'right' are the boundaries and are NOT burst.
         """
         # Base case: no balloons strictly between left and right
         if left + 1 == right:
@@ -103,9 +106,11 @@ def maxCoins_memo(nums: List[int]) -> int:
             return memo[(left, right)]
 
         max_coins = 0
-        # Try bursting every balloon k LAST
+        # Try bursting every balloon k LAST in the range (left, right)
         for k in range(left + 1, right):
-            # Coins from bursting k last + coins from bursting left half + right half
+            # Coins from bursting k last: nums[left] * nums[k] * nums[right]
+            # Plus coins from bursting everything in the left half: (left, k)
+            # Plus coins from bursting everything in the right half: (k, right)
             coins = nums[left] * nums[k] * nums[right]
             total = coins + dfs(left, k) + dfs(k, right)
             max_coins = max(max_coins, total)
@@ -126,8 +131,8 @@ Therefore, we must solve subproblems ordered by **interval length**, or by movin
 ```python
 def maxCoins_tabulation(nums: List[int]) -> int:
     """
-    Time Complexity: O(N^3)
-    Space Complexity: O(N^2) for the DP table
+    Time Complexity: O(n^3)
+    Space Complexity: O(n^2) for the DP table
     """
     nums = [1] + nums + [1]
     n = len(nums)
@@ -135,13 +140,15 @@ def maxCoins_tabulation(nums: List[int]) -> int:
     # dp[left][right] = max coins from bursting balloons strictly between left and right
     dp = [[0] * n for _ in range(n)]
 
-    # Iterate left backwards from the end
+    # Iterate left backwards from the second to last element
     for left in range(n - 2, -1, -1):
-        # Iterate right forwards from left + 2 (so there is at least one balloon between them)
+        # Iterate right forwards from left + 2 (ensures at least one balloon is between)
         for right in range(left + 2, n):
 
             # Try every possible last balloon k to burst in (left, right)
             for k in range(left + 1, right):
+                # We calculate the score of bursting k last, plus the optimal
+                # scores of bursting the sub-intervals (left, k) and (k, right)
                 coins = nums[left] * nums[k] * nums[right]
                 dp[left][right] = max(
                     dp[left][right],
@@ -151,7 +158,7 @@ def maxCoins_tabulation(nums: List[int]) -> int:
     return dp[0][n - 1]
 ```
 
-*Note on loop order:* Iterating `left` backwards and `right` forwards guarantees that when evaluating `dp[left][right]`, all shorter intervals (like `dp[left][k]` and `dp[k][right]`) have already been computed.
+*Note on loop order:* Iterating `left` backwards and `right` forwards guarantees that when evaluating `dp[left][right]`, all strictly shorter intervals (like `dp[left][k]` and `dp[k][right]`) have already been computed.
 
 ---
 
@@ -166,22 +173,29 @@ No balloons strictly between `left` and `right`. All `dp[left][left+1] = 0`.
 *(This is implicitly handled by the matrix initialization).*
 
 **Length 3 (right - left = 2, exactly one balloon between):**
-- `dp[0][2]`: Burst balloon 1 (value 3) last. Coins = $1 \cdot 3 \cdot 1 = 3$.
-- `dp[1][3]`: Burst balloon 2 (value 1) last. Coins = $3 \cdot 1 \cdot 5 = 15$.
-- `dp[2][4]`: Burst balloon 3 (value 5) last. Coins = $1 \cdot 5 \cdot 8 = 40$.
-- `dp[3][5]`: Burst balloon 4 (value 8) last. Coins = $5 \cdot 8 \cdot 1 = 40$.
+
+| Interval `[left][right]` | Balloon $k$ (index) | Value $nums[k]$ | Calculation $nums[left] \times nums[k] \times nums[right]$ | Coins |
+| :--- | :--- | :--- | :--- | :--- |
+| `dp[0][2]` | 1 | 3 | $1 \times 3 \times 1$ | 3 |
+| `dp[1][3]` | 2 | 1 | $3 \times 1 \times 5$ | 15 |
+| `dp[2][4]` | 3 | 5 | $1 \times 5 \times 8$ | 40 |
+| `dp[3][5]` | 4 | 8 | $5 \times 8 \times 1$ | 40 |
 
 **Length 4 (right - left = 3, exactly two balloons between):**
-Calculate `dp[0][3]` (range contains index 1 and 2, values `3` and `1`).
-- Try bursting index 1 (value 3) last ($k=1$):
-  `dp[0][1] + dp[1][3] + (nums[0] * nums[1] * nums[3])`
-  `0 + 15 + (1 * 3 * 5) = 15 + 15 = 30`
-- Try bursting index 2 (value 1) last ($k=2$):
-  `dp[0][2] + dp[2][3] + (nums[0] * nums[2] * nums[3])`
-  `3 + 0 + (1 * 1 * 5) = 3 + 5 = 8`
-- Max for `dp[0][3]` is `30`.
 
-We continue expanding the interval until we calculate `dp[0][5]`, which covers all original balloons and gives the final answer: `167`.
+Calculate `dp[0][3]` (range contains index 1 and 2, values `3` and `1`). We evaluate two choices for the **last** balloon to burst $k$:
+
+1.  **Try bursting index 1 (value 3) last ($k=1$):**
+    *   $dp[0][1] + dp[1][3] + (nums[0] \times nums[1] \times nums[3])$
+    *   $0 + 15 + (1 \times 3 \times 5) = 15 + 15 = 30$
+
+2.  **Try bursting index 2 (value 1) last ($k=2$):**
+    *   $dp[0][2] + dp[2][3] + (nums[0] \times nums[2] \times nums[3])$
+    *   $3 + 0 + (1 \times 1 \times 5) = 3 + 5 = 8$
+
+Therefore, the maximum for `dp[0][3]` is **`30`**.
+
+We continue expanding the interval until we calculate `dp[0][5]`, which covers all original balloons and gives the final answer: **`167`**.
 
 ---
 
@@ -233,8 +247,8 @@ A standard 2D state `dp[left][right]` cannot remember how many boxes of the same
 ```python
 def removeBoxes(boxes: List[int]) -> int:
     """
-    Time Complexity: O(N^4)
-    Space Complexity: O(N^3)
+    Time Complexity: O(n^4)
+    Space Complexity: O(n^3)
     """
     memo = {}
 
@@ -246,6 +260,7 @@ def removeBoxes(boxes: List[int]) -> int:
             return memo[(left, right, k)]
 
         # Optimization: Group identical consecutive boxes at the start
+        # E.g., [3, 3, 3, 4] with k=0 becomes processing [3, 4] with k=2
         l, count = left, k
         while l < right and boxes[l] == boxes[l + 1]:
             l += 1
@@ -253,6 +268,7 @@ def removeBoxes(boxes: List[int]) -> int:
 
         # Option 1: Remove boxes[left] along with the 'count' attached boxes right now.
         # This gives us (count + 1)^2 points, and we recursively solve the remaining boxes[l+1...right].
+        # We reset k to 0 for the subproblem because there are no boxes attached to l+1.
         res = (count + 1) ** 2 + dp(l + 1, right, 0)
 
         # Option 2: Try to merge boxes[l] with another box of the same color later in the array.
@@ -262,6 +278,7 @@ def removeBoxes(boxes: List[int]) -> int:
         for m in range(l + 1, right + 1):
             if boxes[m] == boxes[l]:
                 # Cost to remove the middle + cost of the merged remainder
+                # The remaining boxes starting at 'm' now have 'count + 1' boxes attached to their left
                 res = max(res, dp(l + 1, m - 1, 0) + dp(m, right, count + 1))
 
         memo[(left, right, k)] = res
@@ -290,4 +307,4 @@ def removeBoxes(boxes: List[int]) -> int:
 - [ ] Does the score depend on these new neighbors?
 - [ ] **Action:** Think about the LAST element removed.
 - [ ] **Action:** Add virtual boundaries to the input array.
-- [ ] **Action:** Use $O(N^3)$ Interval DP mapping out `dp[left][right]` exclusively.
+- [ ] **Action:** Use $O(n^3)$ Interval DP mapping out `dp[left][right]` exclusively.

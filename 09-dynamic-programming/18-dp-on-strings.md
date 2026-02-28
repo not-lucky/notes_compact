@@ -48,30 +48,30 @@ $$
 ```python
 def num_decodings(s: str) -> int:
     """
-    Time Complexity: O(N) where N is len(s)
+    Time Complexity: O(n) where n is len(s)
     Space Complexity: O(1) using space optimization
     """
     if not s or s[0] == '0':
         return 0
 
     n = len(s)
-    # prev2 = dp[i-2], prev1 = dp[i-1]
+    # At the start of loop i, prev2 holds dp[i-2], prev1 holds dp[i-1]
     prev2, prev1 = 1, 1
 
     for i in range(2, n + 1):
-        curr = 0
+        curr_ways = 0
 
         # Case 1: Single digit decoding (1-9)
         if s[i - 1] != '0':
-            curr += prev1
+            curr_ways += prev1
 
         # Case 2: Two digit decoding (10-26)
         two_digit = int(s[i - 2:i])
         if 10 <= two_digit <= 26:
-            curr += prev2
+            curr_ways += prev2
 
         # Shift variables for the next iteration
-        prev2, prev1 = prev1, curr
+        prev2, prev1 = prev1, curr_ways
 
     return prev1
 ```
@@ -99,8 +99,8 @@ Calculating `dp[i][j]` only requires values from the previous row (`dp[i-1][...]
 ```python
 def num_distinct(s: str, t: str) -> int:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(N) optimized to 1D array
+    Time Complexity: O(m * n)
+    Space Complexity: O(n) optimized to 1D array
     """
     m, n = len(s), len(t)
 
@@ -112,7 +112,7 @@ def num_distinct(s: str, t: str) -> int:
         # Iterate j backwards to prevent using updated dp[j-1] values in the same row i
         for j in range(min(i, n), 0, -1):
             if s[i - 1] == t[j - 1]:
-                # ways = don't use s[i-1] (dp[j]) + use s[i-1] (dp[j-1])
+                # dp[j] (new row i) = dp[j] (old row i-1: skip s[i-1]) + dp[j-1] (old row i-1: use s[i-1])
                 dp[j] = dp[j] + dp[j - 1]
             # else: dp[j] remains unchanged (conceptually dp[i][j] = dp[i-1][j])
 
@@ -131,8 +131,8 @@ Let `dp[i][j]` be a boolean: Can `s1[0..i-1]` and `s2[0..j-1]` interleave to for
 ```python
 def is_interleave(s1: str, s2: str, s3: str) -> bool:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(N) optimized to 1D array
+    Time Complexity: O(m * n)
+    Space Complexity: O(n) optimized to 1D array
     """
     m, n = len(s1), len(s2)
     if m + n != len(s3):
@@ -142,18 +142,21 @@ def is_interleave(s1: str, s2: str, s3: str) -> bool:
     dp = [False] * (n + 1)
     dp[0] = True
 
-    # Base case: Initialize the 0th row (using ONLY s2 to match s3)
+    # Base case: Initialize the 0th row (i=0)
+    # This represents trying to match s3 using ONLY characters from s2
     for j in range(1, n + 1):
         dp[j] = dp[j - 1] and s2[j - 1] == s3[j - 1]
 
     for i in range(1, m + 1):
-        # Base case for the current row: using ONLY s1 to match s3
+        # Base case for the current row (j=0): using ONLY characters from s1 to match s3
         dp[0] = dp[0] and s1[i - 1] == s3[i - 1]
 
         for j in range(1, n + 1):
             # Can we use s1[i-1]?
+            # Yes, if s1[0..i-2] and s2[0..j-1] matched (dp[j]) AND s1[i-1] matches s3[i+j-1]
             match_s1 = dp[j] and s1[i - 1] == s3[i + j - 1]
             # Can we use s2[j-1]?
+            # Yes, if s1[0..i-1] and s2[0..j-2] matched (dp[j-1]) AND s2[j-1] matches s3[i+j-1]
             match_s2 = dp[j - 1] and s2[j - 1] == s3[i + j - 1]
 
             dp[j] = match_s1 or match_s2
@@ -172,48 +175,50 @@ When a problem allows arbitrary splitting of the string into halves recursively,
 Check if `s2` is a scrambled version of `s1`. A string is scrambled by recursively partitioning it into two non-empty substrings and optionally swapping them.
 
 **Intuition:**
-This is natively suited for **Top-Down Memoization** due to the $O(N^4)$ time complexity. We split the string at every possible index `i` and check if the unswapped halves match or if the swapped halves match.
+This is natively suited for **Top-Down Memoization** due to the $O(n^4)$ time complexity. We split the string at every possible index `i` and check if the unswapped halves match or if the swapped halves match.
 
-Rather than passing indices around which is verbose, slicing `s1` and `s2` directly in Python is cleaner and highly readable, leveraging `@lru_cache`.
+While passing indices is more standard for DP to avoid $O(n)$ string slicing overhead, passing slices of strings in Python combined with `@lru_cache` is incredibly clean and often fast enough in practice due to underlying string hashing optimizations. We also add an $O(n)$ pruning step using character counts to skip large branches.
 
 ```python
 from functools import lru_cache
+from collections import Counter
 
-def is_scramble(s1: str, s2: str) -> bool:
-    """
-    Time Complexity: O(N^4) (O(N^3) subproblems * O(N) per subproblem for slicing/iteration)
-    Space Complexity: O(N^3) for the memoization cache
-    """
-    # Quick short-circuit
-    if len(s1) != len(s2):
-        return False
-
-    @lru_cache(maxsize=None)
-    def dp(s1: str, s2: str) -> bool:
-        # Base cases
-        if s1 == s2:
-            return True
-
-        # Pruning: Frequency check. If anagrams don't match, scrambles can't match.
-        if sorted(s1) != sorted(s2):
+class Solution:
+    def isScramble(self, s1: str, s2: str) -> bool:
+        """
+        Time Complexity: O(n^4) bounds (O(n^3) subproblems * O(n) for slicing/Counter)
+        Space Complexity: O(n^3) for the memoization cache
+        """
+        if len(s1) != len(s2):
             return False
 
-        n = len(s1)
-        # Try all possible split points
-        for i in range(1, n):
-            # Try Without Swap:
-            # Check if left matches left, and right matches right
-            if dp(s1[:i], s2[:i]) and dp(s1[i:], s2[i:]):
+        @lru_cache(maxsize=None)
+        def dfs(s1: str, s2: str) -> bool:
+            # Base cases
+            if s1 == s2:
                 return True
 
-            # Try With Swap:
-            # Check if left of s1 matches right of s2, and right of s1 matches left of s2
-            if dp(s1[:i], s2[-i:]) and dp(s1[i:], s2[:-i]):
-                return True
+            # Pruning: Frequency check. If anagrams don't match, scrambles can't match.
+            # Counter is O(n), much faster than sorted() which is O(n log n)
+            if Counter(s1) != Counter(s2):
+                return False
 
-        return False
+            n = len(s1)
+            # Try all possible split points
+            for i in range(1, n):
+                # Option 1: Try Without Swap
+                # Check if left matches left, and right matches right
+                if dfs(s1[:i], s2[:i]) and dfs(s1[i:], s2[i:]):
+                    return True
 
-    return dp(s1, s2)
+                # Option 2: Try With Swap
+                # Check if left of s1 matches right of s2, and right of s1 matches left of s2
+                if dfs(s1[:i], s2[-i:]) and dfs(s1[i:], s2[:-i]):
+                    return True
+
+            return False
+
+        return dfs(s1, s2)
 ```
 
 ---
@@ -236,8 +241,8 @@ Let `dp[i]` be the length of the longest valid substring strictly **ending at** 
 ```python
 def longest_valid_parentheses(s: str) -> int:
     """
-    Time Complexity: O(N)
-    Space Complexity: O(N)
+    Time Complexity: O(n)
+    Space Complexity: O(n)
     """
     n = len(s)
     if n == 0:
@@ -252,14 +257,19 @@ def longest_valid_parentheses(s: str) -> int:
             if s[i - 1] == '(':
                 dp[i] = (dp[i - 2] if i >= 2 else 0) + 2
 
-            # Case 2: Nested pairing `...))`. Check if there's a matching '('
-            elif i - dp[i - 1] - 1 >= 0 and s[i - dp[i - 1] - 1] == '(':
-                # Add 2 for the outer `(...)` pair
-                dp[i] = dp[i - 1] + 2
+            # Case 2: Nested pairing `...))`.
+            # Check if there's a matching '(' that corresponds to this closing ')'
+            elif s[i - 1] == ')':
+                # Skip back over the previous valid sequence to find the potential matching '('
+                prev_open_idx = i - dp[i - 1] - 1
 
-                # We must also attach any adjacent valid sequence immediately before our matching '('
-                if i - dp[i - 1] - 2 >= 0:
-                    dp[i] += dp[i - dp[i - 1] - 2]
+                if prev_open_idx >= 0 and s[prev_open_idx] == '(':
+                    # Add 2 for the outer `(...)` pair we just found
+                    dp[i] = dp[i - 1] + 2
+
+                    # We must also attach any adjacent valid sequence immediately before our matching '('
+                    if prev_open_idx - 1 >= 0:
+                        dp[i] += dp[prev_open_idx - 1]
 
             max_len = max(max_len, dp[i])
 
@@ -270,17 +280,17 @@ def longest_valid_parentheses(s: str) -> int:
 
 ## Non-DP String Problems (For Contrast)
 
-Some string matching problems look like DP but are better solved with hashing, tries, or greedy two-pointer approaches. Be highly skeptical if a "DP" solution exceeds $O(N^2)$ time on a string where $N > 5,000$.
+Some string matching problems look like DP but are better solved with hashing, tries, or greedy two-pointer approaches. Be highly skeptical if a "DP" solution exceeds $O(n^2)$ time on a string where $n > 5,000$.
 
 ### Palindrome Pairs (Tries / Hash Maps)
 *Given a list of words, find pairs `(i, j)` where `words[i] + words[j]` is a palindrome.*
 
-**Why NOT DP?** Comparing all pairs is $O(N^2 \cdot K)$. Instead, use a Hash Map. For each word, split it into prefix/suffix. If the prefix is a palindrome, look up the reverse of the suffix in the hash map. Time: $O(N \cdot K^2)$.
+**Why NOT DP?** Comparing all pairs is $O(n^2 \cdot k)$. Instead, use a Hash Map. For each word, split it into prefix/suffix. If the prefix is a palindrome, look up the reverse of the suffix in the hash map. Time: $O(n \cdot k^2)$.
 
 ### Shortest Way to Form String (Greedy / Two Pointers)
 *Minimum number of subsequences of `source` needed to form `target`.*
 
-**Why NOT DP?** While it looks like Sequence Alignment, a greedy approach (matching characters in `target` sequentially against `source` until exhaustion, then restarting `source`) guarantees the optimal answer in $O(M \cdot N)$ with space $O(1)$. DP adds unnecessary memory overhead.
+**Why NOT DP?** While it looks like Sequence Alignment, a greedy approach (matching characters in `target` sequentially against `source` until exhaustion, then restarting `source`) guarantees the optimal answer in $O(m \cdot n)$ with space $O(1)$. DP adds unnecessary memory overhead.
 
 ---
 
