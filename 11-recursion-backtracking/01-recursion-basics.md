@@ -63,13 +63,13 @@ Stack: [] → done
 Many recursive problems form a **recursion tree**, especially when there are multiple recursive calls per function:
 
 ```text
-                    fib(5)
-                   /      \
-               fib(4)    fib(3)
-              /    \     /    \
-          fib(3) fib(2) fib(2) fib(1)
-          /   \
-      fib(2) fib(1)
+                        fib(5)
+                      /        \
+               fib(4)            fib(3)
+              /      \          /      \
+          fib(3)    fib(2)  fib(2)    fib(1)
+          /    \
+      fib(2)  fib(1)
 ```
 
 This visualization helps:
@@ -104,7 +104,7 @@ def sum_list(nums: list[int], index: int = 0) -> int:
     if index == len(nums):
         return 0
     # Recursive case: current element + sum of rest
-    # Note: We use an index pointer rather than nums[1:] to avoid O(N) slicing
+    # Note: We use an index pointer rather than nums[1:] to avoid \mathcal{O}(N) slicing
     return nums[index] + sum_list(nums, index + 1)
 ```
 
@@ -134,20 +134,20 @@ When analyzing recursion, we must distinguish between:
 
 | Pattern | Example | Time Complexity | Auxiliary Space (Call Stack) |
 | ------- | ------- | --------------- | ---------------------------- |
-| **Linear** | Factorial | $O(N)$ - $N$ calls | $O(N)$ depth |
-| **Binary** | Fibonacci | $O(2^N)$ - exponential nodes | $O(N)$ max depth |
-| **Divide & Conquer** | Merge Sort | $O(N \log N)$ | $O(\log N)$ depth |
+| **Linear** | Factorial | $\mathcal{O}(N)$ - $N$ calls | $\mathcal{O}(N)$ depth |
+| **Binary** | Fibonacci | $\mathcal{O}(2^N)$ - exponential nodes | $\mathcal{O}(N)$ max depth |
+| **Divide & Conquer** | Merge Sort | $\mathcal{O}(N \log N)$ | $\mathcal{O}(\log N)$ depth |
 
 **Note on Time Complexity:**
 The time complexity of a recursive algorithm is generally:
 `Total Recursive Calls * Time Complexity per Call`
 
-For example, if you slice an array in your recursive call (`arr[1:]`), the slicing takes $O(N)$ time. If you do this $N$ times, your time complexity becomes $O(N^2)$ instead of $O(N)$. **Always use index pointers (`start_index`) to pass arrays $O(1)$ instead of slicing.**
+For example, if you slice an array in your recursive call (`arr[1:]`), the slicing takes $\mathcal{O}(N)$ time. If you do this $N$ times, your time complexity becomes $\mathcal{O}(N^2)$ instead of $\mathcal{O}(N)$. **Always use index pointers (`start_index`) to pass arrays $\mathcal{O}(1)$ instead of slicing.**
 
 ## Common Pitfalls
 
 1. **Forgetting the Base Case**: Always write the base case first. Without it, you will get a `RecursionError: maximum recursion depth exceeded`.
-2. **Passing Array Slices (`arr[1:]`)**: Slicing creates a new array, taking $O(N)$ time and $O(N)$ space. This turns an $O(N)$ algorithm into an $O(N^2)$ algorithm. Use an index parameter instead.
+2. **Passing Array Slices (`arr[1:]`)**: Slicing creates a new array, taking $\mathcal{O}(N)$ time and $\mathcal{O}(N)$ space. This turns an $\mathcal{O}(N)$ algorithm into an $\mathcal{O}(N^2)$ algorithm. Use an index parameter instead.
 3. **Not Trusting the Recursion**: Trying to mentally trace every single call down to the base case for complex problems. Use the "Leap of Faith"—trace one level down and trust the rest.
 4. **Returning the Wrong Type**: Ensure the recursive case returns the same type as the base case.
 5. **Ignoring Stack Overflow Limits**: Python's default stack limit is ~1000. Problems with $N > 1000$ may crash. If the input can be large, convert to iteration.

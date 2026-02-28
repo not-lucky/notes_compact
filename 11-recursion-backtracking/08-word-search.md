@@ -4,7 +4,7 @@
 
 ## Core Concept
 
-Word Search applies backtracking to **grid-based path finding**. Given a 2D grid of characters and a target word, you determine if the word can be formed by sequentially adjacent cells. This pattern is fundamental for any problem involving exploring paths through a grid, emphasizing **in-place matrix state mutation**, bounding box early termination, and recursive depth management.
+Word Search applies backtracking to **grid-based path finding**. Given a 2D grid of characters and a target word, you determine if the word can be formed by sequentially adjacent cells. This pattern is fundamental for any problem involving exploring paths through a grid, emphasizing **in-place matrix state mutation**, bounding box early termination, and recursive depth management using $O(1)$ index pointers.
 
 ## Intuition & Mental Models
 
@@ -31,24 +31,33 @@ S F C S
 A D E E
 
 Starting at A(0,0), looking for "ABCCED":
-(0,0)A → mark as '#', need "BCCED"
-  ↓
-(0,1)B → mark as '#', need "CCED"
-  ↓
-(0,2)C → mark as '#', need "CED"
-  ↓
-(1,2)C → mark as '#', need "ED"
-  ↓
-(2,2)E → mark as '#', need "D"
-  ↓
-(2,1)D → mark as '#', need "" ← Empty! Found it!
+
+dfs(0, 0, index=0) -> 'A' == 'A'
+├── Mark (0,0) as '#'
+├── dfs(0, 1, index=1) -> 'B' == 'B'
+│   ├── Mark (0,1) as '#'
+│   ├── dfs(0, 2, index=2) -> 'C' == 'C'
+│   │   ├── Mark (0,2) as '#'
+│   │   ├── dfs(1, 2, index=3) -> 'C' == 'C'
+│   │   │   ├── Mark (1,2) as '#'
+│   │   │   ├── dfs(2, 2, index=4) -> 'E' == 'E'
+│   │   │   │   ├── Mark (2,2) as '#'
+│   │   │   │   ├── dfs(2, 1, index=5) -> 'D' == 'D'
+│   │   │   │   │   ├── Mark (2,1) as '#'
+│   │   │   │   │   ├── dfs(..., index=6) -> True! (index == len(word))
+│   │   │   │   │   └── Restore (2,1) to 'D'
+│   │   │   │   └── Restore (2,2) to 'E'
+│   │   │   └── Restore (1,2) to 'C'
+│   │   └── Restore (0,2) to 'C'
+│   └── Restore (0,1) to 'B'
+└── Restore (0,0) to 'A'
 
 Path: A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)
 ```
 
 ## Basic Implementation: State Mutation and Restoration
 
-Instead of a separate `visited` set, we temporarily mutate the cell to `#`, then restore it. This saves $O(M \times N)$ space and is a common interview optimization.
+Instead of a separate `visited` set, we temporarily mutate the cell to `#`, then restore it. This saves $O(M \times N)$ space and is a common optimization. Notice we use an $O(1)$ `index` pointer instead of string slicing `word[1:]` to maintain efficiency.
 
 ```python
 def exist(board: list[list[str]], word: str) -> bool:
@@ -59,7 +68,8 @@ def exist(board: list[list[str]], word: str) -> bool:
         return False
 
     rows, cols = len(board), len(board[0])
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # right, left, down, up
+    # Right, Left, Down, Up
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
     def dfs(row: int, col: int, index: int) -> bool:
         # Base case: Found all characters
@@ -159,9 +169,8 @@ def exist_optimized(board: list[list[str]], word: str) -> bool:
 
 ## Complexity Analysis
 
-- **Time Complexity:** $O(M \times N \times 3^L)$ where $M \times N$ is the size of the board and $L$ is the length of the word. We iterate through every cell on the board ($M \times N$). For each cell, we explore up to 3 directions (we don't go back where we came from, hence 3, not 4) for a maximum depth of $L$.
-- **Auxiliary Space:** $O(L)$ for the recursion depth representing the call stack when the path hits the length of the word.
-- **Total Space:** $O(1)$ modification space since the 2D grid is mutated **in-place** directly.
+- **Time Complexity:** $\mathcal{O}(M \times N \times 3^L)$ where $M \times N$ is the size of the board and $L$ is the length of the word. We iterate through every cell on the board ($M \times N$). For each cell, we explore up to 3 directions (we don't go back where we came from, hence 3, not 4) for a maximum depth of $L$. Using an index pointer instead of string slicing ensures we don't multiply this by an additional $\mathcal{O}(L)$ string copying factor.
+- **Space/Memory Complexity:** $\mathcal{O}(L)$ auxiliary space for the recursion depth representing the call stack when the path hits the length of the word. We use $\mathcal{O}(1)$ space for the grid modification itself since the 2D grid is mutated **in-place**.
 
 ## Common Pitfalls
 
@@ -184,7 +193,7 @@ return result
 
 ### 2. Slicing the String (Anti-Pattern)
 
-Many candidates slice the string as they traverse (`word[1:]`). This takes $O(L)$ time per recursive call, worsening the time complexity from $O(3^L)$ to $O(L \cdot 3^L)$. Use an `index` pointer instead.
+Many candidates slice the string as they traverse (`word[1:]`). This takes $\mathcal{O}(L)$ time per recursive call, worsening the time complexity from $\mathcal{O}(3^L)$ to $\mathcal{O}(L \cdot 3^L)$. Use an $\mathcal{O}(1)$ index pointer instead.
 
 ```python
 # WRONG: O(L) operation inside recursion

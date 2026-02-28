@@ -32,7 +32,7 @@ Results: "ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"
 
 ## Basic Implementation (String Concatenation)
 
-While creating new strings at every level works and implicitly handles backtracking state, it is an anti-pattern for strict performance because string concatenation in Python is $O(N)$. However, because $N$ is at most 4 for a single phone digit mapping, and max digits length is typically small (e.g. $N \le 4$), this is acceptable in many interviews.
+While creating new strings at every level works and implicitly handles backtracking state, it is an anti-pattern for strict performance because string concatenation in Python is $\mathcal{O}(N)$. However, because $N$ is at most 4 for a single phone digit mapping, and max digits length is typically small (e.g. $N \le 4$), this is acceptable in many interviews.
 
 ```python
 def letter_combinations(digits: str) -> list[str]:
@@ -102,12 +102,12 @@ def letter_combinations_optimized(digits: str) -> list[str]:
 
 Let $N$ be the length of the `digits` string.
 
-- **Time Complexity:** $O(N \cdot 4^N)$
+- **Time Complexity:** $\mathcal{O}(N \cdot 4^N)$
   - In the worst case (e.g., input "7979"), each digit maps to 4 letters, creating $4^N$ leaf nodes.
-  - At each leaf node, we perform an $O(N)$ operation to copy/join the path array into a string.
+  - At each leaf node, we perform an $\mathcal{O}(N)$ operation to copy/join the path array into a string.
 - **Space Complexity:**
-  - **Auxiliary Space (Call Stack):** $O(N)$ depth of the recursion tree.
-  - **Total Space:** $O(N \cdot 4^N)$ to store all combinations in the result list.
+  - **Auxiliary Space (Call Stack):** $\mathcal{O}(N)$ depth of the recursion tree.
+  - **Total Space:** $\mathcal{O}(N \cdot 4^N)$ to store all combinations in the result list.
 
 ## Common Pitfalls
 
@@ -117,5 +117,5 @@ Let $N$ be the length of the `digits` string.
    - When using the optimized list approach, failing to `path.pop()` will result in accumulated letters from dead-end branches spilling over into valid ones.
 3. **Hardcoding mappings incorrectly:**
    - Remember that `7` maps to 4 letters (`pqrs`) and `9` maps to 4 letters (`wxyz`). Assuming all map to 3 letters throws off exact time complexity analysis.
-4. **Using $O(N)$ Slicing:**
-   - Avoid passing sliced strings like `digits[1:]` in the recursive call. Always use an index pointer (`idx`). Passing `digits[1:]` adds a hidden $O(N)$ string copy at every recursive step, degrading time complexity.
+4. **Using $\mathcal{O}(N)$ Slicing:**
+   - Avoid passing sliced strings like `digits[1:]` in the recursive call. Always use an $\mathcal{O}(1)$ index pointer (`idx`). Passing `digits[1:]` adds a hidden $\mathcal{O}(N)$ string copy at every recursive step, degrading time complexity.

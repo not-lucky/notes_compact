@@ -68,8 +68,8 @@ We treat every character (and every space between characters) as a potential cen
 ```python
 def longest_palindrome_substring(s: str) -> str:
     """
-    Time Complexity: O(n^2) where n is the length of the string.
-    Space Complexity: O(1) beyond the output string.
+    Time: O(n^2) where n is the length of the string.
+    Space: O(1) beyond the output string.
     """
     if not s:
         return ""
@@ -110,8 +110,8 @@ $$
 ```python
 def get_palindrome_table(s: str) -> list[list[bool]]:
     """
-    Time Complexity: O(n^2)
-    Space Complexity: O(n^2) for the 2D DP matrix.
+    Time: O(n^2)
+    Space: O(n^2) for the 2D DP matrix.
     """
     n = len(s)
     dp = [[False] * n for _ in range(n)]
@@ -159,8 +159,8 @@ Since $dp[i][j]$ only depends on $dp[i+1][\dots]$ (the row directly below) and $
 ```python
 def longest_palindrome_subseq(s: str) -> int:
     """
-    Time Complexity: O(n^2)
-    Space Complexity: O(n) using 1D row arrays.
+    Time: O(n^2)
+    Space: O(n) using 1D row arrays.
     """
     n = len(s)
     # row_below represents dp[i+1]
@@ -196,8 +196,8 @@ Many "Make String Palindrome" problems gracefully reduce to finding the Longest 
 ```python
 def min_insertions(s: str) -> int:
     """
-    Time Complexity: O(n^2)
-    Space Complexity: O(n)
+    Time: O(n^2)
+    Space: O(n)
     """
     n = len(s)
     row_below = [0] * n
@@ -226,32 +226,32 @@ Problems like Minimum Cuts (Palindrome Partitioning II) require breaking the str
 ```python
 def min_cut(s: str) -> int:
     """
-    Time Complexity: O(n^2) - O(n^2) to precompute palindromes, O(n^2) for the 1D DP.
-    Space Complexity: O(n^2) for the boolean matrix.
+    Time: O(n^2) - O(n^2) to precompute palindromes, O(n^2) for the 1D DP.
+    Space: O(n^2) for the boolean matrix.
     """
     n = len(s)
     if n <= 1:
         return 0
 
     # 1. Precompute valid palindromes using Interval DP
-    is_palin = [[False] * n for _ in range(n)]
+    is_palindrome = [[False] * n for _ in range(n)]
     for length in range(1, n + 1):
         for i in range(n - length + 1):
             j = i + length - 1
-            if s[i] == s[j] and (length <= 2 or is_palin[i + 1][j - 1]):
-                is_palin[i][j] = True
+            if s[i] == s[j] and (length <= 2 or is_palindrome[i + 1][j - 1]):
+                is_palindrome[i][j] = True
 
     # 2. 1D DP to find minimum cuts
     # dp[i] = min cuts needed for prefix s[0..i]
     dp = [0] * n
     for i in range(n):
-        if is_palin[0][i]:
+        if is_palindrome[0][i]:
             dp[i] = 0  # Whole prefix is palindrome, 0 cuts needed
         else:
             dp[i] = i  # Max possible cuts (each char is separate)
             for j in range(i):
                 # If s[j+1..i] is a palindrome, we can cut after j
-                if is_palin[j + 1][i]:
+                if is_palindrome[j + 1][i]:
                     dp[i] = min(dp[i], dp[j] + 1)
 
     return dp[n - 1]

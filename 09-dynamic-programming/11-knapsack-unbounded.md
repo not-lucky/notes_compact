@@ -18,12 +18,12 @@ Let $dp[i][w]$ be the maximum value we can achieve using a subset of the first $
 
 When considering item $i$, we have two choices:
 1. **Don't pick it:** The max value is what we could get using the previous $i-1$ items with the same capacity $w$. $\rightarrow dp[i-1][w]$
-2. **Pick it (if $wt[i] \leq w$):** The max value is $val[i]$ plus the best value we can get with the *remaining* capacity $w - wt[i]$.
+2. **Pick it (if $weight[i] \leq w$):** The max value is $value[i]$ plus the best value we can get with the *remaining* capacity $w - weight[i]$.
 
-   **Here is the critical difference:** Because we have unlimited items, after picking item $i$, we can pick item $i$ *again*. Therefore, we look at $dp[i][w - wt[i]]$ (current row), NOT $dp[i-1][w - wt[i]]$ (previous row).
+   **Here is the critical difference:** Because we have unlimited items, after picking item $i$, we can pick item $i$ *again*. Therefore, we look at $dp[i][w - weight[i]]$ (current row), NOT $dp[i-1][w - weight[i]]$ (previous row).
 
 $$
-dp[i][w] = \max(dp[i-1][w], \ dp[i][w - wt[i]] + val[i])
+dp[i][w] = \max(dp[i-1][w], \ dp[i][w - weight[i]] + value[i])
 $$
 
 **Base Cases:**
@@ -36,13 +36,13 @@ $$
 
 The most elegant part of Unbounded Knapsack is how it translates to a 1D space-optimized array.
 
-In 0/1 Knapsack, we iterate capacity **backward**. Why? To ensure that when we update `dp[w] = max(dp[w], dp[w - wt] + val)`, the value we pull from `dp[w - wt]` represents the state *before* we considered the current item. This prevents us from taking the same item twice.
+In 0/1 Knapsack, we iterate capacity **backward**. Why? To ensure that when we update `dp[w] = max(dp[w], dp[w - weight] + value)`, the value we pull from `dp[w - weight]` represents the state *before* we considered the current item. This prevents us from taking the same item twice.
 
 In Unbounded Knapsack, we want to allow taking the same item multiple times! Therefore, we iterate capacity **forward**.
 
-1. When we calculate `dp[w]`, we look back at `dp[w - wt[i]]`.
-2. Because we are iterating forward, `dp[w - wt[i]]` was *already updated* in the current item's loop.
-3. If `dp[w - wt[i]]` already includes item $i$, our update `dp[w - wt[i]] + val[i]` means we are effectively taking item $i$ *again*. This perfectly models infinite supply.
+1. When we calculate `dp[w]`, we look back at `dp[w - weight[i]]`.
+2. Because we are iterating forward, `dp[w - weight[i]]` was *already updated* in the current item's loop.
+3. If `dp[w - weight[i]]` already includes item $i$, our update `dp[w - weight[i]] + value[i]` means we are effectively taking item $i$ *again*. This perfectly models infinite supply.
 
 ---
 
@@ -75,29 +75,29 @@ The top-down approach is straightforward. Notice that the state only needs the r
 def unbounded_knapsack_memo(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Top-Down DP (Memoization)
-    Time: O(n * W), where n is number of items, W is capacity
-    Space: O(W) for the memoization dictionary and recursion stack
+    Time: O(n \cdot w), where n is number of items, W is capacity
+    Space: O(w) for the memoization dictionary and recursion stack
     """
     memo = {}
 
-    def dfs(rem_cap: int) -> int:
-        if rem_cap == 0:
+    def dfs(rem_w: int) -> int:
+        if rem_w == 0:
             return 0
-        if rem_cap in memo:
-            return memo[rem_cap]
+        if rem_w in memo:
+            return memo[rem_w]
 
-        max_val = 0
+        max_value = 0
 
         # Try taking EVERY possible item for the remaining capacity
         for i in range(len(weights)):
-            if weights[i] <= rem_cap:
+            if weights[i] <= rem_w:
                 # Add item value, and recurse with remaining capacity
                 # We can pick 'i' again because the loop in the child call
                 # will again consider all items [0...n-1]
-                max_val = max(max_val, values[i] + dfs(rem_cap - weights[i]))
+                max_value = max(max_value, values[i] + dfs(rem_w - weights[i]))
 
-        memo[rem_cap] = max_val
-        return max_val
+        memo[rem_w] = max_value
+        return max_value
 
     return dfs(capacity)
 ```
@@ -110,22 +110,22 @@ Building the full 2D table helps visualize the formal recurrence. We use $dp[i][
 def unbounded_knapsack_2d(weights: list[int], values: list[int], capacity: int) -> int:
     """
     2D Bottom-Up DP
-    Time: O(n * W)
-    Space: O(n * W)
+    Time: O(n \cdot w)
+    Space: O(n \cdot w)
     """
     n = len(weights)
     # dp[i][w] = max value using first i items (1-indexed) with capacity w
     dp = [[0] * (capacity + 1) for _ in range(n + 1)]
 
     for i in range(1, n + 1):
-        wt = weights[i - 1]
-        val = values[i - 1]
+        weight = weights[i - 1]
+        value = values[i - 1]
 
         for w in range(1, capacity + 1):
-            if wt <= w:
-                # CRITICAL: Notice dp[i][w - wt], not dp[i-1][w - wt]
+            if weight <= w:
+                # CRITICAL: Notice dp[i][w - weight], not dp[i-1][w - weight]
                 # We stay on the same row 'i' to allow reusing the item.
-                dp[i][w] = max(dp[i - 1][w], dp[i][w - wt] + val)
+                dp[i][w] = max(dp[i - 1][w], dp[i][w - weight] + value)
             else:
                 dp[i][w] = dp[i - 1][w]
 
@@ -134,29 +134,29 @@ def unbounded_knapsack_2d(weights: list[int], values: list[int], capacity: int) 
 
 ### 3. Tabulation (1D Space-Optimized - Best Practice)
 
-We only ever need the current row `i` and the previous row `i-1`. In fact, because the Unbounded Knapsack recurrence requires looking at *earlier* computed values in the *current* row (`dp[i][w - wt]`), we can collapse this into a single 1D array by iterating capacity **forward**.
+We only ever need the current row `i` and the previous row `i-1`. In fact, because the Unbounded Knapsack recurrence requires looking at *earlier* computed values in the *current* row (`dp[i][w - weight]`), we can collapse this into a single 1D array by iterating capacity **forward**.
 
 ```python
 def unbounded_knapsack_1d(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Space-Optimized 1D Bottom-Up DP
-    Time: O(n * W)
-    Space: O(W)
+    Time: O(n \cdot w)
+    Space: O(w)
     """
     # dp[w] = max value achievable with capacity w
     dp = [0] * (capacity + 1)
 
     # For each item...
     for i in range(len(weights)):
-        wt = weights[i]
-        val = values[i]
+        weight = weights[i]
+        value = values[i]
 
         # Iterate FORWARD through capacity!
-        # We start at 'wt' because we can't fit the item in a smaller capacity.
-        for w in range(wt, capacity + 1):
-            # dp[w - wt] might already include the current item 'i',
+        # We start at 'weight' because we can't fit the item in a smaller capacity.
+        for w in range(weight, capacity + 1):
+            # dp[w - weight] might already include the current item 'i',
             # allowing us to pick it multiple times.
-            dp[w] = max(dp[w], dp[w - wt] + val)
+            dp[w] = max(dp[w], dp[w - weight] + value)
 
     return dp[capacity]
 ```
@@ -174,7 +174,7 @@ def unbounded_knapsack_swapped(weights: list[int], values: list[int], capacity: 
         # Try every item
         for i in range(len(weights)):
             if weights[i] <= w:
-                dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+                dp[w] = max(dp[w], dp[w - weight] + value)
 
     return dp[capacity]
 ```
@@ -212,7 +212,7 @@ Answer: `45`
 
 1. **Limited Item Quantities:** If you have exactly $K$ copies of an item, it's a **Bounded Knapsack** problem. Treat it as 0/1 Knapsack by "flattening" the items (e.g., three 5¢ coins become three separate 5¢ items).
 2. **Single Use Required:** Use 0/1 Knapsack (backward capacity iteration).
-3. **Very Large Capacity ($W > 10^7$):** DP becomes $O(n \times W)$, causing TLE (Time Limit Exceeded) and MLE (Memory Limit Exceeded). Use a Greedy approach, often combined with a small DP for the modulo remainder.
+3. **Very Large Capacity ($W > 10^7$):** DP becomes $O(n \times w)$, causing TLE (Time Limit Exceeded) and MLE (Memory Limit Exceeded). Use a Greedy approach, often combined with a small DP for the modulo remainder.
 4. **Sequence/Order Matters:** If you need to find a specific valid sequence (like valid parentheses), DP on states or Interval DP is required, not knapsack.
 5. **Negative Weights/Cycles:** Taking an item would *increase* your capacity, creating infinite loops. Knapsack DP requires weights $\geq 0$.
 
@@ -250,7 +250,7 @@ def change(amount: int, coins: list[int]) -> int:
 By locking the capacity in the outer loop, you try *every* item for a given capacity. To reach `capacity = 3`, you try adding `1` (from state 2) and adding `2` (from state 1). This allows generating both `1+2` and `2+1` as distinct paths.
 
 ```python
-def combinationSum4(nums: list[int], target: int) -> int:
+def combination_sum_4(nums: list[int], target: int) -> int:
     dp = [0] * (target + 1)
     dp[0] = 1
 
@@ -289,9 +289,9 @@ def coin_change(coins: list[int], amount: int) -> int:
 | Aspect | 0/1 Knapsack | Unbounded Knapsack |
 | :--- | :--- | :--- |
 | **Item usage** | At most once | Unlimited |
-| **2D Recurrence** | `dp[i-1][w - wt] + val` | `dp[i][w - wt] + val` |
-| **1D DP Update** | `dp[w] = max(dp[w], dp[w - wt] + val)` | `dp[w] = max(dp[w], dp[w - wt] + val)` |
-| **1D Iteration** | **Backward** (`W` down to `wt`) | **Forward** (`wt` up to `W`) |
+| **2D Recurrence** | `dp[i-1][w - weight] + value` | `dp[i][w - weight] + value` |
+| **1D DP Update** | `dp[w] = max(dp[w], dp[w - weight] + value)` | `dp[w] = max(dp[w], dp[w - weight] + value)` |
+| **1D Iteration** | **Backward** (`w` down to `weight`) | **Forward** (`weight` up to `w`) |
 | **Counting Loop Order** | Combinations only | Combinations (Item outer) OR Permutations (Cap outer) |
 
 *Mnemonic: If you accidentally iterate Unbounded backward, you solve 0/1. If you accidentally iterate 0/1 forward, you solve Unbounded.*

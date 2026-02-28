@@ -25,10 +25,10 @@ This guide emphasizes **patterns over memorization**, **problem-solving strategi
 
 Most DSA resources are either too academic or too focused on competitive programming. This guide is different:
 
-- **Interview-focused**: Every topic includes "why interviewers ask this" and common variations
-- **Pattern-based**: Learn to recognize patterns rather than memorizing hundreds of solutions
-- **Practical**: Covers what actually gets asked, not academic completeness
-- **Time-conscious**: Includes complexity analysis critical for interview discussions
+- **Interview-focused**: Every topic includes "why interviewers ask this" and common variations.
+- **Pattern-based**: Learn to recognize patterns rather than memorizing hundreds of solutions.
+- **Practical**: Covers what actually gets asked, not academic completeness.
+- **Time-conscious**: Includes complexity analysis critical for interview discussions.
 
 **What's NOT covered**: Competitive programming-only topics like segment trees, suffix automata, FFT, persistent structures, and advanced computational geometry. These rarely appear in FANG+ interviews, and studying them before mastering the fundamentals is a distraction.
 
@@ -39,28 +39,24 @@ Most DSA resources are either too academic or too focused on competitive program
 Before diving in, you should be comfortable with:
 
 ### Programming Fundamentals
-
 - **Python proficiency** (or ability to translate concepts to your preferred language)
 - Basic syntax: loops, conditionals, functions
 - Object-oriented basics: classes, methods, inheritance
-- Understanding of references vs values
+- Understanding of references vs. values
 
-### Mathematical Foundations
-
+### Mathematics
 - Basic algebra and arithmetic
 - Understanding of logarithms (log base 2)
 - Exponents and powers
 - Basic probability concepts (helpful but not required)
 
-### Computer Science Basics
-
+### Computer Science Concepts
 - What an array is and how indexing works
-- Basic understanding of memory and pointers (conceptual)
-- Familiarity with at least one programming environment/IDE
+- Conceptual understanding of memory and pointers
+- Familiarity with an IDE or programming environment
 
-### Recommended But Not Required
-
-- Previous exposure to any DSA course or content
+### Recommended (But Optional)
+- Previous exposure to a DSA course
 - Experience with LeetCode or similar platforms
 - Basic understanding of recursion
 
@@ -70,11 +66,11 @@ Before diving in, you should be comfortable with:
 
 ### Study Approach
 
-1. **Read the Pattern First**: Each section explains the underlying pattern before diving into problems
-2. **Understand, Don't Memorize**: Focus on WHY a solution works, not just the code
-3. **Practice Actively**: After reading a pattern, try problems WITHOUT looking at solutions first
-4. **Time Yourself**: Set a timer (25-45 minutes for medium problems) to simulate interview conditions
-5. **Review Mistakes**: Keep a log of problems you struggled with and revisit them
+1. **Read the Pattern First**: Each section explains the underlying pattern before diving into problems.
+2. **Understand, Don't Memorize**: Focus on WHY a solution works, not just the code.
+3. **Practice Actively**: After reading a pattern, try problems WITHOUT looking at solutions first.
+4. **Time Yourself**: Set a timer (25-45 minutes for medium problems) to simulate interview conditions.
+5. **Review Mistakes**: Keep a log of problems you struggled with and revisit them.
 
 ### Recommended Study Flow
 

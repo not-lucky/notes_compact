@@ -13,7 +13,7 @@ By defining these clear states and mapping out the transitions between them, we 
 **Why does State Machine DP work so well here?**
 
 1. **Finite States**: On any given day, you are in a specific state. For basic problems, it's binary: you either `HOLD` a stock, or you have `CASH` (no stock).
-2. **State Encapsulates History**: The core DP insight is that "how I got here" doesn't matter. Whether you bought yesterday or last year, your maximum future profit depends *only* on your current state and today's price.
+2. **State Encapsulates History**: The core DP insight is that "how I got here" doesn't matter. Whether you bought yesterday or last year, your maximum profit achieved so far depends *only* on your current state and today's price.
 3. **Daily Transitions**: Each day, you make a choice that determines your state for the next day.
    - If in `HOLD`: Do nothing (stay in `HOLD`), or Sell (transition to `CASH`).
    - If in `CASH`: Do nothing (stay in `CASH`), or Buy (transition to `HOLD`).
@@ -117,7 +117,7 @@ Let `cash[i]` be the max profit on day `i` if we end the day **without** a stock
 - `cash[i] = max(cash[i-1], hold[i-1] + price[i])`  *(Keep cash OR Sell today)*
 
 **Space Optimization:**
-Notice that to calculate `hold[i]` and `cash[i]`, we only need `hold[i-1]` and `cash[i-1]`. We don't need arrays of size $N$; we can just use two variables!
+Notice that to calculate `hold[i]` and `cash[i]`, we only need `hold[i-1]` and `cash[i-1]`. We don't need arrays of size $n$; we can just use two variables!
 
 ```python
 def maxProfit_2_dp(prices: list[int]) -> int:
@@ -198,14 +198,14 @@ This is a generalized version of Stock III. We use arrays of size $k+1$ to track
 ```python
 def maxProfit_4(k: int, prices: list[int]) -> int:
     """
-    Time: O(nk) | Space: O(k)
+    Time: O(n*k) | Space: O(k)
     """
     n = len(prices)
     if not prices or k == 0:
         return 0
 
     # Optimization: If k >= n/2, it's equivalent to unlimited transactions.
-    # Without this, O(nk) could TLE when k is massively large.
+    # Without this, O(n*k) could TLE when k is massively large.
     if k >= n // 2:
         return sum(max(0, prices[i] - prices[i-1]) for i in range(1, n))
 
