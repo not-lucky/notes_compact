@@ -1,6 +1,6 @@
 # 2D DP Basics
 
-> **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
+> **Prerequisites:** [1D DP Basics](./03-1d-dp-basics.md)
 
 ## Overview
 
@@ -10,7 +10,7 @@
 
 **Why do we need 2D DP?**
 
-1. **Two Independent Dimensions**: When the state of a problem is defined by two independent variables—such as the position in two different strings, the row and column in a 2D grid, or the current item index and remaining capacity in a knapsack—a single dimension isn't enough to track all combinations.
+1. **Two Independent Dimensions**: When the state of a problem is defined by two independent variables—such as the positions in two different strings, the row and column in a 2D grid, or the current item index and remaining capacity in a knapsack—a single dimension isn't enough to track all combinations.
 2. **Grid Problems Are Natural 2D**: In a grid, reaching cell `(i, j)` usually depends on reaching adjacent cells like `(i-1, j)` and `(i, j-1)`. The state naturally maps to the grid coordinates.
 3. **Sequence Comparison Needs Pairs**: For problems like Longest Common Subsequence (LCS) or Edit Distance, we compare a prefix of the first string `s1[0..i]` with a prefix of the second string `s2[0..j]`. The answer for each `(i, j)` pair is unique.
 4. **The Dependency Insight**: In 2D DP, `dp[i][j]` typically depends on:
@@ -38,7 +38,7 @@ Before jumping to a 2D array, consider if it's the right tool:
 1. **State Is Actually 1D**: Don't force 2D when 1D suffices. Problems like Fibonacci, Climbing Stairs, or House Robber only need one index to represent the state.
 2. **State Requires 3+ Dimensions**: Some complex problems require tracking more parameters, leading to states like `dp[i][j][k]` (e.g., trading stocks with `k` transactions allowed, or pathfinding in a 3D grid).
 3. **General Graphs (Non-Grids)**: 2D DP works well for grids where transitions only go in specific directions (forming a Directed Acyclic Graph, or DAG). For general graphs with cycles or arbitrary edge weights, use shortest path algorithms like Dijkstra's or Bellman-Ford.
-4. **Sparse State Space**: If only a small fraction of all possible `(i, j)` pairs are ever visited or valid, an $O(M \times N)$ table wastes space and time. Use top-down memoization with a hash map instead.
+4. **Sparse State Space**: If only a small fraction of all possible `(i, j)` pairs are ever visited or valid, an $O(M \times N)$ table wastes space and time. Use top-down memoization with a hash map (`dict` in Python) instead.
 
 **Signs 2D DP is Appropriate:**
 - You are given a 2D matrix or grid and need to find a path, optimal sum, or pattern.
@@ -95,7 +95,7 @@ def unique_paths_memo(m: int, n: int) -> int:
 Instead of writing `if/else` checks for the boundaries, we can pad the array to size `n + 1` and let the out-of-bounds cells be `0`.
 
 ```python
-def uniquePaths(m: int, n: int) -> int:
+def unique_paths(m: int, n: int) -> int:
     """
     Count unique paths in m x n grid. Space optimized with padding.
 
@@ -121,14 +121,14 @@ Similar to the previous problem, but the grid contains obstacles (`1` represents
 Notice how easily the padding trick adapts to obstacles without any boundary-checking spaghetti code:
 
 ```python
-def uniquePathsWithObstacles(obstacleGrid: list[list[int]]) -> int:
+def unique_paths_with_obstacles(obstacle_grid: list[list[int]]) -> int:
     """
     Count paths avoiding obstacles. Space optimized with padding.
 
     Time: O(m * n)
     Space: O(n)
     """
-    m, n = len(obstacleGrid), len(obstacleGrid[0])
+    m, n = len(obstacle_grid), len(obstacle_grid[0])
 
     # Pad with 0s. dp[1] represents paths to start cell.
     dp = [0] * (n + 1)
@@ -136,7 +136,7 @@ def uniquePathsWithObstacles(obstacleGrid: list[list[int]]) -> int:
 
     for i in range(m):
         for j in range(n):
-            if obstacleGrid[i][j] == 1:
+            if obstacle_grid[i][j] == 1:
                 dp[j + 1] = 0 # Obstacle blocks all paths
             else:
                 dp[j + 1] += dp[j]
@@ -149,7 +149,7 @@ def uniquePathsWithObstacles(obstacleGrid: list[list[int]]) -> int:
 Find a path from top-left to bottom-right that minimizes the sum of all numbers along its path.
 
 ```python
-def minPathSum(grid: list[list[int]]) -> int:
+def min_path_sum(grid: list[list[int]]) -> int:
     """
     Minimum sum path from top-left to bottom-right.
 
@@ -180,7 +180,7 @@ Given a `triangle` array, find the minimum path sum from top to bottom. You can 
 **Key Insight:** This problem is much easier to solve **bottom-up**, starting from the base of the triangle and moving towards the top. This avoids having to check boundaries on the sides of the triangle as it narrows.
 
 ```python
-def minimumTotal(triangle: list[list[int]]) -> int:
+def minimum_total(triangle: list[list[int]]) -> int:
     """
     Minimum path sum from top to bottom of a triangle.
     Process bottom-up for cleaner code and automatic boundary handling.
@@ -218,7 +218,7 @@ If `matrix[i][j] == '1'`, it can only form a larger square if the cells to its l
 By using array padding, we eliminate boundary conditions completely:
 
 ```python
-def maximalSquare(matrix: list[list[str]]) -> int:
+def maximal_square(matrix: list[list[str]]) -> int:
     """
     Find largest square of 1s using padded array.
 
@@ -261,7 +261,7 @@ Find the minimum initial health needed to navigate a dungeon from top-left to bo
 If you process **bottom-up** (from the destination to the start), the state simplifies: "What is the minimum health I need at this cell to survive the rest of the journey?"
 
 ```python
-def calculateMinimumHP(dungeon: list[list[int]]) -> int:
+def calculate_minimum_hp(dungeon: list[list[int]]) -> int:
     """
     Minimum initial HP to reach bottom-right. Process backwards.
 
@@ -302,7 +302,7 @@ Two robots start from opposite corners and collect cherries. Find the maximum ch
 We can further optimize this to use a strict $O(N^2)$ space by updating the 2D array **in-place** while iterating backwards, ensuring we don't overwrite values needed for the current step.
 
 ```python
-def cherryPickup(grid: list[list[int]]) -> int:
+def cherry_pickup(grid: list[list[int]]) -> int:
     """
     Two robots moving simultaneously from top-left to bottom-right.
     Fully space optimized in-place 2D DP.
@@ -372,6 +372,7 @@ A common source of bugs and messy code in 2D DP is boundary handling (checking `
 
 By shifting our 1D DP array 1-index to the right (making it size `n + 1`), we let `dp[0]` act as an out-of-bounds boundary.
 - For finding minimums, pad with `float('inf')`.
+- For finding maximums, pad with `float('-inf')`.
 - For finding sums or paths, pad with `0`.
 
 Then, we carefully seed a single initial value (e.g., `dp[1] = 1`) that naturally flows into the `(0, 0)` cell calculation. This completely removes the need for boundary checks inside your loops, resulting in incredibly clean, readable code.
@@ -397,11 +398,14 @@ For problems like Maximum Square or Longest Common Subsequence, the recurrence r
 
 **Unique Paths:**
 ```text
-|     | c=0 | c=1 | c=2 | c=3 |
-|-----|-----|-----|-----|-----|
-| r=0 | [1] | [1] | [1] | [1] |
-| r=1 | [1] | [2] | [3] | [4] |
-| r=2 | [1] | [3] | [6] | [10]|
+      c=0   c=1   c=2   c=3
+    +-----+-----+-----+-----+
+r=0 |  1  |  1  |  1  |  1  |
+    +-----+-----+-----+-----+
+r=1 |  1  |  2  |  3  |  4  |
+    +-----+-----+-----+-----+
+r=2 |  1  |  3  |  6  |  10 |
+    +-----+-----+-----+-----+
 ```
 
 Formula: $dp[i][j] = dp[i-1][j] + dp[i][j-1]$
@@ -410,18 +414,21 @@ The value in any cell is the sum of the cell directly above (↑) and the cell d
 **Minimum Path Sum:**
 Grid:
 ```text
-| 1 | 3 | 1 |
-| 1 | 5 | 1 |
-| 4 | 2 | 1 |
+  1   3   1
+  1   5   1
+  4   2   1
 ```
 
 DP Table:
 ```text
-|   | c=0 | c=1 | c=2 |
-|---|-----|-----|-----|
-|r=0| [1] | [4] | [5] |
-|r=1| [2] | [7] | [6] |
-|r=2| [6] | [8] | [7] |  ← Answer: 7
+      c=0   c=1   c=2
+    +-----+-----+-----+
+r=0 |  1  |  4  |  5  |
+    +-----+-----+-----+
+r=1 |  2  |  7  |  6  |
+    +-----+-----+-----+
+r=2 |  6  |  8  |  7  |  ← Answer: 7
+    +-----+-----+-----+
 ```
 
 ---
@@ -474,6 +481,6 @@ DP Table:
 
 ---
 
-## Next: [08-longest-common-subsequence.md](./08-longest-common-subsequence.md)
+## Next: [Longest Common Subsequence](./08-longest-common-subsequence.md)
 
 Learn how to apply 2D DP to string comparison problems using the Longest Common Subsequence pattern.

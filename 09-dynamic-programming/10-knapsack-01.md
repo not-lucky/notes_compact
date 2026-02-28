@@ -88,8 +88,8 @@ from functools import cache
 def knapsack_memo(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Top-Down DP (Memoization)
-    Time: O(n * capacity)
-    Space: O(n * capacity) for the memoization cache and call stack.
+    Time: O(N * W) where N is number of items, W is capacity
+    Space: O(N * W) for the memoization cache and call stack.
     """
     n = len(weights)
 
@@ -120,8 +120,8 @@ This iterative approach builds the solution systematically from smaller subprobl
 def knapsack_2d(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Bottom-Up DP (Tabulation)
-    Time: O(n * capacity)
-    Space: O(n * capacity)
+    Time: O(N * W) where N is number of items, W is capacity
+    Space: O(N * W)
     """
     n = len(weights)
     # dp[i][w] = max value using the first i items with a capacity of w.
@@ -172,8 +172,8 @@ We can squash the $O(n \times W)$ matrix down into a single $1D$ array of size $
 def knapsack_1d(weights: list[int], values: list[int], capacity: int) -> int:
     """
     Space-Optimized Bottom-Up DP (1D Tabulation)
-    Time: O(n * capacity)
-    Space: O(capacity)
+    Time: O(N * W) where N is number of items, W is capacity
+    Space: O(W)
     """
     n = len(weights)
     dp = [0] * (capacity + 1)
@@ -329,8 +329,8 @@ Once we find the max possible sum for subset $P$ (`dp[capacity]`), the sum of th
 
 | Approach | Time | Space | Notes |
 | :--- | :--- | :--- | :--- |
-| Memoization (Top-Down) | $O(n \times W)$ | $O(n \times W)$ | Good if capacity space is sparse. Risk of `RecursionError` in Python for very large $n$. |
-| Tabulation (2D) | $O(n \times W)$ | $O(n \times W)$ | Easiest to conceptualize and debug. |
-| **Tabulation (1D)** | $O(n \times W)$ | $O(W)$ | **Best practice.** Optimized space. Expected in interviews. |
+| Memoization (Top-Down) | $O(N \times W)$ | $O(N \times W)$ | Good if capacity space is sparse. Risk of `RecursionError` in Python for very large $N$. |
+| Tabulation (2D) | $O(N \times W)$ | $O(N \times W)$ | Easiest to conceptualize and debug. |
+| **Tabulation (1D)** | $O(N \times W)$ | $O(W)$ | **Best practice.** Optimized space. Expected in interviews. |
 
-*Note: $W$ is the capacity. These algorithms run in **pseudo-polynomial** time. $O(n \times W)$ is polynomial relative to the numeric value of $W$, but exponential relative to the number of bits needed to represent the value $W$ in binary. If $W$ is a billion, the algorithm is slow, even though a billion is only a 30-bit number.*
+*Note: $W$ is the capacity and $N$ is the number of items. These algorithms run in **pseudo-polynomial** time. $O(N \times W)$ is polynomial relative to the numeric value of $W$, but exponential relative to the number of bits needed to represent the value $W$ in binary. If $W$ is a billion, the algorithm is slow, even though a billion is only a 30-bit number.*

@@ -149,7 +149,7 @@ num=18  : tails = [2, 3, 7, 18]    (18 replaces 101, better tail for len 4)
 Result: len(tails) = 4
 ```
 
-> **CRITICAL NOTE:** The `tails` array does **NOT** represent the actual longest increasing subsequence. It only stores the smallest possible ending values for subsequences of each length. For example, if `nums = [4, 5, 6, 3]`, `tails` becomes `[3, 5, 6]`. The valid LIS is `[4, 5, 6]`, not `[3, 5, 6]`.
+> **CRITICAL NOTE:** The `tails` array does **NOT** necessarily represent the actual longest increasing subsequence. It only stores the smallest possible ending values for subsequences of each length. For example, if `nums = [4, 5, 6, 3]`, `tails` becomes `[3, 5, 6]`. The valid LIS is `[4, 5, 6]`, not `[3, 5, 6]`.
 
 ---
 
@@ -215,6 +215,8 @@ Instead of tracking just the length, we must also track the *count* of how many 
 ```python
 def find_number_of_lis(nums: list[int]) -> int:
     """
+    Finds the number of longest increasing subsequences.
+
     Time Complexity: O(n²)
     Space Complexity: O(n)
     """
@@ -254,6 +256,8 @@ import bisect
 
 def max_envelopes(envelopes: list[list[int]]) -> int:
     """
+    Finds the maximum number of envelopes you can nest.
+
     Time Complexity: O(n log n)
     Space Complexity: O(n)
     """
@@ -279,6 +283,8 @@ Find if there exist indices `i < j < k` such that `nums[i] < nums[j] < nums[k]`.
 ```python
 def increasing_triplet(nums: list[int]) -> bool:
     """
+    Finds if there exists an increasing triplet subsequence.
+
     Time Complexity: O(n)
     Space Complexity: O(1)
     """

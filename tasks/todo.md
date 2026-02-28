@@ -28,10 +28,26 @@
 - [x] Implement improvements to the file (simplified DP loops using simultaneous assignments).
 - [x] Verify the file is accurate and consistent with "Chapter 09" notes.
 
+## 07-2d-dp-basics.md
+- [x] Read and analyze `09-dynamic-programming/07-2d-dp-basics.md`.
+- [x] Identify areas for clearer explanations, correctness, and better markdown structure.
+- [x] Review code blocks for readability, formatting, and clear variable naming.
+- [x] Implement improvements to the file.
+- [x] Verify the file is accurate and consistent with "Chapter 09" notes.
+
+## 08-longest-common-subsequence.md
+- [x] Read and analyze `09-dynamic-programming/08-longest-common-subsequence.md`.
+- [x] Identify areas for clearer explanations, correctness, and better markdown structure.
+- [x] Review code blocks for readability, formatting, and clear variable naming.
+- [x] Implement improvements to the file.
+- [x] Verify the file is accurate and consistent with "Chapter 09" notes.
+
 ## Final Review
 - [x] Ensure consistent tone and formatting across files.
 - [x] Add summary review to this file.
 
-### Summary Review (01 and 02):
+### Summary Review:
 - **01-dp-fundamentals.md:** Corrected variable casing $O(N) \to O(n)$ for consistency. Standardized headings. Fixed typos and improved explanations for `Constraints` and `@functools.lru_cache` usage in interviews.
-- **02-memoization-vs-tabulation.md:** Corrected variable casing $O(N) \to O(n)$ and $M \times N \to m \times n$. Added "Chapter 09:" to the title. Improved the explanation for boundary conditions under the pitfalls section. Both files now have a cohesive tone suitable for a high-quality DP study guide.
+- **02-memoization-vs-tabulation.md:** Corrected variable casing $O(N) \to O(n)$ and $M \times N \to m \times n$. Added "Chapter 09:" to the title. Improved the explanation for boundary conditions under the pitfalls section.
+- **07-2d-dp-basics.md:** Made python code standard with snake case variable names. Rewrote Visual sections using nice ascii boxes. Fixed boundary cases with finding max and padding.
+- **08-longest-common-subsequence.md:** Fixed some markdown formatting for inline code blocks. Made some ascii box visualizations. Standardized variable names. Added next link to edit distance.

@@ -98,7 +98,7 @@ def min_distance_memo(word1: str, word2: str) -> int:
         if (i, j) in memo:
             return memo[(i, j)]
 
-        # If characters match, no operation needed for this position
+        # If characters match, no operations needed for this position
         if word1[i - 1] == word2[j - 1]:
             memo[(i, j)] = dfs(i - 1, j - 1)
         else:
@@ -128,15 +128,15 @@ def min_distance_2d(word1: str, word2: str) -> int:
     """
     m, n = len(word1), len(word2)
 
-    # dp[i][j] means min operations to convert word1[0..i-1] to word2[0..j-1]
+    # dp[i][j] means min operations to convert word1[0...i-1] to word2[0...j-1]
     dp = [[0] * (n + 1) for _ in range(m + 1)]
 
     # Initialize Base Cases
-    # Converting any string of length i to empty string takes i deletions
+    # Converting any string of length i to an empty string takes i deletions
     for i in range(m + 1):
         dp[i][0] = i
 
-    # Converting empty string to any string of length j takes j insertions
+    # Converting an empty string to any string of length j takes j insertions
     for j in range(n + 1):
         dp[0][j] = j
 
@@ -186,31 +186,34 @@ def min_distance(word1: str, word2: str) -> int:
 
     m, n = len(word1), len(word2)
 
-    # Initialize the first row (converting "" to word2[0..j-1])
+    # dp[j] represents the minimum operations to convert word1[0...i] to word2[0...j]
+    # Initialize the first row (converting "" to word2[0...j])
     dp = list(range(n + 1))
 
     for i in range(1, m + 1):
-        # The first element of the new row represents converting word1[0..i] to ""
+        # The first element of the new row represents converting word1[0...i] to ""
         # So it takes i deletions.
-        # prev_diagonal will initially hold dp[i-1][0]
+        # prev_diagonal will initially hold the previous row's dp[0] (which is i - 1)
         prev_diagonal = dp[0]
         dp[0] = i
 
         for j in range(1, n + 1):
-            # Save the current dp[j] (which is from the previous row)
-            # before we overwrite it. This will be the diagonal for j+1.
+            # Save the current dp[j] (from the previous row) before overwriting it.
+            # This becomes the diagonal (prev_diagonal) for the next column (j + 1).
             temp = dp[j]
 
             if word1[i - 1] == word2[j - 1]:
+                # Characters match: cost is the diagonal value
                 dp[j] = prev_diagonal
             else:
+                # Characters differ: 1 + min(delete, insert, replace)
                 dp[j] = 1 + min(
                     dp[j],            # Delete (from previous row above)
                     dp[j - 1],        # Insert (from current row left)
                     prev_diagonal     # Replace (from previous row diagonal)
                 )
 
-            # Update prev_diagonal for the next iteration (j+1)
+            # Update prev_diagonal for the next iteration
             prev_diagonal = temp
 
     return dp[n]
@@ -350,7 +353,7 @@ Check if two strings are exactly one edit apart. Using full $O(M \times N)$ DP i
 def is_one_edit_distance(s: str, t: str) -> bool:
     """
     Checks if s and t are exactly 1 edit distance apart.
-    Time: O(n), Space: O(1)
+    Time: O(N), Space: O(1)
     """
     m, n = len(s), len(t)
     if abs(m - n) > 1:
@@ -370,7 +373,7 @@ def is_one_edit_distance(s: str, t: str) -> bool:
                 # Rest of s must match the rest of t (shifted by 1).
                 return s[i:] == t[i + 1:]
 
-    # If we got here, strings matched up to length of s.
+    # If we got here, strings matched up to the length of s.
     # It's 1 edit apart ONLY IF t has exactly 1 more character.
     return m + 1 == n
 ```

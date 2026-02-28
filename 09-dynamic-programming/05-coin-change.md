@@ -79,8 +79,10 @@ def coin_change(coins: list[int], amount: int) -> int:
             if i - coin >= 0:
                 dp[i] = min(dp[i], dp[i - coin] + 1)
 
-    return dp[amount] if dp[amount] != float('inf') else -1
+    return int(dp[amount]) if dp[amount] != float('inf') else -1
 ```
+
+> **Optimization Note:** For finding the *minimum* coins, you can safely swap the nested loops. Putting `coins` in the outer loop allows you to eliminate the `if i - coin >= 0` check by starting the inner loop directly at `coin`. While loop order doesn't affect the final answer for *minimums*, we will see in Problem 2 that loop order is **critical** when *counting combinations*.
 
 ### Alternative: BFS Approach (Shortest Path)
 
@@ -92,6 +94,9 @@ from collections import deque
 def coin_change_bfs(coins: list[int], amount: int) -> int:
     """
     BFS approach - finds minimum coins naturally level-by-level.
+
+    Time: O(amount * len(coins)) in the worst case
+    Space: O(amount) for the queue and visited set
     """
     if amount == 0:
         return 0
@@ -144,12 +149,17 @@ To calculate *combinations*, we iterate through `coins` in the outer loop and `a
 
 ```python
 def change_combinations(amount: int, coins: list[int]) -> int:
+    """
+    Counts combinations (order doesn't matter).
+    e.g., {1, 2} and {2, 1} are counted once as {1, 2}.
+    """
     dp = [0] * (amount + 1)
     dp[0] = 1
 
     # Outer loop: Coins
     for coin in coins:
         # Inner loop: Amounts
+        # Notice we can start the loop at 'coin' rather than 1
         for i in range(coin, amount + 1):
             dp[i] += dp[i - coin]
 
@@ -166,6 +176,10 @@ To calculate *permutations* (often called Combination Sum IV), we iterate throug
 
 ```python
 def change_permutations(amount: int, coins: list[int]) -> int:
+    """
+    Counts permutations (order matters).
+    e.g., (1, 2) and (2, 1) are counted as distinct sequences.
+    """
     dp = [0] * (amount + 1)
     dp[0] = 1
 
@@ -173,6 +187,7 @@ def change_permutations(amount: int, coins: list[int]) -> int:
     for i in range(1, amount + 1):
         # Inner loop: Coins
         for coin in coins:
+            # We must check bounds since we iterate over all coins
             if i - coin >= 0:
                 dp[i] += dp[i - coin]
 
@@ -203,6 +218,9 @@ Sometimes finding the minimum number of coins isn't enough; you also need to kno
 def coin_change_with_path(coins: list[int], amount: int) -> tuple[int, list[int]]:
     """
     Returns (min_coins, list_of_coins_used).
+
+    Time: O(amount * len(coins))
+    Space: O(amount) for DP arrays
     """
     dp = [float('inf')] * (amount + 1)
     last_coin = [-1] * (amount + 1)
@@ -225,7 +243,7 @@ def coin_change_with_path(coins: list[int], amount: int) -> tuple[int, list[int]
         coins_used.append(used)
         curr -= used
 
-    return dp[amount], coins_used
+    return int(dp[amount]), coins_used
 ```
 
 ---
@@ -241,6 +259,12 @@ Find the minimum number of perfect square numbers (`1, 4, 9, 16, ...`) that sum 
 
 ```python
 def num_squares(n: int) -> int:
+    """
+    Finds the minimum number of perfect squares that sum to n.
+
+    Time: O(n * sqrt(n))
+    Space: O(n)
+    """
     dp = [float('inf')] * (n + 1)
     dp[0] = 0
 
@@ -251,7 +275,7 @@ def num_squares(n: int) -> int:
             dp[i] = min(dp[i], dp[i - j * j] + 1)
             j += 1
 
-    return dp[n]
+    return int(dp[n])
 ```
 
 ---
