@@ -1,7 +1,6 @@
-- Combination Sum problems should show state as `(start_idx, remaining_target)` or `(start_idx, current_path)`.
-- Make sure to always separate Auxiliary Space from Time Complexity clearly.
-- Always use `\mathcal{O}` instead of `$O(...)` for consistency.
-- Avoid modifying objects by reference directly in the argument call (`path + [cands[i]]` is fine for simple prints, but in actual code `path.append` and `path.pop()` is correct).
-- Make sure `i > start` logic in loops for deduplication is well-explained (it restricts skipping to horizontal siblings).
-- For grid-based backtracking problems (like N-Queens, Sudoku), always clarify state mutation, constraint tracking sets (`\mathcal{O}(1)` checks), and state restoration properly in the recursive call cycle.
-- Explain explicit vs implicit state restoration clearly (e.g. passing `string + '('` vs appending and popping from a list).
+## Lessons Learned: Greedy Problems (Merge Intervals)
+
+- Always explicitly mention the time/space complexity tradeoffs (e.g., O(1) space if modifying in-place vs O(n) for new output array).
+- For `employee_free_time`, highlight the optimal Min-Heap approach O(n log k) as it demonstrates advanced interval merging.
+- When creating visual traces, use explicit state values (like `merged[-1][1] = 3`) to map directly to the code logic.
+- Differentiate between "Overlap Detection" and "Adjacent Detection", as interviewers often care about the subtle `<` vs `<=`.
