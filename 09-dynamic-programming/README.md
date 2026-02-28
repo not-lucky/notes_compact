@@ -45,8 +45,8 @@ There are two primary ways to implement a DP solution:
 When faced with a DP problem, follow these 5 steps systematically:
 
 1. **Define the State**: What does `dp[i]` or `dp[i][j]` represent? Clearly articulate what the variables track (e.g., "the maximum profit up to day `i`").
-2. **Define the Recurrence Relation**: How does the current state relate to previous states? (e.g., `dp[i] = dp[i-1] + dp[i-2]`). This is the hardest and most important step.
-3. **Define Base Cases**: What are the initial, simplest values that bootstrap the recurrence? (e.g., `dp[0] = 0`, `dp[1] = 1`).
+2. **Define the Recurrence Relation**: How does the current state relate to previous states? (e.g., `dp[i] = max(dp[i-1], dp[i-2] + nums[i])`). This is the hardest and most important step.
+3. **Define Base Cases**: What are the initial, simplest values that bootstrap the recurrence? (e.g., `dp[0] = 0`, `dp[1] = nums[0]`).
 4. **Define the Final Answer**: Where is the final answer stored? Is it `dp[n]`, the `max` of the entire `dp` array, or something else?
 5. **Optimize Space**: Can we reduce the space complexity? If `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`, we can often reduce $O(N)$ space to $O(1)$ by just keeping track of the last two values.
 
@@ -61,91 +61,67 @@ When faced with a DP problem, follow these 5 steps systematically:
 | **Knapsack (0/1)** | Subset Sum, Partition Equal | Decide to include or exclude an item | $O(N \times W) \rightarrow O(W)$ |
 | **Unbounded Knapsack** | Coin Change | Items can be used multiple times | $O(N \times W) \rightarrow O(W)$ |
 | **String / Sequences** | LCS, Edit Distance | Compare characters of two strings/arrays | $O(M \times N) \rightarrow O(\min(M, N))$ |
-| **Interval** | Burst Balloons, Matrix Chain | Merge ranges, `dp[i][j]` represents interval | $O(N^2)$, rarely optimized further |
-| **State Machine** | Buy & Sell Stock with Cooldown | Finite states (e.g., hold, empty, cooldown) | $O(N \times \text{states}) \rightarrow O(\text{states})$ |
-| **Bitmask DP** | TSP, Matchsticks to Square | Represent small sets of items using integers | $O(2^N \times N)$ |
+| **Interval** | Burst Balloons, Palindromes | Solve sub-intervals and expand outward | $O(N^2)$, rarely optimized further |
+| **State Machine** | Buy & Sell Stock series | Finite states (e.g., hold, empty, cooldown) | $O(N \times \text{states}) \rightarrow O(\text{states})$ |
 
 ---
 
-## Time Complexity Guidelines
+## Time/Space Complexity Guidelines
 
-| DP Type | Typical Time Complexity | Typical Space Complexity |
-| :--- | :--- | :--- |
-| **1D DP** | $O(N)$ | $O(N)$ or $O(1)$ |
-| **2D DP** | $O(M \times N)$ | $O(M \times N)$ or $O(\min(M, N))$ |
-| **Interval DP** | $O(N^3)$ | $O(N^2)$ |
-| **DP + Binary Search**| $O(N \log N)$ | $O(N)$ |
-| **Bitmask DP** | $O(2^N \cdot N)$ | $O(2^N)$ |
-
----
-
-## Quick Reference: Common State Transitions
-
-```python
-# 1D Linear (e.g., Fibonacci, Climbing Stairs)
-dp[i] = dp[i-1] + dp[i-2]
-
-# 2D Grid (e.g., Unique Paths)
-dp[i][j] = dp[i-1][j] + dp[i][j-1]
-
-# 0/1 Knapsack (Wt array for weights, Val array for values)
-# dp[i][w] = max value using first i items with capacity w
-dp[i][w] = max(dp[i-1][w], dp[i-1][w-wt[i-1]] + val[i-1])
-
-# Unbounded Knapsack (e.g., Coin Change)
-# dp[i][w] = min coins to make amount w using first i coin denominations
-dp[i][w] = min(dp[i-1][w], dp[i][w-coins[i-1]] + 1)
-
-# String DP (e.g., Longest Common Subsequence)
-if s1[i-1] == s2[j-1]:
-    dp[i][j] = dp[i-1][j-1] + 1
-else:
-    dp[i][j] = max(dp[i-1][j], dp[i][j-1])
-
-# Interval DP (e.g., Matrix Chain Multiplication)
-# Cost of combining intervals [i...k] and [k+1...j]
-dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost(i, k, j) for k in range(i, j))
-```
-
----
-
-## Common Interview Problems by Company
-
-| Company | Favorite DP Problems |
-| :--- | :--- |
-| **Google** | Word Break, Coin Change, Longest Increasing Subsequence (LIS), Maximize/Minimize Paths |
-| **Meta** | Edit Distance, Decode Ways, Buy & Sell Stock variants, Valid Palindrome III |
-| **Amazon** | House Robber, Coin Change, Knapsack variations, Word Break |
-| **Microsoft** | Longest Common Subsequence (LCS), Unique Paths, Min Path Sum, Wildcard Matching |
-| **Apple** | Palindrome DP, Word Break, Maximum Subarray |
+| DP Pattern | Typical Time | Typical Space | Space Optimized |
+| :--- | :--- | :--- | :--- |
+| **1D DP** | $O(N)$ | $O(N)$ | $O(1)$ |
+| **2D Grid DP** | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
+| **0/1 Knapsack** | $O(N \times W)$ | $O(N \times W)$ | $O(W)$ |
+| **String DP** | $O(M \times N)$ | $O(M \times N)$ | $O(\min(M, N))$ |
+| **Interval DP** | $O(N^3)$ | $O(N^2)$ | N/A |
+| **State Machine** | $O(N)$ | $O(N)$ | $O(1)$ |
 
 ---
 
 ## Chapter Contents
 
-| # | Topic | Key Concepts |
+This chapter is structured progressively. Master the early concepts before tackling the harder patterns.
+
+### Core Foundations
+| File | Topic | Focus |
 | :--- | :--- | :--- |
-| 01 | [DP Fundamentals](./01-dp-fundamentals.md) | Core properties, recognition, Top-down vs Bottom-up |
-| 02 | [Memoization vs Tabulation](./02-memoization-vs-tabulation.md) | Practical differences and tradeoffs |
-| 03 | [1D DP Basics](./03-1d-dp-basics.md) | Fibonacci, Climbing Stairs, Min Cost Climbing Stairs |
-| 04 | [House Robber](./04-house-robber.md) | Linear DP variants, handling circular arrays |
-| 05 | [Coin Change](./05-coin-change.md) | Unbounded knapsack, minimization vs maximization |
-| 06 | [Longest Increasing Subsequence](./06-longest-increasing-subsequence.md) | Standard $O(N^2)$ DP, optimized $O(N \log N)$ with Binary Search |
-| 07 | [2D DP Basics](./07-2d-dp-basics.md) | Grid traversal, Unique Paths, Obstacles, Space optimization |
-| 08 | [Longest Common Subsequence](./08-longest-common-subsequence.md) | String comparison, building the 2D DP table |
-| 09 | [Edit Distance](./09-edit-distance.md) | Levenshtein distance, insert/delete/replace operations |
-| 10 | [0/1 Knapsack](./10-knapsack-01.md) | Include/exclude pattern, 2D to 1D space optimization |
-| 11 | [Unbounded Knapsack](./11-knapsack-unbounded.md) | Unlimited item usage, comparison with 0/1 Knapsack |
-| 12 | [Palindrome DP](./12-palindrome-dp.md) | Longest Palindromic Substring vs Subsequence |
-| 13 | [Word Break](./13-word-break.md) | Dictionary problems, string partitioning |
-| 14 | [Regex Matching](./14-regex-matching.md) | Pattern matching, handling '*' and '.' |
-| 15 | [Buy & Sell Stock](./15-buy-sell-stock.md) | State machine approach, handling cooldowns/fees |
-| 16 | [Matrix Chain](./16-matrix-chain.md) | Optimal multiplication, interval DP basics |
-| 17 | [Burst Balloons](./17-burst-balloons.md) | Advanced interval DP, thinking in reverse |
-| 18 | [DP on Strings](./18-dp-on-strings.md) | Advanced string manipulation, distinct subsequences |
+| [01-dp-fundamentals.md](./01-dp-fundamentals.md) | **DP Fundamentals** | Core properties, recognition, Top-down vs Bottom-up |
+| [02-memoization-vs-tabulation.md](./02-memoization-vs-tabulation.md) | **Memoization vs Tabulation** | Practical differences, tradeoffs, translation |
+
+### Linear & Grid Patterns
+| File | Topic | Focus |
+| :--- | :--- | :--- |
+| [03-1d-dp-basics.md](./03-1d-dp-basics.md) | **1D DP Basics** | Fibonacci, Climbing Stairs, State transitions |
+| [04-house-robber.md](./04-house-robber.md) | **House Robber** | Adjacent element constraints, Circular arrays |
+| [07-2d-dp-basics.md](./07-2d-dp-basics.md) | **2D DP Basics** | Grid traversal, Obstacles, Array padding |
+| [15-buy-sell-stock.md](./15-buy-sell-stock.md) | **State Machine DP** | Modeling multiple states (Buy, Sell, Cooldown) |
+
+### Knapsack & Combinatorics
+| File | Topic | Focus |
+| :--- | :--- | :--- |
+| [10-knapsack-01.md](./10-knapsack-01.md) | **0/1 Knapsack** | Include/exclude pattern, Target Sum |
+| [11-knapsack-unbounded.md](./11-knapsack-unbounded.md) | **Unbounded Knapsack** | Unlimited item usage, Coin Change II |
+| [05-coin-change.md](./05-coin-change.md) | **Coin Change** | Minimization knapsack, Combinations vs Permutations |
+
+### String & Sequence Patterns
+| File | Topic | Focus |
+| :--- | :--- | :--- |
+| [08-longest-common-subsequence.md](./08-longest-common-subsequence.md) | **LCS** | Subsequence comparison, 2D to 1D space opt |
+| [09-edit-distance.md](./09-edit-distance.md) | **Edit Distance** | Insert/delete/replace operations |
+| [18-dp-on-strings.md](./18-dp-on-strings.md) | **DP on Strings** | Decodings, Distinct Subsequences, Interleaving |
+| [13-word-break.md](./13-word-break.md) | **Word Break** | Dictionary partitioning, Recursion with Memo |
+| [14-regex-matching.md](./14-regex-matching.md) | **Regex Matching** | Branching decisions, handling `*` and `?` |
+
+### Advanced Interval DP
+| File | Topic | Focus |
+| :--- | :--- | :--- |
+| [06-longest-increasing-subsequence.md](./06-longest-increasing-subsequence.md) | **LIS** | $O(N^2)$ DP, optimized $O(N \log N)$ with Binary Search |
+| [12-palindrome-dp.md](./12-palindrome-dp.md) | **Palindrome DP** | Interval expanding, LPS vs Longest Substring |
+| [16-matrix-chain.md](./16-matrix-chain.md) | **Matrix Chain** | Splitting intervals, the $O(N^3)$ pattern |
+| [17-burst-balloons.md](./17-burst-balloons.md) | **Burst Balloons** | Reverse interval thinking, Virtual boundaries |
 
 ---
 
-## Start: [01-dp-fundamentals.md](./01-dp-fundamentals.md)
-
-Begin with understanding the core principles of Dynamic Programming.
+## Start Here
+Begin your journey with [**01 DP Fundamentals**](./01-dp-fundamentals.md).

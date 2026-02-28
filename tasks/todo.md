@@ -38,6 +38,6 @@
   - [x] Clarify the reverse iteration for Stock III and IV.
   - [x] Make the DP table/state transition clearer.
 - [x] Improve `16-matrix-chain.md`
-- [ ] Improve `17-burst-balloons.md`
+- [x] Improve `17-burst-balloons.md`
 - [x] Improve `18-dp-on-strings.md`
 - [x] Improve `README.md`
