@@ -55,7 +55,7 @@ This means there's no "better path" to worry about—any path reaching position 
 
 **Jump Game II: "Levels" of Jumps**
 
-For minimum jumps, think of it like BFS levels:
+For minimum jumps, think of it like BFS levels. Each "level" represents positions reachable with exactly that many jumps.
 
 ```
 nums = [2, 3, 1, 1, 4]
@@ -69,8 +69,6 @@ Level 0: [0]
 Level 1: [1, 2]
 Level 2: [3, 4] ← contains end
 ```
-
-Each "level" represents positions reachable with exactly that many jumps.
 
 ---
 
@@ -173,7 +171,7 @@ i=0: jump=3, max_reach = max(0, 0+3) = 3
 i=1: 1 <= 3 ✓, jump=2, max_reach = max(3, 1+2) = 3
 i=2: 2 <= 3 ✓, jump=1, max_reach = max(3, 2+1) = 3
 i=3: 3 <= 3 ✓, jump=0, max_reach = max(3, 3+0) = 3
-i=4: 4 > 3 → return False
+i=4: 4 > 3 ✗ → return False (we can't reach index 4)
 ```
 
 ---
@@ -233,19 +231,21 @@ indices: 0  1  2  3  4
 Initial: jumps=0, current_end=0, farthest=0
 
 i=0: farthest = max(0, 0+2) = 2
-     i == current_end → jump! jumps=1, current_end=2
+     i == current_end (0 == 0) → jump! jumps=1, current_end=2
 
 i=1: farthest = max(2, 1+3) = 4
-     i != current_end
+     i != current_end (1 != 2)
 
 i=2: farthest = max(4, 2+1) = 4
-     i == current_end → jump! jumps=2, current_end=4
+     i == current_end (2 == 2) → jump! jumps=2, current_end=4
      current_end >= 4 → break
 
-Answer: 2
+Answer: 2 jumps
 ```
 
 ### BFS Alternative
+
+While the greedy approach is O(1) space, you can also solve this conceptually with BFS (O(n) space). Each "level" in the BFS represents one jump.
 
 ```python
 from collections import deque
@@ -288,20 +288,18 @@ def jump_bfs(nums: list[int]) -> int:
 **Greedy choice**: Always track maximum reach from all visited positions.
 
 **Why it works**:
-
 - If we can reach position `i`, we can reach all positions `0..i`
 - Maximum reach from `0..i` determines if `i+1` is reachable
 - No need to track which specific path was taken
 
 ### Jump Game II: Minimum Jumps
 
-**Greedy choice**: At each "level", jump to maximize next level's reach.
+**Greedy choice**: At each "level", expand the boundary to the maximum possible reach from ANY node in the current level.
 
 **Why it works**:
-
-- BFS-like level expansion
-- Each level = one jump
-- Jumping to farthest reach minimizes total jumps
+- BFS-like level expansion ensures shortest path
+- Each level corresponds to one jump
+- Jumping to the farthest reachable index in the next level guarantees we cover the maximum ground, minimizing total jumps.
 
 ---
 
@@ -399,7 +397,8 @@ def min_jumps(arr: list[int]) -> int:
             # Next positions: neighbors + same values
             next_positions = [pos - 1, pos + 1]
             next_positions.extend(value_indices[arr[pos]])
-            # Clear to avoid re-visiting same-value group
+
+            # Clear to avoid re-visiting same-value group (O(n) total across all steps)
             value_indices[arr[pos]] = []
 
             for next_pos in next_positions:
@@ -416,13 +415,13 @@ def min_jumps(arr: list[int]) -> int:
 
 ## Jump Game Variant Comparison
 
-| Variant          | Approach | Time       | Key Insight          |
-| ---------------- | -------- | ---------- | -------------------- |
-| I (can reach?)   | Greedy   | O(n)       | Track max reach      |
-| II (min jumps)   | Greedy   | O(n)       | BFS-like levels      |
-| III (reach zero) | BFS      | O(n)       | Bidirectional jumps  |
-| IV (same values) | BFS      | O(n)       | Clear visited groups |
-| V (max score)    | DP       | O(n log n) | Monotonic deque      |
+| Variant | Approach | Time | Space | Key Insight |
+|---------|----------|------|-------|-------------|
+| I (can reach?) | Greedy | O(n) | O(1) | Track max reach |
+| II (min jumps) | Greedy | O(n) | O(1) | BFS-like levels |
+| III (reach zero) | BFS | O(n) | O(n) | Bidirectional jumps |
+| IV (same values) | BFS | O(n) | O(n) | Clear visited groups |
+| V (max score) | DP | O(n log n) | O(n) | Monotonic deque / DP with constraints |
 
 ---
 
@@ -461,58 +460,46 @@ def can_cross(stones: list[int]) -> bool:
 
 ---
 
-## Complexity Analysis
-
-| Problem       | Time  | Space | Approach |
-| ------------- | ----- | ----- | -------- |
-| Jump Game I   | O(n)  | O(1)  | Greedy   |
-| Jump Game II  | O(n)  | O(1)  | Greedy   |
-| Jump Game III | O(n)  | O(n)  | BFS      |
-| Jump Game IV  | O(n)  | O(n)  | BFS      |
-| Frog Jump     | O(n²) | O(n²) | DP       |
-
----
-
 ## Edge Cases
 
-- [ ] Array length 1 → already at end, return true/0
-- [ ] First element 0 → can't move (except if n=1)
-- [ ] All zeros except first → check reachability
-- [ ] Large jumps → should still work, track max reach
-- [ ] Negative values → only in specific variants
+- [ ] **Array length 1**: Already at end, return true (Jump Game I) or 0 (Jump Game II).
+- [ ] **First element 0**: Can't move (except if n=1).
+- [ ] **All zeros except first**: Check reachability correctly.
+- [ ] **Large jumps**: Should still work, track max reach. `max_reach >= len(nums) - 1` handles out of bounds.
+- [ ] **Negative values**: Standard Jump Game arrays usually have non-negative integers. Jump Game III/IV array values can be negative.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem       | Difficulty | Key Insight             |
-| --- | ------------- | ---------- | ----------------------- |
-| 1   | Jump Game     | Medium     | Track max reach         |
-| 2   | Jump Game II  | Medium     | Greedy level expansion  |
-| 3   | Jump Game III | Medium     | BFS bidirectional       |
-| 4   | Jump Game IV  | Hard       | BFS with optimization   |
-| 5   | Frog Jump     | Hard       | DP with jump sizes      |
-| 6   | Jump Game V   | Hard       | DP with monotonic stack |
+| # | Problem | Difficulty | Key Insight |
+|---|---------|------------|-------------|
+| 1 | Jump Game | Medium | Track max reach |
+| 2 | Jump Game II | Medium | Greedy level expansion |
+| 3 | Jump Game III | Medium | BFS bidirectional |
+| 4 | Jump Game IV | Hard | BFS with optimization |
+| 5 | Frog Jump | Hard | DP with jump sizes |
+| 6 | Jump Game V | Hard | DP with monotonic stack |
 
 ---
 
 ## Interview Tips
 
 1. **Identify the variant**: Can reach? Min jumps? Bidirectional?
-2. **Choose right approach**: Greedy for I/II, BFS for III/IV
-3. **Trace through example**: Show max reach updates
-4. **Handle edge cases**: Single element, zero at start
-5. **Know the optimization**: Jump IV needs to clear value groups
+2. **Choose right approach**: Greedy for I/II, BFS for III/IV.
+3. **Trace through example**: Show `max_reach` updates for Jump Game I, and `current_end` for Jump Game II.
+4. **Handle edge cases**: Single element array, zero at start.
+5. **Know the optimization**: Jump IV needs to clear value groups, otherwise it's O(n^2) instead of O(n).
 
 ---
 
 ## Key Takeaways
 
-1. Jump Game I: track maximum reachable position
-2. Jump Game II: BFS-like greedy, count "levels"
-3. Bidirectional jumps → use BFS instead of greedy
-4. Same-value jumps → BFS with group clearing
-5. Greedy works when forward-only and optimal substructure exists
+1. Jump Game I: track maximum reachable position.
+2. Jump Game II: BFS-like greedy, count "levels".
+3. Bidirectional jumps → use BFS instead of greedy.
+4. Same-value jumps → BFS with group clearing.
+5. Greedy works when forward-only and optimal substructure exists.
 
 ---
 
