@@ -1,43 +1,26 @@
-# Improve Chapter 09 Dynamic Programming Notes
+# Plan: Rewrite 09-dynamic-programming/README.md
 
-- [x] Improve `01-dp-fundamentals.md`
-- [x] Improve `02-memoization-vs-tabulation.md`
-- [x] Improve `03-1d-dp-basics.md`
-- [x] Improve `04-house-robber.md`
-- [x] Improve `05-coin-change.md`
-- [x] Improve `06-longest-increasing-subsequence.md`
-- [x] Improve `07-2d-dp-basics.md`
-- [x] Improve `08-longest-common-subsequence.md`
-- [x] Improve `09-edit-distance.md`
-- [x] Improve `10-knapsack-01.md`
-- [x] Improve `11-knapsack-unbounded.md`
-  - [x] Add 2D DP solution before the 1D space-optimized one. This bridges the gap between Top-Down and Space-Optimized.
-  - [x] Refine the recurrence notation ($i$ vs $i-1$) and explain it better. Use standard 0-indexed terms.
-  - [x] Clarify "Building Intuition" to distinguish core knapsack (max value) from combinations/permutations (counting).
-  - [x] Rewrite code with descriptive docstrings, type hints.
-  - [x] Improve DP Table Visualization readability and walkthrough.
-- [x] Improve `12-palindrome-dp.md`
-- [x] Improve `13-word-break.md`
-- [x] Improve `14-regex-matching.md`
-  - [x] Rewrite "Building Intuition" to clearly explain why this is a DP problem (overlapping subproblems from branching).
-  - [x] Fix DP Recurrence formulation for Regex (it mentions $dp[i][j]$ is `True` if prefix matches, but base cases mix up string vs pattern indices). Clarify $i$ is string index, $j$ is pattern index.
-  - [x] Improve the "Star Match" explanation. It says we drop `x*` from pattern for zero occurrences, which is `dp[i][j-2]`. Correct. But for one or more occurrences it says we check `match` and `dp[i-1][j]`. Let's verify `dp[i-1][j]` vs `dp[i-1][j-1]` or other options. If `a` matches `a`, we consume `a` from string but keep `a*` in pattern, so we check `dp[i-1][j]`. Yes.
-  - [x] Fix tabulation python code readability. Use clearer variable names.
-  - [x] Fix the space optimization python code logic.
-  - [x] Fix Wildcard DP Transitions: $dp[i][j] = dp[i][j-1] \lor dp[i-1][j]$. This is correct. `*` matches empty sequence (`dp[i][j-1]`) or matches current char (`dp[i-1][j]`).
-  - [x] Make the Visual Walkthrough tables more readable and intuitive. Add explanations of how we trace back.
-  - [x] Update Complexity table. The notes for Tabulation and Memoization and 1D are a bit weirdly formatted.
-- [x] Improve `15-buy-sell-stock.md`
-  - [x] Add explicit state machine diagrams for all variants (not just cooldown).
-  - [x] Clearly define what "State Machine DP" actually is.
-  - [x] Improve variable naming (`hold` and `cash` are okay, but `held` and `sold`/`empty` might be better or clearly explained).
-  - [x] Explain the Space Optimization from O(N) to O(1) explicitly.
-  - [x] Fix the explanation of `hold` and `cash` for stock 2.
-  - [x] Add explicit time/space complexity blocks.
-  - [x] Improve Python examples with better comments and typing.
-  - [x] Clarify the reverse iteration for Stock III and IV.
-  - [x] Make the DP table/state transition clearer.
-- [x] Improve `16-matrix-chain.md`
-- [x] Improve `17-burst-balloons.md`
-- [x] Improve `18-dp-on-strings.md`
-- [x] Improve `README.md`
+- [ ] Read the current `README.md` to understand its structure and content.
+- [ ] Identify areas for improvement:
+    - [ ] The "DP Problem-Solving Framework" section mixes up state definition, recurrence relation, base cases, final answer, and space optimization but presents them as steps 1-5 where the text doesn't flow correctly (e.g., the examples for step 2 don't match step 1, step 3 is mixed up with step 4, etc. The steps given are a bit confused. Step 1 defines state, step 2 defines recurrence, step 3 is base cases, step 4 is final answer, step 5 is optimize space. Actually, the text in step 1-5 is a bit disjointed. Wait, no, looking closer at lines 47-51:
+      1. State: `dp[i]` represents...
+      2. Recurrence Relation: `dp[i] = max(...)`
+      3. Base Cases: `dp[0] = 0`
+      4. Final Answer: where is it stored?
+      5. Optimize Space: reduce space.
+      Wait, these steps are actually a bit weird because the examples don't flow. Let's rewrite the framework to be the standard 5-step framework (State, Recurrence, Base Cases, Order of Computation/Iteration Order, Final Answer). Space optimization is an optional 6th step.
+    - [ ] The "Top-Down vs. Bottom-Up" section is okay but can be clearer.
+    - [ ] The DP Patterns Overview table is good but could be more comprehensive or better formatted.
+    - [ ] The Time/Space Complexity Guidelines table has duplicate info and could be merged or presented better.
+    - [ ] The Chapter Contents section has hardcoded links to files. I should verify if these files exist and match the naming.
+- [ ] Verify the existence of the files listed in "Chapter Contents".
+- [ ] Draft the new `README.md` content.
+- [ ] Replace the contents of `README.md`.
+- [ ] Review the final `README.md` for correctness, educational value, and readability.
+
+## Review 09-dynamic-programming/README.md Rewrite
+- I rewrote the framework section to present 6 clear steps: Define State, Formulate Recurrence Relation, Establish Base Cases, Determine Iteration Order, Identify Final Answer, and Optimize Space. The previous version skipped steps and provided confusing examples.
+- I merged the two separate complexity and pattern tables into one cohesive table that maps out the patterns, key insights, time complexity, space complexity, and space optimized values.
+- I restructured "Top-Down vs. Bottom-Up Approaches" so they are full subsections with Concept, Mechanism, Pros, and Cons, instead of bulleted lists, making it easier to read.
+- I clarified "Optimal Substructure" vs "Overlapping Subproblems", making it clear that a lack of overlapping subproblems means using Divide and Conquer.
+- Verified that all links in "Chapter Contents" point to existing files.
