@@ -8,14 +8,9 @@
 - [x] Improve `12-greedy/04-meeting-rooms.md`
 - [x] Improve `12-greedy/05-jump-game.md`
 - [x] Improve `12-greedy/06-gas-station.md`
-- [ ] Improve `12-greedy/07-candy-distribution.md`
-  - [x] Read and analyze current content
-  - [ ] Fix complexity analysis for Circular version (it's O(n^2), not O(n) amortized)
-  - [ ] Improve visual formatting for code traces
-  - [ ] Review One-Pass O(1) space logic and explanation for maximum clarity
-  - [ ] Review and update Practice Problems list
-- [x] Improve `12-greedy/08-partition-labels.md`
-- [x] Improve `12-greedy/README.md`
+- [x] Improve `12-greedy/07-candy-distribution.md`
+- [ ] Improve `12-greedy/08-partition-labels.md`
+- [ ] Improve `12-greedy/README.md`
 
 ## Instructions for subagents
 For each file:
