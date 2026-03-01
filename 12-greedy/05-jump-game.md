@@ -297,7 +297,7 @@ def can_reach(arr: list[int], start: int) -> bool:
     We mark visited elements by making them negative.
     
     Time: O(n)
-    Space: O(n) worst-case recursion stack (O(1) explicit space)
+    Space: O(n) worst-case recursion stack
     """
     # Base cases: out of bounds or already visited (negative)
     if start < 0 or start >= len(arr) or arr[start] < 0:
@@ -490,9 +490,82 @@ This is a **critical pattern** bridging Dynamic Programming with Sliding Window 
 
 ---
 
+## Jump Game VII: Reachable Zeros with Min/Max Jump (LC 1871)
+
+### Problem Statement
+
+Given a 0-indexed binary string `s` and two integers `minJump` and `maxJump`, determine if you can reach the last index. You start at index `0` (which is always `'0'`).
+You can jump from `i` to `j` if:
+- `i + minJump <= j <= min(i + maxJump, len(s) - 1)`
+- `s[j] == '0'`
+
+```text
+Input: s = "011010", minJump = 2, maxJump = 3
+Output: true (0 -> 3 -> 5)
+```
+
+### Solution: BFS with Range Optimization
+
+A naive BFS iterates through all possible next jumps `[i + minJump, i + maxJump]`, but overlapping intervals lead to `O(N * maxJump)` which is `O(N^2)` worst-case (Time Limit Exceeded). 
+To optimize, we track the `farthest_checked` index we have evaluated to avoid re-adding or re-checking the same intervals.
+
+```python
+from collections import deque
+
+def can_reach_vii(s: str, minJump: int, maxJump: int) -> bool:
+    """
+    Optimized BFS. We track `farthest_checked` to avoid iterating over 
+    the same indices multiple times.
+    
+    Time: O(n) - each index is checked at most once
+    Space: O(n) - queue can store up to n indices
+    """
+    if s[-1] == '1':
+        return False
+        
+    n = len(s)
+    q = deque([0])
+    farthest_checked = 0
+    
+    while q:
+        i = q.popleft()
+        
+        # The range we can jump to from index i
+        # We start checking from farthest_checked + 1 to avoid duplicate work
+        start = max(i + minJump, farthest_checked + 1)
+        end = min(i + maxJump, n - 1)
+        
+        for j in range(start, end + 1):
+            if s[j] == '0':
+                if j == n - 1:
+                    return True
+                q.append(j)
+                
+        # Update farthest checked so we don't scan overlapping intervals again
+        farthest_checked = max(farthest_checked, i + maxJump)
+        
+    return False
+```
+
+---
+
 ## Frog Jump (LeetCode 403)
 
-A frog crosses a river by jumping on stones. If the last jump was size `k`, the next must be `k-1`, `k`, or `k+1`. 
+### Problem Statement
+
+A frog is crossing a river. The river is divided into some number of units, and at each unit, there may or may not exist a stone. The frog can jump on a stone, but it must not jump into the water.
+
+Given a list of `stones` positions (in units) in sorted strictly increasing order, determine if the frog can cross the river by landing on the last stone. Initially, the frog is on the first stone and assumes the first jump must be `1` unit.
+
+If the frog's last jump was `k` units, its next jump must be either `k - 1`, `k`, or `k + 1` units. The frog can only jump in the forward direction.
+
+```text
+Input: stones = [0,1,3,5,6,8,12,17]
+Output: true
+Explanation: The frog can jump to the last stone by jumping 1 unit to the 2nd stone, then 2 units to the 3rd stone, then 2 units to the 4th stone, then 3 units to the 6th stone, 4 units to the 7th stone, and 5 units to the 8th stone.
+```
+
+### Solution: DP with HashSet
 
 ```python
 def can_cross(stones: list[int]) -> bool:
@@ -532,10 +605,11 @@ def can_cross(stones: list[int]) -> bool:
 |---------|----------|------|-------|-------------|
 | I (can reach?) | Greedy | O(n) | O(1) | Track max reach (`max_reach = max(max_reach, i + nums[i])`) |
 | II (min jumps) | Greedy | O(n) | O(1) | BFS-like levels tracking `farthest` and `current_end` |
-| III (reach zero) | DFS/BFS | O(n) | O(1) | Bidirectional jumps. Use in-place array mutation (`-nums[i]`) |
+| III (reach zero) | DFS/BFS | O(n) | O(n) | Bidirectional jumps. Use in-place array mutation (`-nums[i]`) |
 | IV (same values) | BFS | O(n) | O(n) | Map values to indices; MUST `clear()` visited groups to avoid O(n²) |
 | V (max path) | Top-Down DP | O(nd) | O(n) | Constraints create a DAG. Use recursion + memoization |
 | VI (max score win) | DP + MonoQ | O(n) | O(n) | Use a monotonic queue to find sliding window maximum in O(1) |
+| VII (min/max range) | BFS + Opt | O(n) | O(n) | Avoid re-processing sliding intervals using `farthest_checked` |
 
 ---
 
@@ -558,7 +632,8 @@ def can_cross(stones: list[int]) -> bool:
 | 4 | [Jump Game IV](https://leetcode.com/problems/jump-game-iv/) (LC 1345) | Hard | BFS with group clearing |
 | 5 | [Jump Game V](https://leetcode.com/problems/jump-game-v/) (LC 1340) | Hard | Top-down DP for DAG ordering |
 | 6 | [Jump Game VI](https://leetcode.com/problems/jump-game-vi/) (LC 1696) | Medium | DP + Monotonic Queue optimization |
-| 7 | [Frog Jump](https://leetcode.com/problems/frog-jump/) (LC 403) | Hard | DP with dynamic jump sizes state |
+| 7 | [Jump Game VII](https://leetcode.com/problems/jump-game-vii/) (LC 1871) | Medium | BFS with `farthest_checked` optimization |
+| 8 | [Frog Jump](https://leetcode.com/problems/frog-jump/) (LC 403) | Hard | DP with dynamic jump sizes state |
 
 ---
 
@@ -583,6 +658,7 @@ def can_cross(stones: list[int]) -> bool:
 4. **Bidirectional jumps** (III) -- DFS with in-place visited set marking (make element negative).
 5. **Same-value jumps** (IV) -- BFS with `.clear()` to avoid O(n²) re-processing of value groups.
 6. **DP + Monotonic Queue** (VI) -- Huge pattern: when DP needs max/min over a sliding window, a deque gives O(1) lookups.
+7. **Range Jumps** (VII) -- BFS with `farthest_checked` to avoid re-adding intervals.
 
 ---
 
