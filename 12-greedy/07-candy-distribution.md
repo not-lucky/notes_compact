@@ -453,7 +453,7 @@ candies = [1] * n
 
 **2. Bounded candy values.** If candy must be between 1 and `k`, run two-pass first, then check if any value exceeds `k`. If so, no valid assignment exists (since two-pass gives the minimum).
 
-**3. Circular arrangement.** If the first and last children are neighbors, the wrap-around dependency makes simple two-pass insufficient. You need to iterate passes until convergence or find a starting point that avoids wrap-around conflicts.
+**3. Circular arrangement.** If the first and last children are neighbors, the wrap-around dependency makes simple two-pass insufficient. We must break the cycle, for example, by finding the minimum element to unroll the array, and then we can safely apply the two-pass algorithm.
 
 **4. Enumerating all valid assignments.** Two-pass gives the unique minimum-total answer. Enumerating all valid distributions requires a different approach.
 
@@ -465,21 +465,20 @@ candies = [1] * n
 
 Children stand in a circle (first and last are neighbors). The wrap-around dependency means a single two-pass is not enough -- updating one end can invalidate the other.
 
-**Correct approach**: Iterate passes until no changes occur.
+**Correct approach**: Since we are trying to find the minimum candies, we can find the child with the minimum rating. This child can safely be given 1 candy, breaking the circular dependency. We can unroll the array starting from this minimum child, and then apply the standard O(N) two-pass solution.
 
 ```python
 def candy_circular(ratings: list[int]) -> int:
     """
     Candy distribution where children form a circle.
 
-    Iterate forward and backward passes until stable.
-    Each pass only increases values, so convergence is guaranteed.
-    Since changes propagate strictly left-to-right or right-to-left
-    during a pass, and we do both in each loop iteration, the while loop
-    executes at most O(n) times. The worst case happens when changes
-    must propagate sequentially around the circle.
+    Instead of iterating passes O(n^2), we can break the circle at the
+    child with the minimum rating. Since they have the lowest rating,
+    they will never need more than 1 candy to satisfy neighbors.
+    We can unroll the array starting from this index and use the
+    standard O(N) two-pass approach.
 
-    Time:  O(n^2) worst case
+    Time:  O(n)
     Space: O(n)
     """
     if not ratings:
@@ -489,27 +488,35 @@ def candy_circular(ratings: list[int]) -> int:
     if n == 1:
         return 1
 
-    candies = [1] * n
-    changed = True
+    # Find index of global minimum rating to break the circle
+    min_idx = 0
+    for i in range(1, n):
+        if ratings[i] < ratings[min_idx]:
+            min_idx = i
 
-    while changed:
-        changed = False
+    # Unroll the array starting from the minimum index
+    # We append the minimum child twice to handle wrap-around constraints
+    unrolled = []
+    for i in range(n):
+        unrolled.append(ratings[(min_idx + i) % n])
+    unrolled.append(ratings[min_idx])
 
-        # Forward pass
-        for i in range(n):
-            left = (i - 1) % n
-            if ratings[i] > ratings[left] and candies[i] <= candies[left]:
-                candies[i] = candies[left] + 1
-                changed = True
+    # Standard two-pass on the unrolled array
+    m = len(unrolled)
+    candies = [1] * m
 
-        # Backward pass
-        for i in range(n - 1, -1, -1):
-            right = (i + 1) % n
-            if ratings[i] > ratings[right] and candies[i] <= candies[right]:
-                candies[i] = candies[right] + 1
-                changed = True
+    for i in range(1, m):
+        if unrolled[i] > unrolled[i - 1]:
+            candies[i] = candies[i - 1] + 1
 
-    return sum(candies)
+    for i in range(m - 2, -1, -1):
+        if unrolled[i] > unrolled[i + 1]:
+            candies[i] = max(candies[i], candies[i + 1] + 1)
+
+    # The last element in `candies` is the same child as the first element.
+    # Because it's the global minimum, it must be 1 at both ends.
+    # We just sum the first n elements.
+    return sum(candies[:n])
 ```
 
 ### Variation 2: Bounded Candy Values
@@ -619,7 +626,7 @@ def product_except_self(nums: list[int]) -> list[int]:
 | :--- | :--- | :--- | :--- |
 | **Two-pass** | $O(n)$ | $O(n)$ | Simple, clear, recommended for interviews |
 | **One-pass (slope)** | $O(n)$ | $O(1)$ | Tricky peak-bump logic; good follow-up optimization |
-| **Circular variation** | $O(n^2)$ | $O(n)$ | Iterate until no changes; bounds to $O(n)$ iterations |
+| **Circular variation** | $O(n)$ | $O(n)$ | Unroll array at the minimum element to break circular dependency |
 
 ---
 
@@ -644,8 +651,9 @@ def product_except_self(nums: list[int]) -> list[int]:
 | 1 | [Candy](https://leetcode.com/problems/candy/) (LC 135) | Hard | Two-pass greedy, `max()` to merge constraints |
 | 2 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) (LC 42) | Hard | Two-pass or two-pointer |
 | 3 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) (LC 238) | Medium | Prefix and suffix products |
-| 4 | [Minimum Number of Coins for Fruits](https://leetcode.com/problems/minimum-number-of-coins-for-fruits/) (LC 2944) | Medium | Forward-pass greedy with sliding window / Monotonic Queue |
-| 5 | [Distribute Candies Among Children II](https://leetcode.com/problems/distribute-candies-among-children-ii/) (LC 2929) | Medium | Distribution with upper bounds, Math / Combinatorics |
+| 4 | [Minimum Deletions to Make Character Frequencies Unique](https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/) (LC 1647) | Medium | Greedy approach to sort frequencies and decrement |
+| 5 | [Minimum Number of Coins for Fruits](https://leetcode.com/problems/minimum-number-of-coins-for-fruits/) (LC 2944) | Medium | Forward-pass greedy with sliding window / Monotonic Queue |
+| 6 | [Distribute Candies Among Children II](https://leetcode.com/problems/distribute-candies-among-children-ii/) (LC 2929) | Medium | Distribution with upper bounds, Math / Combinatorics |
 
 ---
 

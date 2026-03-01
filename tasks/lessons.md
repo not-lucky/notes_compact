@@ -1,14 +1,7 @@
-## Lessons Learned: Greedy Problems (Merge Intervals)
+# Lessons Learned
 
-- Always explicitly mention the time/space complexity tradeoffs (e.g., O(1) space if modifying in-place vs O(n) for new output array).
-- For `employee_free_time`, highlight the optimal Min-Heap approach O(n log k) as it demonstrates advanced interval merging.
-- When creating visual traces, use explicit state values (like `merged[-1][1] = 3`) to map directly to the code logic.
-- Differentiate between "Overlap Detection" and "Adjacent Detection", as interviewers often care about the subtle `<` vs `<=`.
-
-## Lessons Learned: Greedy Problems (Interval Scheduling)
-
-- Emphasize the intuition difference between sorting by start time vs end time. End time sorting is critical because "earliest end time leaves maximum room for future activities."
-- Explicitly differentiate between overlapping and touching intervals (e.g., `start >= last_end` vs `start > last_end`). Mention that clarifying this in an interview is essential.
-- Include a specific example of why sorting by duration fails.
-- Provide DP alternative solutions (e.g., Weighted Interval Scheduling) when Greedy fails due to added constraints (like weights/values).
-- Be extremely meticulous with algorithm correctness. E.g., fixing a binary search in DP where finding the *rightmost* element requires storing the last valid index.
+- **Space Complexity with Sorting Iterators**: When `sorted(...)` is used on an iterator (like `zip(...)` in Python), it consumes `O(n)` space to create the sorted list copy. Always document this `+ sorted copy` in space complexity analyses.
+- **Interval Overlaps**: `>` vs `>=` is the most critical source of bugs. Always map "touching" explicitly in comments (e.g., `touching OK` -> `>=` vs `touching overlaps` -> `>`). When comparing `last` vs `current` in merge intervals, if index `i` is included in both `[a, i]` and `[i, b]`, they overlap at `i`, so use `<` or `<=` depending on inclusive vs exclusive intervals.
+- **Micro-optimizations**: When optimizing hash maps to arrays for character tracking (like `last_occurrence = [0] * 26`), be mindful to emphasize the constant time lookup and space, and ensure the ord math `ord(c) - ord('a')` is consistently applied.
+- **Verifying Backtracking Algorithms**: A backtracking algorithm traversing DP states (like the one in `job_scheduling_with_selection`) needs precise bounds checks to ensure elements at `i=0` are handled or evaluated correctly, and that tracking variables update without looping indefinitely. Writing quick test scripts avoids guesswork.
+- **Python Zip Iterator**: Zipping two lists (`zip(A, B)`) returns an iterator. Doing `sorted(zip(A,B))` consumes it and instantiates a fully new list in memory. Memory is `O(n)` not `O(1)`.

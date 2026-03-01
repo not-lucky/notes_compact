@@ -12,9 +12,9 @@ Partition Labels is a classic problem that tests:
 4. **Pattern recognition**: Identifying interval merging problems in disguise.
 
 **Constraints & Assumptions**:
-- Input string contains only lowercase English letters (`'a'`-`'z'`).
+- Input string `s` consists of lowercase English letters (`'a'`-`'z'`).
 - String length: typically `1 <= s.length <= 500`.
-- Empty string is usually not a valid input, but handle it gracefully if needed.
+- Empty string is usually not a valid input, but it's good practice to handle it gracefully.
 
 ---
 
@@ -90,7 +90,7 @@ Overlapping lifespans MUST be in the same partition. Non-overlapping lifespans C
 
 Each character creates an interval `[first_occurrence, last_occurrence]`. Overlapping intervals must be merged into the same partition. This is exactly the **merge intervals** pattern!
 
-But wait, we don't need to explicitly sort the intervals! Why?
+But wait, we don't need to explicitly create and sort the intervals! Why?
 Because as we scan the string from left to right, we inherently encounter each character's *first* occurrence in sorted order. The string itself acts as our pre-sorted list of interval start times.
 
 ### The Greedy "Extending Horizon" Approach
@@ -138,7 +138,7 @@ def partition_labels(s: str) -> list[int]:
 
 ### Complexity Analysis
 
-- **Time Complexity:** $O(N)$, where $N$ is the length of the string.
+- **Time Complexity:** $O(N)$, where $N$ is the length of the string `s`.
   - First pass: Build `last_occurrence` dictionary — $O(N)$
   - Second pass: Scan to find partitions — $O(N)$
   - Dictionary lookups and `max()` operations are $O(1)$.
@@ -156,16 +156,20 @@ To make the connection to Merge Intervals concrete, here is a solution that expl
 
 ```python
 def partition_labels_via_merge(s: str) -> list[int]:
-    if not s: return []
+    if not s:
+        return []
 
     # Build [first, last] interval for each character
-    first, last = {}, {}
+    first: dict[str, int] = {}
+    last: dict[str, int] = {}
     for i, char in enumerate(s):
-        if char not in first: first[char] = i
+        if char not in first:
+            first[char] = i
         last[char] = i
 
     # Create intervals sorted by first occurrence (at most 26 intervals)
-    intervals = sorted([[first[c], last[c]] for c in first])
+    intervals = [[first[c], last[c]] for c in first]
+    intervals.sort()
 
     # Standard merge intervals
     merged = [intervals[0]]
@@ -187,12 +191,17 @@ Since the input contains only lowercase English letters, we can use a fixed-size
 
 ```python
 def partition_labels_array(s: str) -> list[int]:
+    if not s:
+        return []
+
+    # Map each character 'a'-'z' to an index 0-25
     last_occurrence = [0] * 26
     for i, char in enumerate(s):
         last_occurrence[ord(char) - ord('a')] = i
 
     result = []
-    start = end = 0
+    start = 0
+    end = 0
 
     for i, char in enumerate(s):
         end = max(end, last_occurrence[ord(char) - ord('a')])
@@ -206,6 +215,8 @@ def partition_labels_array(s: str) -> list[int]:
 ---
 
 ## Visual Trace
+
+Let's walk through the horizon approach using `s = "ababcbacadefegdehijhklij"`.
 
 ```text
 s = "ababcbacadefegdehijhklij"
@@ -257,7 +268,7 @@ Result: [9, 7, 8]
 | :--- | :--- | :--- |
 | **Using first occurrence instead of last** | You cut too early, leaving character occurrences outside. | Track the **last** occurrence to ensure containment. |
 | **Cutting when a character repeats** | Doesn't guarantee *all* future occurrences are contained. | Only cut when `i == partition_end` (horizon reached). |
-| **Explicitly sorting intervals** | Works, but does unnecessary $O(N \log N)$ work. | Scan the string directly; the left-to-right order *is* the sorted start time. |
+| **Explicitly creating and sorting intervals** | Works, but does unnecessary $O(N \log N)$ work or extra $O(1)$ constant time overhead. | Scan the string directly; the left-to-right order *is* the sorted start time. |
 | **Off-by-one in partition size** | Outputting `end - start` instead of `end - start + 1`. | Array length for an inclusive range is `end - start + 1`. |
 
 ---
@@ -268,6 +279,7 @@ Result: [9, 7, 8]
 | :--- | :--- | :--- |
 | **[Partition Labels (LC 763)](https://leetcode.com/problems/partition-labels/)** | Medium | The core problem. Track last occurrence, greedily extend horizon. |
 | **[Optimal Partition of String (LC 2405)](https://leetcode.com/problems/optimal-partition-of-string/)** | Medium | Minimizing partitions so no letter repeats within a part. Greedy: use a set, cut the moment you see a duplicate. |
+| **[Divide Intervals Into Minimum Number of Groups (LC 2406)](https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/)** | Medium | Similar interval management, but checking maximum overlapping intervals (can use line sweep). |
 | **[Split Array into Consecutive Subsequences (LC 659)](https://leetcode.com/problems/split-array-into-consecutive-subsequences/)** | Medium | Advanced greedy using hashmaps to track subsequence endings and available counts. |
 
 ---

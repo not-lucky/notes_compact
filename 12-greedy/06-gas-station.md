@@ -166,7 +166,7 @@ But total_tank < 0 means NO solution exists!
 So when a solution exists (total_tank >= 0), start is guaranteed to be < n.
 ```
 
-This is why the algorithm needs no explicit bounds checking on `start`.
+This is why the algorithm needs no explicit bounds checking on `start`. (Assuming `n >= 1` as typically guaranteed).
 
 ---
 
@@ -513,7 +513,7 @@ Greedy:
 | 1   | Gas Station (LC 134)              | Medium     | Greedy reset on failure             |
 | 2   | Maximum Sum Circular Subarray (LC 918) | Medium | Kadane + wrap-around trick          |
 | 3   | Minimum Number of Refueling Stops (LC 871) | Hard  | Max-heap greedy                     |
-| 4   | Rotate Array (LC 189)             | Medium     | Circular array manipulation         |
+| 4   | Destroying Asteroids (LC 2126)    | Medium     | Greedy accumulation / sorting       |
 | 5   | Circular Array Loop (LC 457)      | Medium     | Circular traversal + cycle detection|
 
 ### Worked Problem 1: Maximum Sum Circular Subarray (LC 918)
@@ -607,6 +607,9 @@ def min_refuel_stops(target: int, start_fuel: int, stations: list[list[int]]) ->
             # Push negative for max-heap behavior
             heapq.heappush(heap, -stations[i][1])
             i += 1
+
+        if fuel >= target:
+            break
 
         if not heap:
             return -1  # Can't reach target or any more stations

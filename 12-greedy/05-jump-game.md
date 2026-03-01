@@ -457,32 +457,35 @@ def max_result(nums: list[int], k: int) -> int:
     """
     DP + Monotonic Decreasing Queue optimization.
     The queue efficiently stores the max DP value in our jump window of size k.
-    
+
     Time: O(n)
     Space: O(n) for the dp array and queue
     """
     n = len(nums)
+    if n == 0:
+        return 0
+
     dp = [0] * n
     dp[0] = nums[0]
-    
+
     # Queue stores indices, keeping dp values strictly monotonically decreasing
     q = deque([0])
-    
+
     for i in range(1, n):
         # 1. Remove indices that are outside the window of size k
-        while q and q[0] < i - k:
+        if q and q[0] < i - k:
             q.popleft()
-            
+
         # 2. The max element in the window is at the front of the queue
         dp[i] = nums[i] + dp[q[0]]
-        
-        # 3. Maintain monotonic decreasing property: 
+
+        # 3. Maintain monotonic decreasing property:
         # pop smaller values because they'll never be the max if dp[i] is larger
         while q and dp[q[-1]] <= dp[i]:
             q.pop()
-            
+
         q.append(i)
-        
+
     return dp[-1]
 ```
 
@@ -576,15 +579,24 @@ def can_cross(stones: list[int]) -> bool:
     Time: O(n^2) -- each stone can accumulate up to n jump sizes
     Space: O(n^2)
     """
+    n = len(stones)
+    if n <= 1:
+        return True
+
+    # The first jump must be exactly 1 unit
+    if stones[1] != 1:
+        return False
+
     target = stones[-1]
 
     # dp[stone] = set of valid previous jump sizes that reached this stone
     dp = {stone: set() for stone in stones}
-    dp[stones[0]].add(0)
+    dp[1].add(1) # We landed on stone 1 with a jump of size 1
 
     # Note: Iterating through the list `stones` directly ensures we
     # process stones safely in increasing positional order.
-    for stone in stones:
+    # Start from index 1 since index 0 is already processed
+    for stone in stones[1:]:
         for k in dp[stone]:
             for next_jump in [k - 1, k, k + 1]:
                 if next_jump > 0:
