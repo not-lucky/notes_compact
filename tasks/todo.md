@@ -1,20 +1,25 @@
-# Task: Analyze and Update 12-greedy/05-jump-game.md
+# Chapter 12: Greedy Algorithms - Analysis and Improvement
 
-- [x] Analyze the current content of `12-greedy/05-jump-game.md`
-- [x] Identify inaccuracies, poor explanations, or code readability issues
-- [x] Draft improvements for:
-  - [x] Building Intuition section
-  - [x] Code examples
-  - [x] Add type hints consistently and ensure modern Python syntax.
-  - [x] Improve complexity analysis section
-- [x] Apply updates to the file
-- [x] Verify the file reads well and all code is correct
-- [x] Update tasks/todo.md with results
+## Plan
 
-**Results of Jump Game review:**
-- Improved the visual traces to clearly differentiate indices and max reach limits (e.g., showing the condition `4 > 3 ✗`).
-- Made the BFS conceptual code block for Jump Game II correctly calculate jumps.
-- Cleaned up table formatting and added a Space column.
-- Clarified the `value_indices` clearance in Jump Game IV with an inline comment that it's `O(n)` total across all steps.
-- Cleaned up edge cases.
-- Validated explanations of Greedy reachability vs BFS paths.
+- [x] Improve `12-greedy/01-greedy-basics.md`
+- [x] Improve `12-greedy/02-interval-scheduling.md`
+- [x] Improve `12-greedy/03-merge-intervals.md`
+- [x] Improve `12-greedy/04-meeting-rooms.md`
+- [x] Improve `12-greedy/05-jump-game.md`
+- [x] Improve `12-greedy/06-gas-station.md`
+- [ ] Improve `12-greedy/07-candy-distribution.md`
+  - [x] Read and analyze current content
+  - [ ] Fix complexity analysis for Circular version (it's O(n^2), not O(n) amortized)
+  - [ ] Improve visual formatting for code traces
+  - [ ] Review One-Pass O(1) space logic and explanation for maximum clarity
+  - [ ] Review and update Practice Problems list
+- [x] Improve `12-greedy/08-partition-labels.md`
+- [x] Improve `12-greedy/README.md`
+
+## Instructions for subagents
+For each file:
+1. Fix anything that is wrong.
+2. Improve explanations, correctness, and code readability.
+3. Ensure only Python3 code is used.
+4. Add good and progressive problems if needed for better understanding.
