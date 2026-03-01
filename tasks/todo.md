@@ -9,6 +9,15 @@
 - [x] Refactor 06-gas-station.md
 - [x] Refactor 07-candy-distribution.md
 
+## Completed 05-jump-game.md
+1. Analyzed `12-greedy/05-jump-game.md` for errors, improvements in explanations, correctness, and code readability
+2. Extracted all Python 3 code blocks and thoroughly tested them in `test_jump_game.py`.
+3. Fixed a logical flaw in `can_cross` (Frog Jump LC 403). Added the explicit requirement check for the first jump (`if stones[1] != 1: return False`) and adjusted the initial DP state properly, iterating from index 1.
+4. Refined the Python code snippets (typing, edge cases, removed trailing whitespace).
+5. Addressed edge case definitions and handling. For LC 1696 (Jump Game VI), checked array initialization logic to clearly reflect DP principles.
+6. Improved formatting and style of explanations.
+7. Expanded clarification in `can_reach` on array modification requirements vs. utilizing a standard `visited` set for strict interview rules.
+
 ## Completed 08-partition-labels.md
 1. Analyzed `12-greedy/08-partition-labels.md` for errors, improvements in explanations, correctness, and code readability
 2. Refined the Python code snippets (typing, edge cases, naming)

@@ -6,10 +6,10 @@
 
 Jump game problems test:
 
-1. **Greedy reachability**: Track farthest position reachable
-2. **Optimization**: Find minimum jumps
-3. **Pattern recognition**: When greedy vs DP vs BFS vs Monotonic Queue
-4. **Edge case handling**: Zero jumps, already at end
+1. **Greedy reachability**: Track farthest position reachable (`max_reach`).
+2. **Optimization**: Find minimum jumps by treating jumps like BFS levels.
+3. **Pattern recognition**: Knowing when to use Greedy vs. DP vs. BFS vs. Monotonic Queue.
+4. **Edge case handling**: Zero jump lengths, already at the end, array modification limits.
 
 ---
 
@@ -288,29 +288,29 @@ Output: true (5 → 4 → 1 → 3)
 
 ### Solution: DFS with O(1) Space
 
-Interviewers love the in-place marking optimization to save O(N) space.
+Interviewers love the in-place marking optimization to save `O(N)` auxiliary space for a `visited` set. If modifying the array is strictly prohibited by the interviewer, use a standard `visited = set([start])`.
 
 ```python
 def can_reach(arr: list[int], start: int) -> bool:
     """
     DFS approach with O(1) auxiliary space (ignoring recursion stack).
     We mark visited elements by making them negative.
-    
+
     Time: O(n)
     Space: O(n) worst-case recursion stack
     """
     # Base cases: out of bounds or already visited (negative)
     if start < 0 or start >= len(arr) or arr[start] < 0:
         return False
-        
+
     # Found the target
     if arr[start] == 0:
         return True
-        
+
     # Mark current index as visited
     jump_dist = arr[start]
     arr[start] = -arr[start]
-    
+
     # Explore both directions
     return can_reach(arr, start + jump_dist) or can_reach(arr, start - jump_dist)
 ```
@@ -517,36 +517,36 @@ from collections import deque
 
 def can_reach_vii(s: str, minJump: int, maxJump: int) -> bool:
     """
-    Optimized BFS. We track `farthest_checked` to avoid iterating over 
+    Optimized BFS. We track `farthest_checked` to avoid iterating over
     the same indices multiple times.
-    
+
     Time: O(n) - each index is checked at most once
     Space: O(n) - queue can store up to n indices
     """
-    if s[-1] == '1':
-        return False
-        
     n = len(s)
+    if n == 0 or s[-1] == '1':
+        return False
+
     q = deque([0])
     farthest_checked = 0
-    
+
     while q:
         i = q.popleft()
-        
+
         # The range we can jump to from index i
         # We start checking from farthest_checked + 1 to avoid duplicate work
         start = max(i + minJump, farthest_checked + 1)
         end = min(i + maxJump, n - 1)
-        
+
         for j in range(start, end + 1):
             if s[j] == '0':
                 if j == n - 1:
                     return True
                 q.append(j)
-                
+
         # Update farthest checked so we don't scan overlapping intervals again
         farthest_checked = max(farthest_checked, i + maxJump)
-        
+
     return False
 ```
 
