@@ -652,14 +652,14 @@ def asteroids_destroyed(mass: int, asteroids: list[int]) -> bool:
     Greedy: Sort asteroids and consume smallest first to build mass.
 
     Time:  O(n log n) - sorting dominates
-    Space: O(1)       - ignoring sort space
+    Space: O(n)       - sorted copy to avoid mutating input
     """
-    # Sort to greedily consume smallest asteroids first
-    asteroids.sort()
+    # Sort a copy to greedily consume smallest asteroids first without mutating
+    sorted_asteroids = sorted(asteroids)
 
     current_mass = mass
 
-    for asteroid in asteroids:
+    for asteroid in sorted_asteroids:
         if current_mass >= asteroid:
             current_mass += asteroid
         else:

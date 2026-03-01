@@ -9,6 +9,12 @@
 - [x] Refactor 06-gas-station.md
 - [x] Refactor 07-candy-distribution.md
 
+## Completed 04-meeting-rooms.md
+1. **Code Readability and Correctness**: Checked that all existing python3 code snippets correctly solve the problems and use standard `list[list[int]]` typing. Refined the python syntax in `can_attend_meetings` and explicitly clarified that `sorted` in python takes `O(n)` memory.
+2. **Practice Problems Evolution**: Replaced "Find Right Interval" (LC 436) with "My Calendar I and II" (LC 729, 731). The "My Calendar" series dynamically handles adding intervals while tracking active overlaps, which builds upon "Meeting Rooms I & II" wonderfully.
+3. **Complexity Table Updates**: Updated the complexity table to reflect the changes to the practice problems and fixed the space complexity for Meeting Rooms I to `O(n)`.
+4. **Verification**: Wrote local test scripts for every single code block in the file to run the code and verify its correctness against edge cases.
+
 ## Completed 02-interval-scheduling.md
 1. Wrote a Python test script (`test_intervals.py`) to systematically execute and verify all the code blocks in the file.
 2. Verified the behavior of `max_activities`, `count_max_activities`, `erase_overlap_intervals` (LC 435), `find_min_arrows` (LC 452), `find_longest_chain` (LC 646), and both versions of `job_scheduling` (LC 1235).
@@ -28,13 +34,14 @@
 - Validated all code snippets locally.
 
 ## Completed 05-jump-game.md
-1. Analyzed `12-greedy/05-jump-game.md` for errors, improvements in explanations, correctness, and code readability
-2. Extracted all Python 3 code blocks and thoroughly tested them in `test_jump_game.py`.
-3. Fixed a logical flaw in `can_cross` (Frog Jump LC 403). Added the explicit requirement check for the first jump (`if stones[1] != 1: return False`) and adjusted the initial DP state properly, iterating from index 1.
-4. Refined the Python code snippets (typing, edge cases, removed trailing whitespace).
-5. Addressed edge case definitions and handling. For LC 1696 (Jump Game VI), checked array initialization logic to clearly reflect DP principles.
-6. Improved formatting and style of explanations.
-7. Expanded clarification in `can_reach` on array modification requirements vs. utilizing a standard `visited` set for strict interview rules.
+1. **Bug Fixes and Algorithmic Correctness**:
+   - Identified and resolved a logical bug in `can_cross` (Frog Jump LC 403). The original DP implementation failed to strictly enforce the problem's constraint that the **first jump must be exactly 1 unit**, allowing invalid initial state leaps. Safely returning `False` if `stones[1] != 1` (since the first stone is always at `0`), initializing the DP state cleanly at index `1`, and iterating explicitly from `stones[1:]`.
+2. **Refined Code Explanations & Readability**:
+   - Modernized type hints across all Python code blocks (e.g., using Python 3.9+ `list[int]`).
+   - Cleaned up loop constraints and added robust empty array edge cases checks in BFS queue initializations.
+   - Augmented `can_reach` (Jump Game III) explanation with a comment noting that in-place marking trick modifies the array, which might be prohibited in strict interview settings.
+3. **Validation & Verification**:
+   - Created comprehensive Python scripts locally that extracted and tested all 8 problem implementations against edge cases. Verified all algorithms ran flawlessly.
 
 ## Completed 08-partition-labels.md
 1. Analyzed `12-greedy/08-partition-labels.md` for errors, improvements in explanations, correctness, and code readability
