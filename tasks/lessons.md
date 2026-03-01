@@ -1,5 +1,6 @@
 # Lessons Learned
 
+- **Sorting Mutations in Python**: Python's `.sort()` method mutates lists in place. In greedy algorithms where the original array structure should be preserved (often a requirement in real-world APIs or interview constraints), use `sorted()` and explicitly allocate `O(N)` space complexity for the sorted copy.
 - **Space Complexity with Sorting Iterators**: When `sorted(...)` is used on an iterator (like `zip(...)` in Python), it consumes `O(n)` space to create the sorted list copy. Always document this `+ sorted copy` in space complexity analyses.
 - **Interval Overlaps**: `>` vs `>=` is the most critical source of bugs. Always map "touching" explicitly in comments (e.g., `touching OK` -> `>=` vs `touching overlaps` -> `>`). When comparing `last` vs `current` in merge intervals, if index `i` is included in both `[a, i]` and `[i, b]`, they overlap at `i`, so use `<` or `<=` depending on inclusive vs exclusive intervals.
 - **Micro-optimizations**: When optimizing hash maps to arrays for character tracking (like `last_occurrence = [0] * 26`), be mindful to emphasize the constant time lookup and space, and ensure the ord math `ord(c) - ord('a')` is consistently applied.

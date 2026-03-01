@@ -583,8 +583,6 @@ Answer = max(7, 10) = 10  (subarray [5, _, 5] wrapping around)
 **Key insight**: Greedily delay refueling. As we pass stations, add their fuel to a max-heap. Whenever we run out of fuel, pop the largest available refuel. This minimizes stops because each stop we "use" gives us the maximum possible fuel.
 
 ```python
-import heapq
-
 def min_refuel_stops(target: int, start_fuel: int, stations: list[list[int]]) -> int:
     """
     Minimum refueling stops to reach target.
@@ -595,6 +593,8 @@ def min_refuel_stops(target: int, start_fuel: int, stations: list[list[int]]) ->
     Time:  O(n log n) -- each station pushed/popped from heap at most once
     Space: O(n)       -- heap stores at most n stations
     """
+    import heapq
+
     fuel = start_fuel
     stops = 0
     heap = []  # max-heap (negate values since Python has min-heap)

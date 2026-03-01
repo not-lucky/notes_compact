@@ -4,10 +4,16 @@
 - [x] Refactor 02-interval-scheduling.md
 - [x] Refactor 08-partition-labels.md
 - [x] Refactor 05-jump-game.md
-- [ ] Refactor 01-greedy-basics.md
+- [x] Refactor 01-greedy-basics.md
 - [x] Refactor 04-meeting-rooms.md
 - [x] Refactor 06-gas-station.md
 - [x] Refactor 07-candy-distribution.md
+
+## Completed 01-greedy-basics.md
+- Fixed sorting side effects by using `sorted()` instead of `.sort()` to prevent destructive mutations on input arrays. Space complexity updated accordingly.
+- Added missing progressive problem: LC 2160 (Minimum Sum of Four Digit Number After Splitting Digits) as a great introductory problem.
+- Added inline comments and fixed visual traces.
+- Validated all code snippets locally.
 
 ## Completed 05-jump-game.md
 1. Analyzed `12-greedy/05-jump-game.md` for errors, improvements in explanations, correctness, and code readability
