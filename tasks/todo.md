@@ -9,6 +9,18 @@
 - [x] Refactor 06-gas-station.md
 - [x] Refactor 07-candy-distribution.md
 
+## Completed 02-interval-scheduling.md
+1. Wrote a Python test script (`test_intervals.py`) to systematically execute and verify all the code blocks in the file.
+2. Verified the behavior of `max_activities`, `count_max_activities`, `erase_overlap_intervals` (LC 435), `find_min_arrows` (LC 452), `find_longest_chain` (LC 646), and both versions of `job_scheduling` (LC 1235).
+3. Validated the logic of the dynamic programming backtracking function `job_scheduling_with_selection`, ensuring it properly rebuilds the optimal non-overlapping interval sequence.
+4. Standardized the Python syntax (e.g. `list[tuple[int, int]]`).
+5. Replaced some verbose comments inside functions with clear, descriptive docstrings explaining the algorithmic intent, touching conventions, and time/space complexities.
+6. Improved the introductory context to explain why we focus on mapping the end time (e.g. "always pick the request that ends earliest and doesn't conflict with what you already accepted").
+7. Significantly clarified the nuance between overlapping and touching intervals (`>` vs `>=`). The provided table ("Overlapping vs Touching: The Critical Detail") clearly maps common LeetCode problems to their respective convention (e.g., LC 452 Min Arrows requires `>` because balloons that touch can be shot with the same arrow).
+8. Refined the DP recurrence logic for Weighted Interval Scheduling to explicitly document the `exclude` vs `include` states and why greedy falls short.
+9. Updated the space complexity of `job_scheduling` to correctly state `O(n) -- DP array + sorted copy` to explicitly account for the memory overhead of doing `sorted(zip(...))` in Python.
+10. Added specific takeaways to `tasks/lessons.md` covering python sorting space complexity and the importance of checking backtracking algorithms.
+
 ## Completed 01-greedy-basics.md
 - Fixed sorting side effects by using `sorted()` instead of `.sort()` to prevent destructive mutations on input arrays. Space complexity updated accordingly.
 - Added missing progressive problem: LC 2160 (Minimum Sum of Four Digit Number After Splitting Digits) as a great introductory problem.
