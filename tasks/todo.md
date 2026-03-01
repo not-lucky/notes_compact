@@ -25,6 +25,8 @@
 - [x] Fix heap implementations for tracking Top K suggestions.
 - [x] Fix missing character dictionary creation bug in Production-Ready Version.
 - [x] Fix typing and imports.
+- [x] Added dedicated Time Complexity Quick Reference.
+- [x] Improved Autocomplete System pre-computation for true O(1) queries.
 
 # Tries: Maximum XOR Fixes
 - [x] Add missing type hints to `xor_range`, `maximizeXor`, `maxGeneticDifference`, and `countPairs`.
