@@ -1,139 +1,45 @@
 # Chapter 13: Tries
 
-A Trie (prefix tree) is a specialized tree data structure used for efficient retrieval of strings. The name comes from "re**trie**val." Tries excel at prefix-based operations, making them essential for autocomplete, spell checking, and IP routing.
+A **Trie** (pronounced "try", coming from re**trie**val) is a specialized tree data structure designed for efficient storage and retrieval of strings. Also known as a **prefix tree**, a trie stores characters in its nodes, meaning all descendants of a node share a common prefix of the string associated with that node.
 
-## Why Tries Matter
-
-1. **Interview frequency**: Tries appear in ~10-15% of FANG interviews
-2. **Unique niche**: Some problems are nearly impossible without tries
-3. **Design interviews**: Autocomplete is a classic system design component
-4. **Time efficiency**: $O(L)$ operations where $L$ is word length, regardless of dictionary size
+Tries excel at prefix-based operations, making them the foundational data structure for autocomplete systems, spell checkers, dictionary validations, and IP routing.
 
 ---
 
-## Building Intuition
+## 1. Building Intuition: Why Tries Matter
 
-**What Problem Does a Trie Solve?**
+Imagine you're building a phone's keyboard autocomplete. As the user types "app", you need to instantly suggest "apple", "application", and "applesauce". With 100,000 words in your dictionary:
 
-Imagine you're building a phone's keyboard autocomplete. As the user types "app", you need to instantly suggest "apple", "application", "applesauce". With 100,000 words in your dictionary:
+- **Hashset**: You can check if "apple" exists in $O(1)$, but to find "all words starting with 'app'", you must scan the entire dictionary ($O(n \cdot L)$).
+- **Sorted list + binary search**: You can find the range of 'app-' words in $O(\log n)$, but then you must still iterate through the range to collect results.
+- **Trie**: You navigate directly to the 'app' node in exactly 3 steps. Everything below that node is a guaranteed valid completion.
 
-- **Hashset**: Can check "does 'apple' exist?" but can't find "all words starting with 'app'" without scanning everything
-- **Sorted list + binary search**: Can find the range of 'app-' words in $O(\log n)$, but then must scan the range
-- **Trie**: Navigate directly to the 'app' node; everything below is your answer
+### The Core Insight: Shared Prefixes
 
-**The Core Insight: Shared Prefixes**
+English words heavily share prefixes ("apple", "application", "apply"). Instead of storing "appl" multiple times, a trie stores it **once**:
 
-English words share prefixes heavily. "apple", "application", "apply" all share "appl". Instead of storing this 4 times, a trie stores it ONCE:
-
-```
+```text
 a → p → p → l → (branches to e, i, y)
-
-4 nodes for "appl" shared by all 3 words.
-Without sharing: 5 + 11 + 5 = 21 characters
-With sharing: 4 + 1 + 7 + 1 = 13 characters (38% savings)
 ```
 
-**Why $O(L)$ for Everything?**
+Without sharing, storing "apple", "application", and "apply" requires: $5 + 11 + 5 = 21$ characters.
+With a trie, they share "appl": $4$ (appl) $+ 1$ (e) $+ 7$ (ication) $+ 1$ (y) = $13$ nodes. **(38% savings)**
 
-The magic of a trie: your query time depends on word length $L$, NOT dictionary size $n$.
+### The Magic of $O(L)$
 
-```
-Dictionary of 1 million words:
-  Hashset lookup: O(L) average — must hash the whole word
-  Trie lookup: O(L) guaranteed — just walk L nodes
+In a trie, your query time depends strictly on the length of the word $L$, **not** the size of the dictionary $n$.
 
-They're the same for exact lookup! But for prefixes...
-
-"Find all words starting with 'app'":
-  Hashset: O(n * L) — must check every word
-  Trie: O(L + k) — walk 3 nodes to 'app', then collect k results
-```
-
-**Mental Model: A Branching Path**
-
-Think of a trie like a choose-your-own-adventure book where each page is a letter:
-
-```
-Page 1: "What's your first letter?" → Turn to page A, B, C, ...
-Page A: "After 'a', what's next?" → Turn to page AP, AR, AT, ...
-Page AP: "After 'ap', what's next?" → Turn to page APP, APT, ...
-...
-```
-
-At any page (node), you can ask:
-
-- "Have I finished a valid word?" (check is_end flag)
-- "What continuations exist?" (check children)
-- "How many words start here?" (count descendants)
+For a dictionary of 1 million words:
+- **Exact lookup**: Hashset average is $O(L)$ (must hash the word). Trie is guaranteed $O(L)$ (walk $L$ nodes). They perform similarly.
+- **Prefix search**: Hashset is $O(n \cdot L)$ (check every word). Trie is $O(L + k)$ (walk $L$ nodes to the prefix, collect $k$ descendants). Trie wins massively.
 
 ---
 
-## When NOT to Use Tries
+## 2. Trie Structure Visualization
 
-**1. Exact Match Only (No Prefix Operations)**
+Think of a trie like a choose-your-own-adventure book where each node is a character, and every path from the root represents a sequence of characters.
 
-If you only need "does this word exist?", a hashset is simpler:
-
-```python
-# Hashset: 1 line, O(1) average lookup
-words = {"apple", "banana"}
-"apple" in words  # True
-
-# Trie: 50+ lines of code for the same result
-```
-
-Trie shines when you need prefix operations.
-
-**2. Memory-Constrained Environments**
-
-Each trie node carries overhead:
-
-- HashMap-based: ~200+ bytes per node (Python dict overhead)
-- Array-based: 26 × 8 = 208 bytes per node
-
-For a million short words, a hashset uses ~50MB; a trie might use 500MB+.
-
-**3. Numeric or High-Cardinality Alphabets**
-
-26-letter alphabet: 26 possible children per node (manageable)
-Unicode: 65,536+ possible children per node (explosion!)
-
-For numeric data, segment trees or other structures often work better.
-
-**4. Substring Search (Not Prefix)**
-
-"Find words CONTAINING 'cat'" is not a prefix problem. You'd need:
-
-- Inverted index
-- Suffix tree/array
-- Full-text search (like Lucene)
-
-**Red Flags That Suggest NOT Using Trie:**
-
-- "Find exact matches only"
-- "Memory limit is tight"
-- "Search for substring" (not prefix)
-- "Unicode/arbitrary alphabet"
-
----
-
-## Trie vs Other Data Structures
-
-| Operation             | Trie                      | HashMap        | BST            | Sorted Array   |
-| --------------------- | ------------------------- | -------------- | -------------- | -------------- |
-| Insert                | $O(L)$                      | $O(L)$           | $O(L \log n)$     | $O(n)$           |
-| Search                | $O(L)$                      | $O(L)$           | $O(L \log n)$     | $O(L \log n)$     |
-| Prefix search         | $O(L)$                      | $O(n \cdot L)$       | $O(n)$           | $O(n)$           |
-| Space                 | $O(\text{alphabet} \cdot \text{total chars})$ | $O(\text{total chars})$ | $O(\text{total chars})$ | $O(\text{total chars})$ |
-| **Prefix operations** | **Excellent**             | Poor           | Poor           | Poor           |
-
-$L$ = word length, $n$ = number of words
-
----
-
-## Trie Structure Visualization
-
-```
+```text
 Words: ["apple", "app", "apt", "bat"]
 
              root
@@ -142,219 +48,97 @@ Words: ["apple", "app", "apt", "bat"]
          /          \
         p            a
        /  \           \
-      p    t           t
-     /      \
-    l        *          *
+      p    t*          t*
+     / \
+    l   * (marks "app")
    /
-  e
-   \
-    *
+  e* (marks "apple")
 
-* = marks end of word
+* = is_end flag (marks the end of a valid word)
 ```
+
+At any given node, you can ask three critical questions:
+1. **"Have I finished a valid word?"** Check the `is_end` boolean flag.
+2. **"What continuations exist?"** Check the `children` dictionary or array.
+3. **"How many words start here?"** Count the descendants (or store a `count` variable during insertion).
 
 ---
 
-## When to Use Tries
+## 3. When to Use (and Avoid) Tries
 
 ### Strong Indicators (Use Trie)
-
 1. **Prefix matching**: "Find all words starting with..."
-2. **Autocomplete/typeahead**: Suggest completions as user types
-3. **Spell checking**: Find words within edit distance
-4. **Word validation**: Check if a word exists in dictionary
-5. **Longest prefix matching**: IP routing, URL matching
+2. **Autocomplete/typeahead**: Suggesting completions as a user types.
+3. **Spell checking**: Finding words within an edit distance or tracking typos.
+4. **Longest prefix matching**: IP routing, URL path matching.
+5. **Bitwise Maximum XOR**: Finding the max XOR of two numbers in an array (using a binary trie).
+6. **2D Word Search**: Finding dictionary words in a Boggle board (Trie + DFS).
 
-### Weak Indicators (Consider Alternatives)
-
-1. **Exact match only**: HashMap is simpler and faster
-2. **Infrequent lookups**: Overhead not justified
-3. **Memory constrained**: Tries can be space-intensive
-4. **Numeric data**: Segment tree or other structures better
-
----
-
-## Core Trie Operations
-
-| Operation    | Time     | Space | Description                              |
-| ------------ | -------- | ----- | ---------------------------------------- |
-| Insert       | $O(L)$     | $O(L)$  | Add word to trie                         |
-| Search       | $O(L)$     | $O(1)$  | Check if exact word exists               |
-| StartsWith   | $O(L)$     | $O(1)$  | Check if prefix exists                   |
-| Delete       | $O(L)$     | $O(1)$  | Remove word from trie                    |
-| Prefix Words | $O(L + k)$ | $O(k)$  | Find all words with prefix ($k$ = results) |
+### Red Flags (Avoid Trie)
+1. **Exact match only**: If you never need prefix operations, a simple `set()` in Python is infinitely faster and simpler to implement.
+2. **Memory constrained**: Nodes have overhead. A Python dict per node means high memory fragmentation. A massive dictionary of millions of short words might take 50MB in a HashSet but 500MB+ in a HashMap-based Trie.
+3. **High-Cardinality Alphabets**: 26 lowercase English letters are fine ($O(26)$ space per node). Full Unicode ($65,536+$ characters) explodes memory usage if using arrays, and hash maps get fragmented.
+4. **Substring Search**: "Find words containing 'cat'" is NOT a prefix problem. You need an inverted index, suffix tree/array, or KMP algorithm instead.
 
 ---
 
-## Trie Patterns Overview
+## 4. Time and Space Complexity
 
-| Pattern         | Problems                        | Key Strategy                   |
-| --------------- | ------------------------------- | ------------------------------ |
-| Basic Trie      | Implement trie, word dictionary | Standard implementation        |
-| Trie + DFS      | Word Search II, word break      | Combine trie with backtracking |
-| Trie + Wildcard | Add and search word             | DFS at wildcard positions      |
-| Bitwise Trie    | Maximum XOR                     | Store binary representations   |
-| Trie + Count    | Top K frequent words            | Store frequency in nodes       |
+Let $L$ be the length of the word, $n$ be the total number of words, and $k$ be the number of results found.
 
----
+| Operation | Time Complexity | Space Complexity | Description |
+| :--- | :--- | :--- | :--- |
+| **Insert** | $O(L)$ | $O(L)$ | Add a word. In the worst case, adds $L$ new nodes. |
+| **Search (Exact)** | $O(L)$ | $O(1)$ | Traverse $L$ nodes. Returns `is_end`. |
+| **StartsWith (Prefix)** | $O(L)$ | $O(1)$ | Traverse $L$ nodes. Returns true if reached without error. |
+| **Prefix Words** | $O(L + k)$ | $O(k)$ | Walk $L$ nodes, then DFS to collect $k$ words. |
+| **Delete** | $O(L)$ | $O(1)$ | Traverse and unmark `is_end` (and optionally prune dead branches). |
 
-## Chapter Contents
-
-| #   | Topic                                              | Key Concepts                       |
-| --- | -------------------------------------------------- | ---------------------------------- |
-| 01  | [Trie Implementation](./01-trie-implementation.md) | Insert, search, startsWith, delete |
-| 02  | [Word Search II](./02-word-search-trie.md)         | Trie + DFS optimization            |
-| 03  | [Autocomplete System](./03-autocomplete.md)        | Design search autocomplete         |
-| 04  | [Word Dictionary](./04-word-dictionary.md)         | Search with wildcards              |
-| 05  | [Maximum XOR](./05-maximum-xor.md)                 | Bitwise trie for XOR               |
-
----
-
-## Implementation Choices
-
-### Array-based vs HashMap-based Children
-
-```python
-# Array-based (26 letters) - faster but more memory
-class TrieNode:
-    def __init__(self):
-        self.children = [None] * 26  # Fixed size array
-        self.is_end = False
-
-# HashMap-based - flexible, less memory for sparse tries
-class TrieNode:
-    def __init__(self):
-        self.children = {}  # Dynamic size
-        self.is_end = False
-```
-
-| Aspect      | Array-based                 | HashMap-based                |
-| ----------- | --------------------------- | ---------------------------- |
-| Access time | O(1)                        | O(1) amortized               |
-| Memory      | 26 pointers per node        | Only used letters            |
-| Best for    | Dense tries, lowercase only | Sparse tries, any characters |
-| Interview   | More common                 | More flexible                |
-
----
-
-## Common Mistakes
-
-1. **Forgetting is_end flag**: A prefix existing doesn't mean word exists
-2. **Memory leaks on delete**: Not cleaning up empty branches
-3. **Wrong alphabet size**: Assuming 26 when unicode is possible
-4. **Not handling empty string**: Edge case often forgotten
-5. **Modifying during iteration**: Concurrent modification issues
-
----
-
-## Time Complexity Patterns
-
-| Problem Type        | Time           | Why                         |
-| ------------------- | -------------- | --------------------------- |
-| Insert $n$ words      | $O(n \cdot L_{avg})$   | Each word takes $O(L)$        |
-| Search with prefix  | $O(L + k)$       | $L$ for prefix, $k$ for results |
-| Word search in grid | $O(m \cdot n \cdot 4^L)$ | DFS from each cell          |
-| Autocomplete top-k  | $O(L + k \log k)$ | Traverse + heap for top-$k$   |
-
----
-
-## Space Complexity Analysis
-
+### Space Complexity Breakdown
 For $n$ words with average length $L$ and alphabet size $A$:
-
-```
-Worst case: O(n * L * A)  - no shared prefixes
-Best case:  O(L * A)      - all words share prefixes
-Typical:    O(total_chars * A) - some sharing
-
-# Example: ["apple", "app", "application"]
-# Nodes: a-p-p-l-e + l-i-c-a-t-i-o-n = 13 nodes
-# If stored separately: 5 + 3 + 11 = 19 characters
-# Trie saves: 6 characters worth of nodes
-```
+- **Worst case**: $O(n \cdot L \cdot A)$ (No shared prefixes, all nodes distinct).
+- **Best case**: $O(L \cdot A)$ (All words share the same exact prefix path).
 
 ---
 
-## Classic Interview Problems by Company
+## 5. Implementation Choices: Array vs HashMap
 
-| Company   | Favorite Trie Problems                                    |
-| --------- | --------------------------------------------------------- |
-| Google    | Word Search II, Autocomplete, Concatenated Words          |
-| Meta      | Add and Search Word, Implement Trie, Stream of Characters |
-| Amazon    | Search Suggestions System, Replace Words                  |
-| Microsoft | Longest Word in Dictionary, Prefix and Suffix Search      |
-| Apple     | Word Squares, Palindrome Pairs                            |
-
----
-
-## Trie Problem Signals
-
-Look for these keywords/patterns:
-
-```
-- "Prefix" → almost always trie
-- "Autocomplete" → trie + frequency
-- "Dictionary" → consider trie vs hashmap
-- "Word search in grid" → trie + DFS
-- "Multiple string matching" → trie over repeated binary search
-- "XOR maximum/minimum" → bitwise trie
-```
-
----
-
-## Comparison: When Trie vs HashMap
-
-| Scenario                 | Use Trie | Use HashMap |
-| ------------------------ | -------- | ----------- |
-| Prefix operations needed | ✓        |             |
-| Only exact match         |          | ✓           |
-| Autocomplete feature     | ✓        |             |
-| Fixed small dictionary   |          | ✓           |
-| Memory is critical       |          | ✓           |
-| Wildcard search          | ✓        |             |
-
----
-
-## Common Trie Variations
-
-### 1. Compressed Trie (Radix Tree)
-
-Merge chains of single-child nodes:
-
-```
-Standard:  a → p → p → l → e
-Compressed: "app" → "le"
-```
-
-Used in: IP routing, suffix trees
-
-### 2. Ternary Search Tree
-
-Three children: less, equal, greater
-
-```
-Balanced like BST, prefix search like trie
-Lower memory than standard trie
-```
-
-### 3. Suffix Trie
-
-Insert all suffixes of a string:
-
-```
-"banana": banana, anana, nana, ana, na, a
-Used for substring search
-```
-
----
-
-## Quick Reference: Standard Trie Template
+In Python, you have two primary ways to represent `children`:
 
 ```python
-class TrieNode:
+# Array-based (26 letters) - Faster, deterministic, more memory
+class TrieNodeArray:
+    def __init__(self):
+        self.children = [None] * 26
+        self.is_end = False
+
+# HashMap-based - Flexible, space-efficient for sparse tries
+class TrieNodeHash:
     def __init__(self):
         self.children = {}
         self.is_end = False
+```
+
+| Aspect | Array-based `[None] * 26` | HashMap-based `{}` |
+| :--- | :--- | :--- |
+| **Access Time** | $O(1)$ absolute | $O(1)$ amortized (hashing overhead) |
+| **Memory** | High (26 pointers per node, mostly null) | Low for sparse tries, higher overhead per key |
+| **Best For** | Dense tries, fixed alphabet (e.g., lowercase only) | Sparse tries, arbitrary characters (Unicode) |
+| **Interviews** | Safe, shows deep understanding of ASCII math | Standard Pythonic approach, highly recommended |
+
+---
+
+## 6. Standard Trie Template (Python 3)
+
+This is the canonical HashMap-based implementation you should memorize.
+
+```python
+from typing import Optional
+
+class TrieNode:
+    def __init__(self):
+        self.children: dict[str, 'TrieNode'] = {}
+        self.is_end: bool = False
 
 class Trie:
     def __init__(self):
@@ -375,7 +159,7 @@ class Trie:
     def startsWith(self, prefix: str) -> bool:
         return self._find_node(prefix) is not None
 
-    def _find_node(self, prefix: str) -> 'TrieNode | None':
+    def _find_node(self, prefix: str) -> Optional[TrieNode]:
         node = self.root
         for char in prefix:
             if char not in node.children:
@@ -384,8 +168,34 @@ class Trie:
         return node
 ```
 
+### Common Pitfalls
+1. **Forgetting the `is_end` flag**: Just because a node exists doesn't mean the word ends there (e.g., "app" might be a prefix for "apple", but "app" itself might not have been inserted).
+2. **Not handling empty strings**: Inserting `""` should just mark the root's `is_end` as `True`.
+3. **Memory leaks on delete**: If you delete "apple", you should ideally prune the `e`, `l`, `p`, `p` nodes if they have no other children, rather than just unmarking `is_end`.
+
+---
+
+## 7. Classic Interview Problems
+
+| Pattern | Problems | Key Strategy |
+| :--- | :--- | :--- |
+| **Basic Trie** | Implement Trie, Design Add/Search Words Data Structure | Standard implementation template. |
+| **Trie + DFS (2D Grid)** | Word Search II | Backtrack on the grid while traversing the Trie simultaneously. |
+| **Autocomplete** | Design Search Autocomplete System | Store top-$k$ frequencies directly in nodes to speed up retrieval. |
+| **Bitwise Trie** | Maximum XOR of Two Numbers in an Array | Insert 32-bit binary strings; greedily follow the *opposite* bit. |
+
+## 8. Chapter Contents
+
+| # | Topic | Key Concepts |
+| :--- | :--- | :--- |
+| 01 | [Trie Implementation](./01-trie-implementation.md) | Insert, Search, StartsWith, Delete operations. |
+| 02 | [Word Search II](./02-word-search-trie.md) | Trie + DFS optimization on a 2D grid. |
+| 03 | [Autocomplete System](./03-autocomplete.md) | Designing a typeahead autocomplete system. |
+| 04 | [Word Dictionary](./04-word-dictionary.md) | Searching with wildcards (`.`) and edit distances. |
+| 05 | [Maximum XOR](./05-maximum-xor.md) | Using Bitwise tries to solve XOR problems. |
+
 ---
 
 ## Start: [01-trie-implementation.md](./01-trie-implementation.md)
 
-Begin with the fundamental trie implementation that forms the basis for all trie problems.
+Begin with the fundamental trie implementation that forms the basis for all prefix-based interview questions.
