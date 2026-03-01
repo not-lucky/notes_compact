@@ -8,7 +8,7 @@ Jump game problems test:
 
 1. **Greedy reachability**: Track farthest position reachable
 2. **Optimization**: Find minimum jumps
-3. **Pattern recognition**: When greedy vs DP vs BFS
+3. **Pattern recognition**: When greedy vs DP vs BFS vs Monotonic Queue
 4. **Edge case handling**: Zero jumps, already at end
 
 ---
@@ -47,11 +47,9 @@ After i=1:  [X] [X] [X] [X] [X]  reach=4 (from index 1, jump 3)
                            Reached the end!
 ```
 
-**Why Greedy Works for Jump Game I**
+**Why Greedy Works Here**
 
-The crucial observation: _If you can reach position i, you can reach ALL positions 0 through i._
-
-This means there's no "better path" to worry about—any path reaching position i is equally good for the purpose of reaching position i.
+The crucial observation: _If you can reach position i, you can reach ALL positions 0 through i_ (since jumps are "up to" `nums[i]`). Reachability is always a contiguous prefix -- there are no gaps. This means only the frontier matters, not the path taken to get there. (See [detailed proof below](#why-greedy-works-for-jump-game).)
 
 **Jump Game II: "Levels" of Jumps**
 
@@ -76,42 +74,19 @@ Level 2: [3, 4] ← contains end
 
 **1. When Jumps Can Go Backwards**
 
-Jump Game III allows jumping to `i + arr[i]` OR `i - arr[i]`:
+Jump Game III allows jumping to `i + arr[i]` OR `i - arr[i]`. This breaks the contiguous-frontier property -- positions can be revisited, so use BFS/DFS with a visited set.
 
-```
-This is no longer a "reach frontier" problem.
-Use BFS/DFS because you can visit the same index multiple ways.
-```
+**2. When Jumps Have Costs / Specific Values**
 
-**2. When Jumps Have Costs**
-
-If each jump position has a cost to land on:
-
-```
-nums = [2, 3, 1, 1, 4]
-cost = [1, 100, 1, 1, 1]
-
-Greedy "minimum jumps" might pick expensive path.
-Need DP: dp[i] = minimum cost to reach index i
-```
+If each landing position has a cost, greedy "minimum jumps" might choose an expensive path. Need DP: `dp[i] = maximum/minimum cost to reach index i`.
 
 **3. When You Must Land on Specific Indices**
 
-If only certain indices are "safe" (like Frog Jump with stones):
+If only certain indices are valid landing spots (e.g., Frog Jump with stones), the reachable set is sparse, not contiguous. Use DP with state = `(position, last_jump_size)`.
 
-```
-Greedy doesn't work because valid landing spots are sparse.
-Use DP with state = (position, last_jump_size)
-```
+**4. When Jump Sizes Depend on History**
 
-**4. When Jump Sizes Have Constraints**
-
-If jump size must follow a pattern (k-1, k, k+1 from last jump):
-
-```
-This is stateful—the valid jumps depend on history.
-Greedy is stateless by design, so use DP.
-```
+If the next jump size depends on the previous jump (e.g., must be `k-1`, `k`, or `k+1`), the problem requires tracking path history. Greedy only tracks a single frontier, so use DP with state = `(position, last_jump_size)`.
 
 ---
 
@@ -144,11 +119,15 @@ def can_jump(nums: list[int]) -> bool:
     """
     max_reach = 0
 
-    for i, jump in enumerate(nums):
+    for i, jump_len in enumerate(nums):
+        # Check if current position is reachable
         if i > max_reach:
-            # Can't reach this position
             return False
-        max_reach = max(max_reach, i + jump)
+
+        # Update the farthest position we can reach from index i
+        max_reach = max(max_reach, i + jump_len)
+
+        # Early termination: if we can already reach the end, return True
         if max_reach >= len(nums) - 1:
             return True
 
@@ -157,21 +136,29 @@ def can_jump(nums: list[int]) -> bool:
 
 ### Visual Trace
 
+**Example 1: `nums = [2, 3, 1, 1, 4]`**
 ```
-nums = [2, 3, 1, 1, 4]
-indices: 0  1  2  3  4
+indices:    0   1   2   3   4
+nums:      [2,  3,  1,  1,  4]
 
-i=0: jump=2, max_reach = max(0, 0+2) = 2
-i=1: 1 <= 2 ✓, jump=3, max_reach = max(2, 1+3) = 4 >= 4 → return True
+i=0: jump_len=2, max_reach = max(0, 0+2) = 2
+i=1: 1 <= 2 ✓, jump_len=3, max_reach = max(2, 1+3) = 4 >= 4 → return True
 
-nums = [3, 2, 1, 0, 4]
-indices: 0  1  2  3  4
+Path: 0 → 1 → 4 (or 0 → 2 → 3 → 4, both work)
+```
 
-i=0: jump=3, max_reach = max(0, 0+3) = 3
-i=1: 1 <= 3 ✓, jump=2, max_reach = max(3, 1+2) = 3
-i=2: 2 <= 3 ✓, jump=1, max_reach = max(3, 2+1) = 3
-i=3: 3 <= 3 ✓, jump=0, max_reach = max(3, 3+0) = 3
-i=4: 4 > 3 ✗ → return False (we can't reach index 4)
+**Example 2: `nums = [3, 2, 1, 0, 4]`**
+```
+indices:    0   1   2   3   4
+nums:      [3,  2,  1,  0,  4]
+              ↘
+i=0: jump_len=3, max_reach = max(0, 0+3) = 3  (can reach indices 1,2,3)
+i=1: 1 <= 3 ✓, jump_len=2, max_reach = max(3, 1+2) = 3
+i=2: 2 <= 3 ✓, jump_len=1, max_reach = max(3, 2+1) = 3
+i=3: 3 <= 3 ✓, jump_len=0, max_reach = max(3, 3+0) = 3  (stuck!)
+i=4: 4 > 3 ✗ → return False
+
+Problem: Index 3 has value 0, creating a "dead zone" that blocks progress.
 ```
 
 ---
@@ -194,8 +181,10 @@ def jump(nums: list[int]) -> int:
     """
     Find minimum jumps to reach last index.
 
-    Greedy: Jump to position that maximizes next reach.
-    Track: current range end, farthest reachable, jump count.
+    Greedy: Implicitly performs BFS by tracking level boundaries.
+    - current_end: right boundary of the current BFS level
+    - farthest: right boundary of the next BFS level
+    - When i reaches current_end, we've exhausted this level → jump
 
     Time: O(n)
     Space: O(1)
@@ -205,47 +194,27 @@ def jump(nums: list[int]) -> int:
         return 0
 
     jumps = 0
-    current_end = 0    # End of current jump range
-    farthest = 0       # Farthest we can reach
+    current_end = 0    # Right boundary of current BFS level
+    farthest = 0       # Farthest reachable from any position in current level
 
-    for i in range(n - 1):  # Don't need to jump from last position
+    for i in range(n - 1):  # Stop before last index since we only need to reach it
         farthest = max(farthest, i + nums[i])
 
         if i == current_end:
-            # Must jump now - reached end of current range
+            # Exhausted all positions in this level -- must take another jump
             jumps += 1
             current_end = farthest
 
+            # Early exit: if we can already reach the last index
             if current_end >= n - 1:
                 break
 
     return jumps
 ```
 
-### Visual Trace
+### BFS Alternative (Conceptual)
 
-```
-nums = [2, 3, 1, 1, 4]
-indices: 0  1  2  3  4
-
-Initial: jumps=0, current_end=0, farthest=0
-
-i=0: farthest = max(0, 0+2) = 2
-     i == current_end (0 == 0) → jump! jumps=1, current_end=2
-
-i=1: farthest = max(2, 1+3) = 4
-     i != current_end (1 != 2)
-
-i=2: farthest = max(4, 2+1) = 4
-     i == current_end (2 == 2) → jump! jumps=2, current_end=4
-     current_end >= 4 → break
-
-Answer: 2 jumps
-```
-
-### BFS Alternative
-
-While the greedy approach is O(1) space, you can also solve this conceptually with BFS (O(n) space). Each "level" in the BFS represents one jump.
+The greedy solution above is essentially an optimized BFS. Here's the explicit BFS to show the connection -- each "level" represents positions reachable in exactly that many jumps. The greedy version avoids the queue and visited set by exploiting the contiguous-range property.
 
 ```python
 from collections import deque
@@ -254,7 +223,9 @@ def jump_bfs(nums: list[int]) -> int:
     """
     BFS approach: level = number of jumps.
 
-    Time: O(n)
+    Note: Jump Game II guarantees the end is reachable.
+
+    Time: O(n^2) worst case if tracking visited loosely -- greedy avoids this.
     Space: O(n)
     """
     n = len(nums)
@@ -276,7 +247,7 @@ def jump_bfs(nums: list[int]) -> int:
                     visited.add(next_pos)
                     queue.append(next_pos)
 
-    return -1  # Can't reach
+    return -1
 ```
 
 ---
@@ -285,69 +256,63 @@ def jump_bfs(nums: list[int]) -> int:
 
 ### Jump Game I: Reachability
 
-**Greedy choice**: Always track maximum reach from all visited positions.
+**Greedy choice**: At each reachable position, update the maximum reach.
 
-**Why it works**:
-- If we can reach position `i`, we can reach all positions `0..i`
-- Maximum reach from `0..i` determines if `i+1` is reachable
-- No need to track which specific path was taken
+**Why it works** (exchange argument):
+- Jumps go "up to" `nums[i]` positions forward, so if position `i` is reachable, every position in `0..i` is also reachable.
+- Therefore, reachability is always a contiguous prefix `[0..max_reach]` -- there are never gaps.
+- No "better path" exists to consider -- any path that reaches position `i` yields the same set of reachable indices from `i`, so greedy never misses anything.
 
 ### Jump Game II: Minimum Jumps
 
-**Greedy choice**: At each "level", expand the boundary to the maximum possible reach from ANY node in the current level.
+**Greedy choice**: At each "level" (set of positions reachable in exactly `k` jumps), find the farthest position reachable. That becomes the boundary of the next level.
 
 **Why it works**:
-- BFS-like level expansion ensures shortest path
-- Each level corresponds to one jump
-- Jumping to the farthest reachable index in the next level guarantees we cover the maximum ground, minimizing total jumps.
+- This is implicit BFS: each level boundary corresponds to exactly one jump.
+- Expanding the next level's boundary as far as possible can only help or be neutral -- it never excludes positions that a narrower boundary would include.
 
 ---
 
 ## Jump Game III: Can Reach Zero
 
-**Different pattern** - uses BFS, not greedy.
+**Different pattern** -- uses BFS or DFS, not greedy.
 
 ### Problem Statement
 
-You can jump to `i + arr[i]` or `i - arr[i]`. Can you reach any index with value 0?
+Given a non-negative array `arr` and a starting index, you can jump to `i + arr[i]` or `i - arr[i]`. Determine if you can reach any index with value 0.
 
 ```
 Input:  arr = [4, 2, 3, 0, 3, 1, 2], start = 5
 Output: true (5 → 4 → 1 → 3)
 ```
 
-### Solution: BFS
+### Solution: DFS with O(1) Space
+
+Interviewers love the in-place marking optimization to save O(N) space.
 
 ```python
-from collections import deque
-
 def can_reach(arr: list[int], start: int) -> bool:
     """
-    BFS to check if any 0-valued index is reachable.
-
+    DFS approach with O(1) auxiliary space (ignoring recursion stack).
+    We mark visited elements by making them negative.
+    
     Time: O(n)
-    Space: O(n)
+    Space: O(n) worst-case recursion stack (O(1) explicit space)
     """
-    n = len(arr)
-    visited = set()
-    queue = deque([start])
-
-    while queue:
-        pos = queue.popleft()
-
-        if arr[pos] == 0:
-            return True
-
-        if pos in visited:
-            continue
-        visited.add(pos)
-
-        # Try both directions
-        for next_pos in [pos + arr[pos], pos - arr[pos]]:
-            if 0 <= next_pos < n and next_pos not in visited:
-                queue.append(next_pos)
-
-    return False
+    # Base cases: out of bounds or already visited (negative)
+    if start < 0 or start >= len(arr) or arr[start] < 0:
+        return False
+        
+    # Found the target
+    if arr[start] == 0:
+        return True
+        
+    # Mark current index as visited
+    jump_dist = arr[start]
+    arr[start] = -arr[start]
+    
+    # Explore both directions
+    return can_reach(arr, start + jump_dist) or can_reach(arr, start - jump_dist)
 ```
 
 ---
@@ -356,11 +321,11 @@ def can_reach(arr: list[int], start: int) -> bool:
 
 ### Problem Statement
 
-Jump to `i+1`, `i-1`, or any index `j` where `arr[i] == arr[j]`. Find minimum jumps to reach end.
+From index `i`, you can jump to `i+1`, `i-1`, or any index `j` where `arr[i] == arr[j]`. Find the minimum number of jumps from index 0 to the last index.
 
 ```
 Input:  arr = [100, -23, -23, 404, 100, 23, 23, 23, 3, 404]
-Output: 3
+Output: 3 (0 → 4 → 3 → 9, using same-value jump 100→100, then -1, then same-value 404→404)
 ```
 
 ### Solution: BFS with Optimization
@@ -371,7 +336,11 @@ from collections import defaultdict, deque
 def min_jumps(arr: list[int]) -> int:
     """
     BFS with same-value jumps.
-    Key optimization: clear value's indices after first visit.
+
+    Key optimization: after processing a value group, clear it from the map.
+    Without this, indices with the same value get re-enumerated at every BFS
+    level that touches them, leading to O(n^2) total work. Clearing ensures
+    each value group is iterated exactly once across the entire BFS.
 
     Time: O(n)
     Space: O(n)
@@ -380,10 +349,10 @@ def min_jumps(arr: list[int]) -> int:
     if n <= 1:
         return 0
 
-    # Build value → indices mapping
-    value_indices = defaultdict(list)
+    # Build value -> indices mapping for O(1) same-value teleportation
+    val_to_indices: dict[int, list[int]] = defaultdict(list)
     for i, val in enumerate(arr):
-        value_indices[val].append(i)
+        val_to_indices[val].append(i)
 
     visited = {0}
     queue = deque([0])
@@ -394,12 +363,12 @@ def min_jumps(arr: list[int]) -> int:
         for _ in range(len(queue)):
             pos = queue.popleft()
 
-            # Next positions: neighbors + same values
-            next_positions = [pos - 1, pos + 1]
-            next_positions.extend(value_indices[arr[pos]])
+            # Next positions: left neighbor, right neighbor, and same-value teleports
+            next_positions = [pos - 1, pos + 1] + val_to_indices[arr[pos]]
 
-            # Clear to avoid re-visiting same-value group (O(n) total across all steps)
-            value_indices[arr[pos]] = []
+            # Critical: clear the group to ensure each value is processed only once
+            # Keeps the algorithm O(n) instead of O(n^2)
+            val_to_indices[arr[pos]].clear()
 
             for next_pos in next_positions:
                 if next_pos == n - 1:
@@ -413,60 +382,169 @@ def min_jumps(arr: list[int]) -> int:
 
 ---
 
-## Jump Game Variant Comparison
+## Jump Game V: Maximum Score (Constraint Jumps)
 
-| Variant | Approach | Time | Space | Key Insight |
-|---------|----------|------|-------|-------------|
-| I (can reach?) | Greedy | O(n) | O(1) | Track max reach |
-| II (min jumps) | Greedy | O(n) | O(1) | BFS-like levels |
-| III (reach zero) | BFS | O(n) | O(n) | Bidirectional jumps |
-| IV (same values) | BFS | O(n) | O(n) | Clear visited groups |
-| V (max score) | DP | O(n log n) | O(n) | Monotonic deque / DP with constraints |
+### Problem Statement
+
+Given an array `arr` and a maximum jump distance `d`, you can jump from index `i` to `i + x` or `i - x` (where `1 <= x <= d`).
+
+**Constraint**: You can only jump to index `j` if `arr[j] < arr[i]` AND all intermediate elements between `i` and `j` are also strictly smaller than `arr[i]`.
+
+Find the maximum score (number of indices visited) starting from any index. 
+
+### Solution: Top-Down DP with Memoization
+
+```python
+from functools import cache
+
+def max_jumps(arr: list[int], d: int) -> int:
+    """
+    Top-Down DP with Memoization.
+    
+    The constraint that we can only jump to strictly smaller elements
+    guarantees that our jumps form a Directed Acyclic Graph (DAG).
+    Top-down memoization cleanly resolves the evaluation order.
+
+    Time: O(n * d) - each state computed once, d transitions per state
+    Space: O(n) - recursion stack and memo cache
+    """
+    n = len(arr)
+
+    @cache
+    def dfs(i: int) -> int:
+        res = 1  # Can always visit self (length 1 path)
+        
+        # Check left jumps
+        for j in range(i - 1, max(i - d - 1, -1), -1):
+            if arr[j] >= arr[i]:
+                break  # Blocked by a larger or equal element
+            res = max(res, 1 + dfs(j))
+            
+        # Check right jumps
+        for j in range(i + 1, min(i + d + 1, n)):
+            if arr[j] >= arr[i]:
+                break  # Blocked by a larger or equal element
+            res = max(res, 1 + dfs(j))
+            
+        return res
+
+    # Start from any index, find the global maximum
+    return max(dfs(i) for i in range(n))
+```
+
+*Note: You can also solve this Bottom-Up by explicitly sorting the indices by their values in ascending order, computing DP on the smallest values first. But the top-down approach is usually faster to write and less prone to DAG-ordering errors in interviews.*
+
+---
+
+## Jump Game VI: Max Score with Monotonic Queue (LC 1696)
+
+### Problem Statement
+Given a 0-indexed integer array `nums` and an integer `k`, you can jump at most `k` steps forward. Find the **maximum score** (sum of visited elements) to reach the last index.
+
+```
+Input: nums = [1,-1,-2,4,-7,3], k = 2
+Output: 7 (Path: 1 -> -1 -> 4 -> 3)
+```
+
+### Solution: DP + Monotonic Queue
+
+Standard DP formulation would be `dp[i] = nums[i] + max(dp[i-k] ... dp[i-1])`, yielding O(N * k) time. We can optimize this to **O(N)** by maintaining the sliding window maximum of the DP array using a monotonic decreasing queue!
+
+```python
+from collections import deque
+
+def max_result(nums: list[int], k: int) -> int:
+    """
+    DP + Monotonic Decreasing Queue optimization.
+    The queue efficiently stores the max DP value in our jump window of size k.
+    
+    Time: O(n)
+    Space: O(n) for the dp array and queue
+    """
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+    
+    # Queue stores indices, keeping dp values strictly monotonically decreasing
+    q = deque([0])
+    
+    for i in range(1, n):
+        # 1. Remove indices that are outside the window of size k
+        while q and q[0] < i - k:
+            q.popleft()
+            
+        # 2. The max element in the window is at the front of the queue
+        dp[i] = nums[i] + dp[q[0]]
+        
+        # 3. Maintain monotonic decreasing property: 
+        # pop smaller values because they'll never be the max if dp[i] is larger
+        while q and dp[q[-1]] <= dp[i]:
+            q.pop()
+            
+        q.append(i)
+        
+    return dp[-1]
+```
+
+This is a **critical pattern** bridging Dynamic Programming with Sliding Window techniques.
 
 ---
 
 ## Frog Jump (LeetCode 403)
 
-A frog crosses a river by jumping on stones. Different pattern - uses DP.
+A frog crosses a river by jumping on stones. If the last jump was size `k`, the next must be `k-1`, `k`, or `k+1`. 
 
 ```python
 def can_cross(stones: list[int]) -> bool:
     """
-    Frog must land on stones only.
-    If last jump was k, next can be k-1, k, or k+1.
+    State: for each stone, track which jump sizes can land on it.
+    Transition: from stone s with jump size k, try jumps of k-1, k, k+1.
 
-    Time: O(n²)
-    Space: O(n²)
+    Time: O(n^2) -- each stone can accumulate up to n jump sizes
+    Space: O(n^2)
     """
-    stone_set = set(stones)
     target = stones[-1]
 
-    # memo[position] = set of valid jump sizes to reach this position
-    memo = {stone: set() for stone in stones}
-    memo[0].add(0)  # Starting position with jump size 0
+    # dp[stone] = set of valid previous jump sizes that reached this stone
+    dp = {stone: set() for stone in stones}
+    dp[stones[0]].add(0)
 
+    # Note: Iterating through the list `stones` directly ensures we
+    # process stones safely in increasing positional order.
     for stone in stones:
-        for k in memo[stone]:
+        for k in dp[stone]:
             for next_jump in [k - 1, k, k + 1]:
                 if next_jump > 0:
                     next_pos = stone + next_jump
-                    if next_pos in stone_set:
-                        if next_pos == target:
-                            return True
-                        memo[next_pos].add(next_jump)
+                    if next_pos == target:
+                        return True
+                    if next_pos in dp:
+                        dp[next_pos].add(next_jump)
 
     return False
 ```
 
 ---
 
+## Jump Game Variant Comparison
+
+| Variant | Approach | Time | Space | Key Insight |
+|---------|----------|------|-------|-------------|
+| I (can reach?) | Greedy | O(n) | O(1) | Track max reach (`max_reach = max(max_reach, i + nums[i])`) |
+| II (min jumps) | Greedy | O(n) | O(1) | BFS-like levels tracking `farthest` and `current_end` |
+| III (reach zero) | DFS/BFS | O(n) | O(1) | Bidirectional jumps. Use in-place array mutation (`-nums[i]`) |
+| IV (same values) | BFS | O(n) | O(n) | Map values to indices; MUST `clear()` visited groups to avoid O(n²) |
+| V (max path) | Top-Down DP | O(nd) | O(n) | Constraints create a DAG. Use recursion + memoization |
+| VI (max score win) | DP + MonoQ | O(n) | O(n) | Use a monotonic queue to find sliding window maximum in O(1) |
+
+---
+
 ## Edge Cases
 
-- [ ] **Array length 1**: Already at end, return true (Jump Game I) or 0 (Jump Game II).
-- [ ] **First element 0**: Can't move (except if n=1).
-- [ ] **All zeros except first**: Check reachability correctly.
-- [ ] **Large jumps**: Should still work, track max reach. `max_reach >= len(nums) - 1` handles out of bounds.
-- [ ] **Negative values**: Standard Jump Game arrays usually have non-negative integers. Jump Game III/IV array values can be negative.
+- **Array length 1**: Already at end, return true (I), 0 (II), or `nums[0]` (VI).
+- **First element 0**: Can't move anywhere (except if n=1, already at end).
+- **Large jumps**: Handled correctly — `max_reach >= len(nums) - 1` short-circuits without out-of-bounds issues.
+- **Negative values**: Standard Jump Game I/II/III arrays are non-negative. Jump Game VI specifically uses negative values to force careful DP optimization.
 
 ---
 
@@ -474,32 +552,37 @@ def can_cross(stones: list[int]) -> bool:
 
 | # | Problem | Difficulty | Key Insight |
 |---|---------|------------|-------------|
-| 1 | Jump Game | Medium | Track max reach |
-| 2 | Jump Game II | Medium | Greedy level expansion |
-| 3 | Jump Game III | Medium | BFS bidirectional |
-| 4 | Jump Game IV | Hard | BFS with optimization |
-| 5 | Frog Jump | Hard | DP with jump sizes |
-| 6 | Jump Game V | Hard | DP with monotonic stack |
+| 1 | [Jump Game](https://leetcode.com/problems/jump-game/) (LC 55) | Medium | Track max reach |
+| 2 | [Jump Game II](https://leetcode.com/problems/jump-game-ii/) (LC 45) | Medium | Greedy level expansion |
+| 3 | [Jump Game III](https://leetcode.com/problems/jump-game-iii/) (LC 1306) | Medium | DFS/BFS bidirectional, O(1) space mod |
+| 4 | [Jump Game IV](https://leetcode.com/problems/jump-game-iv/) (LC 1345) | Hard | BFS with group clearing |
+| 5 | [Jump Game V](https://leetcode.com/problems/jump-game-v/) (LC 1340) | Hard | Top-down DP for DAG ordering |
+| 6 | [Jump Game VI](https://leetcode.com/problems/jump-game-vi/) (LC 1696) | Medium | DP + Monotonic Queue optimization |
+| 7 | [Frog Jump](https://leetcode.com/problems/frog-jump/) (LC 403) | Hard | DP with dynamic jump sizes state |
 
 ---
 
 ## Interview Tips
 
-1. **Identify the variant**: Can reach? Min jumps? Bidirectional?
-2. **Choose right approach**: Greedy for I/II, BFS for III/IV.
-3. **Trace through example**: Show `max_reach` updates for Jump Game I, and `current_end` for Jump Game II.
-4. **Handle edge cases**: Single element array, zero at start.
-5. **Know the optimization**: Jump IV needs to clear value groups, otherwise it's O(n^2) instead of O(n).
+1. **Identify the variant**: Can reach? Min jumps? Bidirectional? Constraints? Value scores?
+2. **Choose right approach**:
+   - Greedy for I/II (forward-only, contiguous reachability)
+   - BFS/DFS for III/IV (bidirectional or teleportation)
+   - DP for V/VI and Frog Jump (score aggregation or history-dependent constraints)
+3. **Trace through example**: Show `max_reach` updates for Jump Game I, `current_end`/`farthest` for Jump Game II.
+4. **Know the DP optimization**: Jump Game VI explicitly targets your ability to optimize an O(N*K) DP equation into O(N) using sliding window monotonic queues!
+5. **Jump Game V insight**: Recursion solves the topological DAG order easily!
 
 ---
 
 ## Key Takeaways
 
-1. Jump Game I: track maximum reachable position.
-2. Jump Game II: BFS-like greedy, count "levels".
-3. Bidirectional jumps → use BFS instead of greedy.
-4. Same-value jumps → BFS with group clearing.
-5. Greedy works when forward-only and optimal substructure exists.
+1. **Greedy works when**: jumps are forward-only and reachable positions form a contiguous range.
+2. **Jump Game I**: Track maximum reachable index. Reachability is a contiguous prefix, so a single variable suffices.
+3. **Jump Game II**: Implicit BFS via greedy. Count "levels" using `current_end` as the level boundary, `farthest` as the next boundary.
+4. **Bidirectional jumps** (III) -- DFS with in-place visited set marking (make element negative).
+5. **Same-value jumps** (IV) -- BFS with `.clear()` to avoid O(n²) re-processing of value groups.
+6. **DP + Monotonic Queue** (VI) -- Huge pattern: when DP needs max/min over a sliding window, a deque gives O(1) lookups.
 
 ---
 
