@@ -4,185 +4,100 @@
 
 ## Interview Context
 
-Partition labels tests:
+Partition Labels is a classic problem that tests:
 
-1. **Interval transformation**: Converting string to intervals
-2. **Greedy partitioning**: Finding optimal split points
-3. **HashMap usage**: Tracking last occurrences
-4. **Pattern recognition**: Interval covering in disguise
+1. **Interval transformation**: Recognizing that character appearances define intervals `[first, last]`.
+2. **Greedy partitioning**: Finding optimal split points in a single pass.
+3. **HashMap usage**: Tracking the last occurrence of each character.
+4. **Pattern recognition**: Identifying interval merging problems in disguise.
 
----
-
-## Building Intuition
-
-**The "Last Appearance" Rule**
-
-Every character in a partition must have ALL its occurrences in that partition. This means: once you include a character, you must extend the partition to include its LAST occurrence.
-
-```
-s = "ababcbaca"
-     012345678
-
-'a' appears at: 0, 2, 4, 6, 8  → last at 8
-'b' appears at: 1, 3, 5       → last at 5
-'c' appears at: 4, 7          → last at 7
-
-Starting at index 0:
-- We see 'a', must extend to index 8
-- Along the way, we see 'b' (extends to 5) and 'c' (extends to 7)
-- Maximum extension needed: 8
-- First partition: indices 0-8, length 9
-```
-
-**Mental Model: Character "Lifespans"**
-
-Think of each character as having a "lifespan" from first to last occurrence:
-
-```
-s = "ababcbacadefegdehijhklij"
-
-Character lifespans:
-a: |---------|
-b:  |---|
-c:    |---|
-d:           |---|
-e:            |----|
-f:             ||
-g:              ||
-h:                  |---|
-i:                   |-----|
-j:                    |----|
-k:                       ||
-l:                        ||
-
-Overlapping lifespans MUST be in the same partition.
-Non-overlapping lifespans CAN be in different partitions.
-
-Partitions: [a,b,c overlap], [d,e,f,g overlap], [h,i,j,k,l overlap]
-```
-
-**Why This Is Really "Merge Intervals"**
-
-Each character creates an interval [first_occurrence, last_occurrence].
-Overlapping intervals must be in the same partition.
-This is exactly merge intervals!
-
-```
-Character intervals:
-a: [0, 8]
-b: [1, 5]
-c: [4, 7]
-d: [9, 14]
-e: [10, 15]
-...
-
-Merged intervals = partitions:
-[0, 8] (merged a, b, c)
-[9, 15] (merged d, e, ...)
-...
-```
-
-**The Greedy "Extending Horizon" Approach**
-
-We don't need to explicitly build intervals. Just track the "horizon"—the farthest point we must reach:
-
-```
-s = "ababcbaca"
-     012345678
-
-i=0 'a': horizon = max(0, 8) = 8
-i=1 'b': horizon = max(8, 5) = 8
-i=2 'a': horizon = max(8, 8) = 8
-...
-i=8 'a': horizon = 8, i == horizon → partition ends here!
-```
-
-When current index equals horizon, we've seen all occurrences of all characters in this partition.
-
----
-
-## When NOT to Use Partition Labels Approach
-
-**1. When Partitions Must Have Equal/Fixed Size**
-
-If partitions must be exactly k characters:
-
-```
-s = "aabb", k = 2
-Partition labels: Can't be applied—it optimizes partition COUNT, not size.
-Need different approach: sliding window or DP.
-```
-
-**2. When You Can Rearrange the String**
-
-If you can reorder characters to minimize partitions:
-
-```
-s = "abab" → "aabb" → only 2 partitions instead of 1!
-This becomes an optimization problem over permutations.
-```
-
-**3. When Characters Can Be in Multiple Partitions**
-
-The problem assumes each character appears in exactly ONE partition. If duplicates are allowed:
-
-```
-This is no longer interval merging—each character can have multiple "homes."
-```
-
-**4. When You Need Maximum Partitions with Constraints**
-
-If partitions must satisfy additional constraints (max length, certain characters together):
-
-```
-This becomes a constrained optimization problem.
-May need DP or greedy with more complex logic.
-```
+**Constraints & Assumptions**:
+- Input string contains only lowercase English letters (`'a'`-`'z'`).
+- String length: typically `1 <= s.length <= 500`.
+- Empty string is usually not a valid input, but handle it gracefully if needed.
 
 ---
 
 ## Problem Statement
 
-Partition a string into as many parts as possible so that each letter appears in at most one part.
+You are given a string `s`. We want to partition the string into as many parts as possible so that **each letter appears in at most one part**.
 
-```
+Return a list of integers representing the size of these parts.
+
+```text
 Input:  s = "ababcbacadefegdehijhklij"
 Output: [9, 7, 8]
 
 Explanation:
-Partition: "ababcbaca", "defegde", "hijhklij"
-- 'a' only in first part
-- 'd' only in second part
-- 'h' only in third part
-- etc.
+The partition is "ababcbaca", "defegde", "hijhklij".
+- 'a', 'b', and 'c' only appear in the first part (size 9).
+- 'd', 'e', 'f', and 'g' only appear in the second part (size 7).
+- 'h', 'i', 'j', 'k', and 'l' only appear in the third part (size 8).
 ```
 
 ---
 
-## The Core Insight
+## Building Intuition
 
-**Each character defines an interval: [first occurrence, last occurrence]**
+### The "Last Appearance" Rule
 
-For partitioning:
+Every character in a partition must have ALL its occurrences within that partition. This means: **once you include a character, you must extend the current partition at least to its LAST occurrence.**
 
-- A partition must include all occurrences of any character it contains
-- Find the smallest valid partition at each step
-- The partition ends at the farthest "last occurrence" of any character in it
+```text
+s = "ababcbaca"
+     012345678
 
-```
-s = "ababcbaca..."
-
-Character intervals:
-a: [0, 8]  (first at 0, last at 8)
-b: [1, 5]
-c: [4, 7]
+'a' appears at: 0, 2, 6, 8     → last at 8
+'b' appears at: 1, 3, 5        → last at 5
+'c' appears at: 4, 7           → last at 7
 
 Starting at index 0:
-- We include 'a', so partition must extend to at least index 8
-- Along the way, we include 'b' (extends to 5) and 'c' (extends to 7)
-- Max extension = 8
-- Partition ends at 8
+- We see 'a', so the partition MUST extend to at least index 8.
+- Along the way, we see 'b' (needs index 5) and 'c' (needs index 7).
+- The farthest requirement is index 8 (from 'a').
+- When we reach index 8, all requirements are satisfied!
+- First partition: indices 0-8, length 9.
 ```
+
+### Mental Model: Character "Lifespans"
+
+Think of each character as having a "lifespan" from its first to its last occurrence:
+
+```text
+s = "ababcbacadefegdehijhklij"
+     0         1         2
+     012345678901234567890123    (24 characters, indices 0-23)
+
+Character lifespans (first occurrence → last occurrence):
+a: [0,  8]  |---------|
+b: [1,  5]   |----|
+c: [4,  7]       |---|
+d: [9, 14]            |-----|
+e: [10,15]             |-----|
+f: [11,11]              |
+g: [13,13]                |
+h: [16,19]                    |----|
+i: [17,22]                     |------|
+j: [18,23]                      |------|
+k: [20,20]                          |
+l: [21,21]                           |
+             ├─ part 1 ─┤├─ part 2 ─┤├── part 3 ──┤
+```
+
+Overlapping lifespans MUST be in the same partition. Non-overlapping lifespans CAN be in different partitions.
+
+### Why This Is Really Merge Intervals
+
+Each character creates an interval `[first_occurrence, last_occurrence]`. Overlapping intervals must be merged into the same partition. This is exactly the **merge intervals** pattern!
+
+But wait, we don't need to explicitly sort the intervals! Why?
+Because as we scan the string from left to right, we inherently encounter each character's *first* occurrence in sorted order. The string itself acts as our pre-sorted list of interval start times.
+
+### The Greedy "Extending Horizon" Approach
+
+We don't need to explicitly build and merge intervals. We only need the **last occurrence** of each character. Then we scan left to right, maintaining a "horizon"—the farthest index we *must* reach before we can close the current partition.
+
+The horizon can only grow (or stay the same) during a partition; it never shrinks. The exact moment our current index `i` catches up to the horizon, every character in the current partition has been fully accounted for, and we can make a cut!
 
 ---
 
@@ -191,26 +106,97 @@ Starting at index 0:
 ```python
 def partition_labels(s: str) -> list[int]:
     """
-    Partition string so each letter appears in at most one part.
+    Partition a string into as many parts as possible so that each letter
+    appears in at most one part.
 
-    Greedy: Track last occurrence of each char, extend partition to include all.
-
-    Time: O(n)
-    Space: O(1) - at most 26 characters
+    Time: O(N)
+    Space: O(1)
     """
-    # Find last occurrence of each character
-    last = {char: i for i, char in enumerate(s)}
+    if not s:
+        return []
+
+    # Step 1: Record the last occurrence index of every character
+    last_occurrence = {char: i for i, char in enumerate(s)}
 
     result = []
-    start = 0
-    end = 0
+    partition_start = 0
+    partition_end = 0  # "horizon" -- farthest index we must reach
+
+    # Step 2: Scan left to right, extending the horizon as needed
+    for i, char in enumerate(s):
+        # Extend horizon to include all occurrences of the current character
+        partition_end = max(partition_end, last_occurrence[char])
+
+        # When current index reaches horizon, every character in
+        # [partition_start, partition_end] is fully contained
+        if i == partition_end:
+            result.append(partition_end - partition_start + 1)
+            partition_start = i + 1
+
+    return result
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** $O(N)$, where $N$ is the length of the string.
+  - First pass: Build `last_occurrence` dictionary — $O(N)$
+  - Second pass: Scan to find partitions — $O(N)$
+  - Dictionary lookups and `max()` operations are $O(1)$.
+- **Space Complexity:** $O(1)$ auxiliary space.
+  - The `last_occurrence` dictionary stores at most 26 entries (one per lowercase English letter), taking $O(26) = O(1)$ space.
+  - (The output list is generally not counted as auxiliary space).
+
+---
+
+## Alternative Approaches
+
+### 1. Explicit Merge Intervals (For Understanding)
+
+To make the connection to Merge Intervals concrete, here is a solution that explicitly builds character intervals and merges them.
+
+```python
+def partition_labels_via_merge(s: str) -> list[int]:
+    if not s: return []
+
+    # Build [first, last] interval for each character
+    first, last = {}, {}
+    for i, char in enumerate(s):
+        if char not in first: first[char] = i
+        last[char] = i
+
+    # Create intervals sorted by first occurrence (at most 26 intervals)
+    intervals = sorted([[first[c], last[c]] for c in first])
+
+    # Standard merge intervals
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            # Overlap: extend
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            # Gap: new partition
+            merged.append([start, end])
+
+    return [end - start + 1 for start, end in merged]
+```
+*Note: This is strictly for educational purposes to prove the relationship to Merge Intervals. The single-pass horizon approach is much cleaner for interviews.*
+
+### 2. Array Instead of HashMap (Micro-optimization)
+
+Since the input contains only lowercase English letters, we can use a fixed-size array of length 26 instead of a hash map for slightly better constant factors.
+
+```python
+def partition_labels_array(s: str) -> list[int]:
+    last_occurrence = [0] * 26
+    for i, char in enumerate(s):
+        last_occurrence[ord(char) - ord('a')] = i
+
+    result = []
+    start = end = 0
 
     for i, char in enumerate(s):
-        # Extend partition to include all of current char
-        end = max(end, last[char])
-
+        end = max(end, last_occurrence[ord(char) - ord('a')])
         if i == end:
-            # We've reached the end of current partition
             result.append(end - start + 1)
             start = i + 1
 
@@ -221,38 +207,34 @@ def partition_labels(s: str) -> list[int]:
 
 ## Visual Trace
 
-```
+```text
 s = "ababcbacadefegdehijhklij"
-     0123456789...
+     012345678901234567890123   (indices 0-23)
 
-Last occurrence:
-a: 8, b: 5, c: 7, d: 14, e: 15, f: 11, g: 13, h: 19, i: 22, j: 23, k: 20, l: 21
+Step 1: Build last_occurrence
+last = {a:8, b:5, c:7, d:14, e:15, f:11, g:13, h:19, i:22, j:23, k:20, l:21}
 
-Scan:
-i=0 'a': end = max(0, 8) = 8
-i=1 'b': end = max(8, 5) = 8
-i=2 'a': end = max(8, 8) = 8
-i=3 'b': end = max(8, 5) = 8
-i=4 'c': end = max(8, 7) = 8
-i=5 'b': end = max(8, 5) = 8
-i=6 'a': end = max(8, 8) = 8
-i=7 'c': end = max(8, 7) = 8
-i=8 'a': end = max(8, 8) = 8
-       i == end → partition! length = 8 - 0 + 1 = 9
-
-i=9  'd': end = max(9, 14) = 14
-i=10 'e': end = max(14, 15) = 15
-i=11 'f': end = max(15, 11) = 15
-i=12 'e': end = max(15, 15) = 15
-i=13 'g': end = max(15, 13) = 15
-i=14 'd': end = max(15, 14) = 15
-i=15 'e': end = max(15, 15) = 15
-        i == end → partition! length = 15 - 9 + 1 = 7
-
-i=16 'h': end = max(16, 19) = 19
+Step 2: Scan left to right
+─────────────────────────────────────────────────────────────────────────────
+ i  char  last[char]  end = max(end, last)  Action
+─────────────────────────────────────────────────────────────────────────────
+ 0   'a'      8        max(0,  8) =  8
+ 1   'b'      5        max(8,  5) =  8
+ 2   'a'      8        max(8,  8) =  8
 ...
-i=23 'j': end = max(23, 23) = 23
-        i == end → partition! length = 23 - 16 + 1 = 8
+ 8   'a'      8        max(8,  8) =  8      i == end! CUT. size = 8-0+1 = 9
+─────────────────────────────────────────────────────────────────────────────
+ 9   'd'     14        max(8, 14) = 14      (new partition, start=9)
+10   'e'     15        max(14,15) = 15      horizon extends!
+...
+15   'e'     15        max(15,15) = 15      i == end! CUT. size = 15-9+1 = 7
+─────────────────────────────────────────────────────────────────────────────
+16   'h'     19        max(15,19) = 19      (new partition, start=16)
+17   'i'     22        max(19,22) = 22      horizon extends!
+18   'j'     23        max(22,23) = 23      horizon extends!
+...
+23   'j'     23        max(23,23) = 23      i == end! CUT. size = 23-16+1 = 8
+─────────────────────────────────────────────────────────────────────────────
 
 Result: [9, 7, 8]
 ```
@@ -261,215 +243,52 @@ Result: [9, 7, 8]
 
 ## Why Greedy Works
 
-**Greedy Choice**: End partition as soon as all included characters are complete.
+**Greedy Choice**: End each partition at the *earliest* valid point (the exact moment `i` reaches `partition_end`).
 
-**Why it's optimal**:
-
-1. We can't end earlier (would split a character)
-2. Ending later would only make this partition bigger
-3. More partitions means smaller partitions (goal: maximize count)
-
-**Proof by construction**:
-
-- At position `i`, if `i == end`, no character in `[start, i]` appears after `i`
-- So `[start, i]` is a valid partition
-- Starting a new partition at `i+1` is safe
+**Why is this optimal?**
+1. **Validity**: We *cannot* cut before `partition_end`. If we did, some character in the current partition would have another occurrence later in the string, violating the rule that a character appears in only one part.
+2. **Maximality**: We *should not* extend past `partition_end`. Extending would merge the current valid partition with the next one, resulting in fewer total partitions. Since the goal is to maximize the number of partitions, we must cut as early as possible.
 
 ---
 
-## Interval Representation
+## Common Mistakes
 
-An alternative view using explicit intervals:
-
-```python
-def partition_labels_intervals(s: str) -> list[int]:
-    """
-    Convert to intervals, then merge and partition.
-
-    Time: O(n log n) due to sorting
-    Space: O(26) = O(1)
-    """
-    # Build intervals for each character
-    first = {}
-    last = {}
-
-    for i, char in enumerate(s):
-        if char not in first:
-            first[char] = i
-        last[char] = i
-
-    # Create intervals
-    intervals = [(first[c], last[c]) for c in first]
-    intervals.sort()
-
-    # Merge overlapping intervals
-    merged = []
-    for start, end in intervals:
-        if merged and start <= merged[-1][1]:
-            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
-        else:
-            merged.append((start, end))
-
-    # Convert to lengths
-    return [end - start + 1 for start, end in merged]
-```
-
----
-
-## Related Problems
-
-### Merge Intervals
-
-```python
-def merge(intervals: list[list[int]]) -> list[list[int]]:
-    """Standard merge intervals for reference."""
-    intervals.sort()
-    merged = [intervals[0]]
-
-    for start, end in intervals[1:]:
-        if start <= merged[-1][1]:
-            merged[-1][1] = max(merged[-1][1], end)
-        else:
-            merged.append([start, end])
-
-    return merged
-```
-
-### Maximum Number of Non-overlapping Substrings
-
-```python
-def max_num_of_substrings(s: str) -> list[str]:
-    """
-    Find maximum number of valid non-overlapping substrings.
-    Each substring contains all occurrences of its characters.
-
-    Time: O(n)
-    Space: O(1)
-    """
-    n = len(s)
-
-    # For each character, find bounds of valid substring containing it
-    first = {}
-    last = {}
-    for i, c in enumerate(s):
-        if c not in first:
-            first[c] = i
-        last[c] = i
-
-    # Get valid interval for each character
-    def get_interval(c):
-        start = first[c]
-        end = last[c]
-        i = start
-        while i <= end:
-            char = s[i]
-            if first[char] < start:
-                return None  # Invalid: would need to extend left
-            end = max(end, last[char])
-            i += 1
-        return (start, end)
-
-    # Collect all valid intervals
-    intervals = []
-    for c in first:
-        interval = get_interval(c)
-        if interval:
-            intervals.append(interval)
-
-    # Sort by end, then by start (prefer smaller)
-    intervals.sort(key=lambda x: (x[1], x[0]))
-
-    result = []
-    prev_end = -1
-    for start, end in intervals:
-        if start > prev_end:
-            result.append(s[start:end + 1])
-            prev_end = end
-
-    return result
-```
-
-### Smallest Sufficient Team (Related Pattern)
-
-Finding minimum covering - different approach but similar thinking.
-
----
-
-## Complexity Analysis
-
-| Approach           | Time       | Space | Notes                |
-| ------------------ | ---------- | ----- | -------------------- |
-| Single pass greedy | O(n)       | O(1)  | Most efficient       |
-| Interval-based     | O(n log n) | O(26) | More intuitive       |
-| Brute force        | O(n²)      | O(n)  | Check each partition |
-
----
-
-## Edge Cases
-
-- [ ] Single character → [1]
-- [ ] All same character → [n] (one partition)
-- [ ] All unique characters → [1, 1, 1, ...] (each char is own partition)
-- [ ] Empty string → []
-- [ ] Two characters alternating → one partition
-
----
-
-## Pattern Recognition
-
-Partition Labels is really "interval covering" in disguise:
-
-1. Each character creates an interval [first, last]
-2. All overlapping intervals must be in same partition
-3. Find minimum cuts to separate non-overlapping groups
-4. Equivalent to: merge overlapping intervals, count groups
+| Mistake | Consequence | Correction |
+| :--- | :--- | :--- |
+| **Using first occurrence instead of last** | You cut too early, leaving character occurrences outside. | Track the **last** occurrence to ensure containment. |
+| **Cutting when a character repeats** | Doesn't guarantee *all* future occurrences are contained. | Only cut when `i == partition_end` (horizon reached). |
+| **Explicitly sorting intervals** | Works, but does unnecessary $O(N \log N)$ work. | Scan the string directly; the left-to-right order *is* the sorted start time. |
+| **Off-by-one in partition size** | Outputting `end - start` instead of `end - start + 1`. | Array length for an inclusive range is `end - start + 1`. |
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                                      | Difficulty | Key Insight                          |
-| --- | -------------------------------------------- | ---------- | ------------------------------------ |
-| 1   | Partition Labels                             | Medium     | Track last occurrence, greedy extend |
-| 2   | Merge Intervals                              | Medium     | Sort by start, merge overlapping     |
-| 3   | Maximum Number of Non-overlapping Substrings | Hard       | Valid substring intervals            |
-| 4   | Optimal Partition of String                  | Medium     | Partition to minimize duplicates     |
-| 5   | Video Stitching                              | Medium     | Interval covering                    |
+| Problem | Difficulty | Key Insight |
+| :--- | :--- | :--- |
+| **[Partition Labels (LC 763)](https://leetcode.com/problems/partition-labels/)** | Medium | The core problem. Track last occurrence, greedily extend horizon. |
+| **[Optimal Partition of String (LC 2405)](https://leetcode.com/problems/optimal-partition-of-string/)** | Medium | Minimizing partitions so no letter repeats within a part. Greedy: use a set, cut the moment you see a duplicate. |
+| **[Split Array into Consecutive Subsequences (LC 659)](https://leetcode.com/problems/split-array-into-consecutive-subsequences/)** | Medium | Advanced greedy using hashmaps to track subsequence endings and available counts. |
 
 ---
 
-## Interview Tips
+## Chapter Summary: Greedy Algorithms
 
-1. **Explain the interval insight**: Characters define intervals
-2. **Track last occurrence**: Build hashmap first
-3. **Trace an example**: Show `end` extending as you scan
-4. **Mention alternative**: Explicit interval merging works too
-5. **Connect to patterns**: This is interval merging in disguise
+You've completed Chapter 12: Greedy Algorithms!
 
----
+### Core Patterns Mastered
 
-## Key Takeaways
+| Pattern | Mental Model | Classic Problems |
+| :--- | :--- | :--- |
+| **Interval Scheduling** | Sort by end time, pick the earliest finisher. | Activity Selection, Non-overlapping Intervals |
+| **Merge Intervals** | Sort by start time, extend the end. | Merge Intervals, Insert Interval, Partition Labels |
+| **Heap-Based Greedy** | Track the dynamic min/max of a resource. | Meeting Rooms II, Task Scheduler |
+| **Jump/Reach** | Track the farthest reachable frontier. | Jump Game I & II |
+| **Reset on Deficit** | Reset your starting point when an accumulator drops below 0. | Gas Station, Maximum Subarray |
+| **Two-Pass** | Resolve neighborhood constraints left-to-right, then right-to-left. | Candy Distribution, Trapping Rain Water |
 
-1. Each character creates interval [first occurrence, last occurrence]
-2. Greedy: track maximum "last occurrence" seen in current partition
-3. End partition when current index equals max last occurrence
-4. O(n) time with O(1) space (26 characters max)
-5. Equivalent to merging overlapping character intervals
-
----
-
-## Chapter Summary
-
-You've completed Chapter 12: Greedy Algorithms! Key patterns learned:
-
-| Pattern             | Problems                | Key Technique            |
-| ------------------- | ----------------------- | ------------------------ |
-| Interval Scheduling | Activity selection      | Sort by end time         |
-| Merge Intervals     | Overlapping intervals   | Sort by start time       |
-| Meeting Rooms       | Resource allocation     | Min-heap or sweep line   |
-| Jump/Reach          | Jump games, gas station | Track farthest reachable |
-| Two-Pass            | Candy distribution      | Forward + backward pass  |
-| Partition           | Partition labels        | Track last occurrence    |
+**The Golden Rule of Greedy Algorithms:**
+Always try to break your greedy idea with counter-examples before writing code. If you can't break it, look for a way to prove that the locally optimal choice guarantees the global optimum.
 
 ---
 
