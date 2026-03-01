@@ -118,9 +118,9 @@ For n = 100,000 and L = 32:
 For "XOR of numbers from L to R", use the mathematical property:
 
 ```python
-def xor_range(L, R):
+def xor_range(L: int, R: int) -> int:
     # XOR from 1 to n has a pattern based on n % 4
-    def xor_1_to_n(n):
+    def xor_1_to_n(n: int) -> int:
         if n % 4 == 0: return n
         if n % 4 == 1: return 1
         if n % 4 == 2: return n + 1
@@ -285,8 +285,8 @@ class Solution:
 
 ```python
 class TrieNode:
-    def __init__(self):
-        self.children = {}  # 0 or 1 -> TrieNode
+    def __init__(self) -> None:
+        self.children: dict[int, 'TrieNode'] = {}  # 0 or 1 -> TrieNode
 
 
 class Solution:
@@ -462,7 +462,7 @@ class Solution:
 
         return result
 
-    def _insert(self, root, num):
+    def _insert(self, root: dict, num: int) -> None:
         node = root
         for i in range(31, -1, -1):
             bit = (num >> i) & 1
@@ -470,7 +470,7 @@ class Solution:
                 node[bit] = {}
             node = node[bit]
 
-    def _query(self, root, num):
+    def _query(self, root: dict, num: int) -> int:
         node = root
         xor_val = 0
         for i in range(31, -1, -1):
@@ -487,120 +487,122 @@ class Solution:
 ### Maximum Genetic Difference Query (LeetCode 1938)
 
 ```python
-def maxGeneticDifference(self, parents: list[int], queries: list[list[int]]) -> list[int]:
-    """
-    Tree structure, each node has value 0 to n-1.
-    Query: Max XOR with any node on path from root to node_i.
+class Solution:
+    def maxGeneticDifference(self, parents: list[int], queries: list[list[int]]) -> list[int]:
+        """
+        Tree structure, each node has value 0 to n-1.
+        Query: Max XOR with any node on path from root to node_i.
 
-    Approach: DFS with trie insert/remove
-    """
-    # Build tree
-    from collections import defaultdict
-    children = defaultdict(list)
-    root = -1
-    for i, p in enumerate(parents):
-        if p == -1:
-            root = i
-        else:
-            children[p].append(i)
-
-    # Group queries by node
-    node_queries = defaultdict(list)
-    for i, (node, val) in enumerate(queries):
-        node_queries[node].append((val, i))
-
-    result = [0] * len(queries)
-    trie = {}
-
-    def insert(num):
-        node = trie
-        for i in range(17, -1, -1):
-            bit = (num >> i) & 1
-            if bit not in node:
-                node[bit] = {'count': 0}
-            node = node[bit]
-            node['count'] += 1
-
-    def remove(num):
-        node = trie
-        for i in range(17, -1, -1):
-            bit = (num >> i) & 1
-            node = node[bit]
-            node['count'] -= 1
-
-    def query(num):
-        node = trie
-        xor_val = 0
-        for i in range(17, -1, -1):
-            bit = (num >> i) & 1
-            want = 1 - bit
-            if want in node and node[want]['count'] > 0:
-                xor_val |= (1 << i)
-                node = node[want]
+        Approach: DFS with trie insert/remove
+        """
+        # Build tree
+        from collections import defaultdict
+        children = defaultdict(list)
+        root = -1
+        for i, p in enumerate(parents):
+            if p == -1:
+                root = i
             else:
+                children[p].append(i)
+
+        # Group queries by node
+        node_queries = defaultdict(list)
+        for i, (node, val) in enumerate(queries):
+            node_queries[node].append((val, i))
+
+        result = [0] * len(queries)
+        trie = {}
+
+        def insert(num: int) -> None:
+            node = trie
+            for i in range(17, -1, -1):
+                bit = (num >> i) & 1
+                if bit not in node:
+                    node[bit] = {'count': 0}
                 node = node[bit]
-        return xor_val
+                node['count'] += 1
 
-    def dfs(node_id):
-        insert(node_id)
-        # Answer queries for this node
-        for val, query_idx in node_queries[node_id]:
-            result[query_idx] = query(val)
-        # Visit children
-        for child in children[node_id]:
-            dfs(child)
-        remove(node_id)
+        def remove(num: int) -> None:
+            node = trie
+            for i in range(17, -1, -1):
+                bit = (num >> i) & 1
+                node = node[bit]
+                node['count'] -= 1
 
-    dfs(root)
-    return result
+        def query(num: int) -> int:
+            node = trie
+            xor_val = 0
+            for i in range(17, -1, -1):
+                bit = (num >> i) & 1
+                want = 1 - bit
+                if want in node and node[want]['count'] > 0:
+                    xor_val |= (1 << i)
+                    node = node[want]
+                else:
+                    node = node[bit]
+            return xor_val
+
+        def dfs(node_id: int) -> None:
+            insert(node_id)
+            # Answer queries for this node
+            for val, query_idx in node_queries[node_id]:
+                result[query_idx] = query(val)
+            # Visit children
+            for child in children[node_id]:
+                dfs(child)
+            remove(node_id)
+
+        dfs(root)
+        return result
 ```
 
 ### Count Pairs With XOR in Range (LeetCode 1803)
 
 ```python
-def countPairs(self, nums: list[int], low: int, high: int) -> int:
-    """
-    Count pairs where low <= nums[i] XOR nums[j] <= high
+class Solution:
+    def countPairs(self, nums: list[int], low: int, high: int) -> int:
+        """
+        Count pairs where low <= nums[i] XOR nums[j] <= high
 
-    Approach: Count pairs with XOR < limit
-    Answer = count(< high+1) - count(< low)
-    """
-    def count_less(limit):
-        root = {}
-        count = 0
+        Approach: Count pairs with XOR < limit
+        Answer = count(< high+1) - count(< low)
+        """
+        def count_less(limit: int) -> int:
+            root = {}
+            count = 0
 
-        for num in nums:
-            # Query: count pairs with XOR < limit
-            node = root
-            for i in range(14, -1, -1):
-                if node is None:
-                    break
-                bit = (num >> i) & 1
-                limit_bit = (limit >> i) & 1
+            for num in nums:
+                # Query: count pairs with XOR < limit
+                node = root
+                for i in range(14, -1, -1):
+                    if node is None:
+                        break
+                    bit = (num >> i) & 1
+                    limit_bit = (limit >> i) & 1
 
-                if limit_bit == 1:
-                    # If limit has 1, XOR with same bit gives 0 (< 1)
-                    # All numbers in that subtree are valid
-                    if bit in node:
-                        count += node[bit].get('cnt', 0)
-                    # Continue with opposite bit (gives XOR = 1)
-                    node = node.get(1 - bit)
-                else:
-                    # If limit has 0, must have XOR = 0, take same bit
-                    node = node.get(bit)
+                    if limit_bit == 1:
+                        # If limit has 1, XOR with same bit gives 0 (< 1)
+                        # All numbers in that subtree are valid
+                        if bit in node:
+                            count += node[bit].get('cnt', 0)
+                        # Continue with opposite bit (gives XOR = 1)
+                        node = node.get(1 - bit)
+                    else:
+                        # If limit has 0, must have XOR = 0, take same bit
+                        node = node.get(bit)
 
-            # Insert num into trie
-            node = root
-            for i in range(14, -1, -1):
-                bit = (num >> i) & 1
-                if bit not in node:
-                    node[bit] = {'cnt': 0}
-                node = node[bit]
-                node['cnt'] += 1
+                # Insert num into trie
+                node = root
+                for i in range(14, -1, -1):
+                    bit = (num >> i) & 1
+                    if bit not in node:
+                        node[bit] = {'cnt': 0}
+                    node = node[bit]
+                    node['cnt'] += 1
 
-        return count
+            return count
 
-    return count_less(high + 1) - count_less(low)
+        return count_less(high + 1) - count_less(low)
 ```
 
 ---
