@@ -30,3 +30,4 @@ For each file:
 - Rewrote the README.md to be an excellent introductory index, grouping topics logically and clearly comparing Greedy vs. Dynamic Programming and BFS.
 - Rewrote 08-partition-labels.md to emphasize the horizon extension pattern and relationship to Merge Intervals. Improved the LC 1520 sketch to be mathematically precise and much more readable Python code.
 - Reviewed and improved README.md.
+- Enhanced 05-jump-game.md with LC 1871 (Reachable Zeros with Min/Max Jump), optimized table comparisons, fixed typos and logic bugs in code sketches.
