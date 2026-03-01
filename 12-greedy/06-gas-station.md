@@ -638,6 +638,52 @@ fuel=110 >= 100: done! Answer = 2
 
 ---
 
+### Worked Problem 3: Destroying Asteroids (LC 2126)
+
+**Problem**: You are given an integer `mass`, which represents the original mass of a planet. You are further given an integer array `asteroids`. You can arrange for the planet to collide with the asteroids in any arbitrary order. If the mass of the planet is greater than or equal to the mass of the asteroid, the asteroid is destroyed and the planet gains the mass of the asteroid. Otherwise, the planet is destroyed. Return `true` if all asteroids can be destroyed. Otherwise, return `false`.
+
+**Key insight**: This is a classic greedy accumulation problem. To maximize our chances of destroying all asteroids, we should always tackle the smallest asteroids first to build up our mass. If we can't destroy the smallest available asteroid, we certainly can't destroy any larger ones.
+
+```python
+def asteroids_destroyed(mass: int, asteroids: list[int]) -> bool:
+    """
+    Determine if planet can destroy all asteroids.
+
+    Greedy: Sort asteroids and consume smallest first to build mass.
+
+    Time:  O(n log n) - sorting dominates
+    Space: O(1)       - ignoring sort space
+    """
+    # Sort to greedily consume smallest asteroids first
+    asteroids.sort()
+
+    current_mass = mass
+
+    for asteroid in asteroids:
+        if current_mass >= asteroid:
+            current_mass += asteroid
+        else:
+            return False
+
+    return True
+```
+
+**Trace** (`mass = 10, asteroids = [3, 9, 19, 5, 21]`):
+
+```text
+Sort asteroids: [3, 5, 9, 19, 21]
+
+mass=10: asteroid=3  -> 10 >= 3  -> mass = 10 + 3 = 13
+mass=13: asteroid=5  -> 13 >= 5  -> mass = 13 + 5 = 18
+mass=18: asteroid=9  -> 18 >= 9  -> mass = 18 + 9 = 27
+mass=27: asteroid=19 -> 27 >= 19 -> mass = 27 + 19 = 46
+mass=46: asteroid=21 -> 46 >= 21 -> mass = 46 + 21 = 67
+
+All destroyed! Return True.
+```
+
+---
+
 ## Interview Tips
 
 1. **State the two observations**: total sum feasibility check + greedy reset on failure

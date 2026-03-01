@@ -596,7 +596,7 @@ def minimum_sum(num: int) -> int:
     Time:  O(1) -- sorting 4 digits takes constant time
     Space: O(1) -- space for 4 digits is constant
     """
-    # Convert number to list of its digits and sort them
+    # Convert number to a sorted list of its integer digits
     digits = sorted(int(d) for d in str(num))
 
     # Form the two numbers:
@@ -696,7 +696,7 @@ Equivalent to: buy at 1, sell at 5 (+4), buy at 3, sell at 6 (+3)
 
 ---
 
-### Problem 3: Boats to Save People (LC 881) -- Medium
+### Problem 4: Boats to Save People (LC 881) -- Medium
 
 **Problem:** People have weights. Each boat holds at most 2 people and has a weight `limit`. Find the minimum number of boats.
 
@@ -753,10 +753,11 @@ Result: 3 boats
 | --- | --- | --- | --- |
 | 1 | Assign Cookies (LC 455) | Easy | Sort both, greedy matching |
 | 2 | Lemonade Change (LC 860) | Easy | Greedy change giving, conserve versatile bills |
-| 3 | Maximum Units on a Truck (LC 1710) | Easy | Sort by value, fill greedily |
-| 4 | Best Time to Buy and Sell Stock II (LC 122) | Medium | Collect all positive deltas |
-| 5 | Boats to Save People (LC 881) | Medium | Two-pointer greedy pairing |
-| 6 | Minimum Number of Arrows to Burst Balloons (LC 452) | Medium | Interval greedy (covered in later notes) |
+| 3 | Minimum Sum of Four Digit Number (LC 2160) | Easy | Sort digits, place smallest in tens place |
+| 4 | Maximum Units on a Truck (LC 1710) | Easy | Sort by value, fill greedily |
+| 5 | Best Time to Buy and Sell Stock II (LC 122) | Medium | Collect all positive deltas |
+| 6 | Boats to Save People (LC 881) | Medium | Two-pointer greedy pairing |
+| 7 | Minimum Number of Arrows to Burst Balloons (LC 452) | Medium | Interval greedy (covered in later notes) |
 
 ---
 
