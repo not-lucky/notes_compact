@@ -1,6 +1,6 @@
 # Word Dictionary (Search with Wildcards)
 
-[Previous: Trie Implementation](./01-trie-implementation.md) | [Next: Word Search II](./04-word-search-trie.md)
+[Previous: Trie Implementation](./01-trie-implementation.md) | [Next: Replace Words](./03-replace-words.md)
 
 > **Prerequisites:** [Trie Implementation](./01-trie-implementation.md), [Backtracking](../11-recursion-backtracking/README.md)
 
@@ -612,6 +612,7 @@ Result: True
 ## Related Sections
 
 - [Trie Implementation](./01-trie-implementation.md) - Basic trie operations
+- [Replace Words](./03-replace-words.md) - Shortest prefix match
 - [Word Search II](./04-word-search-trie.md) - Trie combined with DFS
 - [Backtracking](../11-recursion-backtracking/README.md) - DFS patterns
 - [Regular Expressions](../16-math-basics/README.md) - For regex matching context

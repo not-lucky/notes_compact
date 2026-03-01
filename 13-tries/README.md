@@ -189,10 +189,11 @@ class Trie:
 | # | Topic | Key Concepts |
 | :--- | :--- | :--- |
 | 01 | [Trie Implementation](./01-trie-implementation.md) | Insert, Search, StartsWith, Delete operations. |
-| 02 | [Word Search II](./02-word-search-trie.md) | Trie + DFS optimization on a 2D grid. |
-| 03 | [Autocomplete System](./03-autocomplete.md) | Designing a typeahead autocomplete system. |
-| 04 | [Word Dictionary](./04-word-dictionary.md) | Searching with wildcards (`.`) and edit distances. |
-| 05 | [Maximum XOR](./05-maximum-xor.md) | Using Bitwise tries to solve XOR problems. |
+| 02 | [Word Dictionary](./02-word-dictionary.md) | Searching with wildcards (`.`) and edit distances. |
+| 03 | [Replace Words](./03-replace-words.md) | Shortest prefix match. |
+| 04 | [Word Search II](./04-word-search-trie.md) | Trie + DFS optimization on a 2D grid. |
+| 06 | [Autocomplete System](./06-autocomplete.md) | Designing a typeahead autocomplete system. |
+| 08 | [Maximum XOR](./08-maximum-xor.md) | Using Bitwise tries to solve XOR problems. |
 
 ---
 

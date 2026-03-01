@@ -76,6 +76,24 @@ At any point, you can ask "Is there a word that starts with the path I've taken?
 
 ---
 
+## Quick Reference
+
+| Operation           | Time     | Space | Notes                               |
+| ------------------- | -------- | ----- | ----------------------------------- |
+| **Insert**          | O(L)     | O(L)  | L = word length, may create L nodes |
+| **Search**          | O(L)     | O(1)  | Just traversal                      |
+| **StartsWith**      | O(L)     | O(1)  | Just traversal                      |
+| **Delete**          | O(L)     | O(L)  | Recursion stack (or O(1) if iterative) |
+| **Get all with prefix** | O(L + k) | O(k)  | k = total chars in results          |
+
+**Space Complexity (Trie Total):** O(N × L × A) worst case
+- N = number of words
+- L = average word length
+- A = alphabet size (26 for lowercase)
+- *Using `__slots__` significantly reduces memory overhead in Python.*
+
+---
+
 ## When NOT to Use Tries
 
 **1. Exact Match Only**
@@ -211,6 +229,8 @@ Step 4: insert("bat")
 class TrieNode:
     """A node in the trie structure."""
 
+    __slots__ = ['children', 'is_end']
+
     def __init__(self):
         self.children: dict[str, 'TrieNode'] = {}  # char -> TrieNode
         self.is_end: bool = False  # True if node marks end of a word
@@ -258,13 +278,13 @@ class Trie:
 ### Array-based Children (Faster, 26 lowercase letters)
 
 ```python
-from typing import Optional
-
 class TrieNode:
     """Node with fixed-size array for lowercase letters only."""
 
+    __slots__ = ['children', 'is_end']
+
     def __init__(self):
-        self.children: list[Optional['TrieNode']] = [None] * 26  # Index 0-25 for 'a'-'z'
+        self.children: list['TrieNode' | None] = [None] * 26  # Index 0-25 for 'a'-'z'
         self.is_end: bool = False
 
     def _char_to_index(self, char: str) -> int:
@@ -308,6 +328,21 @@ class Trie:
 ## Extended Operations
 
 These methods build upon the basic `Trie` class defined above.
+
+### Iterative Search (Detailed)
+
+While the basic implementation uses a helper method `_find_node`, here's a standalone iterative search method showing the exact logic:
+
+```python
+    def search_iterative(self, word: str) -> bool:
+        """Iterative search without a helper function."""
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return node.is_end
+```
 
 ### Delete a Word
 
@@ -397,6 +432,8 @@ Deleting a word requires careful memory management. We only delete nodes that ar
 
 ```python
 class CountTrieNode:
+    __slots__ = ['children', 'count']
+
     def __init__(self):
         self.children: dict[str, 'CountTrieNode'] = {}
         self.count: int = 0  # Track how many times a word ends here
@@ -428,24 +465,6 @@ class TrieWithCount:
 
 ---
 
-## Complexity Analysis
-
-| Operation           | Time     | Space | Notes                               |
-| ------------------- | -------- | ----- | ----------------------------------- |
-| Insert              | O(L)     | O(L)  | L = word length, may create L nodes |
-| Search              | O(L)     | O(1)  | Just traversal                      |
-| StartsWith          | O(L)     | O(1)  | Just traversal                      |
-| Delete              | O(L)     | O(L)  | Recursion stack                     |
-| Get all with prefix | O(L + k) | O(k)  | k = total chars in results          |
-
-Space for entire trie: O(N × L × A) worst case
-
-- N = number of words
-- L = average word length
-- A = alphabet size (26 for lowercase)
-
----
-
 ## Common Variations
 
 ### 1. Trie with Word Storage
@@ -453,12 +472,12 @@ Space for entire trie: O(N × L × A) worst case
 Store the complete word at terminal nodes:
 
 ```python
-from typing import Optional
-
 class WordTrieNode:
+    __slots__ = ['children', 'word']
+
     def __init__(self):
         self.children: dict[str, 'WordTrieNode'] = {}
-        self.word: Optional[str] = None  # Store complete word instead of is_end
+        self.word: str | None = None  # Store complete word instead of is_end
 
 # Useful for Word Search II where you need to return the words rapidly
 ```
@@ -469,6 +488,8 @@ Track how many words pass through each node:
 
 ```python
 class PrefixTrieNode:
+    __slots__ = ['children', 'is_end', 'prefix_count']
+
     def __init__(self):
         self.children: dict[str, 'PrefixTrieNode'] = {}
         self.is_end: bool = False
@@ -489,6 +510,8 @@ class PrefixTrieNode:
 
 ```python
 class MapSumNode:
+    __slots__ = ['children', 'score_sum']
+
     def __init__(self):
         self.children: dict[str, 'MapSumNode'] = {}
         self.score_sum: int = 0  # Sum of all scores in subtree
@@ -559,6 +582,8 @@ class MapSum:
 
 ## Related Sections
 
-- [Word Search II](./02-word-search-trie.md) - Trie combined with DFS
-- [Autocomplete System](./03-autocomplete.md) - Trie in system design
-- [Word Dictionary](./04-word-dictionary.md) - Wildcard search
+- [Word Dictionary](./02-word-dictionary.md) - Wildcard search
+- [Word Search II](./04-word-search-trie.md) - Trie combined with DFS
+- [Autocomplete System](./06-autocomplete.md) - Trie in system design
+- [Replace Words](./03-replace-words.md) - Shortest prefix matching
+- [Word Dictionary](./02-word-dictionary.md) - Wildcard search
