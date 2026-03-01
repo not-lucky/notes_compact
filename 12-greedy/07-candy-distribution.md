@@ -134,10 +134,10 @@ def candy(ratings: list[int]) -> int:
     Time:  O(n)
     Space: O(n)
     """
-    n = len(ratings)
-    if n == 0:
+    if not ratings:
         return 0
 
+    n = len(ratings)
     candies = [1] * n
 
     # Pass 1: each child with a higher rating than their left neighbor
@@ -228,9 +228,11 @@ def candy_one_pass(ratings: list[int]) -> int:
     Time:  O(n)
     Space: O(1)
     """
+    if not ratings:
+        return 0
     n = len(ratings)
-    if n <= 1:
-        return n
+    if n == 1:
+        return 1
 
     total = 1  # First child always gets 1 candy
     up = 0     # Length of current ascending run
@@ -480,9 +482,12 @@ def candy_circular(ratings: list[int]) -> int:
     Time:  O(n^2) worst case
     Space: O(n)
     """
+    if not ratings:
+        return 0
+
     n = len(ratings)
-    if n <= 1:
-        return n
+    if n == 1:
+        return 1
 
     candies = [1] * n
     changed = True
@@ -514,10 +519,10 @@ Each child must receive between 1 and `k` candies. If the two-pass minimum excee
 ```python
 def candy_bounded(ratings: list[int], k: int) -> int:
     """Return minimum total candies, or -1 if no valid assignment within [1, k]."""
-    n = len(ratings)
-    if n == 0:
+    if not ratings:
         return 0
 
+    n = len(ratings)
     candies = [1] * n
     for i in range(1, n):
         if ratings[i] > ratings[i - 1]:
@@ -547,10 +552,10 @@ def trap(height: list[int]) -> int:
     Time:  O(n)
     Space: O(n)
     """
-    n = len(height)
-    if n <= 2:
+    if not height or len(height) <= 2:
         return 0
 
+    n = len(height)
     left_max = [0] * n
     right_max = [0] * n
 
@@ -577,6 +582,9 @@ def product_except_self(nums: list[int]) -> list[int]:
     Time:  O(n)
     Space: O(1) extra (output array not counted)
     """
+    if not nums:
+        return []
+
     n = len(nums)
     result = [1] * n
 
@@ -617,8 +625,8 @@ def product_except_self(nums: list[int]) -> list[int]:
 
 ## Edge Cases
 
-- **Empty array**: Return 0. Handled by `if n == 0`.
-- **Single child**: Return 1. Loop bounds naturally handle this.
+- **Empty array**: Return 0. Handled by `if not ratings: return 0`.
+- **Single child**: Return 1. Handled by loop bounds or explicit checks.
 - **Two children**: `[1, 2]` -> `[1, 2]`; `[2, 1]` -> `[2, 1]`; `[2, 2]` -> `[1, 1]`.
 - **All same ratings**: Everyone gets 1. `[2, 2, 2]` -> `[1, 1, 1]`.
 - **Strictly increasing**: `[1, 2, 3, ..., n]` -> `[1, 2, 3, ..., n]`.
