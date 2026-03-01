@@ -212,9 +212,9 @@ class Solution:
             next_node = node[char]
 
             # Found a word
-            if '$' in next_node:
-                result.append(next_node['$'])
-                del next_node['$']  # Avoid duplicates
+            word_match = next_node.pop('$', None)
+            if word_match:
+                result.append(word_match)
 
             # Mark visited
             board[i][j] = '#'
@@ -235,7 +235,8 @@ class Solution:
         # Start DFS from every cell
         for i in range(m):
             for j in range(n):
-                dfs(i, j, root)
+                if board[i][j] in root:
+                    dfs(i, j, root)
 
         return result
 ```
@@ -291,7 +292,8 @@ class Solution:
 
         for i in range(m):
             for j in range(n):
-                dfs(i, j, root)
+                if board[i][j] in root.children:
+                    dfs(i, j, root)
 
         return result
 ```
@@ -303,35 +305,37 @@ class Solution:
 ### 1. Store Word at Terminal (Instead of is_end)
 
 ```python
-# Instead of
-node.is_end = True
+# Instead of:
+node['is_end'] = True
 # And then reconstructing the word during DFS
 
 # Do this:
-node.word = word  # Store the complete word
+node['$'] = word  # Store the complete word
 ```
 
-This avoids reconstructing the word from path during DFS.
+This avoids reconstructing the word from the path during DFS and simplifies finding a match.
 
 ### 2. Remove Word After Finding (Avoid Duplicates)
 
 ```python
-if child.word:
-    result.append(child.word)
-    child.word = None  # Don't find same word again
+# During DFS
+word_match = next_node.pop('$', None)
+if word_match:
+    result.append(word_match)
+    # The word is removed from the trie, preventing duplicate findings
 ```
 
-Without this, same word could be found from different starting cells.
+Without this, the same word could be found starting from different cells, requiring a `set` to track unique found words. Modifying the Trie directly eliminates this need.
 
 ### 3. Prune Empty Trie Branches
 
 ```python
 # After DFS returns
-if not child.children and not child.word:
-    del node.children[char]
+if not next_node:
+    del node[char]
 ```
 
-Once a word is found and no other words share this prefix, remove the branch. This speeds up future searches.
+Once a word is found and no other words share this prefix, remove the branch. This massively speeds up future searches and avoids re-exploring dead ends.
 
 ### 4. In-place Board Marking
 
@@ -440,9 +444,9 @@ def findLongestWord(self, board, words):
 1. **Empty board**: Return empty list
 2. **Empty words list**: Return empty list
 3. **Single cell board**: Only matches single-char words
-4. **Word longer than board cells**: Cannot exist
-5. **Duplicate words in input**: Trie handles naturally (store once)
-6. **Same word found multiple times**: Use `child.word = None` after finding
+4. **Word longer than board cells**: The naive algorithm might try to check these, but counting board letters will prune them early.
+5. **Duplicate words in input**: The trie naturally handles duplicates by storing the word once.
+6. **Same word found multiple times**: Modifying the trie `next_node.pop('$', None)` guarantees a word is added to the result exactly once.
 
 ---
 

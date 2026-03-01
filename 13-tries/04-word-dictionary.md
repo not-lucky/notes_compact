@@ -74,12 +74,12 @@ Brute force with n words and wildcards:
   For each of n words: check if pattern matches → O(n × L)
 
 Trie with wildcards:
-  Traverse trie, branching at wildcards → O(26^k × L)
+  Traverse trie, branching at wildcards → O(26^k)
   where k = number of wildcards
 
 If n = 100,000 and k = 2:
-  Brute force: 100,000 × L = 500,000 operations
-  Trie:        26² × L = 3,380 operations
+  Brute force: 100,000 operations (assuming length is a small constant)
+  Trie:        26² = 676 operations
 
 Trie wins when n >> 26^k (many words, few wildcards).
 ```
@@ -220,7 +220,7 @@ class WordDictionary:
 
     Time:
     - addWord: O(L) where L = word length
-    - search: O(26^k × L) worst case where k = number of wildcards
+    - search: O(26^k) worst case where k = number of wildcards (ignoring small linear factors)
 
     Space: O(total characters in all words)
     """
@@ -361,7 +361,7 @@ class WordDictionary:
 | ---------------------- | --------- | ----------- | -------------------- |
 | addWord                | O(L)      | O(L)        | L = word length      |
 | search (no wildcard)   | O(L)      | O(L)        | Standard trie search |
-| search (k wildcards)   | O(L)      | O(26^k × L) | Branch at each '.'   |
+| search (k wildcards)   | O(L)      | O(26^k)     | Branch at each '.' (up to 26 paths) |
 | search (all wildcards) | O(26^L)   | O(26^L)     | Explores entire trie |
 
 ### Space Complexity
@@ -576,10 +576,10 @@ Result: True
 | Pattern | Time Complexity | Example             |
 | ------- | --------------- | ------------------- |
 | "hello" | O(5)            | Exact match         |
-| ".ello" | O(26 × 4)       | Wildcard at start   |
-| "h.llo" | O(1 + 26 × 3)   | Wildcard in middle  |
+| ".ello" | O(26)       | Wildcard at start   |
+| "h.llo" | O(1 + 26)   | Wildcard in middle  |
 | "....." | O(26^5)         | All wildcards       |
-| ".e.l." | O(26^3 × 2)     | Scattered wildcards |
+| ".e.l." | O(26^2)     | Scattered wildcards |
 
 ---
 
@@ -591,7 +591,7 @@ Result: True
 | 2   | Implement Magic Dictionary        | Medium     | Single char modification    |
 | 3   | Prefix and Suffix Search          | Hard       | Combined prefix/suffix trie |
 | 4   | Camelcase Matching                | Medium     | Pattern matching variant    |
-| 5   | Match Substring After Replacement | Hard       | Advanced pattern matching   |
+| 5   | Concatenated Words                | Hard       | DFS + Trie                  |
 
 ---
 

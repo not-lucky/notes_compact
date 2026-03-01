@@ -288,7 +288,19 @@ class AutocompleteSystem:
 ```python
 import heapq
 
-class AutocompleteSystem:
+class TrieItem:
+    def __init__(self, freq: int, sentence: str):
+        self.freq = freq
+        self.sentence = sentence
+
+    def __lt__(self, other):
+        # We want to keep top k elements with MAXIMUM frequency and MINIMUM lexicographical string
+        # So the min-heap should pop out elements with MINIMUM frequency and MAXIMUM string
+        if self.freq == other.freq:
+            return self.sentence > other.sentence # pop larger string first
+        return self.freq < other.freq # pop smaller freq first
+
+class AutocompleteSystemHeap:
     """Optimized with heap for top-k retrieval."""
 
     def __init__(self, sentences: list[str], times: list[int]):
@@ -325,26 +337,24 @@ class AutocompleteSystem:
         self.current_node = self.current_node[c]
 
         # Use heap for top 3
-        heap = []  # Min heap of (freq, sentence)
+        heap = []  # Min heap of TrieItem
         self._collect_topk(self.current_node, heap, 3)
 
         # Extract results (heap gives min first, need to reverse)
         result = []
         while heap:
-            freq, sentence = heapq.heappop(heap)
-            result.append(sentence)
+            item = heapq.heappop(heap)
+            result.append(item.sentence)
         return result[::-1]
 
     def _collect_topk(self, node: dict, heap: list, k: int) -> None:
         """Collect top k using min heap."""
         if 'freq' in node:
-            # Negate freq for max-heap behavior, compare by sentence for ties
-            item = (-node['freq'], node['sentence'])
+            item = TrieItem(node['freq'], node['sentence'])
             if len(heap) < k:
-                heapq.heappush(heap, (node['freq'], node['sentence']))
+                heapq.heappush(heap, item)
             else:
-                # heap[0] is smallest freq
-                heapq.heappushpop(heap, (node['freq'], node['sentence']))
+                heapq.heappushpop(heap, item)
 
         for char, child in node.items():
             if char not in ['freq', 'sentence']:
@@ -403,9 +413,9 @@ class AutocompleteSystem:
 
         self.current_input.append(c)
 
-        if c not in self.current_node.children:
-            # Create path for new sentence
-            self.current_node = self.current_node.children[c]
+        if not self.current_node or c not in self.current_node.children:
+            # Cannot find path for new sentence
+            self.current_node = None
             return []
 
         self.current_node = self.current_node.children[c]
@@ -465,22 +475,44 @@ sentences.sort(key=lambda x: (-x.freq, x.sentence))
 ### Top K Frequent Words (LeetCode 692)
 
 ```python
+from collections import Counter
+import heapq
+
+class WordFreq:
+    def __init__(self, freq: int, word: str):
+        self.freq = freq
+        self.word = word
+
+    def __lt__(self, other):
+        # We want MAX freq, so min-heap pops MIN freq
+        if self.freq == other.freq:
+            # For ties, we want MIN lexicographical, so min-heap pops MAX lexicographical
+            return self.word > other.word
+        return self.freq < other.freq
+
 def topKFrequent(self, words: list[str], k: int) -> list[str]:
     """Return k most frequent words."""
-    from collections import Counter
-    import heapq
-
     count = Counter(words)
-    # Use heap: (-freq, word) for max freq, min word
-    heap = [(-freq, word) for word, freq in count.items()]
-    heapq.heapify(heap)
+    heap = []
 
-    return [heapq.heappop(heap)[1] for _ in range(k)]
+    for word, freq in count.items():
+        item = WordFreq(freq, word)
+        if len(heap) < k:
+            heapq.heappush(heap, item)
+        else:
+            heapq.heappushpop(heap, item)
+
+    result = []
+    while heap:
+        result.append(heapq.heappop(heap).word)
+    return result[::-1]
 ```
 
 ### Search Suggestions System (LeetCode 1268)
 
 ```python
+import bisect
+
 def suggestedProducts(self, products: list[str], searchWord: str) -> list[list[str]]:
     """
     Return 3 lexicographically smallest products for each prefix.
