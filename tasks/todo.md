@@ -6,8 +6,8 @@
 - [x] Refactor 05-jump-game.md
 - [ ] Refactor 01-greedy-basics.md
 - [x] Refactor 04-meeting-rooms.md
-- [ ] Refactor 06-gas-station.md
-- [ ] Refactor 07-candy-distribution.md
+- [x] Refactor 06-gas-station.md
+- [x] Refactor 07-candy-distribution.md
 
 ## Completed 08-partition-labels.md
 1. Analyzed `12-greedy/08-partition-labels.md` for errors, improvements in explanations, correctness, and code readability
@@ -27,3 +27,15 @@
 - Expanded practice problems with `Divide Intervals Into Minimum Number of Groups` (LC 2406).
 - Checked the visual trace and complexity analysis; they are correct.
 - Added minor micro-optimization clarifications in Common Mistakes.
+
+## Completed 06-gas-station.md
+1. Improved `can_complete_circuit_v2` with a comment clarifying baseline tank logic.
+2. Fixed a logical error in `min_refuel_stops` where `if fuel >= target: break` was missing, which could lead to an unnecessary `-1` return when the heap was empty but the target was already reached.
+3. Added the "Destroying Asteroids (LC 2126)" problem to the Practice Problems to show a greedy accumulation problem.
+4. Expanded readability and clarified the implicit boundaries assumption (`n >= 1`).
+
+## Completed 07-candy-distribution.md
+1. Improved code correctness for Circular arrangement by refactoring the O(n^2) approach to an O(n) version using circular array unrolling.
+2. Verified and updated table for the time/space complexities respectively.
+3. Added another progressive practice problem Minimum Deletions to Make Character Frequencies Unique.
+4. Ensured markdown logic formatting was sound and readable.
