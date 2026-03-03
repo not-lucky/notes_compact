@@ -6,8 +6,8 @@
 
 **Why do we need different representations?** Think of a social network:
 
-- **Sparse network**: Most people have 100-500 friends out of billions of users
-- **Dense network**: A small club where everyone knows everyone
+- **Sparse network**: Most people have 100-500 friends out of billions of users.
+- **Dense network**: A small club where everyone knows everyone.
 
 For sparse networks (most real-world graphs), storing "who knows whom" as a list is efficient. For dense networks, a matrix makes lookups instant.
 
@@ -18,18 +18,18 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
 
 **Mental model - The Phone Book Analogy**:
 
-- **Adjacency List** = Phone book with each person's contacts listed under their name
-  - Finding all of Alice's friends: O(1) - just look up Alice's entry
-  - Checking if Alice knows Bob: O(degree) - scan Alice's contact list
+- **Adjacency List** = Phone book with each person's contacts listed under their name.
+  - Finding all of Alice's friends: O(1) to find Alice, then O(degree) to scan her contacts.
+  - Checking if Alice knows Bob: O(degree) - scan Alice's contact list.
 - **Adjacency Matrix** = Giant grid where row=caller, column=receiver, cell=connected?
-  - Finding all of Alice's friends: O(n) - scan entire row
-  - Checking if Alice knows Bob: O(1) - instant lookup at [Alice][Bob]
+  - Finding all of Alice's friends: O(V) - scan entire row.
+  - Checking if Alice knows Bob: O(1) - instant lookup at `[Alice][Bob]`.
 
 **When the representation matters most**:
 
-- BFS/DFS traverse neighbors → Adjacency List wins (O(degree) per node)
-- Floyd-Warshall checks all pairs → Adjacency Matrix wins (O(1) per check)
-- Most interview problems → Default to Adjacency List
+- BFS/DFS traverse neighbors → Adjacency List wins (O(degree) per node, O(V+E) overall).
+- Floyd-Warshall checks all pairs → Adjacency Matrix wins (O(1) per check). Floyd-Warshall intrinsically requires an adjacency matrix because its DP state tracks the shortest path between *every* pair of vertices, which inherently requires $O(V^2)$ space.
+- Most interview problems → Default to Adjacency List.
 
 ---
 
@@ -37,21 +37,21 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
 
 **Don't use Adjacency Matrix when:**
 
-- Graph is sparse (E << V²) - wastes O(V²) space
-- You need to iterate all edges - O(V²) vs O(E) for list
-- Memory is constrained - matrix scales quadratically
+- Graph is sparse (E << V²) - wastes O(V²) space.
+- You need to iterate all edges - O(V²) vs O(V + E) for list.
+- Memory is constrained - matrix scales quadratically.
 
 **Don't use Adjacency List when:**
 
-- Frequent "does edge exist?" queries - O(degree) vs O(1) for matrix
-- Graph is dense (E ≈ V²) - list overhead exceeds matrix
-- Using Floyd-Warshall algorithm - needs matrix structure
+- Frequent "does edge exist?" queries - O(degree) vs O(1) for matrix.
+- Graph is dense (E ≈ V²) - list overhead exceeds matrix.
+- Using Floyd-Warshall algorithm - needs matrix structure for $O(V^2)$ state.
 
 **Don't over-engineer representation when:**
 
-- Problem gives adjacency list directly - use it as-is
-- Grid problem - use implicit neighbors, don't build explicit graph
-- Tree problem - parent/children pointers often cleaner
+- Problem gives adjacency list directly - use it as-is.
+- Grid problem - use implicit neighbors, don't build explicit graph.
+- Tree problem - parent/children pointers often cleaner.
 
 ---
 
@@ -59,10 +59,10 @@ For sparse networks (most real-world graphs), storing "who knows whom" as a list
 
 Understanding graph representations is critical because:
 
-1. **Foundation for all graph problems**: Every graph algorithm builds on this
-2. **Trade-off decisions**: Space vs time, sparse vs dense graphs
-3. **Interview input formats**: You'll receive edges as lists, must build your own structure
-4. **Conversion skills**: Often need to convert between representations
+1. **Foundation for all graph problems**: Every graph algorithm builds on this.
+2. **Trade-off decisions**: Space vs time, sparse vs dense graphs.
+3. **Interview input formats**: You'll receive edges as lists, must build your own structure.
+4. **Conversion skills**: Often need to convert between representations.
 
 ### FANG Perspective
 - **Amazon** loves Grid/Matrix traversal problems (like "Rotting Oranges" or "Number of Islands") and often asks them as a disguised graph problem. You must recognize when a 2D matrix *is* the graph vs when a 2D matrix is an adjacency matrix.
@@ -78,7 +78,7 @@ A **graph** G = (V, E) consists of:
 - **Vertices (V)**: Nodes/points
 - **Edges (E)**: Connections between vertices
 
-```
+```text
 Undirected Graph:           Directed Graph:
     0 ─── 1                     0 ──▶ 1
     │     │                     │     │
@@ -119,25 +119,17 @@ In an **undirected graph**, every edge is either a Tree Edge or a Back Edge. For
 
 **Most common for interviews.** Store neighbors for each vertex.
 
-<details>
-<summary>Python</summary>
-
 ```python
-from collections import defaultdict
-
-def build_adjacency_list(n: int, edges: list[list[int]],
-                          directed: bool = False) -> dict[int, list[int]]:
+def build_adjacency_list(n: int, edges: list[list[int]], directed: bool = False) -> list[list[int]]:
     """
-    Build adjacency list from edge list.
+    Build adjacency list from edge list for nodes 0 to n-1.
 
-    Time: O(E)
-    Space: O(V + E)
+    Time: O(V + E)  # V to initialize, E to populate
+    Space: O(V + E) # V lists, E elements in lists (or 2E if undirected)
     """
-    graph = defaultdict(list)
-
-    # Initialize all vertices (important for disconnected graphs)
-    for i in range(n):
-        graph[i]  # Creates empty list
+    # Initialize all vertices with an empty list
+    # Use an array (list of lists) when nodes are contiguous integers 0 to n-1
+    graph = [[] for _ in range(n)]
 
     for u, v in edges:
         graph[u].append(v)
@@ -151,11 +143,50 @@ edges = [[0, 1], [0, 2], [1, 3], [2, 3]]
 graph = build_adjacency_list(4, edges)
 # {0: [1, 2], 1: [0, 3], 2: [0, 3], 3: [1, 2]}
 ```
-</details>
+
+### Adjacency Set
+
+An **Adjacency Set** is a variation of the Adjacency List where the list of neighbors is replaced with a `set`.
+
+- **Pros**: $O(1)$ lookups to check if an edge exists between two specific nodes, while maintaining $O(V+E)$ space. Removes duplicate edges inherently.
+- **Cons**: Slightly higher memory overhead and iteration time than a simple list. Order of neighbors is not guaranteed.
+
+```python
+from collections import defaultdict
+
+def build_adjacency_set(n: int, edges: list[list[int]], directed: bool = False) -> dict[int, set[int]]:
+    graph = defaultdict(set)
+    for i in range(n):
+        graph[i] = set()
+
+    for u, v in edges:
+        graph[u].add(v)
+        if not directed:
+            graph[v].add(u)
+
+    return graph
+```
 
 ### With Weights
 
 For weighted graphs, store tuples/pairs/objects containing `(neighbor, weight)`.
+
+```python
+from collections import defaultdict
+
+def build_weighted_adjacency_list(n: int, edges: list[list[int]], directed: bool = False) -> dict[int, list[tuple[int, int]]]:
+    # edges is a list of [u, v, weight]
+    graph = defaultdict(list)
+    for i in range(n):
+        graph[i] = []
+
+    for u, v, weight in edges:
+        graph[u].append((v, weight))
+        if not directed:
+            graph[v].append((u, weight))
+
+    return graph
+```
 
 ---
 
@@ -163,17 +194,13 @@ For weighted graphs, store tuples/pairs/objects containing `(neighbor, weight)`.
 
 **Best for dense graphs** or when checking edge existence frequently.
 
-<details>
-<summary>Python</summary>
-
 ```python
-def build_adjacency_matrix(n: int, edges: list[list[int]],
-                            directed: bool = False) -> list[list[int]]:
+def build_adjacency_matrix(n: int, edges: list[list[int]], directed: bool = False) -> list[list[int]]:
     """
     Build adjacency matrix from edge list.
 
-    Time: O(V² + E)
-    Space: O(V²)
+    Time: O(V² + E) # V² to initialize, E to populate
+    Space: O(V²)    # n x n matrix
     """
     matrix = [[0] * n for _ in range(n)]
 
@@ -184,7 +211,36 @@ def build_adjacency_matrix(n: int, edges: list[list[int]],
 
     return matrix
 ```
-</details>
+
+---
+
+## Representation 3: Object-Oriented (Node Class)
+
+Often given as the structure in LeetCode problems (e.g., Clone Graph). Instead of an overarching dictionary, nodes hold references to their neighbors.
+
+```python
+class Node:
+    def __init__(self, val: int = 0, neighbors: list['Node'] | None = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+        
+    def __repr__(self):
+        return f"Node({self.val})" 
+
+# Building a graph:
+# 1 -- 2
+# |    |
+# 4 -- 3
+node1 = Node(1)
+node2 = Node(2)
+node3 = Node(3)
+node4 = Node(4)
+
+node1.neighbors = [node2, node4]
+node2.neighbors = [node1, node3]
+node3.neighbors = [node2, node4]
+node4.neighbors = [node1, node3]
+```
 
 ---
 
@@ -192,7 +248,7 @@ def build_adjacency_matrix(n: int, edges: list[list[int]],
 
 | Operation         | Adjacency List | Adjacency Matrix | Edge List |
 | ----------------- | -------------- | ---------------- | --------- |
-| **Space**             | **O(V + E)**       | **O(V²)**            | O(E)      |
+| **Space**         | **O(V + E)**   | **O(V²)**        | O(E)      |
 | Add edge          | O(1)           | O(1)             | O(1)      |
 | Remove edge       | O(degree)      | O(1)             | O(E)      |
 | Check edge exists | O(degree)      | O(1)             | O(E)      |
@@ -201,12 +257,12 @@ def build_adjacency_matrix(n: int, edges: list[list[int]],
 
 ### Sparse vs Dense Representation Analysis
 
-1. **Sparse Graphs ($E \ll V^2$)**:
+1. **Sparse Graphs ($E \\ll V^2$)**:
    - For example, cities connected by highways, or users in a social network.
-   - Using an **Adjacency Matrix** here is extremely wasteful. A matrix for 1 million users takes $10^6 \times 10^6$ bytes = 1 Terabyte of memory, mostly storing `0`s (no connection).
+   - Using an **Adjacency Matrix** here is extremely wasteful. A matrix for 1 million users takes $10^6 \\times 10^6$ bytes = 1 Terabyte of memory, mostly storing `0`s (no connection).
    - An **Adjacency List** only stores actual connections, keeping memory proportional to the actual data $O(V + E)$.
 
-2. **Dense Graphs ($E \approx V^2$)**:
+2. **Dense Graphs ($E \\approx V^2$)**:
    - For example, flight paths between major hubs, or small highly connected clusters.
    - An **Adjacency Matrix** is very efficient here. It offers $O(1)$ edge lookups and has lower constant overhead than a list of lists or hash maps. The $O(V^2)$ memory is justified because almost all cells are `1`.
 
@@ -228,7 +284,7 @@ Grids (2D arrays) are graphs where:
 
 **Crucial Theory**: *Never build an explicit Adjacency List for a grid problem.* Grids are already their own adjacency matrix / graph representation. The connections are implicitly defined by the indices.
 
-```
+```text
 Grid:               Implicit Graph:
 1 1 0               (0,0) ─── (0,1)   (0,2)
 1 1 0                 │         │
@@ -239,17 +295,19 @@ Grid:               Implicit Graph:
 
 ### Grid Traversal Template
 
-<details>
-<summary>Python</summary>
+This template demonstrates how we handle nodes (cells) and edges (directions) without an explicit graph structure. Note that this snippet shows a `while` loop over a queue, a typical structure for BFS on a grid.
 
 ```python
 from collections import deque
 
 def grid_bfs(grid: list[list[int]], start: tuple[int, int]):
+    if not grid or not grid[0]:
+        return
+        
     rows, cols = len(grid), len(grid[0])
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # Right, Left, Down, Up
 
-    visited = set([start])
+    visited = {start}
     queue = deque([start])
 
     while queue:
@@ -257,18 +315,22 @@ def grid_bfs(grid: list[list[int]], start: tuple[int, int]):
 
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
-            # 1. Bounds check
-            # 2. Visited check
-            # 3. Validity check (e.g., grid[nr][nc] == 1)
-            if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in visited and grid[nr][nc] == 1:
+
+            # 1. Bounds check (Separated for readability)
+            if not (0 <= nr < rows and 0 <= nc < cols):
+                continue
+
+            # 2. Visited check & 3. Validity check (e.g., grid[nr][nc] == 1)
+            if (nr, nc) not in visited and grid[nr][nc] == 1:
                 visited.add((nr, nc))
                 queue.append((nr, nc))
 ```
-</details>
 
 ---
 
 ## Edge Cases
+
+Be prepared to handle these graph inputs in interviews:
 
 ```python
 # 1. Empty graph
@@ -279,15 +341,15 @@ n = 1, edges = []
 
 # 3. Disconnected graph
 #   0 - 1    3 - 4
-edges = [[0, 1], [3, 4]]
+n = 5, edges = [[0, 1], [3, 4]]
 
 # 4. Self-loop
-edges = [[0, 0]]  # Node connected to itself
+n = 1, edges = [[0, 0]]  # Node connected to itself
 
 # 5. Multiple edges between same nodes
-edges = [[0, 1], [0, 1]]  # Usually should deduplicate
+n = 2, edges = [[0, 1], [0, 1]]  # Usually should deduplicate or use Adj Set
 
-# 6. Node with no edges
+# 6. Node with no edges (isolated)
 n = 3, edges = [[0, 1]]  # Node 2 is isolated
 ```
 
@@ -296,31 +358,47 @@ n = 3, edges = [[0, 1]]  # Node 2 is isolated
 ## Interview Tips
 
 1. **Ask about input format**: Edge list? Adjacency list? What represents edges?
-2. **Clarify directed/undirected**: Critical for building graph correctly
-3. **Handle disconnected graphs**: Don't assume all nodes are reachable
-4. **Initialize all nodes**: Important for graphs with isolated nodes
+2. **Clarify directed/undirected**: Critical for building graph correctly.
+3. **Handle disconnected graphs**: Don't assume all nodes are reachable from node 0.
+4. **Initialize all nodes**: Important for graphs with isolated nodes. Always build an entry for `0..n-1`.
 5. **Use correct data structure**: Default to Array/Vector of Arrays/Vectors when node IDs are `0` to `n-1`. Only use HashMap/Dictionary if nodes are arbitrary strings/values.
 
 ---
 
 ## Practice Problems
 
+### Foundational Practice
+
+These problems help you get comfortable with basic graph structures and properties.
+
 | #   | Problem                      | Difficulty | Key Concept           |
 | --- | ---------------------------- | ---------- | --------------------- |
-| 1   | Find if Path Exists in Graph | Easy       | Basic graph traversal |
-| 2   | Clone Graph                  | Medium     | Graph construction    |
-| 3   | Number of Islands            | Medium     | Grid as graph         |
-| 4   | Graph Valid Tree             | Medium     | Connected + acyclic   |
+| 1791| [Find Center of Star Graph](https://leetcode.com/problems/find-center-of-star-graph/) | Easy       | Graph Properties / Degrees / Easy intro |
+| 997 | [Find the Town Judge](https://leetcode.com/problems/find-the-town-judge/) | Easy       | Indegree vs Outdegree |
+| 1971| [Find if Path Exists in Graph](https://leetcode.com/problems/find-if-path-exists-in-graph/) | Easy       | Basic graph traversal (BFS/DFS) |
+| 1557| [Minimum Number of Vertices to Reach All Nodes](https://leetcode.com/problems/minimum-number-of-vertices-to-reach-all-nodes/) | Medium     | In-degrees / Reachability |
+
+### Standard Practice
+
+These are common interview patterns related to graph representations and traversals.
+
+| #   | Problem                      | Difficulty | Key Concept           |
+| --- | ---------------------------- | ---------- | --------------------- |
+| 133 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | Medium     | Object-Oriented Graph construction |
+| 200 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) | Medium     | Grid as implicit graph |
+| 797 | [All Paths From Source to Target](https://leetcode.com/problems/all-paths-from-source-to-target/) | Medium     | DFS with Adjacency List |
+| 261 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | Medium     | Connected components + Cycle detection |
+| 310 | [Minimum Height Trees](https://leetcode.com/problems/minimum-height-trees/) | Medium     | Topological sort / Degrees |
 
 ---
 
 ## Key Takeaways
 
-1. **Adjacency list** is default for interviews (sparse, efficient)
-2. **Adjacency matrix** for dense graphs or edge existence checks
-3. **Always handle disconnected graphs**: Iterate over all nodes
+1. **Adjacency list** is default for interviews (sparse, efficient).
+2. **Adjacency matrix** for dense graphs or edge existence checks.
+3. **Always handle disconnected graphs**: Iterate over all nodes.
 4. **Grids are implicit graphs**: Each cell is a node, never build an explicit graph for a grid.
-5. **Know the input format**: Build graph accordingly
+5. **Know the input format**: Build graph accordingly.
 6. **Mind the recursion limits**: Especially important in Python when dealing with deep graphs.
 
 ---

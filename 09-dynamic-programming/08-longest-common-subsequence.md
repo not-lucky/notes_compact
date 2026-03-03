@@ -240,8 +240,10 @@ Finding the *length* of the LCS is usually the goal, but sometimes you need to r
 ```python
 def get_lcs_string(text1: str, text2: str) -> str:
     """
-    Time Complexity: O(M * N)
-    Space Complexity: O(M * N)
+    Finds and returns the actual longest common subsequence string.
+    
+    Time Complexity: O(M * N) to build DP table + O(M + N) to backtrack
+    Space Complexity: O(M * N) for the DP table
     """
     m, n = len(text1), len(text2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
@@ -277,6 +279,20 @@ def get_lcs_string(text1: str, text2: str) -> str:
 
 ---
 
+## Progressive Problems to Master LCS
+
+To truly internalize the LCS pattern, work through these problems in order:
+
+1.  **[Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) (LeetCode 1143):** The base problem. Implement both top-down and bottom-up solutions.
+2.  **[Is Subsequence](https://leetcode.com/problems/is-subsequence/) (LeetCode 392):** A simpler problem that can be solved with two pointers, but thinking about how LCS applies here builds intuition (it's LCS where we only care if the length matches the shorter string).
+3.  **[Maximum Length of Repeated Subarray](https://leetcode.com/problems/maximum-length-of-repeated-subarray/) (LeetCode 718):** This is the "Longest Common Substring" variation discussed above. Understand why the `dp` value must reset to `0` on a mismatch.
+4.  **[Uncrossed Lines](https://leetcode.com/problems/uncrossed-lines/) (LeetCode 1035):** Recognize that "lines cannot cross" is mathematically identical to "relative order must be maintained."
+5.  **[Minimum ASCII Delete Sum for Two Strings](https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/) (LeetCode 712):** Apply costs to the DP transitions instead of just $+1$ or $\max$.
+6.  **[Longest Palindromic Subsequence](https://leetcode.com/problems/longest-palindromic-subsequence/) (LeetCode 516):** The classic trick: `LCS(s, s[::-1])`.
+7.  **[Shortest Common Supersequence](https://leetcode.com/problems/shortest-common-supersequence/) (LeetCode 1092):** The ultimate test. Requires you to fully understand backtracking to reconstruct the answer string after finding the LCS.
+
+---
+
 ## Common Variations & Applications
 
 LCS is a foundational pattern. Many problems are just LCS in disguise or require minor tweaks to the recurrence relation.
@@ -288,6 +304,41 @@ Because characters must be contiguous, the state definition changes. `dp[i][j]` 
 
 If the characters mismatch, the contiguous chain is broken, so we **must reset the length to `0`**. The answer is not necessarily at `dp[m][n]` anymore; it's the maximum value found anywhere in the table.
 
+**Top-Down (Memoization):**
+```python
+def longest_common_substring_memo(text1: str, text2: str) -> int:
+    """
+    Time Complexity: O(M * N)
+    Space Complexity: O(M * N)
+    """
+    m, n = len(text1), len(text2)
+    memo = {}
+    
+    def dfs(i: int, j: int) -> int:
+        # Base case: empty prefix means 0 length contiguous match
+        if i == 0 or j == 0:
+            return 0
+            
+        if (i, j) in memo:
+            return memo[(i, j)]
+            
+        res = 0
+        if text1[i - 1] == text2[j - 1]:
+            res = 1 + dfs(i - 1, j - 1)
+            
+        memo[(i, j)] = res
+        return res
+        
+    max_len = 0
+    # To find the global maximum, we must try ending the substring at all possible pairs
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            max_len = max(max_len, dfs(i, j))
+            
+    return max_len
+```
+
+**Bottom-Up 2D DP:**
 ```python
 def longest_common_substring(text1: str, text2: str) -> int:
     """
@@ -314,6 +365,43 @@ def longest_common_substring(text1: str, text2: str) -> int:
 
 If characters match, there's no cost. If they differ, we must delete either `s1[i-1]` or `s2[j-1]` and add its ASCII value to our running cost.
 
+**Top-Down (Memoization):**
+```python
+def minimum_delete_sum_memo(s1: str, s2: str) -> int:
+    """
+    Time Complexity: O(M * N)
+    Space Complexity: O(M * N)
+    """
+    m, n = len(s1), len(s2)
+    memo = {}
+
+    def dfs(i: int, j: int) -> int:
+        if (i, j) in memo:
+            return memo[(i, j)]
+            
+        # Base cases: cost to delete all remaining characters
+        if i == 0 and j == 0:
+            return 0
+        if i == 0:
+            res = dfs(0, j - 1) + ord(s2[j - 1])
+        elif j == 0:
+            res = dfs(i - 1, 0) + ord(s1[i - 1])
+        else:
+            if s1[i - 1] == s2[j - 1]:
+                res = dfs(i - 1, j - 1)
+            else:
+                res = min(
+                    dfs(i - 1, j) + ord(s1[i - 1]),
+                    dfs(i, j - 1) + ord(s2[j - 1])
+                )
+                
+        memo[(i, j)] = res
+        return res
+
+    return dfs(m, n)
+```
+
+**Bottom-Up 2D DP:**
 ```python
 def minimum_delete_sum(s1: str, s2: str) -> int:
     """
@@ -343,25 +431,110 @@ def minimum_delete_sum(s1: str, s2: str) -> int:
     return dp[m][n]
 ```
 
-### 3. Shortest Common Supersequence
+### 3. Shortest Common Supersequence (LeetCode 1092)
 *Problem: Find the shortest string that has both `str1` and `str2` as subsequences.*
 
 **Insight:** The shortest common supersequence consists of the Longest Common Subsequence included exactly once, padded with all the remaining un-matched characters from both strings.
 `Length = len(str1) + len(str2) - len(LCS(str1, str2))`
 
-### 4. Longest Palindromic Subsequence
+If we need to return the actual string, we can backtrack through the DP table, similarly to how we reconstruct the LCS string, but making sure to append characters from both strings when they don't match.
+
+**Constructing the String:**
+```python
+def shortest_common_supersequence(str1: str, str2: str) -> str:
+    """
+    Time Complexity: O(M * N)
+    Space Complexity: O(M * N)
+    """
+    m, n = len(str1), len(str2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    # 1. Build the LCS DP table
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+    # 2. Backtrack to find the supersequence
+    res = []
+    i, j = m, n
+
+    while i > 0 and j > 0:
+        if str1[i - 1] == str2[j - 1]:
+            # Matched character, add once
+            res.append(str1[i - 1])
+            i -= 1
+            j -= 1
+        elif dp[i - 1][j] > dp[i][j - 1]:
+            # Came from top, meaning str1[i-1] is not in LCS
+            res.append(str1[i - 1])
+            i -= 1
+        else:
+            # Came from left, meaning str2[j-1] is not in LCS
+            res.append(str2[j - 1])
+            j -= 1
+
+    # Add any remaining characters
+    while i > 0:
+        res.append(str1[i - 1])
+        i -= 1
+    while j > 0:
+        res.append(str2[j - 1])
+        j -= 1
+
+    return "".join(reversed(res))
+```
+
+### 4. Longest Palindromic Subsequence (LeetCode 516)
 *Problem: Find the longest subsequence of a string `s` that is a palindrome.*
 
-**Insight:** A clever trick! The longest palindromic subsequence of `s` is simply the Longest Common Subsequence of `s` and `reverse(s)`.
+**Approach 1: Using LCS Insight**
+A clever trick! The longest palindromic subsequence of `s` is simply the Longest Common Subsequence of `s` and `reverse(s)`.
 
 ```python
-def longest_palindrome_subseq(s: str) -> int:
+def longest_palindrome_subseq_lcs(s: str) -> int:
     """
     Time Complexity: O(N^2)
     Space Complexity: O(N^2)
     """
     # Reverse string in Python: s[::-1]
+    # You can just call your longest_common_subsequence function
     return longest_common_subsequence(s, s[::-1])
+```
+
+**Approach 2: Direct Top-Down (Memoization) DP**
+Alternatively, we can directly find the longest palindromic subsequence by comparing the left and right pointers of the string.
+
+```python
+def longest_palindrome_subseq_memo(s: str) -> int:
+    """
+    Time Complexity: O(N^2)
+    Space Complexity: O(N^2)
+    """
+    memo = {}
+    
+    def dfs(l: int, r: int) -> int:
+        # Base case: empty string
+        if l > r:
+            return 0
+        # Base case: single character is a palindrome of length 1
+        if l == r:
+            return 1
+            
+        if (l, r) in memo:
+            return memo[(l, r)]
+            
+        if s[l] == s[r]:
+            res = 2 + dfs(l + 1, r - 1)
+        else:
+            res = max(dfs(l + 1, r), dfs(l, r - 1))
+            
+        memo[(l, r)] = res
+        return res
+        
+    return dfs(0, len(s) - 1)
 ```
 
 ### 5. Uncrossed Lines (LeetCode 1035)
@@ -369,6 +542,35 @@ def longest_palindrome_subseq(s: str) -> int:
 
 **Insight:** Because the lines cannot cross, the relative order of the matched elements is strictly preserved. This problem is literally just finding the Longest Common Subsequence of the two arrays.
 
+**Top-Down (Memoization):**
+```python
+def max_uncrossed_lines_memo(nums1: list[int], nums2: list[int]) -> int:
+    """
+    Time Complexity: O(M * N)
+    Space Complexity: O(M * N)
+    """
+    m, n = len(nums1), len(nums2)
+    memo = {}
+
+    def dfs(i: int, j: int) -> int:
+        if i == 0 or j == 0:
+            return 0
+            
+        if (i, j) in memo:
+            return memo[(i, j)]
+            
+        if nums1[i - 1] == nums2[j - 1]:
+            res = 1 + dfs(i - 1, j - 1)
+        else:
+            res = max(dfs(i - 1, j), dfs(i, j - 1))
+            
+        memo[(i, j)] = res
+        return res
+        
+    return dfs(m, n)
+```
+
+**Bottom-Up 2D DP:**
 ```python
 def max_uncrossed_lines(nums1: list[int], nums2: list[int]) -> int:
     """

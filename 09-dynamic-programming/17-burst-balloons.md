@@ -18,6 +18,21 @@ When dealing with arrays where removing an element changes the adjacency (neighb
 
 ---
 
+## Progressive Problems for Better Understanding
+
+Before jumping into the full complexity of Burst Balloons, it helps to understand simpler interval DP problems that build the foundation.
+
+1.  **Palindrome Partitioning (LeetCode 131, 132):**
+    *   *Concept:* Breaking an array/string into valid sub-intervals. Helps understand how to recursively partition an array.
+2.  **Guess Number Higher or Lower II (LeetCode 375):**
+    *   *Concept:* Minimax in intervals. State is `dp(left, right) = min cost to guess the right number in range [left, right]`. You try picking every `k` in the range and taking the max cost of the left and right subproblems.
+3.  **Matrix Chain Multiplication (Classic DP):**
+    *   *Concept:* Grouping adjacent elements. State is `dp[i][j]` minimum cost to multiply matrices from `i` to `j`. We guess the last multiplication to happen between group `i...k` and `k+1...j`. This introduces the idea of splitting an interval `[left, right]` into two sub-intervals with a loop variable `k`.
+
+Burst Balloons takes the MCM pattern and turns it inside out: instead of merging adjacent groups, we are *removing* elements, which causes formerly separated elements to become adjacent.
+
+---
+
 ## Building Intuition: Why Think Backwards?
 
 Imagine we have balloons `[A, B, C, D]`.
@@ -83,21 +98,23 @@ Memoization is often much easier to write for Interval DP because you don't have
 from typing import List
 
 def maxCoins_memo(nums: List[int]) -> int:
-    """
-    Time Complexity: O(n^3)
-    Space Complexity: O(n^2) for the memoization dictionary
-    """
-    # 1. Add virtual boundaries
-    nums = [1] + nums + [1]
+    \"\"\"
+    Time Complexity: O(n^3) - number of subproblems is O(n^2), loop takes O(n)
+    Space Complexity: O(n^2) for the memoization dictionary and recursion stack
+    \"\"\"
+    # 1. Add virtual boundaries and filter out 0s (optimization)
+    # Bursting a 0 balloon yields 0 coins, so we can ignore them.
+    # We still keep the virtual 1 boundaries.
+    nums = [1] + [x for x in nums if x > 0] + [1]
     n = len(nums)
     memo = {}
 
     def dfs(left: int, right: int) -> int:
-        """
+        \"\"\"
         Returns max coins obtained by bursting all balloons
         strictly between index 'left' and 'right'.
         'left' and 'right' are the boundaries and are NOT burst.
-        """
+        \"\"\"
         # Base case: no balloons strictly between left and right
         if left + 1 == right:
             return 0
@@ -129,12 +146,15 @@ For Tabulation, **loop order is critical**. `dp[left][right]` depends on `dp[lef
 Therefore, we must solve subproblems ordered by **interval length**, or by moving `left` backwards and `right` forwards.
 
 ```python
+from typing import List
+
 def maxCoins_tabulation(nums: List[int]) -> int:
-    """
+    \"\"\"
     Time Complexity: O(n^3)
     Space Complexity: O(n^2) for the DP table
-    """
-    nums = [1] + nums + [1]
+    \"\"\"
+    # Filter 0s for optimization (0s contribute nothing to the score)
+    nums = [1] + [x for x in nums if x > 0] + [1]
     n = len(nums)
 
     # dp[left][right] = max coins from bursting balloons strictly between left and right
@@ -245,11 +265,13 @@ A standard 2D state `dp[left][right]` cannot remember how many boxes of the same
 `dp(left, right, k)` = max points for `boxes[left...right]` given that there are exactly `k` boxes of the same color as `boxes[left]` attached immediately to the left of `left`.
 
 ```python
+from typing import List
+
 def removeBoxes(boxes: List[int]) -> int:
-    """
+    \"\"\"
     Time Complexity: O(n^4)
     Space Complexity: O(n^3)
-    """
+    \"\"\"
     memo = {}
 
     def dp(left: int, right: int, k: int) -> int:

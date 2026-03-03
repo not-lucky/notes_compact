@@ -85,6 +85,61 @@ Where will the final answer be stored once the computation is complete?
 
 ---
 
+
+## Example Walkthrough: Climbing Stairs
+
+**Problem:** You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+### 1. Identify the State
+`dp(i)` will represent the total number of distinct ways to reach step `i`.
+
+### 2. Recurrence Relation
+To reach step `i`, you must have come from either step `i-1` (by taking 1 step) or step `i-2` (by taking 2 steps).
+Therefore, `dp(i) = dp(i-1) + dp(i-2)`.
+
+### 3. Base Cases
+- `dp(0) = 1` (1 way to stay at the ground: do nothing)
+- `dp(1) = 1` (1 way to reach the first step: take 1 step)
+
+### Solution: Top-Down Memoization
+This is the required approach that solves the problem efficiently using recursion and caching.
+
+```python
+def climbStairs(n: int) -> int:
+    memo = {}
+    
+    def dp(i: int) -> int:
+        # Base cases
+        if i <= 1:
+            return 1
+            
+        # Check cache
+        if i in memo:
+            return memo[i]
+            
+        # Compute and memoize
+        memo[i] = dp(i - 1) + dp(i - 2)
+        return memo[i]
+        
+    return dp(n)
+```
+
+### Solution: Bottom-Up Tabulation
+```python
+def climbStairsTab(n: int) -> int:
+    if n <= 1:
+        return 1
+        
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    dp[1] = 1
+    
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+        
+    return dp[n]
+```
+
 ## The Four Stages of DP Solutions (Fibonacci Example)
 
 Most DP problems can be solved by progressing through these four stages. In an interview, explaining this progression demonstrates a deep understanding of the concepts.
@@ -109,7 +164,7 @@ def fib_naive(n: int) -> int:
 Add a cache (dictionary or array) to the recursive function. Check the cache before computing, and save the result before returning.
 
 ```python
-def fib_memo(n: int, memo: dict = None) -> int:
+def fib_memo(n: int, memo: dict[int, int] | None = None) -> int:
     if memo is None:
         memo = {}
 
@@ -205,6 +260,145 @@ If your DP solution is failing, check these common mistakes:
 2. **Off-by-One Array Bounds:** When defining a DP array `dp = [0] * n`, remember the indices are `0` to `n-1`. Often, it's easier to use `dp = [0] * (n + 1)` so `dp[n]` represents the answer for length `n`.
 3. **Missing State Transitions:** Did you consider *all* possible choices at the current state? Make sure your recurrence handles every option.
 4. **Initialization Values:** Is your DP array initialized with `0`, `-1`, `float('inf')`, or `float('-inf')`? Choosing the wrong initial value (e.g., initializing with `0` when looking for a minimum) will break the logic. For minimums, use `float('inf')`; for maximums, use `float('-inf')`.
+
+
+## Progressive Problems to Master DP Fundamentals
+
+To build a solid intuition for Dynamic Programming, solve these problems in order. They gradually introduce new concepts.
+
+### 1. 1D Array / Sequence (Fibonacci Style)
+These problems depend only on 1 or 2 previous states.
+
+#### Min Cost Climbing Stairs (Easy)
+Introduces choosing between costs at each step. You can start at step 0 or 1.
+```python
+def minCostClimbingStairs(cost: list[int]) -> int:
+    memo = {}
+    
+    def dp(i: int) -> int:
+        # Base case: we reached or passed the top step
+        if i >= len(cost):
+            return 0
+            
+        if i in memo:
+            return memo[i]
+            
+        # Decision: take 1 step or 2 steps
+        memo[i] = cost[i] + min(dp(i + 1), dp(i + 2))
+        return memo[i]
+        
+    return min(dp(0), dp(1))
+```
+
+#### House Robber (Medium)
+Classic DP. You can't take adjacent items. `dp(i) = max(dp(i+1), nums[i] + dp(i+2))`
+```python
+def rob(nums: list[int]) -> int:
+    memo = {}
+    
+    def dp(i: int) -> int:
+        if i >= len(nums):
+            return 0
+            
+        if i in memo:
+            return memo[i]
+            
+        # Decision: Rob this house (and skip next), or skip this house
+        rob_current = nums[i] + dp(i + 2)
+        skip_current = dp(i + 1)
+        
+        memo[i] = max(rob_current, skip_current)
+        return memo[i]
+        
+    return dp(0)
+```
+
+### 2. 1D Array (Longest Increasing Subsequence Style)
+These problems depend on *all* previous states, not just the last few.
+
+#### Longest Increasing Subsequence (Medium)
+Core pattern. `dp(i)` finds the longest increasing subsequence starting at index `i`.
+```python
+def lengthOfLIS(nums: list[int]) -> int:
+    memo = {}
+    
+    def dp(i: int) -> int:
+        if i in memo:
+            return memo[i]
+            
+        # Minimum length is 1 (the element itself)
+        max_len = 1
+        
+        # Look ahead at all valid next elements
+        for j in range(i + 1, len(nums)):
+            if nums[j] > nums[i]:
+                max_len = max(max_len, 1 + dp(j))
+                
+        memo[i] = max_len
+        return memo[i]
+        
+    # We can start the LIS from any index
+    return max(dp(i) for i in range(len(nums)))
+```
+
+### 3. 2D DP (Grid Style)
+The state depends on coordinates `(r, c)` and transitions usually involve moving right/down.
+
+#### Unique Paths (Medium)
+Count ways to reach bottom-right.
+```python
+def uniquePaths(m: int, n: int) -> int:
+    memo = {}
+    
+    def dp(r: int, c: int) -> int:
+        # Out of bounds
+        if r >= m or c >= n:
+            return 0
+        # Reached bottom-right corner
+        if r == m - 1 and c == n - 1:
+            return 1
+            
+        state = (r, c)
+        if state in memo:
+            return memo[state]
+            
+        # Move right + move down
+        memo[state] = dp(r, c + 1) + dp(r + 1, c)
+        return memo[state]
+        
+    return dp(0, 0)
+```
+
+### 4. 2D DP (Knapsack Style)
+The state depends on an `index` in the array and a `capacity` constraint.
+
+#### Coin Change (Medium)
+Unbounded Knapsack problem. You can reuse the same coin multiple times.
+```python
+def coinChange(coins: list[int], amount: int) -> int:
+    memo = {}
+    
+    def dp(rem: int) -> int:
+        if rem < 0:
+            return -1
+        if rem == 0:
+            return 0
+            
+        if rem in memo:
+            return memo[rem]
+            
+        min_coins = float('inf')
+        
+        for coin in coins:
+            res = dp(rem - coin)
+            if res >= 0 and res < min_coins:
+                min_coins = 1 + res
+                
+        memo[rem] = min_coins if min_coins != float('inf') else -1
+        return memo[rem]
+        
+    return dp(amount)
+```
 
 ## Summary
 

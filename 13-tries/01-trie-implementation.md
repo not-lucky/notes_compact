@@ -22,9 +22,10 @@ A trie (pronounced "try", from re**trie**val) is a tree-like data structure that
 Words: "apple", "app", "application", "apply"
 
 Without sharing (list): 5 + 3 + 11 + 5 = 24 characters stored
-With sharing (trie):    a-p-p-l-e (5) + l-i-c-a-t-i-o-n (8) + y (1) = 14 nodes
+With sharing (trie):    a-p-p-l-e (5) + i-c-a-t-i-o-n (7) + y (1) + "app" reuses existing (0) = 13 nodes
 
-The prefix "appl" is stored ONCE and shared by all four words.
+The prefix "app" is stored ONCE. "apple" and "apply" further share "appl".
+"app" needs zero extra nodes—it just marks the second 'p' as is_end.
 ```
 
 This sharing is why tries excel at prefix operations. When you traverse to node "app", you've already found ALL words starting with "app"—they're all in the subtree below!
@@ -86,11 +87,11 @@ At any point, you can ask "Is there a word that starts with the path I've taken?
 | **Delete**          | O(L)     | O(L)  | Recursion stack (or O(1) if iterative) |
 | **Get all with prefix** | O(L + k) | O(k)  | k = total chars in results          |
 
-**Space Complexity (Trie Total):** O(N × L × A) worst case
-- N = number of words
-- L = average word length
-- A = alphabet size (26 for lowercase)
-- *Using `__slots__` significantly reduces memory overhead in Python.*
+**Space Complexity (Trie Total):**
+- **Array-based:** O(N × L × A) worst case — each of up to N×L nodes allocates an array of size A
+- **HashMap-based:** O(N × L) worst case — each node only stores entries for characters that exist
+- N = number of words, L = average word length, A = alphabet size (26 for lowercase)
+- *Using `__slots__` significantly reduces per-node memory overhead in Python.*
 
 ---
 
@@ -284,11 +285,8 @@ class TrieNode:
     __slots__ = ['children', 'is_end']
 
     def __init__(self):
-        self.children: list['TrieNode' | None] = [None] * 26  # Index 0-25 for 'a'-'z'
+        self.children: list['TrieNode | None'] = [None] * 26  # Index 0-25 for 'a'-'z'
         self.is_end: bool = False
-
-    def _char_to_index(self, char: str) -> int:
-        return ord(char) - ord('a')
 
 
 class Trie:
@@ -297,10 +295,15 @@ class Trie:
     def __init__(self):
         self.root = TrieNode()
 
+    @staticmethod
+    def _char_to_index(char: str) -> int:
+        """Convert lowercase letter to array index (0-25)."""
+        return ord(char) - ord('a')
+
     def insert(self, word: str) -> None:
         node = self.root
         for char in word:
-            index = ord(char) - ord('a')
+            index = self._char_to_index(char)
             if node.children[index] is None:
                 node.children[index] = TrieNode()
             node = node.children[index]
@@ -316,7 +319,7 @@ class Trie:
     def _find_node(self, prefix: str) -> TrieNode | None:
         node = self.root
         for char in prefix:
-            index = ord(char) - ord('a')
+            index = self._char_to_index(char)
             if node.children[index] is None:
                 return None
             node = node.children[index]
@@ -334,14 +337,14 @@ These methods build upon the basic `Trie` class defined above.
 While the basic implementation uses a helper method `_find_node`, here's a standalone iterative search method showing the exact logic:
 
 ```python
-    def search_iterative(self, word: str) -> bool:
-        """Iterative search without a helper function."""
-        node = self.root
-        for char in word:
-            if char not in node.children:
-                return False
-            node = node.children[char]
-        return node.is_end
+def search_iterative(self, word: str) -> bool:
+    """Iterative search without a helper function."""
+    node = self.root
+    for char in word:
+        if char not in node.children:
+            return False
+        node = node.children[char]
+    return node.is_end
 ```
 
 ### Delete a Word
@@ -349,83 +352,83 @@ While the basic implementation uses a helper method `_find_node`, here's a stand
 Deleting a word requires careful memory management. We only delete nodes that aren't part of other words.
 
 ```python
-    def delete(self, word: str) -> bool:
-        """
-        Delete word from trie. Returns True if word existed and was deleted.
+def delete(self, word: str) -> bool:
+    """
+    Delete word from trie. Returns True if word existed and was deleted.
 
-        Strategy: Use recursion to find the word bottom-up. As we return,
-        delete nodes only if they have no children and are not the end of another word.
-        """
-        word_found = False
+    Strategy: Use recursion to find the word bottom-up. As we return,
+    delete nodes only if they have no children and are not the end of another word.
+    """
+    word_found = False
 
-        def _delete(node: TrieNode, word: str, depth: int) -> bool:
-            nonlocal word_found
+    def _delete(node: TrieNode, word: str, depth: int) -> bool:
+        nonlocal word_found
 
-            # Base case: reached the end of the word
-            if depth == len(word):
-                if node.is_end:
-                    word_found = True
-                    node.is_end = False
-                # Return True if this node can be deleted (no children and not end of another word)
-                return len(node.children) == 0 and not node.is_end
+        # Base case: reached the end of the word
+        if depth == len(word):
+            if node.is_end:
+                word_found = True
+                node.is_end = False
+            # Return True if this node can be deleted (no children and not end of another word)
+            return len(node.children) == 0 and not node.is_end
 
-            char = word[depth]
-            if char not in node.children:
-                return False  # Word doesn't exist
+        char = word[depth]
+        if char not in node.children:
+            return False  # Word doesn't exist
 
-            child = node.children[char]
-            should_delete_child = _delete(child, word, depth + 1)
+        child = node.children[char]
+        should_delete_child = _delete(child, word, depth + 1)
 
-            if should_delete_child:
-                del node.children[char]
-                # Return True if current node can be deleted
-                return len(node.children) == 0 and not node.is_end
+        if should_delete_child:
+            del node.children[char]
+            # Return True if current node can be deleted
+            return len(node.children) == 0 and not node.is_end
 
-            return False
+        return False
 
-        _delete(self.root, word, 0)
-        return word_found
+    _delete(self.root, word, 0)
+    return word_found
 ```
 
 ### Count Words with Prefix
 
 ```python
-    def countWordsWithPrefix(self, prefix: str) -> int:
-        """Count all words that start with prefix."""
-        node = self._find_node(prefix)
-        if node is None:
-            return 0
-        return self._count_words(node)
+def countWordsWithPrefix(self, prefix: str) -> int:
+    """Count all words that start with prefix."""
+    node = self._find_node(prefix)
+    if node is None:
+        return 0
+    return self._count_words(node)
 
-    def _count_words(self, node: TrieNode) -> int:
-        """Count all words in subtree rooted at node."""
-        count = 1 if node.is_end else 0
-        for child in node.children.values():
-            count += self._count_words(child)
-        return count
+def _count_words(self, node: TrieNode) -> int:
+    """Count all words in subtree rooted at node."""
+    count = 1 if node.is_end else 0
+    for child in node.children.values():
+        count += self._count_words(child)
+    return count
 ```
 
 ### Get All Words with Prefix
 
 ```python
-    def getWordsWithPrefix(self, prefix: str) -> list[str]:
-        """Return all words that start with prefix."""
-        result = []
-        node = self._find_node(prefix)
-        if node is None:
-            return result
-
-        def dfs(current_node: TrieNode, path: list[str]):
-            if current_node.is_end:
-                result.append(prefix + ''.join(path))
-
-            for char, child in current_node.children.items():
-                path.append(char)
-                dfs(child, path)
-                path.pop()
-
-        dfs(node, [])
+def getWordsWithPrefix(self, prefix: str) -> list[str]:
+    """Return all words that start with prefix."""
+    result = []
+    node = self._find_node(prefix)
+    if node is None:
         return result
+
+    def dfs(current_node: TrieNode, path: list[str]):
+        if current_node.is_end:
+            result.append(prefix + ''.join(path))
+
+        for char, child in current_node.children.items():
+            path.append(char)
+            dfs(child, path)
+            path.pop()
+
+    dfs(node, [])
+    return result
 ```
 
 ### Trie with Word Count
@@ -548,12 +551,15 @@ class MapSum:
 
 ## Edge Cases
 
-1. **Empty string**: Should empty string be a valid word?
-2. **Single character**: Works normally
-3. **Duplicate inserts**: Typically no-op (already exists)
+1. **Empty string**: Should empty string be a valid word? Clarify with interviewer. If yes, root itself is marked `is_end = True`
+2. **Single character**: Works normally — one child from root, marked as end
+3. **Duplicate inserts**: No-op for basic trie (already `is_end = True`). For count-based trie, increment count
 4. **Delete non-existent**: Return False, no modification
-5. **Search for prefix only**: Use `startsWith`, not `search`
-6. **Case sensitivity**: Decide upfront (lowercase only vs mixed)
+5. **Search for prefix only**: Use `startsWith`, not `search` — common mistake
+6. **Case sensitivity**: Decide upfront (lowercase only vs mixed). Affects array sizing
+7. **Words that are prefixes of each other**: e.g., "app" and "apple" — `is_end` distinguishes them
+8. **Very long strings**: O(L) still, but deep recursion in delete can hit Python's recursion limit (~1000). Consider iterative delete for very long strings
+9. **Non-alphabetic characters**: If input may contain digits, hyphens, etc., use hashmap-based trie or extend array size
 
 ---
 
@@ -568,22 +574,31 @@ class MapSum:
 
 ## Practice Problems
 
-| #   | Problem                    | Difficulty | Key Concept                       |
-| --- | -------------------------- | ---------- | --------------------------------- |
-| 1   | Implement Trie             | Medium     | Basic implementation              |
-| 2   | Replace Words              | Medium     | Shortest prefix replacement       |
-| 3   | Map Sum Pairs              | Medium     | Trie with values                  |
-| 4   | Design Add and Search Words Data Structure | Medium | Trie + DFS for wildcards |
-| 5   | Longest Word in Dictionary | Medium     | Build word character by character |
-| 6   | Search Suggestions System  | Medium     | Trie + DFS for suggestions        |
-| 7   | Implement Magic Dictionary | Medium     | Trie with one-char tolerance      |
+### Progressive Practice (Easy → Medium → Hard)
+
+| #   | Problem                    | LeetCode | Difficulty | Key Concept                       |
+| --- | -------------------------- | -------- | ---------- | --------------------------------- |
+| 1   | Implement Trie             | 208      | Medium     | Basic insert/search/startsWith    |
+| 2   | Longest Word in Dictionary | 720      | Medium     | Build word character by character |
+| 3   | Replace Words              | 648      | Medium     | Shortest prefix replacement       |
+| 4   | Map Sum Pairs              | 677      | Medium     | Trie with values at nodes         |
+| 5   | Implement Magic Dictionary | 676      | Medium     | Trie with one-char tolerance      |
+| 6   | Design Add and Search Words Data Structure | 211 | Medium | Trie + DFS for '.' wildcards |
+| 7   | Search Suggestions System  | 1268     | Medium     | Trie + DFS for autocomplete       |
+| 8   | Maximum XOR of Two Numbers in an Array | 421 | Medium | Bitwise trie (greedy bit choice) |
+| 9   | Word Search II             | 212      | Hard       | Trie + backtracking on 2D grid    |
+| 10  | Palindrome Pairs           | 336      | Hard       | Trie of reversed words            |
+| 11  | Stream of Characters       | 1032     | Hard       | Trie of reversed words + rolling query |
+
+**Suggested order:** Start with #1 to nail the core implementation. Problems #2–#5 add
+one twist each. #6–#7 combine trie with DFS. #8 introduces bitwise tries (a common
+variant). #9–#11 are hard problems that combine tries with other techniques.
 
 ---
 
 ## Related Sections
 
-- [Word Dictionary](./02-word-dictionary.md) - Wildcard search
-- [Word Search II](./04-word-search-trie.md) - Trie combined with DFS
-- [Autocomplete System](./06-autocomplete.md) - Trie in system design
+- [Word Dictionary](./02-word-dictionary.md) - Wildcard search with '.' support
 - [Replace Words](./03-replace-words.md) - Shortest prefix matching
-- [Word Dictionary](./02-word-dictionary.md) - Wildcard search
+- [Word Search II](./04-word-search-trie.md) - Trie combined with DFS on grid
+- [Autocomplete System](./06-autocomplete.md) - Trie in system design

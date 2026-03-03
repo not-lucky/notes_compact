@@ -4,18 +4,18 @@
 
 ## Overview
 
-The **Word Break** problem (LeetCode 139) asks whether a given string $s$ can be completely segmented into a space-separated sequence of one or more dictionary words. It is a classic example of using Dynamic Programming (DP) to avoid redundant computation when exploring combinations.
+The **Word Break** problem (LeetCode 139) asks whether a given string `s` can be completely segmented into a space-separated sequence of one or more dictionary words. It is a classic example of using Dynamic Programming (DP) to avoid redundant computation when exploring combinations.
 
-If you can break a string `s[0..i]` into valid words, it implies there exists some split point `j` such that `s[0..j]` can be broken into valid words, and the remaining suffix `s[j..i]` is itself a valid dictionary word.
+If you can break a string `s[0:i]` into valid words, it implies there exists some split point `j` such that `s[0:j]` can be broken into valid words, and the remaining suffix `s[j:i]` is itself a valid dictionary word.
 
 ## Building Intuition
 
-Consider a string $s$ = `"catsanddog"` and a dictionary `wordDict = ["cat", "cats", "and", "sand", "dog"]`.
+Consider a string `s = "catsanddog"` and a dictionary `word_dict = ["cat", "cats", "and", "sand", "dog"]`.
 
 **Why does a Greedy approach fail?**
 If we greedily match the longest word, we might pick `"cats"`. The remaining string is `"anddog"`. We match `"and"`, leaving `"dog"`. We match `"dog"`, leaving `""`. This works!
 
-But what if the dictionary was `["cats", "dog", "sand", "and", "cat"]` and the string was `"catsanddog"`.
+But what if the dictionary was `["cats", "dog", "sand", "and", "cat"]` and the string was `"catsanddog"`?
 If we greedily pick `"cats"`, the remainder is `"anddog"`. If we didn't have `"and"` in our dictionary, but only `"sand"`, the greedy approach fails. However, picking `"cat" + "sand" + "dog"` would work perfectly.
 
 A greedy choice commits to a path that might lead to a dead end, failing to explore valid alternatives.
@@ -26,27 +26,27 @@ We can try all possible prefixes: `"c"`, `"ca"`, `"cat"`... If `"cat"` is a word
 Imagine trying to segment `"leetcode"`. We might reach the remainder `"ode"` via multiple paths if the dictionary contained `"l"`, `"le"`, `"eet"`, `"et"`, `"c"`. Computing whether `"ode"` can be segmented is identical regardless of how we got there. Recomputing it leads to an exponential $O(2^n)$ time complexity.
 
 **The DP Solution:**
-Instead of re-evaluating the same suffixes or prefixes, we can build the solution incrementally. We ask: "Can the prefix of length $i$ be segmented?"
-To answer this, we look at all possible lengths $j$ of the *last word* in that prefix. If the prefix of length $j$ is segmentable, and the last $i-j$ characters form a valid word, then the prefix of length $i$ is segmentable.
+Instead of re-evaluating the same suffixes or prefixes, we can build the solution incrementally. We ask: "Can the prefix of length `i` be segmented?"
+To answer this, we look at all possible lengths `j` of the *last word* in that prefix. If the prefix of length `j` is segmentable, and the last `i-j` characters form a valid word, then the prefix of length `i` is segmentable.
 
 ## Formal Recurrence
 
-Let $dp[i]$ be a boolean value indicating whether the prefix of $s$ of length $i$ (which corresponds to the substring $s[0 \dots i-1]$) can be segmented into words from the dictionary.
+Let `dp[i]` be a boolean value indicating whether the prefix of `s` of length `i` (which corresponds to the substring `s[0:i]`) can be segmented into words from the dictionary.
 
 **State:**
-$dp[i]$ = `True` if $s[0 \dots i-1]$ can be segmented, `False` otherwise.
+`dp[i] = True` if `s[0:i]` can be segmented, `False` otherwise.
 
 **Recurrence Relation:**
-For a given length $i$, we check all possible split points $j$ where $0 \le j < i$.
-If $dp[j]$ is `True` (meaning the prefix of length $j$ is valid), we only need to check if the remaining substring $s[j \dots i-1]$ is in the dictionary.
+For a given length `i`, we check all possible split points `j` where $0 \le j < i$.
+If `dp[j]` is `True` (meaning the prefix of length `j` is valid), we only need to check if the remaining substring `s[j:i]` is in the dictionary.
 
 $$
 dp[i] = \bigvee_{j=0}^{i-1} \big( dp[j] \text{ AND } (s[j \dots i-1] \in \text{word\_dict}) \big)
 $$
 
 **Base Case:**
-- $dp[0] = \text{True}$
-An empty string can be trivially "segmented" into 0 words. This base case acts as the anchor that allows the first word in the string to match (when $j=0$).
+- `dp[0] = True`
+An empty string can be trivially "segmented" into 0 words. This base case acts as the anchor that allows the first word in the string to match (when `j=0`).
 
 ---
 
@@ -92,7 +92,7 @@ def word_break_memo(s: str, word_dict: list[str]) -> bool:
 
 ### 2. Bottom-Up Tabulation (Standard)
 
-This is the standard DP approach. We build an array $dp$ of size $n+1$.
+This is the standard DP approach. We build an array `dp` of size `n + 1`. This uses a "pull" style DP, where to compute `dp[i]`, we look back at previous states `dp[j]`.
 
 ```python
 def word_break_tabulation(s: str, word_dict: list[str]) -> bool:
@@ -100,30 +100,30 @@ def word_break_tabulation(s: str, word_dict: list[str]) -> bool:
     Time Complexity: O(n^3)
     - Outer loop runs n times.
     - Inner loop runs up to n times.
-    - Slicing `s[j:i]` takes O(n) time.
+    - Slicing `s[j:i]` takes O(i-j) time, bounded by O(n).
     - Thus, total time is O(n^3).
     Space Complexity: O(n) for the DP array.
     """
     word_set = set(word_dict)
     n = len(s)
 
-    # dp[i] represents whether s[0...i-1] can be segmented
+    # dp[i] represents whether s[0:i] can be segmented
     dp = [False] * (n + 1)
-    dp[0] = True # Base case: empty string
+    dp[0] = True  # Base case: empty string
 
     for i in range(1, n + 1):
         for j in range(i):
             # If prefix ending at j is valid AND suffix from j to i is a word
             if dp[j] and s[j:i] in word_set:
                 dp[i] = True
-                break # No need to check other splits once we found a valid one
+                break  # No need to check other splits once we found a valid one
 
     return dp[n]
 ```
 
 ### 3. Optimized Tabulation (Length Bounded)
 
-The inner loop in the standard tabulation checks all $j$ from $0$ to $i-1$. However, the suffix $s[j \dots i-1]$ can never be a valid dictionary word if its length ($i-j$) is greater than the longest word in the dictionary. We can optimize the inner loop by only looking back up to the maximum word length.
+The inner loop in the standard tabulation checks all `j` from `0` to `i-1`. However, the suffix `s[j:i]` can never be a valid dictionary word if its length (`i-j`) is greater than the longest word in the dictionary. We can optimize the inner loop by only looking back up to the maximum word length.
 
 ```python
 def word_break_optimized(s: str, word_dict: list[str]) -> bool:
@@ -157,6 +157,58 @@ def word_break_optimized(s: str, word_dict: list[str]) -> bool:
     return dp[n]
 ```
 
+### 4. Trie + DP (Avoid String Slicing)
+
+While `word_set` lookups take $O(1)$ on average, Python's string slicing `s[j:i]` still takes $O(i-j)$ time, making the inner loop slightly inefficient. We can avoid slicing entirely by building a **Trie** and traversing it character by character. This naturally pairs with a "push-style" DP, where a `True` state at `dp[i]` pushes its validity forward to `dp[j+1]` by traversing the Trie.
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_word = False
+
+def word_break_trie(s: str, word_dict: list[str]) -> bool:
+    """
+    Time Complexity: O(n^2 + D) where D is total characters in word_dict.
+    - Building Trie: O(D).
+    - DP loops: Outer loop runs n times. Inner loop traverses Trie (at most n steps).
+      Crucially, no O(k) string slicing is performed inside the loops!
+    Space Complexity: O(n + D) for DP array and Trie structure.
+    """
+    # Build the Trie
+    root = TrieNode()
+    for word in word_dict:
+        node = root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_word = True
+
+    n = len(s)
+    dp = [False] * (n + 1)
+    dp[0] = True
+
+    # Push-style DP
+    for i in range(n):
+        if not dp[i]:
+            continue
+            
+        # From a valid start i, see how far we can go using the Trie
+        node = root
+        for j in range(i, n):
+            char = s[j]
+            if char not in node.children:
+                break  # No words match this prefix
+            
+            node = node.children[char]
+            if node.is_word:
+                # We found a valid word s[i:j+1]
+                dp[j + 1] = True
+                
+    return dp[n]
+```
+
 ---
 
 ## DP Table Visualization
@@ -164,8 +216,8 @@ def word_break_optimized(s: str, word_dict: list[str]) -> bool:
 Let's trace `s = "leetcode"`, `word_dict = ["leet", "code"]`.
 Max word length is 4.
 
-| `i` | String Prefix $s[0\dots i-1]$ | Checked Suffixes $s[j\dots i-1]$ | `dp[i]` | Reason |
-| :-- | :---------------------------- | :------------------------------- | :------ | :----- |
+| `i` | String Prefix `s[0:i]` | Checked Suffixes `s[j:i]` | `dp[i]` | Reason |
+| :-- | :--------------------- | :------------------------ | :------ | :----- |
 | 0   | `""` | None | `True` | Base Case |
 | 1   | `"l"` | `"l"` ($j=0$) | `False` | `"l"` not in dict |
 | 2   | `"le"` | `"e"` ($j=1$), `"le"` ($j=0$) | `False` | Neither suffix is in dict |
@@ -187,8 +239,9 @@ Sometimes you don't just want to know *if* it can be segmented, but you want to 
 ```python
 def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
     """
-    Time Complexity: O(2^n + n^3) worst case (e.g., s="aaaa", dict=["a","aa"]).
-    - The output size can be exponential, thus constructing it takes exponential time.
+    Time Complexity: O(2^n * n + n^3) worst case (e.g., s="aaaa", dict=["a","aa"]).
+    - Output size can be exponential O(2^n), thus constructing it takes exponential time.
+    - String slicing in the loop adds O(n^3) baseline overhead for memoization checks.
     Space Complexity: O(2^n * n) for storing all valid sentences in the worst case.
     """
     word_set = set(word_dict)
@@ -210,12 +263,12 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
                 # Recursively get sentences for the remaining suffix
                 suffix_sentences = backtrack(end)
                 for suffix in suffix_sentences:
-                    if suffix == "":
+                    if not suffix:
                         # Last word in the sentence
                         valid_sentences.append(word)
                     else:
                         # Append the word with a space to the suffix sentence
-                        valid_sentences.append(word + " " + suffix)
+                        valid_sentences.append(f"{word} {suffix}")
 
         memo[start] = valid_sentences
         return valid_sentences
@@ -234,7 +287,7 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
        if s[j:i] in word_set:
            dp[i] = True
    ```
-   This only checks if the *last* chunk is a valid word. It completely ignores whether the prefix before it was valid. It would say `"catsdog"` is valid for `dict=["dog"]` because `"dog"` is at the end.
+   This only checks if the *last* chunk is a valid word. It completely ignores whether the prefix before it was valid. It would incorrectly say `"catsdog"` is valid for `dict=["dog"]` simply because `"dog"` is at the end.
 
 2. **Off-by-one errors in string slicing:**
    Python slicing `s[start:end]` goes up to, but *does not include*, `end`.
@@ -251,7 +304,7 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
    ```
 
 4. **Iterating the inner loop forward instead of backward:**
-   When using the max length optimization, it's generally faster to iterate $j$ backwards from $i-1$ down to $i - \text{max\_len}$. If you iterate forward, you might do a lot of long substring checks. Iterating backward checks shorter suffixes first, which are cheaper to slice and hash.
+   When using the max length optimization, it's generally faster to iterate `j` backwards from `i-1` down to `i - max_len`. If you iterate forward, you might do a lot of long substring checks. Iterating backward checks shorter suffixes first, which are cheaper to slice and hash.
 
 ---
 
@@ -263,4 +316,16 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
 | Bottom-Up DP (Standard) | $O(n^3)$ | $O(n)$ | $O(n^2)$ loops, $O(n)$ slicing/hashing |
 | Bottom-Up DP (Optimized) | $O(n \cdot m^2)$ | $O(n)$ | $m$ is max word length. Best for most cases. |
 | Trie + DP | $O(n^2 + \text{dict\_chars})$ | $O(n + \text{dict\_chars})$ | Avoids string slicing overhead entirely. |
-| Word Break II (All Paths)| $O(2^n + n^3)$ | $O(2^n \cdot n)$ | Output size can be exponential. |
+| Word Break II (All Paths)| $O(2^n \cdot n + n^3)$ | $O(2^n \cdot n)$ | Output size can be exponential. |
+
+---
+
+## Progressive Problems
+
+To fully master this pattern, try these problems in order:
+
+1. **[Word Break (LeetCode 139)](https://leetcode.com/problems/word-break/)**: The core pattern covered here. Focus on understanding the optimized DP tabulation.
+2. **[Word Break II (LeetCode 140)](https://leetcode.com/problems/word-break-ii/)**: Extends the problem by asking for *all* valid sentences. Requires DP combined with backtracking.
+3. **[Decode Ways (LeetCode 91)](https://leetcode.com/problems/decode-ways/)**: A variation where the "dictionary" is implied (numbers "1" to "26"), and you want to *count* the number of segmentations instead of just returning a boolean.
+4. **[Palindrome Partitioning (LeetCode 131)](https://leetcode.com/problems/palindrome-partitioning/)**: Instead of a dictionary, the valid substrings must be palindromes. Uses similar partitioning logic.
+5. **[Concatenated Words (LeetCode 472)](https://leetcode.com/problems/concatenated-words/)**: Find all words that can be formed by concatenating at least two shorter words in the same list. A practical application of Word Break.

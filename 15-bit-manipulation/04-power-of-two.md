@@ -4,394 +4,287 @@
 
 ## Interview Context
 
-Power of two checks are common interview questions because they have an elegant O(1) bit manipulation solution. These problems test whether you understand binary representation and can recognize patterns.
+Power of two checks are common interview questions because they have an elegant O(1) bit manipulation solution. These problems test whether you understand binary representation and can recognize patterns. Mastery of the `n & (n-1)` trick also unlocks several related problems (power of four, counting set bits, isolating bits).
 
 ---
 
 ## Building Intuition
 
-**Why Powers of Two are Special in Binary**
+### Why Powers of Two Are Special in Binary
 
-In decimal, powers of 10 look clean: 10, 100, 1000... They're 1 followed by zeros.
+In decimal, powers of 10 look clean: 10, 100, 1000... They're a 1 followed by zeros.
 
-In binary, powers of 2 have the same property:
-
-```
-2⁰ = 1  = 1
-2¹ = 2  = 10
-2² = 4  = 100
-2³ = 8  = 1000
-2⁴ = 16 = 10000
-
-Pattern: Exactly ONE bit set, all others zero
-```
-
-This visual pattern is the key to the O(1) check. No other positive integers have exactly one bit set.
-
-**The n & (n-1) Trick: Why It Works**
-
-The trick `n & (n-1)` clears the rightmost set bit. For powers of 2, there's only ONE set bit, so clearing it gives zero:
+In binary, powers of 2 have the exact same property — a single 1-bit followed by zeros:
 
 ```
-Let's trace why n-1 has this effect:
+Decimal  Binary     Set bits
+──────── ────────── ────────
+2⁰ =  1    0001     1 bit
+2¹ =  2    0010     1 bit
+2² =  4    0100     1 bit
+2³ =  8    1000     1 bit
+2⁴ = 16   10000     1 bit
 
-n = 8 = 1000
-To get n-1, we subtract 1:
-  Starting from rightmost bit, we need to "borrow"
-  All zeros right of the 1 become 1s (no bit to borrow from)
-  The rightmost 1 becomes 0 (we borrowed from it)
-  Everything left of it stays same
-
-n-1 = 7 = 0111
-
-n & (n-1) = 1000 & 0111 = 0000
-
-For power of 2: Only 1 bit exists → clearing it gives 0 ✓
-
-For non-power of 2 (e.g., 6 = 110):
-n-1 = 5 = 101
-n & (n-1) = 110 & 101 = 100 ≠ 0 ✗
+Non-powers of 2:
+3  = 0011  (two 1-bits)
+5  = 0101  (two 1-bits)
+6  = 0110  (two 1-bits)
+7  = 0111  (three 1-bits)
 ```
 
-**Power of Four: Building on Power of Two**
+**Key insight:** A positive integer is a power of two *if and only if* it has exactly one set bit.
 
-A power of 4 is a power of 2, but with an additional constraint: the single set bit must be at an even position (0, 2, 4, 6...).
+### The `n & (n-1)` Trick: Why It Works
 
-```
-Powers of 2:  1, 2, 4, 8, 16, 32, 64...
-Powers of 4:  1,    4,    16,     64...  (every other one)
+The expression `n & (n-1)` clears the lowest (rightmost) set bit of `n`. For powers of two there is only one set bit, so clearing it yields zero.
 
-In binary:
-4⁰ = 1  = bit at position 0 ✓ (even)
-4¹ = 4  = bit at position 2 ✓ (even)
-4² = 16 = bit at position 4 ✓ (even)
-4³ = 64 = bit at position 6 ✓ (even)
+**Step-by-step trace of subtraction:**
 
-Not powers of 4:
-2 = bit at position 1 (odd)
-8 = bit at position 3 (odd)
-```
+When you compute `n - 1`:
+1. Starting from the rightmost bit, every 0-bit must "borrow," flipping to 1.
+2. The rightmost 1-bit supplies the borrow and flips to 0.
+3. All bits to the left are untouched.
 
-The mask `0x55555555` has 1s at even positions only:
+This means `n` and `n-1` share the same bits above the lowest set bit, and differ everywhere else — so their AND zeroes out from that bit down.
 
 ```
-0x55555555 = 01010101 01010101 01010101 01010101
+Power of 2 example (n = 8):
+  n     = 1000
+  n - 1 = 0111   (the single 1 flips to 0, trailing 0s flip to 1s)
+  n & (n-1) = 1000 & 0111 = 0000  →  zero ✓
 
-If n is power of 2 AND (n & 0x55555555) != 0,
-the single bit is at an even position → power of 4!
+Non-power of 2 example (n = 6):
+  n     = 0110
+  n - 1 = 0101   (only the lowest 1-bit and below change)
+  n & (n-1) = 0110 & 0101 = 0100  →  nonzero ✗
+
+Another example (n = 16):
+  n     = 10000
+  n - 1 = 01111
+  n & (n-1) = 10000 & 01111 = 00000  →  zero ✓
 ```
 
-**Power of Three: Why Bits Don't Help**
-
-3 isn't a power of 2, so its powers don't have the "single bit" property:
-
-```
-3¹ = 3  = 11
-3² = 9  = 1001
-3³ = 27 = 11011
-3⁴ = 81 = 1010001
-
-No clean binary pattern!
-```
-
-The trick for power of 3 uses number theory instead: the largest power of 3 that fits in a 32-bit signed integer is 3¹⁹ = 1162261467. Any power of 3 must divide this evenly, and no non-power-of-3 can.
-
-**Range Bitwise AND: The Common Prefix Insight**
-
-When you AND all numbers in a range, any bit that changes becomes 0. The result is the common prefix of the range boundaries:
-
-```
-Range [5, 7]:
-5 = 101
-6 = 110
-7 = 111
-
-Look at each bit position:
-- Bit 0: 1, 0, 1 → has both 0 and 1 → AND gives 0
-- Bit 1: 0, 1, 1 → has both 0 and 1 → AND gives 0
-- Bit 2: 1, 1, 1 → all same → AND gives 1
-
-Result: 100 = 4
-
-The common prefix is the leftmost bits where all numbers agree.
-```
-
-The algorithm: shift both boundaries right until they're equal (removing differing bits), then shift back.
+**Edge case:** `n = 0` has no set bits, so `n & (n-1) == 0` is trivially true — but 0 is *not* a power of two. Always guard with `n > 0`.
 
 ---
 
-## When NOT to Use Power of Two Checks
+## When NOT to Use Bit Tricks
 
-**1. When the "Power" Base Isn't 2**
+**1. When the base isn't 2 (or a power of 2)**
 
-The n & (n-1) trick only works for powers of 2. For other bases:
+The `n & (n-1)` trick relies on the binary representation. It works for powers of 2 and can be extended to powers of 4 (since 4 = 2²). For bases like 3, 5, 10, etc., you need different approaches (modulo, repeated division).
 
-```python
-# Power of 3: Use modulo with largest power, or loop
-def is_power_of_3(n):
-    return n > 0 and 1162261467 % n == 0
+**2. For construction, not just checking**
 
-# Power of 10: Has factors of both 2 and 5
-def is_power_of_10(n):
-    if n <= 0:
-        return False
-    while n % 10 == 0:
-        n //= 10
-    return n == 1
-```
+Finding the *next* power of 2 ≥ n, or the *previous* power of 2 ≤ n, requires building a result — see the practice problems below.
 
-**2. For "Next Power of Two" (Different Problem)**
+**3. When zero or negative numbers are valid inputs**
 
-Finding the next power of 2 ≥ n isn't just a check—it's a construction:
+`n & (n-1) == 0` is true for `n = 0`. Negative numbers can't be powers of a positive base. Always check `n > 0` first.
 
-```python
-# Wrong: just checking doesn't give you the next one
-# Right approach: fill all bits right of highest, then add 1
-def next_power_of_2(n):
-    if n <= 0:
-        return 1
-    n -= 1
-    n |= n >> 1
-    n |= n >> 2
-    n |= n >> 4
-    n |= n >> 8
-    n |= n >> 16
-    return n + 1
-```
-
-**3. When Zero is a Valid Input**
-
-The n & (n-1) check needs n > 0. Zero satisfies (n & (n-1)) == 0 but isn't a power of 2:
-
-```python
-# WRONG: returns True for 0
-def is_power_of_2_wrong(n):
-    return (n & (n-1)) == 0
-
-# CORRECT: explicitly check n > 0
-def is_power_of_2(n):
-    return n > 0 and (n & (n-1)) == 0
-```
-
-**4. For Negative Numbers**
-
-Negative numbers can't be powers of positive integers:
-
-```python
-# -8 is NOT a power of 2 (power of 2 means 2^k for non-negative k)
-# The check n > 0 handles this
-```
-
-**Red Flags (Don't Use Bit Tricks):**
-
+**Red flags that bit tricks won't apply directly:**
 - Base isn't 2 (or 4, which is 2²)
 - You need the next/previous power, not just a check
-- Input might be zero or negative (need explicit checks)
-- The problem is really about divisibility, not bit patterns
+- The problem is fundamentally about divisibility, not bit patterns
 
 ---
 
-## Pattern: Power of Two Properties
+## Problem 1: Power of Two (Basic)
 
-Powers of two have a unique property: they have exactly one set bit.
+**LeetCode 231** · Easy
 
-```
-Power of 2    Binary      Property
-1             0001        Single 1 bit
-2             0010        Single 1 bit
-4             0100        Single 1 bit
-8             1000        Single 1 bit
-16            10000       Single 1 bit
+Given an integer `n`, return `True` if it is a power of two, otherwise return `False`.
 
-Not power of 2:
-3 = 0011      (two 1s)
-5 = 0101      (two 1s)
-6 = 0110      (two 1s)
-
-Key insight: n & (n-1) clears the rightmost 1 bit.
-For power of 2, clearing the only 1 gives 0!
-```
-
----
-
-## Problem: Power of Two
-
-**LeetCode 231**: Given an integer n, return true if it is a power of two.
-
-### Example
+### Examples
 
 ```
-Input: n = 1 → Output: true  (2⁰ = 1)
-Input: n = 16 → Output: true (2⁴ = 16)
-Input: n = 3 → Output: false
-Input: n = 0 → Output: false
-Input: n = -16 → Output: false
+Input: n = 1   → Output: True   (2⁰ = 1)
+Input: n = 16  → Output: True   (2⁴ = 16)
+Input: n = 3   → Output: False
+Input: n = 0   → Output: False
+Input: n = -16 → Output: False
 ```
 
 ### Solution
 
 ```python
-def isPowerOfTwo(n: int) -> bool:
+def is_power_of_two(n: int) -> bool:
     """
-    Check if n is a power of 2.
+    A power of 2 has exactly one set bit.
+    n & (n-1) clears the lowest set bit.
+    If the result is 0, there was only one set bit.
 
-    Key insight: Power of 2 has exactly one set bit.
-    n & (n-1) clears the rightmost set bit.
-    If result is 0, there was only one set bit.
+    Guard n > 0 because 0 & (-1) == 0 but 0 is not a power of 2.
 
-    Time: O(1)
+    Time:  O(1)
     Space: O(1)
     """
     return n > 0 and (n & (n - 1)) == 0
 
 
-# Alternative: Check if only one bit is set
-def isPowerOfTwo_alt(n: int) -> bool:
-    """Use popcount to check if exactly one bit is set."""
+# Alternative: count set bits directly
+def is_power_of_two_popcount(n: int) -> bool:
+    """Use Python's bin() to count 1-bits."""
     return n > 0 and bin(n).count('1') == 1
 
 
-# Test
-print(isPowerOfTwo(1))    # True (2^0)
-print(isPowerOfTwo(16))   # True (2^4)
-print(isPowerOfTwo(3))    # False
-print(isPowerOfTwo(0))    # False
-print(isPowerOfTwo(-16))  # False
-```
-
-### Why n & (n-1) Works
-
-```
-n = 8 = 1000:
-  n - 1 = 0111
-  n & (n-1) = 1000 & 0111 = 0000 ✓ (Power of 2)
-
-n = 6 = 0110:
-  n - 1 = 0101
-  n & (n-1) = 0110 & 0101 = 0100 ✗ (Not power of 2)
-
-n = 16 = 10000:
-  n - 1 = 01111
-  n & (n-1) = 10000 & 01111 = 00000 ✓ (Power of 2)
-
-The trick: n-1 flips all bits from rightmost 1 to the right.
-If n is power of 2, all bits become 0 after AND.
+# Tests
+assert is_power_of_two(1) is True       # 2^0
+assert is_power_of_two(16) is True      # 2^4
+assert is_power_of_two(3) is False
+assert is_power_of_two(0) is False
+assert is_power_of_two(-16) is False
+assert is_power_of_two(1024) is True    # 2^10
+print("Problem 1: All tests passed")
 ```
 
 ---
 
-## Problem: Power of Four
+## Problem 2: Power of Four
 
-**LeetCode 342**: Given an integer n, return true if it is a power of four.
+**LeetCode 342** · Easy
 
-### Example
+Given an integer `n`, return `True` if it is a power of four.
+
+### Intuition
+
+A power of 4 is a power of 2, but with the additional constraint that the single set bit must be at an **even** bit position (0, 2, 4, 6, ...).
 
 ```
-Input: n = 16 → Output: true  (4² = 16)
-Input: n = 5 → Output: false
-Input: n = 1 → Output: true  (4⁰ = 1)
-Input: n = 2 → Output: false (power of 2 but not 4)
+Powers of 4 (bit at even position):
+  4⁰ =  1 = 0000 0001   bit position 0 (even) ✓
+  4¹ =  4 = 0000 0100   bit position 2 (even) ✓
+  4² = 16 = 0001 0000   bit position 4 (even) ✓
+  4³ = 64 = 0100 0000   bit position 6 (even) ✓
+
+Powers of 2 that are NOT powers of 4 (bit at odd position):
+  2  = 0000 0010   bit position 1 (odd) ✗
+  8  = 0000 1000   bit position 3 (odd) ✗
+  32 = 0010 0000   bit position 5 (odd) ✗
+```
+
+The mask `0x55555555` has 1s at all even positions:
+
+```
+0x55555555 = 01010101 01010101 01010101 01010101
+```
+
+If `n` is a power of 2 and `n & 0x55555555 != 0`, the single bit sits at an even position — so `n` is a power of 4.
+
+### Examples
+
+```
+Input: n = 16 → Output: True   (4² = 16)
+Input: n = 5  → Output: False
+Input: n = 1  → Output: True   (4⁰ = 1)
+Input: n = 2  → Output: False  (power of 2, but not 4)
 ```
 
 ### Solution
 
 ```python
-def isPowerOfFour(n: int) -> bool:
+def is_power_of_four(n: int) -> bool:
     """
-    Check if n is a power of 4.
+    Three conditions:
+      1. n > 0
+      2. n is a power of 2  (single set bit)
+      3. That bit is at an even position  (passes the 0x55555555 mask)
 
-    Conditions:
-    1. n > 0
-    2. n is power of 2 (single set bit)
-    3. The set bit is at an even position (0, 2, 4, ...)
-
-    The mask 0x55555555 = 01010101... has 1s at even positions.
-
-    Time: O(1)
+    Time:  O(1)
     Space: O(1)
     """
-    # 0x55555555 = 01010101 01010101 01010101 01010101
-    # This mask has 1s at positions 0, 2, 4, 6, ... (even positions)
     return n > 0 and (n & (n - 1)) == 0 and (n & 0x55555555) != 0
 
 
-# Alternative using modulo
-def isPowerOfFour_mod(n: int) -> bool:
-    """
-    Power of 4 minus 1 is always divisible by 3.
-    4^k - 1 = (4-1)(4^(k-1) + 4^(k-2) + ... + 1) = 3 × something
-    """
+# Alternative: power-of-2 check + modulo trick
+# 4 ≡ 1 (mod 3), so 4^k ≡ 1^k ≡ 1 (mod 3) for all k >= 0.
+# But 2·4^k ≡ 2 (mod 3), so powers of 2 that aren't powers of 4 fail.
+def is_power_of_four_mod(n: int) -> bool:
+    """Power of 4 minus 1 is always divisible by 3."""
     return n > 0 and (n & (n - 1)) == 0 and (n - 1) % 3 == 0
 
 
-# Test
-print(isPowerOfFour(1))   # True (4^0)
-print(isPowerOfFour(16))  # True (4^2)
-print(isPowerOfFour(2))   # False (2^1, not power of 4)
-print(isPowerOfFour(8))   # False (2^3, not power of 4)
-print(isPowerOfFour(64))  # True (4^3)
-```
-
-### Powers of Four in Binary
-
-```
-Powers of 4:
-  4⁰ = 1  = 0001      (bit at position 0)
-  4¹ = 4  = 0100      (bit at position 2)
-  4² = 16 = 10000     (bit at position 4)
-  4³ = 64 = 1000000   (bit at position 6)
-
-Pattern: Single 1 bit at EVEN positions (0, 2, 4, 6, ...)
-
-Powers of 2 but NOT 4:
-  2¹ = 2  = 0010      (bit at position 1 - ODD)
-  2³ = 8  = 1000      (bit at position 3 - ODD)
-  2⁵ = 32 = 100000    (bit at position 5 - ODD)
-
-Mask 0x55555555:
-  Binary: 01010101 01010101 01010101 01010101
-  Has 1s at all EVEN positions
-
-If (n & mask) != 0, the single bit is at an even position.
+# Tests
+assert is_power_of_four(1) is True      # 4^0
+assert is_power_of_four(4) is True      # 4^1
+assert is_power_of_four(16) is True     # 4^2
+assert is_power_of_four(64) is True     # 4^3
+assert is_power_of_four(2) is False     # power of 2 but not 4
+assert is_power_of_four(8) is False     # power of 2 but not 4
+assert is_power_of_four(5) is False
+assert is_power_of_four(0) is False
+print("Problem 2: All tests passed")
 ```
 
 ---
 
-## Problem: Power of Three
+## Problem 3: Power of Three (Why Bit Tricks Don't Apply)
 
-**LeetCode 326**: Given an integer n, return true if it is a power of three.
+**LeetCode 326** · Easy
 
-### Example
+Given an integer `n`, return `True` if it is a power of three.
+
+### Why Bits Don't Help Here
+
+3 isn't a power of 2, so its powers don't produce a "single set bit" pattern:
 
 ```
-Input: n = 27 → Output: true (3³)
-Input: n = 0 → Output: false
-Input: n = 9 → Output: true (3²)
-Input: n = 45 → Output: false
+3¹ =   3 = 11
+3² =   9 = 1001
+3³ =  27 = 11011
+3⁴ =  81 = 1010001
+3⁵ = 243 = 11110011
+
+No clean binary pattern — can't use bit manipulation.
+```
+
+### The Number Theory Approach
+
+Since 3 is prime, the only divisors of 3^k are 3^0, 3^1, ..., 3^k.
+
+The largest power of 3 that fits in a 32-bit signed integer is **3¹⁹ = 1,162,261,467**.
+
+Any power of 3 divides 3¹⁹ evenly. No non-power-of-3 can, because 3 is prime and the prime factorisation of 3¹⁹ contains only 3s.
+
+```
+3¹⁹ % 1  == 0  ✓  (3⁰)
+3¹⁹ % 3  == 0  ✓  (3¹)
+3¹⁹ % 27 == 0  ✓  (3³)
+3¹⁹ % 6  != 0  ✗  (6 = 2 × 3, factor of 2 doesn't divide 3¹⁹)
+3¹⁹ % 45 != 0  ✗  (45 = 3² × 5, factor of 5 doesn't divide 3¹⁹)
+```
+
+> **Note:** This trick works because 3 is prime. It would NOT work for, say, power-of-6 because 6 = 2 × 3 is composite, and non-powers like 12 could also divide a power of 6.
+
+### Examples
+
+```
+Input: n = 27 → Output: True   (3³)
+Input: n = 0  → Output: False
+Input: n = 9  → Output: True   (3²)
+Input: n = 45 → Output: False
 ```
 
 ### Solution
 
 ```python
-def isPowerOfThree(n: int) -> bool:
+# Largest power of 3 in a 32-bit signed integer: 3**19 = 1162261467
+MAX_POWER_OF_3 = 3**19  # 1162261467
+
+def is_power_of_three(n: int) -> bool:
     """
-    Check if n is a power of 3.
+    If n is a power of 3, it must divide 3^19 evenly.
+    Works because 3 is prime.
 
-    Note: No simple bit trick for 3 (not power of 2).
-    Use the fact that 3^19 = 1162261467 is the largest
-    power of 3 that fits in a 32-bit signed integer.
-
-    If n is a power of 3, then 3^19 % n == 0.
-
-    Time: O(1)
+    Time:  O(1)
     Space: O(1)
     """
-    return n > 0 and 1162261467 % n == 0
+    return n > 0 and MAX_POWER_OF_3 % n == 0
 
 
-# Alternative: Loop
-def isPowerOfThree_loop(n: int) -> bool:
-    """Check by repeatedly dividing by 3."""
+# Alternative: repeated division (works for any base)
+def is_power_of_three_loop(n: int) -> bool:
+    """Divide out all factors of 3; if 1 remains, n was a power of 3."""
     if n <= 0:
         return False
     while n % 3 == 0:
@@ -399,64 +292,367 @@ def isPowerOfThree_loop(n: int) -> bool:
     return n == 1
 
 
-# Test
-print(isPowerOfThree(1))   # True (3^0)
-print(isPowerOfThree(9))   # True (3^2)
-print(isPowerOfThree(27))  # True (3^3)
-print(isPowerOfThree(45))  # False
-```
-
-### Why the Modulo Trick Works
-
-```
-3^19 = 1162261467 (largest power of 3 in 32-bit signed int)
-
-Powers of 3: 1, 3, 9, 27, 81, 243, 729, ...
-
-All powers of 3 divide 3^19 evenly:
-  3^19 % 3^0 = 0 ✓
-  3^19 % 3^1 = 0 ✓
-  3^19 % 3^5 = 0 ✓
-
-Non-powers of 3 don't divide evenly:
-  3^19 % 2 ≠ 0 ✗
-  3^19 % 6 ≠ 0 ✗
-  3^19 % 45 ≠ 0 ✗
-
-Only powers of 3 (prime factorization contains only 3s)
-can divide a pure power of 3 evenly.
+# Tests
+assert is_power_of_three(1) is True     # 3^0
+assert is_power_of_three(9) is True     # 3^2
+assert is_power_of_three(27) is True    # 3^3
+assert is_power_of_three(45) is False
+assert is_power_of_three(0) is False
+assert is_power_of_three(-3) is False
+print("Problem 3: All tests passed")
 ```
 
 ---
 
-## Problem: Bitwise AND of Numbers Range
+## Problem 4: Every Positive Integer Is a Sum of Powers of Two
 
-**LeetCode 201**: Given two integers left and right, return the bitwise AND of all numbers in [left, right].
+This isn't a LeetCode problem, but it's an important conceptual insight.
 
-### Example
+### Explanation
+
+Every positive integer can be expressed as a sum of distinct powers of 2 — that's exactly what binary representation means.
 
 ```
-Input: left = 5, right = 7
-Output: 4
+13 = 1101 in binary = 2³ + 2² + 2⁰ = 8 + 4 + 1
+25 = 11001 in binary = 2⁴ + 2³ + 2⁰ = 16 + 8 + 1
+7  = 111 in binary = 2² + 2¹ + 2⁰ = 4 + 2 + 1
+```
 
-5 = 101
-6 = 110
-7 = 111
-5 & 6 & 7 = 100 = 4
+So asking "is n a sum of powers of two?" is trivially true for every positive integer. The more interesting question is: **how many** powers of two sum to n? That's just the popcount (number of set bits).
+
+```python
+def count_powers_of_two_in_sum(n: int) -> int:
+    """
+    Every positive integer is a sum of distinct powers of 2.
+    The number of terms equals the number of set bits.
+
+    Time:  O(log n) — string conversion is proportional to bit length
+    Space: O(log n) — for the binary string
+    """
+    if n <= 0:
+        return 0
+    return bin(n).count('1')
+
+
+# Tests
+assert count_powers_of_two_in_sum(13) == 3   # 8 + 4 + 1
+assert count_powers_of_two_in_sum(16) == 1   # 16 (itself a power of 2)
+assert count_powers_of_two_in_sum(7) == 3    # 4 + 2 + 1
+assert count_powers_of_two_in_sum(0) == 0
+print("Problem 4: All tests passed")
+```
+
+---
+
+## Problem 5: Find the Highest and Lowest Set Bit
+
+These operations come up frequently as sub-problems.
+
+### Lowest Set Bit
+
+The lowest (rightmost) set bit can be isolated with `n & (-n)`.
+
+In two's complement, `-n` is computed as `~n + 1`, which flips all bits then adds 1. The bits below the lowest set bit (all 0s) become 1s after the flip, and the +1 cascades through them, flipping them back to 0 and flipping the lowest set bit itself back to 1. Everything above it gets inverted. So when you AND `n` with `-n`, only the lowest set bit survives.
+
+```
+n     = 12 = 1100
+-n    =      0100  (two's complement)
+n & (-n) =   0100  →  4 (bit position 2)
+
+n     = 10 = 1010
+-n    =      0110
+n & (-n) =   0010  →  2 (bit position 1)
+```
+
+### Highest Set Bit
+
+The highest (leftmost) set bit position is `bit_length() - 1`. To get its value, use `1 << (bit_length() - 1)`.
+
+```python
+def lowest_set_bit(n: int) -> int:
+    """
+    Isolate the lowest set bit of n.
+    Returns 0 if n is 0.
+
+    Example: lowest_set_bit(12) → 4 (binary 0100)
+
+    Time:  O(1)
+    Space: O(1)
+    """
+    if n == 0:
+        return 0
+    return n & (-n)
+
+
+def highest_set_bit(n: int) -> int:
+    """
+    Isolate the highest set bit of n.
+    Returns 0 if n <= 0.
+
+    Example: highest_set_bit(12) → 8 (binary 1000)
+
+    Time:  O(1)
+    Space: O(1)
+    """
+    if n <= 0:
+        return 0
+    return 1 << (n.bit_length() - 1)
+
+
+def lowest_set_bit_position(n: int) -> int:
+    """Return the 0-indexed position of the lowest set bit, or -1 if n == 0."""
+    if n == 0:
+        return -1
+    return (n & -n).bit_length() - 1
+
+
+def highest_set_bit_position(n: int) -> int:
+    """Return the 0-indexed position of the highest set bit, or -1 if n <= 0."""
+    if n <= 0:
+        return -1
+    return n.bit_length() - 1
+
+
+# Tests
+assert lowest_set_bit(12) == 4       # 1100 → 0100
+assert lowest_set_bit(10) == 2       # 1010 → 0010
+assert lowest_set_bit(8) == 8        # 1000 → 1000
+assert lowest_set_bit(0) == 0
+
+assert highest_set_bit(12) == 8      # 1100 → 1000
+assert highest_set_bit(10) == 8      # 1010 → 1000
+assert highest_set_bit(1) == 1
+assert highest_set_bit(0) == 0
+
+assert lowest_set_bit_position(12) == 2
+assert highest_set_bit_position(12) == 3
+print("Problem 5: All tests passed")
+```
+
+---
+
+## Problem 6: Round Up to Next Power of Two
+
+Given a positive integer `n`, find the smallest power of 2 that is ≥ n.
+
+### Intuition
+
+The idea is to "smear" the highest set bit rightward until all lower bits are 1, then add 1.
+
+```
+n = 13 = 01101
+Step 0: subtract 1       → 01100
+Step 1: n |= n >> 1      → 01110
+Step 2: n |= n >> 2      → 01111
+Step 3: n |= n >> 4      → 01111  (no change, bits already filled)
+Step 4: add 1             → 10000 = 16 ✓
+```
+
+We subtract 1 first so that if `n` is already a power of 2, it maps to itself (e.g., 8 → 7 → 7 → 8).
+
+### Solution
+
+```python
+def next_power_of_two(n: int) -> int:
+    """
+    Find the smallest power of 2 >= n.
+
+    Algorithm:
+      1. Subtract 1 (so exact powers of 2 stay put)
+      2. Smear the highest bit rightward to fill all lower bits
+      3. Add 1 to get the next power of 2
+
+    The 5 shifts (1, 2, 4, 8, 16) handle up to 32-bit integers.
+    For 64-bit, add: n |= n >> 32
+
+    Note: Python integers have arbitrary precision, so the bit-smearing
+    approach is mainly useful in fixed-width languages (C/C++/Java).
+    The bit_length() alternative below is idiomatic Python and works
+    for any size.
+
+    Time:  O(1)  (fixed number of operations)
+    Space: O(1)
+    """
+    if n <= 1:
+        return 1
+    n -= 1
+    n |= n >> 1
+    n |= n >> 2
+    n |= n >> 4
+    n |= n >> 8
+    n |= n >> 16
+    # For 64-bit integers, uncomment:
+    # n |= n >> 32
+    return n + 1
+
+
+# Python alternative using bit_length (simpler)
+def next_power_of_two_simple(n: int) -> int:
+    """Use bit_length to find the position, then shift."""
+    if n <= 1:
+        return 1
+    return 1 << (n - 1).bit_length()
+
+
+# Tests
+assert next_power_of_two(1) == 1
+assert next_power_of_two(2) == 2
+assert next_power_of_two(3) == 4
+assert next_power_of_two(5) == 8
+assert next_power_of_two(8) == 8     # already a power of 2
+assert next_power_of_two(17) == 32
+assert next_power_of_two(0) == 1
+assert next_power_of_two(-5) == 1
+print("Problem 6: All tests passed")
+```
+
+---
+
+## Problem 7: Previous Power of Two
+
+Given a positive integer `n`, find the largest power of 2 that is ≤ n.
+
+### Solution
+
+```python
+def prev_power_of_two(n: int) -> int:
+    """
+    Find the largest power of 2 <= n.
+
+    Smear the highest bit rightward, then shift right and add 1
+    to isolate just the highest bit.
+
+    Time:  O(1)
+    Space: O(1)
+    """
+    if n <= 0:
+        return 0
+    n |= n >> 1
+    n |= n >> 2
+    n |= n >> 4
+    n |= n >> 8
+    n |= n >> 16
+    return (n + 1) >> 1
+
+
+# Python alternative using bit_length
+def prev_power_of_two_simple(n: int) -> int:
+    """Use bit_length to find the highest set bit position."""
+    if n <= 0:
+        return 0
+    return 1 << (n.bit_length() - 1)
+
+
+# Tests
+assert prev_power_of_two(5) == 4
+assert prev_power_of_two(8) == 8     # already a power of 2
+assert prev_power_of_two(17) == 16
+assert prev_power_of_two(1) == 1
+assert prev_power_of_two(0) == 0
+print("Problem 7: All tests passed")
+```
+
+---
+
+## Problem 8: Log Base 2
+
+Floor and ceiling of log₂ are useful for determining how many bits are needed, tree heights, and divide-and-conquer analysis.
+
+### Solution
+
+```python
+def log2_floor(n: int) -> int:
+    """
+    Floor of log base 2 = position of the highest set bit.
+    Returns -1 for n <= 0 (undefined).
+
+    Time:  O(1) using Python's bit_length()
+    Space: O(1)
+    """
+    if n <= 0:
+        return -1
+    return n.bit_length() - 1
+
+
+def log2_ceil(n: int) -> int:
+    """
+    Ceiling of log base 2.
+    Returns -1 for n <= 0 (undefined).
+
+    If n is a power of 2, ceil == floor.
+    Otherwise, ceil == floor + 1.
+
+    Time:  O(1)
+    Space: O(1)
+    """
+    if n <= 0:
+        return -1
+    result = n.bit_length() - 1
+    # If n is not a power of 2, round up
+    if n & (n - 1) != 0:
+        result += 1
+    return result
+
+
+# Tests
+assert log2_floor(1) == 0
+assert log2_floor(8) == 3
+assert log2_floor(10) == 3
+assert log2_floor(16) == 4
+
+assert log2_ceil(1) == 0
+assert log2_ceil(8) == 3     # exact power of 2
+assert log2_ceil(10) == 4    # between 8 and 16
+assert log2_ceil(16) == 4
+print("Problem 8: All tests passed")
+```
+
+---
+
+## Problem 9: Bitwise AND of Numbers Range
+
+**LeetCode 201** · Medium
+
+Given two integers `left` and `right`, return the bitwise AND of all numbers in `[left, right]`.
+
+### Intuition
+
+When you AND all numbers in a range, any bit position that changes value at least once becomes 0. Only the **common prefix** — the leftmost bits where `left` and `right` agree — survives.
+
+```
+Range [5, 7]:
+  5 = 101
+  6 = 110
+  7 = 111
+
+Bit 2: 1, 1, 1  →  stays 1  (common prefix)
+Bit 1: 0, 1, 1  →  varies   →  AND gives 0
+Bit 0: 1, 0, 1  →  varies   →  AND gives 0
+
+Result: 100 = 4
+```
+
+**Algorithm:** Shift both `left` and `right` right until they are equal (stripping off the differing suffix), then shift the common value back left.
+
+### Examples
+
+```
+Input: left = 5, right = 7  → Output: 4
+Input: left = 0, right = 0  → Output: 0
+Input: left = 1, right = 2147483647 → Output: 0
 ```
 
 ### Solution
 
 ```python
-def rangeBitwiseAnd(left: int, right: int) -> int:
+def range_bitwise_and(left: int, right: int) -> int:
     """
-    Find common prefix of left and right.
+    Find the common prefix of left and right in binary.
 
-    Key insight: When we AND a range, any bit that changes
-    within the range will become 0. We only keep the
-    common prefix bits that stay constant.
+    Shift both right until they match, counting shifts.
+    Then shift the common value back left.
 
-    Time: O(log n)
+    Time:  O(log n) where n is the value of right
     Space: O(1)
     """
     shift = 0
@@ -467,180 +663,99 @@ def rangeBitwiseAnd(left: int, right: int) -> int:
     return left << shift
 
 
-# Alternative: Clear rightmost differing bits
-def rangeBitwiseAnd_v2(left: int, right: int) -> int:
-    """Keep clearing rightmost bit of right until right <= left."""
+# Alternative: repeatedly clear the lowest set bit of right
+def range_bitwise_and_v2(left: int, right: int) -> int:
+    """
+    Clear rightmost bit of right until right <= left.
+    At that point, right IS the common prefix.
+
+    Each n & (n-1) removes one bit, so this is also O(log n).
+    """
     while right > left:
         right &= right - 1
     return right
 
 
-# Test
-print(rangeBitwiseAnd(5, 7))    # 4
-print(rangeBitwiseAnd(0, 0))    # 0
-print(rangeBitwiseAnd(1, 2147483647))  # 0
-```
+# Trace for left=5, right=7:
+#   shift=0: left=5(101), right=7(111)  →  5 < 7
+#   shift=1: left=2(10),  right=3(11)   →  2 < 3
+#   shift=2: left=1(1),   right=1(1)    →  equal, stop
+#   return 1 << 2 = 4
 
-### Why Common Prefix Works
-
-```
-Range [5, 7]:
-  5 = 101
-  6 = 110
-  7 = 111
-
-Notice: The leftmost bit (position 2) is always 1.
-But positions 0 and 1 change values.
-
-Any bit that "flips" during the range becomes 0 in the AND.
-
-Algorithm:
-  left=5=101, right=7=111, shift=0
-  left < right, so:
-    left>>1 = 10, right>>1 = 11, shift=1
-  left < right, so:
-    left>>1 = 1, right>>1 = 1, shift=2
-  left == right, stop!
-  return 1 << 2 = 100 = 4
-
-The common prefix is 1, and we shift it back.
+# Tests
+assert range_bitwise_and(5, 7) == 4
+assert range_bitwise_and(0, 0) == 0
+assert range_bitwise_and(1, 2147483647) == 0
+assert range_bitwise_and(6, 7) == 6       # 110 & 111 = 110
+assert range_bitwise_and(4, 4) == 4       # single element range
+print("Problem 9: All tests passed")
 ```
 
 ---
 
-## Complexity Analysis
+## Complexity Summary
 
-| Problem           | Time     | Space | Technique               |
-| ----------------- | -------- | ----- | ----------------------- |
-| Power of Two      | O(1)     | O(1)  | n & (n-1) == 0          |
-| Power of Four     | O(1)     | O(1)  | Power of 2 + mask check |
-| Power of Three    | O(1)     | O(1)  | Modulo by max power     |
-| Range Bitwise AND | O(log n) | O(1)  | Find common prefix      |
-
----
-
-## Common Variations
-
-### 1. Next Power of Two
-
-```python
-def next_power_of_two(n: int) -> int:
-    """
-    Find smallest power of 2 >= n.
-
-    Time: O(log n)
-    Space: O(1)
-    """
-    if n <= 0:
-        return 1
-    if n & (n - 1) == 0:
-        return n  # Already power of 2
-
-    # Fill all bits to the right of highest set bit
-    n -= 1
-    n |= n >> 1
-    n |= n >> 2
-    n |= n >> 4
-    n |= n >> 8
-    n |= n >> 16
-    return n + 1
-
-
-print(next_power_of_two(5))   # 8
-print(next_power_of_two(8))   # 8
-print(next_power_of_two(17))  # 32
-```
-
-### 2. Previous Power of Two
-
-```python
-def prev_power_of_two(n: int) -> int:
-    """
-    Find largest power of 2 <= n.
-
-    Time: O(log n)
-    Space: O(1)
-    """
-    if n <= 0:
-        return 0
-    if n & (n - 1) == 0:
-        return n  # Already power of 2
-
-    n |= n >> 1
-    n |= n >> 2
-    n |= n >> 4
-    n |= n >> 8
-    n |= n >> 16
-    return (n + 1) >> 1
-
-
-print(prev_power_of_two(5))   # 4
-print(prev_power_of_two(8))   # 8
-print(prev_power_of_two(17))  # 16
-```
-
-### 3. Log Base 2
-
-```python
-def log2_floor(n: int) -> int:
-    """
-    Floor of log base 2 (position of highest set bit).
-
-    Time: O(1) with bit_length()
-    """
-    return n.bit_length() - 1 if n > 0 else -1
-
-
-def log2_ceil(n: int) -> int:
-    """Ceiling of log base 2."""
-    if n <= 0:
-        return -1
-    floor = log2_floor(n)
-    return floor if n == (1 << floor) else floor + 1
-
-
-print(log2_floor(8))   # 3
-print(log2_floor(10))  # 3
-print(log2_ceil(8))    # 3
-print(log2_ceil(10))   # 4
-```
+| Problem                     | Time     | Space    | Technique                          |
+| --------------------------- | -------- | -------- | ---------------------------------- |
+| Power of Two                | O(1)     | O(1)     | `n & (n-1) == 0`                  |
+| Power of Four               | O(1)     | O(1)     | Power of 2 + even-position mask   |
+| Power of Three              | O(1)     | O(1)     | Modulo by max power of 3          |
+| Sum of Powers of Two        | O(log n) | O(log n) | Always true; count = popcount     |
+| Highest / Lowest Set Bit    | O(1)     | O(1)     | `bit_length()` / `n & (-n)`       |
+| Next Power of Two           | O(1)     | O(1)     | Bit smearing + add 1              |
+| Previous Power of Two       | O(1)     | O(1)     | Bit smearing + shift              |
+| Log Base 2                  | O(1)     | O(1)     | `bit_length() - 1`               |
+| Bitwise AND of Range        | O(log n) | O(1)     | Common prefix via right-shifting  |
 
 ---
 
 ## Edge Cases
 
-1. **Zero**: Not a power of any positive integer
-2. **One**: Power of every base (n⁰ = 1)
-3. **Negative numbers**: Not powers of positive bases
-4. **Large numbers**: Watch for overflow in some languages
-5. **Range where left == right**: Result is left (or right)
+1. **Zero**: Not a power of any positive integer. Always check `n > 0`.
+2. **One**: Power of every base (n⁰ = 1 for any n).
+3. **Negative numbers**: Not powers of positive bases. The `n > 0` guard handles this.
+4. **Large numbers**: Python integers have arbitrary precision, so no overflow concerns in Python. In languages with fixed-width integers, watch for overflow in `next_power_of_two`.
+5. **Range where left == right**: Result is `left` (or `right`); the loop never executes.
 
 ---
 
 ## Interview Tips
 
-1. **Know the n & (n-1) trick**: This is essential for power of 2
-2. **Explain the binary insight**: Show understanding, not just memorization
-3. **Handle edge cases first**: Check n > 0 before bit operations
-4. **Power of 4 mask**: Knowing 0x55555555 is impressive
-5. **Power of 3**: Explain why bit tricks don't apply (3 isn't power of 2)
+1. **Know `n & (n-1)` cold.** It clears the lowest set bit. For power-of-2, that makes the result zero.
+2. **Explain the binary insight.** Interviewers want to see understanding, not memorized formulas. Walk through the subtraction mechanics.
+3. **Handle edge cases first.** Check `n > 0` before any bit operation. Mention 0 and negative numbers proactively.
+4. **Know the 0x55555555 mask** for power-of-4. It shows depth of bit manipulation knowledge.
+5. **Explain why power-of-3 is different.** 3 isn't a power of 2, so bits don't help. The modulo trick works because 3 is prime.
+6. **Know `n & (-n)`** for isolating the lowest set bit — it comes up in Fenwick trees and many other problems.
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                      | Difficulty | Key Concept             |
-| --- | ---------------------------- | ---------- | ----------------------- |
-| 1   | Power of Two                 | Easy       | n & (n-1)               |
-| 2   | Power of Three               | Easy       | Modulo by max power     |
-| 3   | Power of Four                | Easy       | Mask for even positions |
-| 4   | Bitwise AND of Numbers Range | Medium     | Common prefix           |
-| 5   | Find Highest Set Bit         | Easy       | bit_length()            |
+| #   | Problem                      | Difficulty | Key Concept                         | LeetCode |
+| --- | ---------------------------- | ---------- | ----------------------------------- | -------- |
+| 1   | Power of Two                 | Easy       | `n & (n-1) == 0`                    | 231      |
+| 2   | Power of Four                | Easy       | Even-position mask `0x55555555`     | 342      |
+| 3   | Power of Three               | Easy       | Modulo by largest power (no bits)   | 326      |
+| 4   | Sum of Powers of Two         | Easy       | Binary representation = the answer  | —        |
+| 5   | Find Highest / Lowest Bit    | Easy       | `bit_length()`, `n & (-n)`          | —        |
+| 6   | Round Up to Next Power of 2  | Medium     | Bit smearing                        | —        |
+| 7   | Previous Power of Two        | Medium     | Bit smearing + shift                | —        |
+| 8   | Log Base 2 (Floor / Ceiling) | Easy       | `bit_length() - 1`                 | —        |
+| 9   | Bitwise AND of Numbers Range | Medium     | Common prefix / right-shift         | 201      |
+
+### Additional Practice
+
+| Problem                              | Difficulty | Key Concept                                   | LeetCode |
+| ------------------------------------ | ---------- | --------------------------------------------- | -------- |
+| Number of 1 Bits                     | Easy       | `n & (n-1)` to count set bits (Kernighan)     | 191      |
+| Minimum Flips to Make a OR b Equal c | Medium     | Per-bit analysis, counting flips needed        | 1318     |
+| Divide Two Integers                  | Medium     | Bit shifting to build quotient from powers of 2 | 29     |
 
 ---
 
 ## Related Sections
 
-- [Binary Basics](./01-binary-basics.md) - Bitwise operators
-- [Counting Bits](./03-counting-bits.md) - Related techniques
-- [Bit Manipulation Tricks](./06-bit-manipulation-tricks.md) - More tricks
+- [Binary Basics](./01-binary-basics.md) — Bitwise operators
+- [Counting Bits](./03-counting-bits.md) — Popcount techniques
+- [Bit Manipulation Tricks](./06-bit-manipulation-tricks.md) — More tricks

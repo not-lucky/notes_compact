@@ -36,7 +36,7 @@ Process the items one by one. For the current item, ask yourself: *"If I have $w
 
 ## Formal Recurrence
 
-Let $dp[i][w]$ be the maximum value we can achieve using a subset of the **first $i$ items** (from index 0 to $i-1$), given a maximum capacity constraint of $w$.
+Let $dp[i][w]$ be the maximum value we can achieve using a subset of the **first $i$ items** (from index $0$ to $i-1$), given a maximum capacity constraint of $w$.
 
 For the item at index $i-1$ (which has weight $wt[i-1]$ and value $val[i-1]$), we have two choices:
 
@@ -57,8 +57,8 @@ dp[i-1][w] & \text{if } wt[i-1] > w \text{ (too heavy)} \\
 $$
 
 **Base Cases:**
-- $dp[0][w] = 0$ for all $w \in [0, W]$ (0 items available means 0 value).
-- $dp[i][0] = 0$ for all $i \in [0, n]$ (0 capacity means we can't take any items, so 0 value).
+- $dp[0][w] = 0$ for all $w \in [0, W]$ ($0$ items available means $0$ value).
+- $dp[i][0] = 0$ for all $i \in [0, n]$ ($0$ capacity means we can't take any items, so $0$ value).
 
 ---
 
@@ -218,6 +218,18 @@ Iterating backward guarantees that when we evaluate `dp[w]`, the cells to its le
 
 Many popular DP problems don't explicitly mention "items" or "capacity," but they reduce exactly to 0/1 Knapsack once you translate the terminology.
 
+### Progressive Problem Set
+
+Here is a recommended progression of problems to solidify your understanding:
+
+1.  **Subset Sum** (Base Pattern)
+2.  **Partition Equal Subset Sum** (LeetCode 416) - Direct application of Subset Sum.
+3.  **Target Sum** (LeetCode 494) - Requires algebraic manipulation to reach Subset Sum.
+4.  **Last Stone Weight II** (LeetCode 1049) - Requires realizing the problem is finding two subsets with a minimal difference.
+5.  **Ones and Zeroes** (LeetCode 474) - Introduces multi-dimensional (2D) Knapsack capacity.
+
+---
+
 ### 1. Subset Sum
 
 **Problem:** Given an array of positive integers, can you find a subset that sums exactly to a specific `target`?
@@ -231,7 +243,27 @@ Many popular DP problems don't explicitly mention "items" or "capacity," but the
 Instead of `max()`, we use logical `OR`.
 
 ```python
+from functools import cache
+
+def can_partition_memo(nums: list[int], target: int) -> bool:
+    """Top-Down Memoization"""
+    n = len(nums)
+    
+    @cache
+    def dfs(i: int, current_sum: int) -> bool:
+        if current_sum == target:
+            return True
+        if i == n or current_sum > target:
+            return False
+            
+        # Choice 1: Include nums[i]
+        # Choice 2: Exclude nums[i]
+        return dfs(i + 1, current_sum + nums[i]) or dfs(i + 1, current_sum)
+        
+    return dfs(0, 0)
+
 def can_partition(nums: list[int], target: int) -> bool:
+    """Bottom-Up 1D Tabulation"""
     dp = [False] * (target + 1)
     dp[0] = True  # A sum of 0 is always possible (empty subset)
 
@@ -276,7 +308,27 @@ This is a massive breakthrough! We have eliminated the `-` signs completely. The
 This is 0/1 Knapsack where `capacity = P`. Because we want the *number of ways*, we use addition instead of `max()`.
 
 ```python
+from functools import cache
+
+def find_target_sum_ways_memo(nums: list[int], target: int) -> int:
+    """Top-Down Memoization"""
+    n = len(nums)
+    
+    @cache
+    def dfs(i: int, current_sum: int) -> int:
+        if i == n:
+            return 1 if current_sum == target else 0
+            
+        # Explore both + and - branches
+        add = dfs(i + 1, current_sum + nums[i])
+        sub = dfs(i + 1, current_sum - nums[i])
+        
+        return add + sub
+        
+    return dfs(0, 0)
+
 def find_target_sum_ways(nums: list[int], target: int) -> int:
+    """Bottom-Up 1D Tabulation"""
     total_sum = sum(nums)
 
     # If the required sum P isn't an integer, or total_sum is too small, it's impossible
@@ -311,6 +363,100 @@ This is exactly 0/1 Knapsack:
 *   **Goal:** Maximize the value (sum) packed into this capacity.
 
 Once we find the max possible sum for subset $P$ (`dp[capacity]`), the sum of the other subset is $N = \text{total\_sum} - P$. The final stone weight is $N - P = \text{total\_sum} - 2 \times P$.
+
+```python
+from functools import cache
+
+def lastStoneWeightII_memo(stones: list[int]) -> int:
+    """Top-Down Memoization"""
+    n = len(stones)
+    total_sum = sum(stones)
+    capacity = total_sum // 2
+    
+    @cache
+    def dfs(i: int, current_sum: int) -> int:
+        if i == n:
+            return current_sum
+            
+        res = dfs(i + 1, current_sum) # Choice 1: Exclude stone
+        if current_sum + stones[i] <= capacity:
+            res = max(res, dfs(i + 1, current_sum + stones[i])) # Choice 2: Include stone
+            
+        return res
+        
+    p_sum = dfs(0, 0)
+    return total_sum - 2 * p_sum
+
+def lastStoneWeightII(stones: list[int]) -> int:
+    """Bottom-Up 1D Tabulation"""
+    total_sum = sum(stones)
+    capacity = total_sum // 2
+    dp = [0] * (capacity + 1)
+    
+    for stone in stones:
+        for w in range(capacity, stone - 1, -1):
+            dp[w] = max(dp[w], dp[w - stone] + stone)
+            
+    return total_sum - 2 * dp[capacity]
+```
+
+### 5. Ones and Zeroes (LeetCode 474)
+
+**Problem:** You are given an array of binary strings `strs` and two integers `m` and `n`. Return the size of the largest subset of `strs` such that there are at most `m` `0`s and `n` `1`s in the subset.
+
+**Insight:** This is a **2D Knapsack** problem. Instead of a single weight capacity, we have two dimensions of capacity: a limit on `0`s and a limit on `1`s.
+*   **Items:** The strings in the array.
+*   **Weights:** The count of `0`s and `1`s in each string.
+*   **Capacity 1:** `m` (maximum `0`s).
+*   **Capacity 2:** `n` (maximum `1`s).
+*   **Value:** `1` (each string we include adds 1 to the size of the subset).
+
+We need a 2D DP array where `dp[i][j]` represents the maximum subset size using at most `i` `0`s and `j` `1`s. We iterate backwards through both capacities to space-optimize and ensure we only use each string once.
+
+```python
+from functools import cache
+
+def findMaxForm_memo(strs: list[str], m: int, n: int) -> int:
+    """Top-Down Memoization"""
+    size = len(strs)
+    # Precompute counts for efficiency
+    counts = [(s.count('0'), s.count('1')) for s in strs]
+    
+    @cache
+    def dfs(i: int, zeros_left: int, ones_left: int) -> int:
+        if i == size:
+            return 0
+            
+        zeros, ones = counts[i]
+        
+        # Choice 1: Skip the string
+        res = dfs(i + 1, zeros_left, ones_left)
+        
+        # Choice 2: Include the string (if it fits)
+        if zeros <= zeros_left and ones <= ones_left:
+            res = max(res, 1 + dfs(i + 1, zeros_left - zeros, ones_left - ones))
+            
+        return res
+        
+    return dfs(0, m, n)
+
+def findMaxForm(strs: list[str], m: int, n: int) -> int:
+    """Bottom-Up 2D Tabulation"""
+    # dp[i][j] will store the max subset size for i 0s and j 1s
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for s in strs:
+        zeros = s.count('0')
+        ones = s.count('1')
+        
+        # Iterate backwards through both capacities
+        for i in range(m, zeros - 1, -1):
+            for j in range(n, ones - 1, -1):
+                # We can either include the string or exclude it
+                dp[i][j] = max(dp[i][j], dp[i - zeros][j - ones] + 1)
+                
+    return dp[m][n]
+```
 
 ---
 

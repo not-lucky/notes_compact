@@ -54,7 +54,26 @@ $$dp[i] = dp[i-1] + dp[i-2]$$
 - $dp[0] = 1$ (1 way to stay at the ground: do nothing)
 - $dp[1] = 1$ (1 way to reach the first step: take 1 step)
 
-**Space Optimization:** We only ever need the last two values, so we can use two variables.
+**Space Optimization:** 
+**Top-Down (Memoization):**
+```python
+def climb_stairs_memo(n: int) -> int:
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        if i <= 1:
+            return 1
+        if i in memo:
+            return memo[i]
+            
+        memo[i] = dfs(i - 1) + dfs(i - 2)
+        return memo[i]
+        
+    return dfs(n)
+```
+
+**Bottom-Up (Tabulation - Optimized Space):**
+
 
 ```python
 def climb_stairs(n: int) -> int:
@@ -89,6 +108,28 @@ $$dp[i] = \min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2])$$
 - $dp[0] = 0$ (Start here for free)
 - $dp[1] = 0$ (Start here for free)
 
+
+**Top-Down (Memoization):**
+```python
+def min_cost_climbing_stairs_memo(cost: list[int]) -> int:
+    memo = {}
+    n = len(cost)
+    
+    def dfs(i: int) -> int:
+        if i <= 1:
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        # Cost to reach step i is the min of reaching i-1 + cost[i-1] 
+        # or reaching i-2 + cost[i-2]
+        memo[i] = min(dfs(i - 1) + cost[i - 1], dfs(i - 2) + cost[i - 2])
+        return memo[i]
+        
+    return dfs(n)
+```
+
+**Bottom-Up (Tabulation - Optimized Space):**
 ```python
 def min_cost_climbing_stairs(cost: list[int]) -> int:
     """
@@ -138,6 +179,26 @@ $$dp[i] = \max(dp[i-1], dp[i-2] + nums[i])$$
 | **3** | `3` | 11 | 7 + 3 | **11** |
 | **4** | `1` | 11 | 11 + 1 | **12** |
 
+
+**Top-Down (Memoization):**
+```python
+def rob_memo(nums: list[int]) -> int:
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        if i < 0:
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        # Max of skipping this house or taking this house + house i-2
+        memo[i] = max(dfs(i - 1), dfs(i - 2) + nums[i])
+        return memo[i]
+        
+    return dfs(len(nums) - 1)
+```
+
+**Bottom-Up (Tabulation - Optimized Space):**
 ```python
 def rob(nums: list[int]) -> int:
     """
@@ -159,6 +220,41 @@ Given an integer array `nums`, you can pick an element `x`, earn `x` points, but
 
 **Insight:** This is House Robber in disguise! If we transform the input into an array where the index is the number itself and the value is the total sum of that number in `nums`, the rule "deleting `x-1` and `x+1`" is identical to the House Robber rule "cannot rob adjacent houses".
 
+
+**Top-Down (Memoization):**
+```python
+def delete_and_earn_memo(nums: list[int]) -> int:
+    from collections import Counter
+    if not nums:
+        return 0
+        
+    counts = Counter(nums)
+    # Get unique sorted keys to avoid iterating over empty values
+    unique_nums = sorted(counts.keys())
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        if i < 0:
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        num = unique_nums[i]
+        earn = num * counts[num]
+        
+        # If previous number is num - 1, we can't take it
+        if i > 0 and unique_nums[i - 1] == num - 1:
+            memo[i] = max(dfs(i - 1), dfs(i - 2) + earn)
+        else:
+            # We can take both since they aren't adjacent in value
+            memo[i] = dfs(i - 1) + earn
+            
+        return memo[i]
+        
+    return dfs(len(unique_nums) - 1)
+```
+
+**Bottom-Up (Tabulation with Array):**
 ```python
 def delete_and_earn(nums: list[int]) -> int:
     """
@@ -199,20 +295,48 @@ Let `dp[i]` be the maximum subarray sum ending at index `i`.
 
 **Recurrence Relation:**
 At index `i`, you have a choice:
-1. Extend the previous best subarray ending at `i-1` by adding `nums[i]`. ($dp[i-1] + nums[i]$)
-2. Start a completely new subarray at `i`. ($nums[i]$)
+1. **Extend the previous best subarray** ending at `i-1` by adding `nums[i]`. ($dp[i-1] + nums[i]$)
+2. **Start a completely new subarray** at `i`. ($nums[i]$)
 
 You choose the maximum of these two.
 $$dp[i] = \max(nums[i], dp[i-1] + nums[i])$$
 
-The global maximum is the maximum value found anywhere in the `dp` array.
+Note that `dp[i]` only represents the best subarray *ending* at `i`. The true global maximum subarray could end anywhere, so we must also track the global maximum found across all `dp` states.
 
+
+**Top-Down (Memoization):**
+Note: Kadane's algorithm is usually written bottom-up because it's simpler, but the top-down equivalent helps understand the state transition.
+```python
+def max_subarray_memo(nums: list[int]) -> int:
+    # memo[i] stores the max subarray sum ending exactly at index i
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        if i == 0:
+            return nums[0]
+        if i in memo:
+            return memo[i]
+            
+        # Either extend the previous subarray or start a new one here
+        memo[i] = max(nums[i], dfs(i - 1) + nums[i])
+        return memo[i]
+        
+    # We must compute all states to find the global max
+    max_sum = float('-inf')
+    for i in range(len(nums)):
+        max_sum = max(max_sum, dfs(i))
+        
+    return int(max_sum)
+```
+
+**Bottom-Up (Kadane's Algorithm):**
 ```python
 def max_subarray(nums: list[int]) -> int:
     """
     Time: O(n) | Space: O(1)
     """
     # Initialize both to the first element
+    # curr_sum represents dp[i]
     max_sum = nums[0]
     curr_sum = nums[0]
 
@@ -228,8 +352,39 @@ def max_subarray(nums: list[int]) -> int:
 ### Maximum Product Subarray
 Like max subarray, but tracking the largest product.
 
-**Insight:** Because multiplying two negative numbers yields a positive number, a very small (negative) product can instantly become the largest product if the current number is negative. Therefore, we must track *both* the maximum and minimum products ending at `i`.
+**Insight:** Because multiplying two negative numbers yields a positive number, a very small (negative) product can instantly become the largest product if the current number is negative. Therefore, we must track *both* the **maximum** and **minimum** products ending at `i`.
 
+
+**Top-Down (Memoization):**
+```python
+def max_product_memo(nums: list[int]) -> int:
+    # Need to track both max and min ending at i
+    # memo[i] = (max_ending_here, min_ending_here)
+    memo = {}
+    
+    def dfs(i: int) -> tuple[int, int]:
+        if i == 0:
+            return (nums[0], nums[0])
+        if i in memo:
+            return memo[i]
+            
+        prev_max, prev_min = dfs(i - 1)
+        num = nums[i]
+        
+        curr_max = max(num, prev_max * num, prev_min * num)
+        curr_min = min(num, prev_max * num, prev_min * num)
+        
+        memo[i] = (curr_max, curr_min)
+        return memo[i]
+        
+    res = float('-inf')
+    for i in range(len(nums)):
+        res = max(res, dfs(i)[0])
+        
+    return int(res)
+```
+
+**Bottom-Up (Tabulation - Optimized Space):**
 ```python
 def max_product(nums: list[int]) -> int:
     """
@@ -238,19 +393,22 @@ def max_product(nums: list[int]) -> int:
     if not nums:
         return 0
 
-    # global max
+    # res stores the global maximum
     res = nums[0]
-    # local min and max ending at current index
+    
+    # curr_min and curr_max store the min/max product of subarrays ending at index i
     curr_min, curr_max = nums[0], nums[0]
 
     for i in range(1, len(nums)):
         num = nums[i]
 
-        # We must store the previous max to correctly calculate the new min
-        # Candidates:
-        # 1. The number itself (starting a new subarray)
-        # 2. Extend the max product so far
-        # 3. Extend the min product so far (if num is negative)
+        # We must store the previous curr_max in a temp variable because we
+        # need to use its value to calculate the new curr_min, before it is overwritten.
+        # Candidates for new max/min:
+        # 1. Start a new subarray here: `num`
+        # 2. Extend the max product subarray: `curr_max * num`
+        # 3. Extend the min product subarray (critical when num < 0): `curr_min * num`
+        
         temp_max = max(num, curr_max * num, curr_min * num)
         curr_min = min(num, curr_max * num, curr_min * num)
         curr_max = temp_max
@@ -277,6 +435,36 @@ To find `dp[i]`:
 - If the single character `s[i-1]` is valid ('1'-'9'), we can append it to all decodings of length `i-1`. Add `dp[i-1]`.
 - If the two characters ending at `s[i-1]` (i.e., `s[i-2:i]`) form a valid number ('10'-'26'), we can append it to all decodings of length `i-2`. Add `dp[i-2]`.
 
+
+**Top-Down (Memoization):**
+```python
+def num_decodings_memo(s: str) -> int:
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        # Base case: empty string has 1 way to decode
+        if i == len(s):
+            return 1
+        # Invalid decoding starts with '0'
+        if s[i] == '0':
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        # Single digit decode
+        res = dfs(i + 1)
+        
+        # Two digit decode
+        if i + 1 < len(s) and (s[i] == '1' or (s[i] == '2' and s[i + 1] in '0123456')):
+            res += dfs(i + 2)
+            
+        memo[i] = res
+        return res
+        
+    return dfs(0)
+```
+
+**Bottom-Up (Tabulation - Optimized Space):**
 ```python
 def num_decodings(s: str) -> int:
     """
@@ -323,6 +511,33 @@ Let `dp[i]` be the minimum number of perfect squares that sum to `i`.
 To find `dp[i]`, we can try subtracting every valid perfect square $j^2 \le i$. The answer is 1 (for the square we just subtracted) plus the optimal answer for the remainder $i - j^2$. We want the minimum over all valid $j$.
 $$dp[i] = 1 + \min_{j^2 \le i}(dp[i - j^2])$$
 
+
+**Top-Down (Memoization):**
+```python
+import math
+
+def num_squares_memo(n: int) -> int:
+    memo = {}
+    
+    def dfs(target: int) -> int:
+        if target == 0:
+            return 0
+        if target in memo:
+            return memo[target]
+            
+        res = float('inf')
+        j = 1
+        while j * j <= target:
+            res = min(res, 1 + dfs(target - j * j))
+            j += 1
+            
+        memo[target] = res
+        return res
+        
+    return dfs(n)
+```
+
+**Bottom-Up (Tabulation):**
 ```python
 def num_squares(n: int) -> int:
     """
@@ -343,6 +558,28 @@ def num_squares(n: int) -> int:
 ```
 
 ---
+
+
+
+## Recommended Progressive Problems
+
+To master 1D DP, practice these problems in this recommended order:
+
+1. **Fibonacci-style**:
+   - [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) (Easy)
+   - [Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs/) (Easy)
+   - [N-th Tribonacci Number](https://leetcode.com/problems/n-th-tribonacci-number/) (Easy)
+2. **Take or Skip**:
+   - [House Robber](https://leetcode.com/problems/house-robber/) (Medium)
+   - [House Robber II](https://leetcode.com/problems/house-robber-ii/) (Medium)
+   - [Delete and Earn](https://leetcode.com/problems/delete-and-earn/) (Medium)
+3. **Best Ending Here (Kadane's)**:
+   - [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) (Medium)
+   - [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) (Medium)
+4. **Combinatorics / Unbounded Lookback**:
+   - [Decode Ways](https://leetcode.com/problems/decode-ways/) (Medium)
+   - [Perfect Squares](https://leetcode.com/problems/perfect-squares/) (Medium)
+   - [Word Break](https://leetcode.com/problems/word-break/) (Medium) - *Transitioning to boolean DP*
 
 ## Key Takeaways
 

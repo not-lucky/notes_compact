@@ -179,25 +179,34 @@ def matrix_chain_memo(p: list[int]) -> int:
 Most interval DP problems follow this exact structure:
 
 ```python
-def interval_dp_template(arr: list) -> int:
+def interval_dp_template(arr: list[int]) -> int | float:
+    """
+    Standard template for Interval DP.
+    """
     n = len(arr)
-    dp = [[0] * n for _ in range(n)]
+    if n == 0:
+        return 0
 
-    # Base cases: intervals of length 1
+    # dp[i][j] represents optimal answer for arr[i...j]
+    dp = [[0.0] * n for _ in range(n)]
+
+    # 1. Base cases: intervals of length 1 (or sometimes 2)
     for i in range(n):
-        dp[i][i] = base_case(arr[i])
+        dp[i][i] = base_case(arr[i])  # Define according to problem
 
-    # Iterate over interval lengths
+    # 2. Iterate over interval lengths (from 2 to n)
     for length in range(2, n + 1):
-        # Iterate over start index
+        # 3. Iterate over start index i
         for i in range(n - length + 1):
-            j = i + length - 1  # Calculate end index
+            j = i + length - 1  # 4. Calculate end index j
+            
+            # Initialize dp[i][j] to infinity (or -infinity if maximizing)
+            dp[i][j] = float('inf')
 
-            dp[i][j] = float('inf')  # Or float('-inf') if maximizing
-
-            # Iterate over split points
+            # 5. Iterate over split points k
             for k in range(i, j):  # Sometimes range(i, j + 1) depending on problem
-                # Transition
+                # Transition: cost of left part + right part + cost to combine
+                # merge_cost could depend on arr, prefix sums, etc.
                 cost = dp[i][k] + dp[k+1][j] + merge_cost(i, k, j)
                 dp[i][j] = min(dp[i][j], cost)
 
@@ -304,6 +313,18 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
 ```
 
 ---
+
+
+## Progressive Problems to Solve
+
+To truly master interval DP, solve these problems in order:
+
+1. **Matrix Chain Multiplication (GeeksforGeeks/Classic)**: The canonical problem. Implements the exact algorithm above.
+2. **Minimum Score Triangulation of Polygon (LeetCode 1039)**: Visually different, mathematically identical to Matrix Chain.
+3. **Minimum Cost Tree From Leaf Values (LeetCode 1130)**: Similar structure but finding maximums in subranges.
+4. **Burst Balloons (LeetCode 312)**: The trick is to think in reverse (which balloon is popped *last* in the interval).
+5. **Minimum Cost to Merge Stones (LeetCode 1000)**: Introduces the $K$-way merge and step-size optimizations.
+6. **Remove Boxes (LeetCode 546)**: Adds a third dimension to track state across split intervals.
 
 ## Common Mistakes
 

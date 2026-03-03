@@ -278,6 +278,20 @@ def longest_valid_parentheses(s: str) -> int:
 
 ---
 
+
+## Progressive Problems to Master String DP
+
+To solidify your understanding of String DP, work through these problems in order. They naturally build upon the concepts of 1D state decodings, 2D sequence alignments, and Interval/State Machine string parsing.
+
+1. **[LeetCode 91: Decode Ways](https://leetcode.com/problems/decode-ways/)** (Medium) - Classic 1D String DP. Teaches you how to look back 1 and 2 characters to validate states.
+2. **[LeetCode 139: Word Break](https://leetcode.com/problems/word-break/)** (Medium) - Expands on Decode Ways. Instead of looking back 2 characters, you look back `k` characters (length of words in dictionary).
+3. **[LeetCode 97: Interleaving String](https://leetcode.com/problems/interleaving-string/)** (Medium) - Classic 2D String DP. Teaches you how to manage two pointers/states moving independently to form a third string.
+4. **[LeetCode 115: Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/)** (Hard) - Advanced 2D String DP. Focuses on counting combinations rather than boolean matching, requiring careful state transitions when characters match.
+5. **[LeetCode 32: Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/)** (Hard) - State Machine / 1D DP. Teaches you how to jump back `dp[i]` steps to find the matching counterpart of a sequence.
+6. **[LeetCode 87: Scramble String](https://leetcode.com/problems/scramble-string/)** (Hard) - Interval DP / Divide and Conquer on Strings.
+
+---
+
 ## Non-DP String Problems (For Contrast)
 
 Some string matching problems look like DP but are better solved with hashing, tries, or greedy two-pointer approaches. Be highly skeptical if a "DP" solution exceeds $O(n^2)$ time on a string where $n > 5,000$.

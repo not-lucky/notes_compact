@@ -97,7 +97,7 @@ Let $L$ be the length of the word, $n$ be the total number of words, and $k$ be 
 ### Space Complexity Breakdown
 For $n$ words with average length $L$ and alphabet size $A$:
 - **Worst case**: $O(n \cdot L \cdot A)$ (No shared prefixes, all nodes distinct).
-- **Best case**: $O(L \cdot A)$ (All words share the same exact prefix path).
+- **Best case**: $O(L \cdot A)$ (All words share the same exact prefix path — e.g., $n$ identical words still produce only $L$ nodes since every insertion follows the same path. The $A$ factor accounts for the children storage at each node).
 
 ---
 
@@ -133,33 +133,35 @@ class TrieNodeHash:
 This is the canonical HashMap-based implementation you should memorize.
 
 ```python
-from typing import Optional
-
 class TrieNode:
     def __init__(self):
         self.children: dict[str, 'TrieNode'] = {}
-        self.is_end: bool = False
+        self.is_end: bool = False  # True if a valid word ends at this node
 
 class Trie:
     def __init__(self):
         self.root = TrieNode()
 
     def insert(self, word: str) -> None:
+        """Insert a word into the trie. O(L) time."""
         node = self.root
         for char in word:
             if char not in node.children:
                 node.children[char] = TrieNode()
             node = node.children[char]
-        node.is_end = True
+        node.is_end = True  # Mark the end of a complete word
 
     def search(self, word: str) -> bool:
+        """Return True if the exact word exists in the trie."""
         node = self._find_node(word)
         return node is not None and node.is_end
 
     def startsWith(self, prefix: str) -> bool:
+        """Return True if any word in the trie starts with the given prefix."""
         return self._find_node(prefix) is not None
 
-    def _find_node(self, prefix: str) -> Optional[TrieNode]:
+    def _find_node(self, prefix: str) -> TrieNode | None:
+        """Traverse the trie following `prefix`. Returns the last node or None."""
         node = self.root
         for char in prefix:
             if char not in node.children:
@@ -179,10 +181,12 @@ class Trie:
 
 | Pattern | Problems | Key Strategy |
 | :--- | :--- | :--- |
-| **Basic Trie** | Implement Trie, Design Add/Search Words Data Structure | Standard implementation template. |
-| **Trie + DFS (2D Grid)** | Word Search II | Backtrack on the grid while traversing the Trie simultaneously. |
-| **Autocomplete** | Design Search Autocomplete System | Store top-$k$ frequencies directly in nodes to speed up retrieval. |
-| **Bitwise Trie** | Maximum XOR of Two Numbers in an Array | Insert 32-bit binary strings; greedily follow the *opposite* bit. |
+| **Basic Trie** | Implement Trie (LC 208), Design Add/Search Words Data Structure (LC 211) | Standard implementation template. |
+| **Trie + DFS (2D Grid)** | Word Search II (LC 212) | Backtrack on the grid while traversing the Trie simultaneously. |
+| **Autocomplete** | Design Search Autocomplete System (LC 642) | Store top-$k$ frequencies directly in nodes to speed up retrieval. |
+| **Bitwise Trie** | Maximum XOR of Two Numbers in an Array (LC 421) | Insert 32-bit binary strings; greedily follow the *opposite* bit. |
+| **Prefix Replacement** | Replace Words (LC 648) | Walk the trie to find the shortest matching root. |
+| **Concatenation** | Concatenated Words (LC 472) | Trie + DFS/DP to check if a word is composed of other words. |
 
 ## 8. Chapter Contents
 
@@ -192,8 +196,11 @@ class Trie:
 | 02 | [Word Dictionary](./02-word-dictionary.md) | Searching with wildcards (`.`) and edit distances. |
 | 03 | [Replace Words](./03-replace-words.md) | Shortest prefix match. |
 | 04 | [Word Search II](./04-word-search-trie.md) | Trie + DFS optimization on a 2D grid. |
+| 05 | [Shortest Unique Prefix](./05-shortest-unique-prefix.md) | Finding the shortest prefix to uniquely identify each word. |
 | 06 | [Autocomplete System](./06-autocomplete.md) | Designing a typeahead autocomplete system. |
+| 07 | [Concatenated Words](./07-concatenated-words.md) | Trie + DFS to find words composed of shorter words. |
 | 08 | [Maximum XOR](./08-maximum-xor.md) | Using Bitwise tries to solve XOR problems. |
+| 09 | [Suffix Tries](./09-suffix-tries.md) | Suffix-based tries for substring matching. |
 
 ---
 

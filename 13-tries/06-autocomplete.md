@@ -16,7 +16,7 @@ Design Search Autocomplete System (LeetCode 642) is a classic problem that appea
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Basic (Terminal Only)** | $O(N \cdot L)$ | $O(p + M \cdot L + M \log M)$ | $O(L)$ (No matches) | $O(M \cdot L + M \log M)$ | $O(\text{total chars})$ |
 | **Optimized (Heap/Top-K)** | $O(N \cdot L)$ | $O(p + M \cdot L + M \log K)$ | $O(L)$ (No matches) | $O(M \cdot L + M \log K)$ | $O(\text{total chars})$ |
-| **Production-Ready** | $O(N \cdot L \cdot K \log K)$ | $O(K \log K)$ or $O(1)$ | $O(1)$ (Cached Top-K) | $O(1)$ (Cached Top-K) | $O(\text{total chars} + \text{nodes} \cdot K)$ |
+| **Production-Ready** | $O(N \cdot L)$ | $O(L)$ (on `#` insert) / $O(1)$ (query) | $O(1)$ (Cached Top-K) | $O(1)$ (Cached Top-K) | $O(\text{total chars} + \text{nodes} \cdot K)$ |
 
 *Where $N$ = sentences, $L$ = avg length, $M$ = matches, $K$ = top-k (3 here), $p$ = prefix length.*
 
@@ -95,12 +95,12 @@ all_matches = collect_all(node)
 all_matches.sort(key=lambda x: -x.freq)
 return all_matches[:3]
 
-# Do this (stops after 3):
+# Do this (heap keeps only top 3, discards the rest):
 heap = []  # Min-heap of size 3
 for match in collect_all(node):
     if len(heap) < 3:
         heappush(heap, match)
-    elif match.freq > heap[0].freq:
+    elif match > heap[0]:  # Custom __lt__ defines "worse" items as smaller
         heapreplace(heap, match)
 return sorted(heap, reverse=True)
 ```
@@ -235,10 +235,10 @@ class AutocompleteSystem:
     """
 
     def __init__(self, sentences: list[str], times: list[int]):
-        self.root = {}
-        self.current_node = self.root
-        self.current_input = []
-        self.dead_node = {}  # Empty node for no matches
+        self.root: dict = {}
+        self.current_node: dict = self.root
+        self.current_input: list[str] = []
+        self.dead_node: dict = {}  # Sentinel node for no-match state
 
         # Build trie with frequencies
         for sentence, count in zip(sentences, times):
@@ -251,9 +251,12 @@ class AutocompleteSystem:
             if char not in node:
                 node[char] = {}
             node = node[char]
-        # Store frequency at terminal, '#' is reserved for sentence data
+        # '#' stores frequency at terminal node. This does NOT conflict with
+        # the '#' end-of-input signal because '#' in input() triggers early
+        # return before any trie navigation — it's never inserted as a char.
+        # '$' stores the complete sentence string for retrieval.
         node['#'] = node.get('#', 0) + count
-        node['$'] = sentence  # Store complete sentence
+        node['$'] = sentence
 
     def input(self, c: str) -> list[str]:
         """Process one character of input."""
@@ -293,7 +296,7 @@ class AutocompleteSystem:
             result.append((node['#'], node['$']))
 
         for char, child in node.items():
-            if char not in ['#', '$']:
+            if char not in ('#', '$'):  # Skip metadata keys (tuple for speed)
                 self._collect(child, result)
 ```
 
@@ -303,28 +306,28 @@ class AutocompleteSystem:
 import heapq
 
 class TrieItem:
+    __slots__ = ('freq', 'sentence')
+
     def __init__(self, freq: int, sentence: str):
         self.freq = freq
         self.sentence = sentence
 
-    def __lt__(self, other):
-        # Min-heap logic for top-k elements.
-        # We want to keep the elements with MAX frequency and MIN lexicographical string.
-        # Therefore, the min-heap should pop (discard) the worst items first:
-        # elements with MIN frequency, and if frequencies tie, MAX lexicographical string.
+    def __lt__(self, other: 'TrieItem') -> bool:
+        # Min-heap logic for maintaining top-k elements.
+        # We want to KEEP the best items: highest frequency, lowest lexicographic.
+        # We want to POP the worst items: lowest frequency, highest lexicographic.
+        # Therefore "less than" = "worse" = should be popped first.
         if self.freq == other.freq:
-            # Pop the larger string (descending ASCII order)
-            return self.sentence > other.sentence
-        # Pop the smaller frequency first
-        return self.freq < other.freq
+            return self.sentence > other.sentence  # Higher lex → worse → pop first
+        return self.freq < other.freq  # Lower freq → worse → pop first
 
 class AutocompleteSystemHeap:
     """Optimized with heap for top-k retrieval."""
 
     def __init__(self, sentences: list[str], times: list[int]):
-        self.root = {}
-        self.current_node = self.root
-        self.current_input = []
+        self.root: dict = {}
+        self.current_node: dict | None = self.root
+        self.current_input: list[str] = []
 
         for sentence, count in zip(sentences, times):
             self._insert(sentence, count)
@@ -375,7 +378,7 @@ class AutocompleteSystemHeap:
                 heapq.heappushpop(heap, item)
 
         for char, child in node.items():
-            if char not in ['freq', 'sentence']:
+            if char not in ('freq', 'sentence'):  # Skip metadata keys
                 self._collect_topk(child, heap, k)
 ```
 
@@ -383,66 +386,79 @@ class AutocompleteSystemHeap:
 
 ```python
 from collections import defaultdict
-import heapq
 
 class TrieNode:
+    __slots__ = ('children', 'top3')
+
     def __init__(self):
+        # defaultdict is safe here: insertion uses [] which auto-creates (intentional),
+        # and queries guard with `c not in node.children` (which does NOT trigger
+        # __missing__) before accessing. See lessons on defaultdict trie pitfalls.
         self.children: dict[str, 'TrieNode'] = defaultdict(TrieNode)
-        # Pre-compute top 3 items as (frequency, sentence) pairs.
+        # Pre-computed top 3 as (-frequency, sentence) would be natural for heaps,
+        # but we store (frequency, sentence) and sort with a key for clarity.
         self.top3: list[tuple[int, str]] = []
 
 
 class AutocompleteSystem:
     """
-    Production-ready autocomplete with truly pre-computed suggestions.
+    Production-ready autocomplete with pre-computed top-3 at every node.
 
-    Optimization: Maintain only the top 3 sentences at each node DURING insertion.
-    Trade-off: Slightly more insertion cost, but true O(1) queries.
+    Optimization: Maintain sorted top-3 list at each node DURING insertion.
+    Trade-off: Slightly more insertion cost O(L per sentence), but O(1) queries.
+
+    Note: Root node's top3 is maintained but never queried — input() always
+    navigates to a child before reading top3. We keep it for API completeness
+    (e.g., if you wanted "show suggestions before any typing").
     """
 
     def __init__(self, sentences: list[str], times: list[int]):
         self.root = TrieNode()
-        self.current_node: 'TrieNode | None' = self.root
+        self.current_node: TrieNode | None = self.root
         self.current_input: list[str] = []
-        # Track total counts for exact updates
+        # Track total counts for correct updates on duplicate sentences
         self.sentence_counts: dict[str, int] = defaultdict(int)
 
         for sentence, count in zip(sentences, times):
             self.sentence_counts[sentence] += count
 
-        for sentence, _ in zip(sentences, times):
+        # Insert each UNIQUE sentence once with its total count
+        for sentence in self.sentence_counts:
             self._insert_path(sentence)
 
     def _insert_path(self, sentence: str) -> None:
-        """Updates the trie path for the given sentence and its current count."""
+        """Update top3 at every node along this sentence's trie path."""
         count = self.sentence_counts[sentence]
         node = self.root
 
-        # Update root
+        # Update root's top3 (useful if we ever query with empty prefix)
         self._update_top3(node, sentence, count)
 
-        # Update children along the path
+        # Update each node along the path
         for char in sentence:
-            node = node.children[char]
+            node = node.children[char]  # defaultdict auto-creates on insert
             self._update_top3(node, sentence, count)
 
     def _update_top3(self, node: TrieNode, sentence: str, count: int) -> None:
-        """Helper to maintain exactly the top 3 items in O(1) query time."""
-        # Find if sentence is already in top3
+        """Maintain exactly the top 3 items at this node.
+
+        Since top3 has at most 4 elements (3 existing + 1 new), all
+        operations here are O(1) — the sort is on a constant-size list.
+        """
+        # Check if sentence already exists in top3
         found_idx = -1
-        for i, (c, s) in enumerate(node.top3):
+        for i, (_, s) in enumerate(node.top3):
             if s == sentence:
                 found_idx = i
                 break
 
         if found_idx != -1:
-            # Update existing candidate
-            node.top3[found_idx] = (count, sentence)
+            node.top3[found_idx] = (count, sentence)  # Update frequency
         else:
-            # Add new candidate
-            node.top3.append((count, sentence))
+            node.top3.append((count, sentence))  # Add new candidate
 
-        # Sort the list. Since we only sort a tiny list (max size 4), it's O(1).
+        # Sort: highest frequency first, then alphabetically for ties
+        # Sorting ≤4 elements is O(1)
         node.top3.sort(key=lambda x: (-x[0], x[1]))
 
         # Trim to keep only the top 3
@@ -461,13 +477,15 @@ class AutocompleteSystem:
 
         self.current_input.append(c)
 
+        # IMPORTANT: `c not in dict` does NOT trigger defaultdict auto-creation.
+        # Only `dict[c]` (i.e., __getitem__) would. So this guard is safe.
         if not self.current_node or c not in self.current_node.children:
             self.current_node = None
             return []
 
         self.current_node = self.current_node.children[c]
 
-        # O(1) query! We already pre-computed the top 3 items
+        # O(1) query — top 3 were pre-computed during insertion
         return [s for _, s in self.current_node.top3]
 ```
 
@@ -477,16 +495,18 @@ class AutocompleteSystem:
 
 | Operation        | Basic Approach     | Optimized (Heap)   | Pre-computed                              |
 | ---------------- | ------------------ | ------------------ | ----------------------------------------- |
-| Init             | O(n × L)           | O(n × L)           | O(n × L × L)                              |
-| Input (per char) | O(m × L + m log m) | O(m × L + m log k) | O(k log k)                                |
+| Init             | O(n × L)           | O(n × L)           | O(n × L)                                  |
+| Input (per char) | O(m × L + m log m) | O(m × L + m log k) | O(1) query / O(L) on '#' insert           |
 | Space            | O(total chars)     | O(total chars)     | O(total chars × avg sentences per prefix) |
 
 Where:
 
-- n = number of sentences
+- n = number of unique sentences
 - L = average sentence length
 - m = matching sentences
 - k = top-k (3 in this problem)
+
+**Init complexity note for Pre-computed:** Each sentence traverses L nodes and calls `_update_top3` at each. Since `top3` has at most 4 elements, sorting it is O(1). Therefore each sentence costs O(L), giving O(n × L) total — NOT O(n × L²) as sometimes incorrectly stated.
 
 ---
 
@@ -528,16 +548,17 @@ from collections import Counter
 import heapq
 
 class WordFreq:
+    __slots__ = ('freq', 'word')
+
     def __init__(self, freq: int, word: str):
         self.freq = freq
         self.word = word
 
-    def __lt__(self, other):
-        # We want to KEEP max freq and min lexicographical.
-        # So we POP min freq and max lexicographical.
+    def __lt__(self, other: 'WordFreq') -> bool:
+        # Same min-heap logic as TrieItem: "less than" = "worse" = pop first
         if self.freq == other.freq:
-            return self.word > other.word
-        return self.freq < other.freq
+            return self.word > other.word  # Higher lex → worse
+        return self.freq < other.freq  # Lower freq → worse
 
 class Solution:
     def topKFrequent(self, words: list[str], k: int) -> list[str]:
@@ -597,28 +618,46 @@ class Solution:
 
 ```python
 class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.is_end = False
-        self.word = ""
+    __slots__ = ('children', 'is_end', 'word')
 
-class Solution:
+    def __init__(self):
+        self.children: dict[str, 'TrieNode'] = {}
+        self.is_end: bool = False
+        self.word: str = ""
+
+class FuzzyAutocomplete:
     def __init__(self):
         self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end = True
+        node.word = word
 
     def fuzzy_autocomplete(self, prefix: str, max_distance: int = 1) -> list[str]:
         """
         Return suggestions within edit distance of prefix.
-        Used for typo tolerance.
+        Used for typo tolerance (e.g., "aple" → "apple").
+
+        Edits allowed: substitution, insertion (extra char in query),
+        deletion (missing char in query).
+
+        WARNING: Time complexity is exponential in max_distance.
+        For max_distance=1 this is manageable; for larger values
+        consider a BK-tree or Levenshtein automaton instead.
         """
-        results = []
+        results: set[str] = set()  # Use set to avoid duplicate results
 
         def dfs(node: TrieNode, remaining: str, edits: int) -> None:
             if edits > max_distance:
                 return
 
             if not remaining:
-                # Prefix consumed, collect all words from this subtree
+                # Prefix consumed — collect all words from this subtree
                 self._collect_words(node, results)
                 return
 
@@ -627,26 +666,26 @@ class Solution:
 
             for next_char, child in node.children.items():
                 if next_char == char:
-                    # Exact match
+                    # Exact match — no edit cost
                     dfs(child, rest, edits)
                 else:
-                    # Substitution
+                    # Substitution — consume both query char and trie char
                     dfs(child, rest, edits + 1)
 
-            # Insertion (skip char in prefix, try same node with shorter prefix)
+            # Insertion — extra char in query, skip it (stay at same trie node)
             dfs(node, rest, edits + 1)
 
-            # Deletion (skip char in trie, move to child but keep full prefix)
+            # Deletion — missing char in query, advance trie without consuming query
             for child in node.children.values():
                 dfs(child, remaining, edits + 1)
 
         dfs(self.root, prefix, 0)
-        return results
+        return sorted(results)  # Return sorted for consistent output
 
-    def _collect_words(self, node: TrieNode, results: list[str]) -> None:
-        """Helper to collect all terminal words under a node."""
+    def _collect_words(self, node: TrieNode, results: set[str]) -> None:
+        """Collect all terminal words under a node."""
         if node.is_end:
-            results.append(node.word)
+            results.add(node.word)
         for child in node.children.values():
             self._collect_words(child, results)
 ```
@@ -693,13 +732,27 @@ For system design interviews, extend the solution:
 
 ## Practice Problems
 
-| #   | Problem                           | Difficulty | Key Concept              |
-| --- | --------------------------------- | ---------- | ------------------------ |
-| 1   | Design Search Autocomplete System | Hard       | Trie + frequency sorting |
-| 2   | Top K Frequent Words              | Medium     | Heap + frequency         |
-| 3   | Search Suggestions System         | Medium     | Trie or binary search    |
-| 4   | Implement Trie II                 | Medium     | Trie with counts         |
-| 5   | Design File System                | Medium     | Trie for paths           |
+### Progressive Practice (Recommended Order)
+
+Start with basic trie operations, then add ranking, then full system design:
+
+| #   | Problem                              | LC#  | Difficulty | Key Concept                          | Why This Order                          |
+| --- | ------------------------------------ | ---- | ---------- | ------------------------------------ | --------------------------------------- |
+| 1   | Implement Trie (Prefix Tree)         | 208  | Medium     | Basic trie insert/search             | Foundation — must be second nature      |
+| 2   | Implement Trie II (Prefix & Count)   | 1804 | Medium     | Trie with prefix/word counts         | Adds counting, needed for frequencies   |
+| 3   | Top K Frequent Words                 | 692  | Medium     | Heap + frequency ranking             | Learn the top-k heap pattern separately |
+| 4   | Search Suggestions System            | 1268 | Medium     | Trie or sorted array + binary search | Prefix suggestions without frequencies  |
+| 5   | Design Search Autocomplete System    | 642  | Hard       | Trie + frequency + API design        | Combines everything above               |
+| 6   | Design File System                   | 1166 | Medium     | Trie for hierarchical paths          | Trie in a different domain              |
+| 7   | Replace Words                        | 648  | Medium     | Trie for prefix replacement          | Trie as lookup, not autocomplete        |
+
+### Additional Challenges
+
+| #   | Problem                              | LC#  | Difficulty | Key Concept                          |
+| --- | ------------------------------------ | ---- | ---------- | ------------------------------------ |
+| 8   | Map Sum Pairs                        | 677  | Medium     | Trie + prefix sums                   |
+| 9   | Stream of Characters                 | 1032 | Hard       | Suffix trie with streaming input     |
+| 10  | Palindrome Pairs                     | 336  | Hard       | Trie for reverse lookup              |
 
 ---
 

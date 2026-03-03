@@ -1,6 +1,6 @@
 # Word Search II
 
-[Previous: Replace Words](./03-replace-words.md) | [Next: Autocomplete](./06-autocomplete.md)
+[Previous: Replace Words](./03-replace-words.md) | [Next: Shortest Unique Prefix](./05-shortest-unique-prefix.md)
 
 > **Prerequisites:** [Trie Implementation](./01-trie-implementation.md), [Backtracking](../11-recursion-backtracking/README.md), [Matrix Traversal](../02-arrays-strings/README.md)
 
@@ -8,11 +8,13 @@
 
 | Concept | Explanation | Complexity |
 | :--- | :--- | :--- |
-| **Why Trie?** | Search all words simultaneously instead of one by one | **Time**: O(M × N × 4^L) |
+| **Why Trie?** | Search all words simultaneously instead of one by one | **Time**: O(R × C × 4^L)† |
 | **Pruning** | Stop DFS immediately if current path isn't in Trie | **Space**: O(ΣL) for Trie |
 | **Terminal Node** | Store the complete word at the end node instead of boolean | Avoids string concat |
 | **Deduplication** | Remove word from Trie (`pop('$')`) after finding it once | No `set` needed |
 | **Branch Deletion** | Delete Trie nodes that have no children after returning | Speeds up later DFS |
+
+> †R × C = grid dimensions (rows × columns), L = max word length. Practical runtime is much lower due to trie pruning — see [Complexity Analysis](#complexity-analysis).
 
 ## Interview Context
 
@@ -107,6 +109,7 @@ If you only need to find ONE word in the grid, skip the trie. Simple DFS is suff
 # Word Search I: Single word, no trie needed
 def exist(board: list[list[str]], word: str) -> bool:
     # Just DFS checking word[i] at each step
+    pass
 ```
 
 Trie overhead isn't worth it for k=1.
@@ -134,6 +137,8 @@ For a 3×3 grid with 5-letter words? Brute force might be faster due to lower co
 ## Problem Statement
 
 Given an `m x n` board of characters and a list of words, find all words that can be formed by sequentially adjacent cells (horizontal or vertical). Each cell may only be used once per word.
+
+> **Note on variable naming:** Throughout this file, `m` and `n` (or `R` and `C`) refer to the **grid dimensions** (rows × columns), `L` is the **max word length**, and `k` is the **number of words**.
 
 ```
 Input:
@@ -200,11 +205,12 @@ class Solution:
         """
         Find all words from the list that exist in the board.
 
-        Time: O(m × n × 4^L) where L = max word length
+        Time: O(m × n × 4^L) where m×n = grid size, L = max word length
         Space: O(total chars in words) for trie
         """
-        # Build trie
-        root: dict[str, any] = {}
+        # Build trie using nested dicts.
+        # Each key is a character; '$' marks a terminal with the full word.
+        root: dict = {}
         for word in words:
             node = root
             for char in word:
@@ -212,9 +218,9 @@ class Solution:
             node['$'] = word  # Store complete word at terminal
 
         m, n = len(board), len(board[0])
-        result = []
+        result: list[str] = []
 
-        def dfs(i: int, j: int, node: dict[str, any]):
+        def dfs(i: int, j: int, node: dict) -> None:
             """DFS from cell (i,j) following trie node."""
             char = board[i][j]
 
@@ -223,28 +229,30 @@ class Solution:
 
             next_node = node[char]
 
-            # Found a word
+            # Found a word — pop '$' to prevent duplicate results
             word_match = next_node.pop('$', None)
             if word_match:
                 result.append(word_match)
 
-            # Mark visited
+            # Mark visited (in-place to avoid a separate visited set)
             board[i][j] = '#'
 
-            # Explore neighbors
+            # Explore 4 neighbors
             for di, dj in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
                 ni, nj = i + di, j + dj
                 if 0 <= ni < m and 0 <= nj < n and board[ni][nj] != '#':
                     dfs(ni, nj, next_node)
 
-            # Restore
+            # Restore original character (backtrack)
             board[i][j] = char
 
-            # Optimization: prune empty branches
+            # Pruning optimization: if this trie branch has no remaining
+            # children or words, remove it from the parent so future DFS
+            # calls skip it entirely.
             if not next_node:
                 del node[char]
 
-        # Start DFS from every cell
+        # Start DFS from every cell whose character exists in the trie root
         for i in range(m):
             for j in range(n):
                 if board[i][j] in root:
@@ -257,7 +265,9 @@ class Solution:
 
 ```python
 class TrieNode:
-    def __init__(self):
+    __slots__ = ('children', 'word')
+
+    def __init__(self) -> None:
         self.children: dict[str, 'TrieNode'] = {}
         self.word: str | None = None  # Store word at terminal
 
@@ -275,9 +285,9 @@ class Solution:
             node.word = word
 
         m, n = len(board), len(board[0])
-        result = []
+        result: list[str] = []
 
-        def dfs(i: int, j: int, node: TrieNode):
+        def dfs(i: int, j: int, node: TrieNode) -> None:
             char = board[i][j]
 
             if char not in node.children:
@@ -287,7 +297,7 @@ class Solution:
 
             if child.word:
                 result.append(child.word)
-                child.word = None  # Avoid duplicates
+                child.word = None  # Prevent duplicate results
 
             board[i][j] = '#'
 
@@ -298,7 +308,7 @@ class Solution:
 
             board[i][j] = char
 
-            # Prune optimization
+            # Prune: remove leaf nodes with no children and no word
             if not child.children and not child.word:
                 del node.children[char]
 
@@ -342,12 +352,14 @@ Without this, the same word could be found starting from different cells, requir
 ### 3. Prune Empty Trie Branches
 
 ```python
-# After DFS returns
-if not next_node:
-    del node[char]
+# After DFS returns from all 4 neighbors:
+if not next_node:      # No remaining children AND no '$' key
+    del node[char]     # Remove this branch from the parent node
 ```
 
-Once a word is found and no other words share this prefix, remove the branch. This massively speeds up future searches and avoids re-exploring dead ends.
+**Why this works:** After we pop `'$'` (found a word) and recursively explore all children, the node may become completely empty — no more characters to follow and no word stored. At that point, no future DFS path through this node can ever find anything, so we delete it from the parent. This prevents all subsequent DFS calls from re-entering a dead-end branch.
+
+**Impact:** Without pruning, every starting cell re-traverses the full trie on every DFS. With pruning, found words are progressively eliminated, so later DFS calls are faster. This is especially impactful when many words share prefixes.
 
 ### 4. In-place Board Marking
 
@@ -365,9 +377,11 @@ Instead of using a separate visited set, modify board directly.
 
 | Aspect            | Value                  | Explanation                                         |
 | ----------------- | ---------------------- | --------------------------------------------------- |
-| Time              | O(m × n × 4^L)         | Start from each cell, max L moves with 4 directions |
+| Time (worst case) | O(m × n × 4^L)         | Start from each cell, max L moves with 4 directions |
 | Space             | O(sum of word lengths) | Trie storage                                        |
 | Space (recursion) | O(L)                   | Max depth of DFS                                    |
+
+> Here `m × n` is the **grid size** (rows × columns) and `L` is the **max word length**.
 
 ### Comparison: With vs Without Trie
 
@@ -377,6 +391,17 @@ Instead of using a separate visited set, modify board directly.
 | With Trie        | O(m × n × 4^L)     | Single DFS checks all words |
 
 For k = 10,000 words, trie is ~10,000x faster.
+
+### Practical vs Theoretical Complexity
+
+The O(m × n × 4^L) bound is the **worst case** — it assumes every path in the grid matches a prefix in the trie all the way to depth L. In practice, the trie pruning makes performance dramatically better:
+
+1. **Prefix pruning:** Most grid paths hit a dead end in the trie within the first 2-3 characters. A DFS that would explore 4^10 ≈ 1M paths might only explore a few dozen.
+2. **Branch deletion:** Once a word is found and its trie branch is pruned, all future DFS calls skip that entire subtree. If all words are found early, later cells have almost nothing to explore.
+3. **Visited-cell constraint:** At depth d, you can't revisit cells, so the branching factor is at most 3 (not 4) after the first step. The tighter bound is O(m × n × 3^L), though this is rarely stated in interviews.
+4. **Frequency pre-check:** Filtering impossible words before building the trie reduces the trie size, which reduces both DFS exploration and memory usage.
+
+In competitive benchmarks, the pruned trie solution typically runs in **low milliseconds** even on the maximum constraints (12×12 grid, 30,000 words).
 
 ---
 
@@ -416,7 +441,8 @@ def exist(self, board: list[list[str]], word: str) -> bool:
 
 ### With Frequency Pre-check
 
-Optimization: Check if board has enough characters before DFS:
+Optimization: Check if board has enough characters before DFS, and reverse
+words whose last character is rarer than their first (reduces branching):
 
 ```python
 from collections import Counter
@@ -427,14 +453,20 @@ def findWords(self, board: list[list[str]], words: list[str]) -> list[str]:
     for row in board:
         board_count.update(row)
 
-    # Filter words that could possibly exist
+    # Filter words that could possibly exist and optimize order
     possible_words = []
     for word in words:
         word_count = Counter(word)
         if all(board_count[c] >= word_count[c] for c in word_count):
-            possible_words.append(word)
+            # If the last char is rarer on the board than the first,
+            # reverse the word so DFS starts from fewer cells.
+            if board_count[word[0]] > board_count[word[-1]]:
+                possible_words.append(word[::-1])
+            else:
+                possible_words.append(word)
 
-    # Now run trie + DFS only on possible words
+    # Now run trie + DFS only on possible_words
+    # (remember to reverse matched words back if they were reversed)
     # ... rest of solution
 ```
 
@@ -444,9 +476,51 @@ Modify to track longest found:
 
 ```python
 def findLongestWord(self, board: list[list[str]], words: list[str]) -> str:
-    # Same trie + DFS approach
-    # Track: max_length, max_word
-    # Update when finding a word longer than current max
+    """Return the longest word from `words` that exists in the board."""
+    # Build trie (same as Word Search II)
+    root: dict = {}
+    for word in words:
+        node = root
+        for char in word:
+            node = node.setdefault(char, {})
+        node['$'] = word
+
+    m, n = len(board), len(board[0])
+    longest = ""
+
+    def dfs(i: int, j: int, node: dict) -> None:
+        nonlocal longest
+        char = board[i][j]
+
+        if char not in node:
+            return
+
+        next_node = node[char]
+
+        # Check for a complete word — keep the longest
+        if '$' in next_node:
+            word = next_node['$']
+            if len(word) > len(longest):
+                longest = word
+            # DON'T pop '$' here — a shorter prefix word may exist,
+            # but we still need to explore deeper for longer words.
+            # We also don't prune because longer words may share this path.
+
+        board[i][j] = '#'
+
+        for di, dj in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            ni, nj = i + di, j + dj
+            if 0 <= ni < m and 0 <= nj < n and board[ni][nj] != '#':
+                dfs(ni, nj, next_node)
+
+        board[i][j] = char
+
+    for i in range(m):
+        for j in range(n):
+            if board[i][j] in root:
+                dfs(i, j, root)
+
+    return longest
 ```
 
 ---
@@ -513,13 +587,13 @@ DFS from (0,3) 'e':
 
 ## Practice Problems
 
-| #   | Problem              | Difficulty | Key Concept          |
-| --- | -------------------- | ---------- | -------------------- |
-| 1   | Word Search          | Medium     | Single word DFS      |
-| 2   | Word Search II       | Hard       | Trie + DFS           |
-| 3   | Concatenated Words   | Hard       | Trie + DP            |
-| 4   | Stream of Characters | Hard       | Suffix trie matching |
-| 5   | Word Squares         | Hard       | Trie + backtracking  |
+| #   | Problem              | LeetCode | Difficulty | Key Concept          |
+| --- | -------------------- | -------- | ---------- | -------------------- |
+| 1   | Word Search          | 79       | Medium     | Single word DFS      |
+| 2   | Word Search II       | 212      | Hard       | Trie + DFS           |
+| 3   | Concatenated Words   | 472      | Hard       | Trie + DP            |
+| 4   | Stream of Characters | 1032     | Hard       | Suffix trie matching |
+| 5   | Word Squares         | 425      | Hard       | Trie + backtracking  |
 
 ---
 

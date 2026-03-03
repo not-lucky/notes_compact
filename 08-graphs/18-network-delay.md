@@ -47,9 +47,80 @@ Answer: 2 (time when last node receives signal)
 
 ---
 
+## Progressive Understanding: Why Standard BFS Fails
+
+A common mistake is trying to solve this using standard Breadth-First Search (BFS) just like unweighted shortest path problems. 
+
+Consider this graph:
+```text
+    A --(5)--> B
+    |          ^
+   (1)        (1)
+    |          |
+    v          |
+    C ---------+
+```
+
+*   **Standard BFS from A:**
+    1. Visits `B` (distance 5) and `C` (distance 1).
+    2. Since `B` is marked as visited, BFS won't update its distance when exploring `C`'s neighbors. 
+    3. The absolute shortest path `A -> C -> B` (total distance 2) is missed.
+
+**Why?** BFS explores by the *number of edges* (hops), assuming each edge takes uniform time. When edge weights differ, a path with more hops can have a smaller total weight.
+
+**The Solution:** We need an algorithm that explores paths based on the *cumulative weight* so far, rather than the number of edges. This is exactly what **Dijkstra's Algorithm** does by using a Priority Queue (Min-Heap) instead of a regular Queue.
+
+---
+
 ## Solution: Dijkstra's Algorithm
 
 ### Python Implementation
+
+```python
+import heapq
+from collections import defaultdict
+
+def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
+    """
+    Find the minimum time it takes for all nodes to receive a signal.
+    
+    Time Complexity: O((V + E) log V) where V=n and E=len(times)
+    Space Complexity: O(V + E) for adjacency list and priority queue
+    """
+    # 1. Build Adjacency List
+    graph = defaultdict(list)
+    for u, v, w in times:
+        graph[u].append((v, w))
+        
+    # 2. Distance Dictionary
+    # We use a dictionary to track shortest paths to visited nodes
+    dist = {}
+    
+    # 3. Priority Queue: (current_time, current_node)
+    heap = [(0, k)]
+    
+    # 4. Process the Graph
+    while heap:
+        time, node = heapq.heappop(heap)
+        
+        # If we already found a shorter path to this node, skip it
+        if node in dist:
+            continue
+            
+        # Record the shortest time to reach this node
+        dist[node] = time
+        
+        # Explore neighbors
+        for neighbor, weight in graph[node]:
+            if neighbor not in dist:
+                heapq.heappush(heap, (time + weight, neighbor))
+                
+    # 5. Check if all nodes were reached
+    if len(dist) == n:
+        return max(dist.values())
+        
+    return -1
+```
 
 ---
 
@@ -71,14 +142,14 @@ When Dijkstra extracts a node `u` from the priority queue, the distance to `u` (
 
 ---
 
-## Alternative: Without defaultdict
+## Alternative: Without `defaultdict` (Array-Based)
 
 ```python
 import heapq
 
 def network_delay_time_alt(times: list[list[int]], n: int, k: int) -> int:
     """
-    Same algorithm with explicit arrays.
+    Same algorithm with explicit arrays for distance tracking.
     """
     # Build adjacency list
     graph = [[] for _ in range(n + 1)]  # 1-indexed
@@ -157,9 +228,11 @@ Answer: 2
 
 ---
 
-## Bellman-Ford Alternative
+## Alternative Solutions
 
-If edges could be negative (they can't in this problem, but good to know):
+### Bellman-Ford (For Negative Weights)
+
+If edges could be negative (they can't in this problem, but it's a good theoretical alternative), we would use Bellman-Ford:
 
 ```python
 def network_delay_time_bf(times: list[list[int]], n: int, k: int) -> int:
@@ -185,9 +258,9 @@ def network_delay_time_bf(times: list[list[int]], n: int, k: int) -> int:
 
 ---
 
-## BFS for Unweighted (Simplified Version)
+### BFS for Unweighted Graphs (Conceptual)
 
-If all delays were 1 (unweighted), could use BFS:
+If all delays were strictly `1` (unweighted), we could use standard BFS:
 
 ```python
 from collections import deque
@@ -270,34 +343,17 @@ def max_probability(n: int, edges: list[list[int]],
 
 ## Edge Cases
 
-```python
-# 1. Source is only node
-n = 1, k = 1, times = []
-# Return 0 (no delay needed)
-
-# 2. Unreachable node
-times = [[1, 2, 1]]  # Only 1 → 2
-n = 3, k = 1
-# Node 3 unreachable, return -1
-
-# 3. All nodes directly connected to source
-times = [[1, 2, 1], [1, 3, 1], [1, 4, 1]]
-n = 4, k = 1
-# All at distance 1, return 1
-
-# 4. Linear chain
-times = [[1, 2, 1], [2, 3, 1], [3, 4, 1]]
-n = 4, k = 1
-# Cumulative delays: 1, 2, 3
-# Return 3
-```
+1. **Source is the only node:** `n = 1, k = 1, times = []` → Return `0` (no delay needed).
+2. **Disconnected graph / Unreachable nodes:** `times = [[1, 2, 1]], n = 3, k = 1` → Node 3 is unreachable, return `-1`.
+3. **All nodes directly connected to source:** `times = [[1, 2, 1], [1, 3, 1], [1, 4, 1]], n = 4, k = 1` → Return `1` (maximum weight of outgoing edges is the answer).
+4. **Linear chain:** `times = [[1, 2, 1], [2, 3, 1], [3, 4, 1]], n = 4, k = 1` → Cumulative delays are `1, 2, 3`. Return `3`.
 
 ---
 
 ## Common Mistakes
 
 ```python
-# WRONG: Using BFS for weighted graph
+# MISTAKE 1: Using BFS for weighted graph
 queue = deque([k])
 dist[k] = 0
 while queue:
@@ -305,12 +361,12 @@ while queue:
     for neighbor, weight in graph[node]:
         # BFS doesn't guarantee shortest path with weights!
 
-# CORRECT: Use Dijkstra for weighted graphs
+# CORRECT: Use Dijkstra with a Min-Heap
 
 
-# WRONG: Not checking if all nodes reached
+# MISTAKE 2: Not checking if all nodes reached
 return max(dist.values())
-# If some nodes unreachable, should return -1
+# If some nodes are unreachable, we should return -1
 
 # CORRECT:
 if len(dist) != n:
@@ -318,11 +374,11 @@ if len(dist) != n:
 return max(dist.values())
 
 
-# WRONG: 0-indexed vs 1-indexed confusion
+# MISTAKE 3: 0-indexed vs 1-indexed confusion
 dist = [INF] * n
-dist[k] = 0  # If k is 1-indexed, this is wrong!
+dist[k] = 0  # If k is 1-indexed, this is out of bounds or semantically wrong!
 
-# CORRECT: Use n+1 for 1-indexed, or use dict
+# CORRECT: Use n+1 for 1-indexed, or use a dictionary
 dist = [INF] * (n + 1)  # 1-indexed
 ```
 

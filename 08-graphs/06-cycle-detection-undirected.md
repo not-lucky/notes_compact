@@ -1,6 +1,6 @@
 # Cycle Detection in Undirected Graphs
 
-> **Prerequisites:** [03-dfs-basics](./03-dfs-basics.md)
+> **Prerequisites:** [03-dfs-basics](./03-dfs-basics.md), [05-cycle-detection-directed](./05-cycle-detection-directed.md)
 
 ## Building Intuition
 
@@ -16,8 +16,9 @@ Road Network:          DFS from 0:
                        → CYCLE FOUND!
 ```
 
-**Why we need to track "parent"**:
-In undirected graphs, edge A-B means both A→B and B→A exist. Without parent tracking:
+### Why We Track the Parent
+
+In undirected graphs, edge A-B means both A→B and B→A exist in the adjacency list. Without parent tracking, *every* edge triggers a false positive:
 
 ```
 Graph: 0 --- 1
@@ -30,14 +31,28 @@ DFS from 0:
 
 With parent tracking:
 - From 1, parent = 0
-- See neighbor 0, but 0 = parent, so skip
+- See neighbor 0, but 0 == parent, so skip it
 - No false positive ✓
 ```
 
-**The key insight**: An edge to a visited node that's NOT your parent is a "back edge" - proof of a cycle.
+**The key insight**: An edge to a visited node that is NOT your parent is a "back edge" — proof of a cycle.
 
-**Union-Find perspective**:
-Before adding any edge, check if endpoints are already connected. If yes → adding this edge would create a cycle!
+### How This Differs from Directed Cycle Detection
+
+| Aspect                | Undirected                        | Directed                                |
+| --------------------- | --------------------------------- | --------------------------------------- |
+| Edge semantics        | Bidirectional (A-B = B-A)         | One-way (A→B ≠ B→A)                     |
+| False positive source | Parent edge (trivial back-link)   | Cross edges (between sibling branches)  |
+| Detection technique   | Track parent to skip trivial edge | Three-color DFS (WHITE/GRAY/BLACK)      |
+| Cycle indicator       | Visited neighbor ≠ parent         | Neighbor is GRAY (still on stack)       |
+| Complexity            | Simpler — two states suffice      | Needs three states to avoid false alarm |
+
+In directed graphs, seeing a visited node doesn't mean a cycle — it could be a cross edge to a fully explored branch. That's why directed detection needs the GRAY "in-progress" state.
+In undirected graphs, the only non-cycle "visited neighbor" is your own parent, which is trivial to check.
+
+### Union-Find Perspective
+
+Process edges one at a time. Before adding each edge, check if both endpoints are already connected. If they are, this edge would create a cycle:
 
 ```
 Adding edges one by one:
@@ -46,90 +61,58 @@ Edge 1-2: 1 and 2 in different sets → union them, OK
 Edge 2-0: 2 and 0 already in SAME set → CYCLE!
 ```
 
----
-
-## Theory: Formalizing Edge Types in Undirected DFS
-
-When we perform a DFS on an undirected graph, every edge falls into one of two categories relative to the DFS traversal tree:
-
-1.  **Tree Edge**: An edge that leads to an unvisited node. These edges form the DFS spanning tree (or forest, if disconnected).
-2.  **Back Edge**: An edge that connects a node to an ancestor in the DFS tree. *Finding a back edge is the necessary and sufficient condition for a cycle to exist.*
-
-*(Note: Unlike directed graphs, undirected DFS does not produce "Forward Edges" or "Cross Edges". If an edge connects two branches, it would have been traversed as a tree edge or back edge depending on which branch explored it first.)*
-
-### Why Parent Tracking Works
-
-Because edges in an undirected graph are bidirectional, when we traverse a tree edge from $u \to v$, the adjacency list for $v$ will contain an edge back to $u$.
-This edge $(v, u)$ is trivial; it just points back to the immediate parent in the DFS tree.
-A true **back edge** must point to a visited node that is *not* the immediate parent.
+This approach is natural when edges arrive as a stream or when you need to identify the *specific* edge that closes the cycle.
 
 ---
 
-## When NOT to Use
+## Theory: Edge Types in Undirected DFS
 
-**Parent-tracking DFS is wrong when:**
+When performing DFS on an undirected graph, every edge falls into one of two categories:
 
-- **Graph is directed** → Use three-color DFS instead
-- **Multiple edges between same nodes** → Need edge-index tracking
-- **Self-loops exist** → Special case (always a cycle)
+1. **Tree Edge**: Leads to an unvisited node. These edges form the DFS spanning tree (or forest, if the graph is disconnected).
+2. **Back Edge**: Connects a node to an ancestor in the DFS tree. Finding a back edge is the necessary and sufficient condition for a cycle.
 
-**Union-Find is better when:**
+> Unlike directed graphs, undirected DFS does **not** produce "Forward Edges" or "Cross Edges". Any edge connecting two visited nodes in different branches would have been traversed as a tree edge when the first branch explored it.
 
-- Processing edges one at a time (streaming)
-- Need to find the SPECIFIC edge causing cycle
-- Building minimum spanning tree (Kruskal's)
+### Why Parent Tracking Is Sufficient
 
-**Common mistake scenarios:**
+Because edges are bidirectional, traversing tree edge u→v means v's adjacency list contains u. That reverse entry is trivial — it just points back to the immediate parent. A true back edge must point to a visited node that is **not** the immediate parent. So we only need two states (visited / not visited) plus the parent reference.
 
-- Not tracking parent → False positives on every edge
-- Using visited-only (like directed) → Every 2-node graph looks like a cycle
-- Forgetting about multiple connected components → Must check all
+---
 
-**The multi-edge trap:**
+## When NOT to Use Parent-Tracking DFS
 
-```
-Multiple edges between 0 and 1:
-Edge list: [(0,1), (0,1)]  ← duplicate edge
+**Wrong tool for the job:**
 
-Parent tracking says: "1's parent is 0, so edge back to 0 is fine"
-But there are TWO edges! The second one creates a cycle!
+- **Directed graphs** → Use three-color DFS instead (see [05-cycle-detection-directed](./05-cycle-detection-directed.md))
+- **Multiple edges between same pair of nodes (multigraph)** → Node-based parent tracking produces false negatives; use edge-index tracking instead (see section below)
+- **Self-loops** → A self-loop (edge from node to itself) is always a cycle; check for it explicitly before DFS
 
-Solution: Track edge INDEX as parent, not node ID
-```
+**When to prefer Union-Find over DFS/BFS:**
+
+- Processing edges one at a time (streaming / online)
+- Need to identify the *specific* edge that creates the cycle
+- Building MST with Kruskal's algorithm
+- Don't want to build an adjacency list
+
+**Common mistakes:**
+
+| Mistake | Result |
+| ------- | ------ |
+| Not tracking parent | False positive on every single edge |
+| Using `visited`-only check (like directed DFS) | Every 2-node graph reports a cycle |
+| Forgetting disconnected components | Miss cycles in unreachable components |
+| Using node-based parent with multigraphs | Miss cycles from duplicate edges |
 
 ---
 
 ### Interview Context: FANG Variations
 
-**Amazon Context**: Amazon heavily favors graph problems where the graph is *not* given explicitly as an adjacency list. You often have to build it from a 2D grid or a list of constraints. A common variation is cycle detection in a grid (e.g., "Is there a cycle of the same color?"), where you can move in 4 directions. In this grid variation, the "parent" is simply the previous $(r, c)$ coordinate you came from.
+**Amazon**: Heavily favors graphs built from 2D grids or constraint lists, not explicit adjacency lists. Common variation: cycle detection in a grid ("Is there a cycle of the same color?"), where the "parent" is the previous (row, col) coordinate.
 
-**Google Context**: Google often tests cycle detection implicitly. They might ask "Can we remove one edge to make this graph a tree?" (Redundant Connection) or "Is this sequence of connections valid without creating a loop?" which forces you to use Union-Find on a stream of edges.
+**Google**: Often tests cycle detection implicitly — "Can we remove one edge to make this graph a tree?" (Redundant Connection) or "Is this sequence of connections valid without creating a loop?" — which pushes you toward Union-Find on a stream of edges.
 
----
-
-## Core Concept: Parent Tracking
-
-In undirected graphs, every edge can be traversed both ways. To avoid false positives:
-
-- Track the **parent** of each node in DFS
-- An edge back to a visited node (that's not the parent) = cycle
-
-```
-    0 --- 1
-    |     |
-    2 --- 3
-
-DFS from 0: 0 → 1 → 3 → 2
-When at 2, we see neighbor 0, but 0 is NOT parent of 2.
-This is a back edge → CYCLE!
-
-Compare without cycle:
-    0 --- 1 --- 2 --- 3
-
-DFS from 0: 0 → 1 → 2 → 3
-At 2, neighbor 1 is parent (not a cycle).
-At 3, no unvisited non-parent neighbors. No cycle.
-```
+**Meta**: Graph valid tree problems and variations involving social network connectivity checks.
 
 ---
 
@@ -140,76 +123,144 @@ from collections import defaultdict
 
 def has_cycle_undirected(n: int, edges: list[list[int]]) -> bool:
     """
-    Detect cycle in undirected graph using DFS.
+    Detect cycle in an undirected graph using DFS with parent tracking.
 
-    Time: O(V + E)
-    Space: O(V)
+    Args:
+        n: Number of nodes (0-indexed: 0 to n-1).
+        edges: List of [u, v] undirected edges.
+
+    Returns:
+        True if a cycle exists.
+
+    Time:  O(V + E)
+    Space: O(V + E) for adjacency list, O(V) for visited set + recursion stack
     """
-    graph = defaultdict(list)
+    graph: dict[int, list[int]] = defaultdict(list)
     for u, v in edges:
         graph[u].append(v)
         graph[v].append(u)
 
-    visited = set()
+    visited: set[int] = set()
 
     def dfs(node: int, parent: int) -> bool:
         visited.add(node)
 
         for neighbor in graph[node]:
             if neighbor not in visited:
+                # Tree edge — continue DFS
                 if dfs(neighbor, node):
                     return True
             elif neighbor != parent:
-                # Visited neighbor that's not parent = back edge
+                # Back edge — visited and NOT parent → cycle
                 return True
 
         return False
 
-    # Check all components
+    # Must check every component (graph may be disconnected)
     for node in range(n):
         if node not in visited:
-            if dfs(node, -1):  # -1 means no parent
+            if dfs(node, -1):  # -1 = no parent (root)
                 return True
 
     return False
 
-
-# Usage
-edges = [[0, 1], [1, 2], [2, 0]]  # Cycle: 0-1-2-0
-print(has_cycle_undirected(3, edges))  # True
-
-edges = [[0, 1], [1, 2]]  # No cycle
-print(has_cycle_undirected(3, edges))  # False
+# --- Examples ---
+# print(has_cycle_undirected(3, [[0, 1], [1, 2], [2, 0]]))  # True  (cycle: 0-1-2-0)
+# print(has_cycle_undirected(3, [[0, 1], [1, 2]]))           # False (simple path)
 ```
 
 ---
 
-## Handling Multiple Edges
+## BFS Approach: Parent Tracking
 
-If there can be multiple edges between same nodes:
+Same idea as DFS, but uses a queue instead of recursion. Avoids stack overflow on deep/linear graphs.
 
 ```python
-def has_cycle_with_multi_edges(n: int, edges: list[list[int]]) -> bool:
-    """
-    Handle graphs that may have multiple edges between same nodes.
+from collections import deque, defaultdict
 
-    Use edge index instead of parent node for tracking.
+def has_cycle_bfs(n: int, edges: list[list[int]]) -> bool:
     """
-    graph = defaultdict(list)  # node -> [(neighbor, edge_index)]
+    Detect cycle in an undirected graph using BFS with parent tracking.
+
+    Time:  O(V + E)
+    Space: O(V + E) for adjacency list, O(V) for queue and visited
+    """
+    graph: dict[int, list[int]] = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+
+    visited: set[int] = set()
+
+    for start in range(n):
+        if start in visited:
+            continue
+
+        queue: deque[tuple[int, int]] = deque([(start, -1)])  # (node, parent)
+        visited.add(start)
+
+        while queue:
+            node, parent = queue.popleft()
+
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append((neighbor, node))
+                elif neighbor != parent:
+                    # Visited neighbor that isn't the node we came from → cycle
+                    return True
+
+    return False
+```
+
+> **When to use BFS over DFS:** When the graph could be very deep (e.g., a long chain of 100K+ nodes) and recursion depth would cause a stack overflow. BFS processes nodes level-by-level and is immune to this.
+
+---
+
+## Handling Multigraphs (Multiple Edges Between Same Nodes)
+
+Standard parent-node tracking fails with duplicate edges:
+
+```
+Multiple edges between 0 and 1:
+Edge list: [(0,1), (0,1)]
+
+Parent tracking says: "1's parent is 0, skip edge back to 0"
+But there are TWO edges between them — the second one creates a real cycle!
+
+Fix: Track the edge INDEX as the parent, not the node ID.
+```
+
+```python
+from collections import defaultdict
+
+def has_cycle_multigraph(n: int, edges: list[list[int]]) -> bool:
+    """
+    Handle graphs with multiple edges between the same pair of nodes.
+
+    Tracks edge index instead of parent node to distinguish
+    the tree edge we arrived on from a different parallel edge.
+
+    Time:  O(V + E)
+    Space: O(V + E)
+    """
+    # Adjacency list stores (neighbor, edge_index) pairs
+    graph: dict[int, list[tuple[int, int]]] = defaultdict(list)
     for i, (u, v) in enumerate(edges):
         graph[u].append((v, i))
         graph[v].append((u, i))
 
-    visited = set()
+    visited: set[int] = set()
 
-    def dfs(node: int, parent_edge: int) -> bool:
+    def dfs(node: int, parent_edge_idx: int) -> bool:
         visited.add(node)
 
         for neighbor, edge_idx in graph[node]:
             if neighbor not in visited:
                 if dfs(neighbor, edge_idx):
                     return True
-            elif edge_idx != parent_edge:
+            elif edge_idx != parent_edge_idx:
+                # Different edge to a visited node → cycle
                 return True
 
         return False
@@ -224,271 +275,306 @@ def has_cycle_with_multi_edges(n: int, edges: list[list[int]]) -> bool:
 
 ---
 
-## BFS Approach
-
-```python
-from collections import deque, defaultdict
-
-def has_cycle_bfs(n: int, edges: list[list[int]]) -> bool:
-    """
-    Detect cycle in undirected graph using BFS.
-
-    Time: O(V + E)
-    Space: O(V)
-    """
-    graph = defaultdict(list)
-    for u, v in edges:
-        graph[u].append(v)
-        graph[v].append(u)
-
-    visited = set()
-
-    for start in range(n):
-        if start in visited:
-            continue
-
-        queue = deque([(start, -1)])  # (node, parent)
-        visited.add(start)
-
-        while queue:
-            node, parent = queue.popleft()
-
-            for neighbor in graph[node]:
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, node))
-                elif neighbor != parent:
-                    return True
-
-    return False
-```
-
----
-
 ## Union-Find Approach
 
-Classic and often preferred for undirected cycle detection:
+Often preferred for undirected cycle detection — especially clean when edges arrive as a list or stream.
 
 ```python
 class UnionFind:
+    """Disjoint Set Union with path compression and union by rank."""
+
     def __init__(self, n: int):
-        self.parent = list(range(n))
-        self.rank = [0] * n
+        self.parent = list(range(n))  # Each node is its own root
+        self.rank = [0] * n           # Rank for union by rank
 
     def find(self, x: int) -> int:
+        """Find root of x with path compression."""
         if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])
+            self.parent[x] = self.find(self.parent[x])  # Path compression
         return self.parent[x]
 
     def union(self, x: int, y: int) -> bool:
-        """Returns False if x and y are already connected (cycle!)."""
-        px, py = self.find(x), self.find(y)
-        if px == py:
-            return False  # Already connected = adding this edge creates cycle
+        """
+        Unite sets containing x and y.
 
-        if self.rank[px] < self.rank[py]:
-            px, py = py, px
-        self.parent[py] = px
-        if self.rank[px] == self.rank[py]:
-            self.rank[px] += 1
+        Returns False if x and y are already in the same set (cycle detected).
+        """
+        root_x, root_y = self.find(x), self.find(y)
+        if root_x == root_y:
+            return False  # Already connected → adding this edge creates a cycle
+
+        # Union by rank: attach shorter tree under taller tree
+        if self.rank[root_x] < self.rank[root_y]:
+            root_x, root_y = root_y, root_x
+        self.parent[root_y] = root_x
+        if self.rank[root_x] == self.rank[root_y]:
+            self.rank[root_x] += 1
 
         return True
-
 
 def has_cycle_union_find(n: int, edges: list[list[int]]) -> bool:
     """
     Detect cycle using Union-Find.
 
-    Time: O(E × α(V)) ≈ O(E)
+    Intuition: Process edges one at a time. Each edge should connect
+    two previously disconnected components. If both endpoints are
+    already in the same component, this edge creates a cycle.
+
+    Time:  O(E * alpha(V)) ≈ O(E) — alpha is inverse Ackermann, effectively constant
     Space: O(V)
     """
     uf = UnionFind(n)
 
     for u, v in edges:
         if not uf.union(u, v):
-            return True  # Edge connects already-connected nodes
+            return True  # u and v already connected → cycle
 
     return False
 ```
 
-**Why Union-Find works**: Each edge should connect two previously disconnected components. If an edge connects nodes already in the same component, it creates a cycle.
-
 ---
 
-## Graph Valid Tree
+## Application: Graph Valid Tree ([LeetCode 261](https://leetcode.com/problems/graph-valid-tree/))
 
-A graph is a valid tree if:
+A graph is a valid tree if and only if:
 
-1. Connected (exactly 1 component)
-2. Acyclic (no cycles)
-3. Equivalently: n nodes and exactly n-1 edges, connected
+1. It is **connected** (exactly 1 component), AND
+2. It is **acyclic** (no cycles)
+
+Equivalent shortcut: **n nodes with exactly n-1 edges + connected = tree**.
 
 ```python
+from collections import defaultdict
+
 def valid_tree(n: int, edges: list[list[int]]) -> bool:
     """
-    Check if graph forms a valid tree.
+    Check if an undirected graph forms a valid tree.
 
-    Time: O(V + E)
-    Space: O(V)
+    Time:  O(V + E)
+    Space: O(V + E)
     """
-    # Quick check: tree has exactly n-1 edges
+    # A tree on n nodes has exactly n-1 edges
     if len(edges) != n - 1:
         return False
 
-    # Check connectivity (if n-1 edges and connected, no cycle)
-    graph = defaultdict(list)
+    # With exactly n-1 edges, just check connectivity.
+    # (n-1 edges + connected → acyclic is guaranteed)
+    graph: dict[int, list[int]] = defaultdict(list)
     for u, v in edges:
         graph[u].append(v)
         graph[v].append(u)
 
-    visited = set()
+    visited: set[int] = set()
 
-    def dfs(node: int):
+    def dfs(node: int) -> None:
         visited.add(node)
         for neighbor in graph[node]:
             if neighbor not in visited:
                 dfs(neighbor)
 
-    dfs(0)
-
+    # Note: since n-1 edges + connected = tree, we just need to verify 
+    # all nodes are visited from a single DFS.
+    if n > 0:
+        dfs(0)
+        
     return len(visited) == n
 
-
-# Alternative: Union-Find
-def valid_tree_uf(n: int, edges: list[list[int]]) -> bool:
+def valid_tree_union_find(n: int, edges: list[list[int]]) -> bool:
+    """Union-Find alternative for graph valid tree."""
     if len(edges) != n - 1:
         return False
 
     uf = UnionFind(n)
     for u, v in edges:
         if not uf.union(u, v):
-            return False
+            return False  # Cycle detected
 
-    return True  # n-1 edges, no cycle → connected tree
+    return True  # n-1 edges + no cycle → connected tree
 ```
 
 ---
 
-## Find the Redundant Edge
+## Application: Find the Redundant Connection ([LeetCode 684](https://leetcode.com/problems/redundant-connection/))
+
+Given a graph that would be a tree if one edge were removed, find that edge.
 
 ```python
 def find_redundant_connection(edges: list[list[int]]) -> list[int]:
     """
-    Find edge that creates a cycle (redundant edge).
+    Find the edge that creates a cycle (the redundant edge).
 
-    Given n edges for n nodes (tree would have n-1),
-    exactly one edge is redundant.
+    The input has n edges for n nodes (a tree would have n-1).
+    Exactly one edge is redundant. Return the last one in the
+    input that causes a cycle.
 
-    Time: O(E × α(V))
+    Time:  O(E * alpha(V)) ≈ O(E)
     Space: O(V)
     """
     n = len(edges)
-    uf = UnionFind(n + 1)  # 1-indexed nodes
+    uf = UnionFind(n + 1)  # +1 because nodes are 1-indexed
 
     for u, v in edges:
         if not uf.union(u, v):
-            return [u, v]
+            return [u, v]  # This edge closes the cycle
 
-    return []
+    return []  # Should not reach here given problem constraints
 
-
-# Usage
-edges = [[1, 2], [1, 3], [2, 3]]
-print(find_redundant_connection(edges))  # [2, 3]
+# --- Example ---
+# print(find_redundant_connection([[1, 2], [1, 3], [2, 3]]))  # [2, 3]
 ```
 
 ---
 
-## Comparison of Approaches & Complexity Trade-offs
+## Application: Cycles in a 2D Grid ([LeetCode 1559](https://leetcode.com/problems/detect-cycles-in-2d-grid/))
 
-| Approach     | Time        | Space | Best For                 | Pros/Cons |
-| ------------ | ----------- | ----- | ------------------------ | --------- |
-| DFS + Parent | O(V + E)    | O(V)  | General use              | **Pros:** Extremely short, simple to write. Native call stack. <br> **Cons:** Recursion depth = $O(V)$. Stack Overflow risk on deep lines (e.g. 100,000 nodes in a chain). |
-| BFS + Parent | O(V + E)    | O(V)  | Avoid recursion          | **Pros:** Immune to Stack Overflow. Level-order processing finds shortest cycles early. <br> **Cons:** slightly more verbose (managing the queue). Memory spike if the tree is wide. |
-| Union-Find   | O(E × α(V)) | O(V)  | Edge processing, dynamic | **Pros:** Best for "online" algorithms where edges are streamed. Don't need to build adjacency list. <br> **Cons:** Slower asymptotically than O(V+E) if E is huge. Hard to extract the actual cycle path. |
+Implicit graphs like 2D grids require tracking the parent coordinate instead of a node ID. A cycle exists if you can reach the same character moving in 4 directions, path length >= 4.
+
+```python
+def containsCycle(grid: list[list[str]]) -> bool:
+    """
+    Detect cycle of the same characters in a 2D grid.
+    
+    Time:  O(M * N)
+    Space: O(M * N)
+    """
+    rows, cols = len(grid), len(grid[0])
+    visited = set()
+    
+    def dfs(r: int, c: int, prev_r: int, prev_c: int) -> bool:
+        visited.add((r, c))
+        
+        # 4-directional movement
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            
+            # Bounds check & matching character
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == grid[r][c]:
+                # If unvisited, keep going
+                if (nr, nc) not in visited:
+                    if dfs(nr, nc, r, c):
+                        return True
+                # Visited and NOT the cell we just came from -> Cycle!
+                elif (nr, nc) != (prev_r, prev_c):
+                    return True
+                    
+        return False
+
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) not in visited:
+                if dfs(r, c, -1, -1):
+                    return True
+                    
+    return False
+```
+
+---
+
+## Comparison of Approaches
+
+| Approach     | Time         | Space | Best For                         | Trade-offs                                                                                              |
+| ------------ | ------------ | ----- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| DFS + Parent | O(V + E)     | O(V+E)| General use, adjacency list      | Simple to write. Risk of stack overflow on deep graphs (O(V) recursion depth).                          |
+| BFS + Parent | O(V + E)     | O(V+E)| Large/deep graphs                | No recursion, immune to stack overflow. Slightly more verbose.                                          |
+| Union-Find   | O(E * a(V))  | O(V)  | Edge streams, finding cycle edge | No adjacency list needed. Identifies the exact edge causing cycle. Harder to extract full cycle path.   |
+
+> **Note on Union-Find complexity:** a(V) is the inverse Ackermann function, which is effectively constant (<=5 for any practical input). So O(E * a(V)) ≈ O(E) in practice.
 
 ---
 
 ## Common Mistakes
 
 ```python
-# WRONG: Not tracking parent
-def has_cycle_wrong(n, edges):
-    visited = set()
+# ============================================================
+# WRONG: No parent tracking → false positive on every edge
+# ============================================================
+def has_cycle_wrong(n: int, edges: list[list[int]]) -> bool:
+    graph: dict[int, list[int]] = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
 
-    def dfs(node):
+    visited: set[int] = set()
+
+    def dfs(node: int) -> bool:
         visited.add(node)
         for neighbor in graph[node]:
             if neighbor in visited:
-                return True  # WRONG! Could be parent
+                return True  # BUG: this fires on the parent edge!
             if dfs(neighbor):
                 return True
         return False
 
-# CORRECT: Track parent
-def has_cycle_correct(n, edges):
-    def dfs(node, parent):
+    return any(dfs(node) for node in range(n) if node not in visited)
+
+
+# ============================================================
+# CORRECT: Track parent to skip the trivial back-link
+# ============================================================
+def has_cycle_correct(n: int, edges: list[list[int]]) -> bool:
+    graph: dict[int, list[int]] = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+
+    visited: set[int] = set()
+
+    def dfs(node: int, parent: int) -> bool:
         visited.add(node)
         for neighbor in graph[node]:
             if neighbor not in visited:
                 if dfs(neighbor, node):
                     return True
-            elif neighbor != parent:  # Not parent = back edge
+            elif neighbor != parent:  # Visited + not parent = back edge → cycle
                 return True
         return False
+
+    return any(
+        dfs(node, -1) for node in range(n) if node not in visited
+    )
 ```
-
----
-
-## Edge Cases
-
-```python
-# 1. No edges (forest of single nodes)
-n = 5, edges = []  # No cycle
-
-# 2. Single edge
-n = 2, edges = [[0, 1]]  # No cycle
-
-# 3. Self-loop (edge to itself)
-n = 1, edges = [[0, 0]]  # Cycle (needs special handling)
-
-# 4. Multiple edges between same nodes
-edges = [[0, 1], [0, 1]]  # Cycle (needs special handling)
-
-# 5. Disconnected with cycle in one component
-edges = [[0, 1], [1, 2], [2, 0], [3, 4]]  # Cycle in first component
-```
-
----
-
-## Interview Tips
-
-1. **Know parent tracking**: Key insight for DFS approach
-2. **Know Union-Find**: Often cleaner for edge-by-edge processing
-3. **Graph Valid Tree**: n-1 edges + connected = tree
-4. **Clarify multi-edges**: May need edge index tracking
-5. **Handle self-loops**: Special case, always a cycle
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                        | Difficulty | Key Variation      |
-| --- | ------------------------------ | ---------- | ------------------ |
-| 1   | Graph Valid Tree               | Medium     | Tree validation    |
-| 2   | Redundant Connection           | Medium     | Find cycle edge    |
-| 3   | Number of Connected Components | Medium     | Component counting |
-| 4   | Redundant Connection II        | Hard       | Directed variation |
+Here is a progression of problems to solidify your understanding of cycle detection in undirected graphs:
+
+### Level 1: Basic Cycle Detection
+1. **Detect Cycle in an Undirected Graph** (GeeksforGeeks)
+   *Goal:* Implement standard DFS/BFS with parent tracking. This is the foundation.
+
+2. **Graph Valid Tree** ([LeetCode 261](https://leetcode.com/problems/graph-valid-tree/))
+   *Goal:* Recognize the relationship between cycles, connectivity, and the number of edges. `edges == n - 1` and single component means it's a tree.
+
+### Level 2: Finding Specific Cycles/Edges
+3. **Redundant Connection** ([LeetCode 684](https://leetcode.com/problems/redundant-connection/))
+   *Goal:* Use Union-Find to find the exact edge that creates the cycle. It highlights why Union-Find is powerful for edge streams.
+
+4. **Maximum Number of Non-Overlapping Cycles** (GeeksforGeeks/Variations)
+   *Goal:* Understand how to count multiple independent cycles in disjoint components. Requires running DFS from multiple unvisited nodes.
+
+### Level 3: Cycles in Grids (Implicit Graphs)
+5. **Detect Cycles in 2D Grid** ([LeetCode 1559](https://leetcode.com/problems/detect-cycles-in-2d-grid/))
+   *Goal:* Apply parent tracking in an implicit graph (2D grid). Instead of tracking `parent` as a node ID, you track `(prev_row, prev_col)`.
+
+### Level 4: Complex Edge Conditions
+6. **Number of Operations to Make Network Connected** ([LeetCode 1319](https://leetcode.com/problems/number-of-operations-to-make-network-connected/))
+   *Goal:* Count components and redundant edges using Union-Find or DFS. If `total_edges < n - 1`, return -1. Otherwise, you need `components - 1` operations.
+
+7. **Redundant Connection II** ([LeetCode 685](https://leetcode.com/problems/redundant-connection-ii/))
+   *Goal:* This is actually a **directed** graph problem, but it serves as a great bridge! You must handle the case where a node has two parents OR there is a cycle.
 
 ---
 
 ## Key Takeaways
 
-1. **Track parent**: Essential to avoid false positives
-2. **Union-Find alternative**: Elegant for undirected graphs
-3. **Tree = connected + acyclic**: Or n nodes with n-1 edges, connected
-4. **Simpler than directed**: No need for three colors
-5. **Edge creates cycle**: When it connects already-connected nodes
+1. **Track the parent** to avoid false positives from bidirectional edges.
+2. **Union-Find is elegant** for edge-by-edge processing and identifying the cycle-causing edge.
+3. **Tree = connected + acyclic** = n nodes with exactly n-1 edges, all connected.
+4. **Simpler than directed**: Two states (visited/not) + parent, vs. three colors for directed graphs.
+5. **Edge creates cycle** when it connects two nodes already in the same connected component.
 
 ---
 

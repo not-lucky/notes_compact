@@ -1,6 +1,6 @@
 # Maximum XOR of Two Numbers (Bitwise Trie)
 
-[Previous: Autocomplete](./06-autocomplete.md) | [Next: Trees](../06-trees/README.md)
+[Previous: Autocomplete](./06-autocomplete.md) | [Next: Suffix Tries](./09-suffix-tries.md)
 
 > **Prerequisites:** [Trie Implementation](./01-trie-implementation.md), [Bit Manipulation](../15-bit-manipulation/01-bitwise-operators.md)
 
@@ -209,36 +209,28 @@ Binary (5 bits):
 25 = 11001
 
 Trie (built bit by bit, MSB first):
-              root
-             /    \
-            0      1
-           /        \
-          0          1
-         / \          \
-        0   1          0
-       /   /            \
-      1   0              0
-     /   /                \
-    1   1                  1
-   (3) (10)              (25)
-         |
-         0
-         |
-         1
-        (5)
+                  root
+                /      \
+              0          1
+            /   \         \
+           0     1         1
+          / \     \         \
+         0   1     0         0
+         |   |     |         |
+         1   0     1         0
+         |   |     |         |
+         1   1     0         1
+        (3) (5)  (10)      (25)
 
 For num=5 (00101), find max XOR:
   Bit 4: have 0, want 1 → take 1 (exists: 25's path)
-  Bit 3: have 0, want 1 → take 1 (exists)
-  Bit 2: have 1, want 0 → take 0 (exists)
-  Bit 1: have 0, want 1 → no 1, take 0
-  Bit 0: have 1, want 0 → take 0 (exists)
-  Path: 11000 → XOR with 00101 = 11101 = 29? Wait, let's recalculate...
+  Bit 3: have 0, want 1 → take 1 (25 continues 1→1)
+  Bit 2: have 1, want 0 → take 0 (25 continues 1→1→0)
+  Bit 1: have 0, want 1 → no 1, forced to take 0
+  Bit 0: have 1, want 0 → no 0, forced to take 1
 
-Actually 5 XOR 25 = 28:
-  5  = 00101
-  25 = 11001
-  XOR= 11100 = 28 ✓
+  Path taken: 11001 = 25
+  XOR: 5 ⊕ 25 = 00101 ⊕ 11001 = 11100 = 28 ✓
 ```
 
 ---
@@ -296,6 +288,8 @@ class Solution:
 
 ```python
 class TrieNode:
+    __slots__ = ('children',)
+
     def __init__(self) -> None:
         self.children: dict[int, 'TrieNode'] = {}  # 0 or 1 -> TrieNode
 
@@ -369,6 +363,8 @@ class Solution:
                     elif bit in curr:
                         curr = curr[bit]
                     else:
+                        # Defensive: shouldn't happen with fully-inserted
+                        # L-bit numbers, but guards against empty subtrees
                         break
 
                 max_xor = max(max_xor, curr_xor)
@@ -476,6 +472,8 @@ class Solution:
 
     def _insert(self, root: dict, num: int) -> None:
         curr = root
+        # 32 bits: problem constraints guarantee nums[i], x_i ≤ 10^9 < 2^30,
+        # but using 32 bits is safe and standard for non-negative int problems.
         for i in range(31, -1, -1):
             bit = (num >> i) & 1
             if bit not in curr:
@@ -485,7 +483,7 @@ class Solution:
     def _query(self, root: dict, num: int) -> int:
         curr = root
         xor_val = 0
-        for i in range(31, -1, -1):
+        for i in range(31, -1, -1):  # Must match bit width used in _insert
             bit = (num >> i) & 1
             want = 1 - bit
 
@@ -526,10 +524,12 @@ class Solution:
             node_queries[node].append((val, i))
 
         result = [0] * len(queries)
-        trie: dict[int, dict | int] = {}
+        # Trie nodes use int keys (0, 1) for children and str key ('count')
+        trie: dict = {}
 
         def insert(num: int) -> None:
             curr = trie
+            # 18 bits: n ≤ 10^5, val ≤ 2*10^5, so max value < 2^18 = 262144
             for i in range(17, -1, -1):
                 bit = (num >> i) & 1
                 if bit not in curr:
@@ -585,11 +585,13 @@ class Solution:
         Answer = count(< high+1) - count(< low)
         """
         def count_less(limit: int) -> int:
-            root: dict[int, dict | int] = {}
+            # Trie nodes use int keys (0, 1) for children and str key ('cnt')
+            root: dict = {}
             count = 0
 
             for num in nums:
                 node: dict | None = root
+                # 15 bits: nums[i] ≤ 2*10^4 < 2^15 = 32768
                 for i in range(14, -1, -1):
                     if node is None:
                         break
@@ -680,13 +682,13 @@ Instead of hardcoding $L = 32$ for standard integers, we find the maximum number
 
 ## Practice Problems
 
-| #   | Problem                                | Difficulty | Key Concept            |
-| --- | -------------------------------------- | ---------- | ---------------------- |
-| 1   | Maximum XOR of Two Numbers in an Array | Medium     | Basic bitwise trie     |
-| 2   | Maximum XOR With an Element From Array | Hard       | Offline queries + trie |
-| 3   | Maximum Genetic Difference Query       | Hard       | DFS + dynamic trie     |
-| 4   | Count Pairs With XOR in a Range        | Hard       | Counting with trie     |
-| 5   | Maximum XOR After Operations           | Medium     | XOR properties + trie  |
+| #   | Problem                                | Difficulty | Key Concept            | LeetCode |
+| --- | -------------------------------------- | ---------- | ---------------------- | -------- |
+| 1   | Maximum XOR of Two Numbers in an Array | Medium     | Basic bitwise trie     | [421](https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/) |
+| 2   | Maximum XOR After Operations           | Medium     | XOR properties + trie  | [2317](https://leetcode.com/problems/maximum-xor-after-operations-on-an-array/) |
+| 3   | Maximum XOR With an Element From Array | Hard       | Offline queries + trie | [1707](https://leetcode.com/problems/maximum-xor-with-an-element-from-array/) |
+| 4   | Count Pairs With XOR in a Range        | Hard       | Counting with trie     | [1803](https://leetcode.com/problems/count-pairs-with-xor-in-a-range/) |
+| 5   | Maximum Genetic Difference Query       | Hard       | DFS + dynamic trie     | [1938](https://leetcode.com/problems/maximum-genetic-difference-query/) |
 
 ---
 

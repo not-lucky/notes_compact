@@ -1,4 +1,6 @@
-# Regex and Wildcard Matching
+import re
+
+content = """# Regex and Wildcard Matching
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md)
 
@@ -69,8 +71,8 @@ Let `dp[i][j]` be `True` if the suffix `s[i:]` matches the suffix `p[j:]` (for T
 Here, we will explain the bottom-up recurrence where $dp[i][j]$ corresponds to prefixes `s[0...i-1]` and `p[0...j-1]`.
 
 **Base Cases:**
-* $dp[0][0] = \text{True}$ (Empty string matches empty pattern).
-* $dp[i][0] = \text{False}$ for $i > 0$ (Non-empty string never matches empty pattern).
+* $dp[0][0] = \\text{True}$ (Empty string matches empty pattern).
+* $dp[i][0] = \\text{False}$ for $i > 0$ (Non-empty string never matches empty pattern).
 * $dp[0][j]$: An empty string can match a pattern *only if* the pattern consists entirely of elements that can be repeated zero times (e.g., `a*`, `.*`, `a*b*`).
   Since `*` modifies the preceding character, we need the `char` + `*` pair to vanish.
   If $p[j-1] == '*'$, then $dp[0][j] = dp[0][j-2]$.
@@ -85,9 +87,9 @@ For $i > 0$ (string length) and $j > 0$ (pattern length):
 2.  **Star Match (`p[j-1] == '*'`):**
     We look at the *preceding* character in the pattern: $p[j-2]$.
     We have two branches (we take the logical OR):
-    $$dp[i][j] = dp[i][j-2] \lor (\text{match} \land dp[i-1][j])$$
+    $$dp[i][j] = dp[i][j-2] \\lor (\\text{match} \\land dp[i-1][j])$$
     *   **Zero Occurrences ($dp[i][j-2]$):** We drop the `char*` pair from the pattern (moving back 2 steps in the pattern). We don't care if the preceding character matches the string or not.
-    *   **One or More Occurrences ($\text{match} \land dp[i-1][j]$):** `match` is true if the preceding char $p[j-2]$ matches the current string char $s[i-1]$ (or is `.`). If it matches, we "consume" $s[i-1]$ (moving back 1 step in the string to $i-1$) but **keep** the `char*` in the pattern (staying at $j$) so it can potentially match more characters.
+    *   **One or More Occurrences ($\\text{match} \\land dp[i-1][j]$):** `match` is true if the preceding char $p[j-2]$ matches the current string char $s[i-1]$ (or is `.`). If it matches, we "consume" $s[i-1]$ (moving back 1 step in the string to $i-1$) but **keep** the `char*` in the pattern (staying at $j$) so it can potentially match more characters.
 
 ### Top-Down DP (Memoization)
 
@@ -95,14 +97,14 @@ Memoization often feels more natural for string matching because the branching l
 
 ```python
 def is_match(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(m * n)
-    """
+    \"\"\"
     memo = {}
 
     def dfs(i: int, j: int) -> bool:
-        """Returns True if suffix s[i:] matches suffix p[j:]"""
+        \"\"\"Returns True if suffix s[i:] matches suffix p[j:]\"\"\"
         if (i, j) in memo:
             return memo[(i, j)]
 
@@ -132,10 +134,10 @@ def is_match(s: str, p: str) -> bool:
 
 ```python
 def is_match_regex(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(m * n)
-    """
+    \"\"\"
     m, n = len(s), len(p)
     # dp[i][j] represents if prefix s[0..i-1] matches prefix p[0..j-1]
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -180,10 +182,10 @@ Notice that to compute `dp[i][j]`, we only ever need values from the current row
 
 ```python
 def is_match_regex_optimized(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(n) using two rows.
-    """
+    \"\"\"
     m, n = len(s), len(p)
 
     # prev_row tracks the matching status for the PREVIOUS string character (i-1)
@@ -250,11 +252,11 @@ Let `s = "aab"` and `p = "c*a*b"`
 
 ### Recurrence Relation
 
-Let $dp[i][j]$ be `True` if prefix $s[0 \dots i-1]$ matches prefix $p[0 \dots j-1]$.
+Let $dp[i][j]$ be `True` if prefix $s[0 \\dots i-1]$ matches prefix $p[0 \\dots j-1]$.
 
 **Base Cases:**
-* $dp[0][0] = \text{True}$
-* $dp[i][0] = \text{False}$ for $i > 0$
+* $dp[0][0] = \\text{True}$
+* $dp[i][0] = \\text{False}$ for $i > 0$
 * $dp[0][j]$: An empty string matches a pattern *only if* the pattern consists entirely of `*`s. If $p[j-1] == '*'$, then $dp[0][j] = dp[0][j-1]$.
 
 **Transitions:**
@@ -264,7 +266,7 @@ For $i > 0$ and $j > 0$:
     $$dp[i][j] = dp[i-1][j-1]$$
 
 2.  **Star Match (`p[j-1] == '*'`):**
-    $$dp[i][j] = dp[i][j-1] \lor dp[i-1][j]$$
+    $$dp[i][j] = dp[i][j-1] \\lor dp[i-1][j]$$
     *   **Match Empty ($dp[i][j-1]$):** We move past the `*` in the pattern, staying on the same string index (look left).
     *   **Match Sequence ($dp[i-1][j]$):** The `*` consumes the current character $s[i-1]$. We move to $i-1$ in the string but *stay on the `*`* in the pattern (look up) to potentially consume more characters.
 
@@ -274,10 +276,10 @@ Notice how much simpler the `*` transition is compared to Regex Matching! We don
 
 ```python
 def is_match_wildcard_memo(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(m * n)
-    """
+    \"\"\"
     memo = {}
 
     def dfs(i: int, j: int) -> bool:
@@ -313,10 +315,10 @@ def is_match_wildcard_memo(s: str, p: str) -> bool:
 
 ```python
 def is_match_wildcard(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(m * n)
-    """
+    \"\"\"
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
 
@@ -363,10 +365,10 @@ Similar to regex matching, wildcard matching relies only on the current and prev
 
 ```python
 def is_match_wildcard_optimized(s: str, p: str) -> bool:
-    """
+    \"\"\"
     Time Complexity: O(m * n)
     Space Complexity: O(n) using two rows.
-    """
+    \"\"\"
     m, n = len(s), len(p)
     prev_row = [False] * (n + 1)
     prev_row[0] = True
@@ -407,9 +409,9 @@ def is_match_wildcard_optimized(s: str, p: str) -> bool:
 
 | Approach | Time Complexity | Space Complexity |
 | :--- | :--- | :--- |
-| **2D Tabulation** | $O(m \times n)$ | $O(m \times n)$ |
-| **Memoization** | $O(m \times n)$ | $O(m \times n)$ |
-| **1D Tabulation** | $O(m \times n)$ | $O(n)$ |
+| **2D Tabulation** | $O(m \\times n)$ | $O(m \\times n)$ |
+| **Memoization** | $O(m \\times n)$ | $O(m \\times n)$ |
+| **1D Tabulation** | $O(m \\times n)$ | $O(n)$ |
 
 Where $m$ is the length of string `s` and $n$ is the length of pattern `p`.
 
@@ -425,3 +427,7 @@ To build an intuition for 2D string DP, solve these in order:
 2. **[Edit Distance](https://leetcode.com/problems/edit-distance/)**: Practice the three-way branching (insert, delete, replace).
 3. **[Wildcard Matching](https://leetcode.com/problems/wildcard-matching/)**: A gentler introduction to `*` because it's a standalone token.
 4. **[Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)**: The boss level, where `*` modifies the preceding character.
+"""
+
+with open("/home/lucky/stuff/notes_fang/09-dynamic-programming/14-regex-matching.md", "w") as f:
+    f.write(content)

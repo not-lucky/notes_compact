@@ -36,7 +36,7 @@ Understanding edge types is crucial for grid problems, especially in FANG interv
 3.  **Custom/Knight's Moves**: Specific movement rules (e.g., Chess Knight `(±1, ±2)` or `(±2, ±1)`). Requires defining a custom `dirs` array.
 
 ```
-Grid:               Implicit Graph:
+Grid:               Implicit Graph (connecting '1's):
 1 1 0               (0,0)-(0,1)  (0,2)
 1 0 0                 |
 0 0 1               (1,0)        (1,2)
@@ -96,6 +96,9 @@ def flood_fill(image: list[list[int]], sr: int, sc: int,
     Time: O(rows × cols)
     Space: O(rows × cols)
     """
+    if not image:
+        return image
+
     if image[sr][sc] == color:
         return image  # No change needed
 
@@ -220,7 +223,7 @@ def num_distinct_islands(grid: list[list[int]]) -> int:
     Time: O(rows × cols)
     Space: O(rows × cols)
 
-    Use relative positions as shape signature.
+    Use a frozenset of relative coordinates as the shape signature.
     """
     if not grid:
         return 0
@@ -229,13 +232,13 @@ def num_distinct_islands(grid: list[list[int]]) -> int:
     shapes = set()
 
     def dfs(r: int, c: int, origin_r: int, origin_c: int,
-            shape: list[tuple[int, int]]):
+            shape: set[tuple[int, int]]):
         if (r < 0 or r >= rows or c < 0 or c >= cols or
             grid[r][c] != 1):
             return
 
         grid[r][c] = 0
-        shape.append((r - origin_r, c - origin_c))
+        shape.add((r - origin_r, c - origin_c))
 
         dfs(r + 1, c, origin_r, origin_c, shape)
         dfs(r - 1, c, origin_r, origin_c, shape)
@@ -245,9 +248,9 @@ def num_distinct_islands(grid: list[list[int]]) -> int:
     for r in range(rows):
         for c in range(cols):
             if grid[r][c] == 1:
-                shape = []
+                shape = set()
                 dfs(r, c, r, c, shape)
-                shapes.add(tuple(shape))
+                shapes.add(frozenset(shape))
 
     return len(shapes)
 ```
@@ -266,6 +269,9 @@ def island_perimeter(grid: list[list[int]]) -> int:
 
     Each land cell contributes 4, minus 2 for each adjacent land.
     """
+    if not grid:
+        return 0
+
     rows, cols = len(grid), len(grid[0])
     perimeter = 0
 
@@ -285,6 +291,55 @@ def island_perimeter(grid: list[list[int]]) -> int:
 
 ---
 
+
+## Multi-Source BFS (01 Matrix / Walls and Gates)
+
+Often, grid problems ask for the shortest distance from *multiple* starting points. Instead of running BFS from each starting point individually (which would be $O((R \times C)^2)$), we can enqueue all starting points initially and run a single BFS. This is called **Multi-Source BFS**.
+
+```python
+from collections import deque
+
+def update_matrix(mat: list[list[int]]) -> list[list[int]]:
+    """
+    Find the distance of the nearest 0 for each cell.
+    (Also known as 01 Matrix or Walls and Gates pattern)
+
+    Time: O(rows × cols)
+    Space: O(rows × cols)
+    """
+    if not mat:
+        return mat
+        
+    rows, cols = len(mat), len(mat[0])
+    queue = deque()
+    
+    # Initialize queue with all 0s and mark 1s as unvisited (-1)
+    for r in range(rows):
+        for c in range(cols):
+            if mat[r][c] == 0:
+                queue.append((r, c))
+            else:
+                mat[r][c] = -1  # Mark as unvisited
+                
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    
+    # Multi-source BFS
+    while queue:
+        r, c = queue.popleft()
+        
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            # If valid and unvisited
+            if 0 <= nr < rows and 0 <= nc < cols and mat[nr][nc] == -1:
+                # The distance is current cell's distance + 1
+                mat[nr][nc] = mat[r][c] + 1
+                queue.append((nr, nc))
+                
+    return mat
+```
+
+---
+
 ## Making a Large Island (Flip One 0)
 
 ```python
@@ -297,6 +352,9 @@ def largest_island(grid: list[list[int]]) -> int:
 
     Strategy: Label each island, store sizes, check each 0.
     """
+    if not grid:
+        return 0
+
     rows, cols = len(grid), len(grid[0])
 
     def dfs(r: int, c: int, label: int) -> int:
@@ -385,7 +443,7 @@ def num_islands_bfs(grid: list[list[str]]) -> int:
         for c in range(cols):
             if grid[r][c] == '1':
                 count += 1
-                grid[r][c] = '0'
+                grid[r][c] = '0'  # Mark visited IMMEDIATELY before pushing
                 queue = deque([(r, c)])
 
                 while queue:
@@ -395,7 +453,7 @@ def num_islands_bfs(grid: list[list[str]]) -> int:
                         nr, nc = cr + dr, cc + dc
                         if (0 <= nr < rows and 0 <= nc < cols and
                             grid[nr][nc] == '1'):
-                            grid[nr][nc] = '0'
+                            grid[nr][nc] = '0'  # Mark visited IMMEDIATELY before pushing
                             queue.append((nr, nc))
 
     return count
@@ -500,9 +558,10 @@ def dfs(r, c):
 | 3   | Flood Fill                  | Easy       | Simple traversal |
 | 4   | Surrounded Regions          | Medium     | Border-connected |
 | 5   | Number of Distinct Islands  | Medium     | Shape signature  |
-| 6   | Making A Large Island       | Hard       | What-if analysis |
-| 7   | Island Perimeter            | Easy       | Counting pattern |
-| 8   | Pacific Atlantic Water Flow | Medium     | Multi-source     |
+| 6   | 01 Matrix                   | Medium     | Multi-source BFS |
+| 7   | Making A Large Island       | Hard       | What-if analysis |
+| 8   | Island Perimeter            | Easy       | Counting pattern |
+| 9   | Pacific Atlantic Water Flow | Medium     | Multi-source     |
 
 ---
 

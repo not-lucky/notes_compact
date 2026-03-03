@@ -80,36 +80,33 @@ $$dp[m][n]$$ (where $m$ is the length of `word1` and $n$ is the length of `word2
 The top-down approach is intuitive because it directly translates the recurrence relation. We use indices representing the *length* of the prefixes being compared.
 
 ```python
+from functools import lru_cache
+
 def min_distance_memo(word1: str, word2: str) -> int:
     """
     Top-Down Memoization approach for Edit Distance.
 
     Time: O(m * n)
-    Space: O(m * n) for memoization dictionary and recursion stack
+    Space: O(m * n) for memoization and recursion stack
     """
     m, n = len(word1), len(word2)
-    memo = {}
 
+    @lru_cache(None)
     def dfs(i: int, j: int) -> int:
         # Base cases: if one string is empty, operation count is the length of the other
         if i == 0: return j  # Need j insertions
         if j == 0: return i  # Need i deletions
 
-        if (i, j) in memo:
-            return memo[(i, j)]
-
         # If characters match, no operations needed for this position
         if word1[i - 1] == word2[j - 1]:
-            memo[(i, j)] = dfs(i - 1, j - 1)
-        else:
-            # If they don't match, try all 3 operations and find the minimum
-            memo[(i, j)] = 1 + min(
-                dfs(i - 1, j),      # Delete from word1
-                dfs(i, j - 1),      # Insert into word1
-                dfs(i - 1, j - 1)   # Replace in word1
-            )
-
-        return memo[(i, j)]
+            return dfs(i - 1, j - 1)
+        
+        # If they don't match, try all 3 operations and find the minimum
+        return 1 + min(
+            dfs(i - 1, j),      # Delete from word1
+            dfs(i, j - 1),      # Insert into word1
+            dfs(i - 1, j - 1)   # Replace in word1
+        )
 
     return dfs(m, n)
 ```
@@ -149,9 +146,9 @@ def min_distance_2d(word1: str, word2: str) -> int:
             else:
                 # Characters differ, take 1 + min of left, top, and diagonal
                 dp[i][j] = 1 + min(
-                    dp[i - 1][j],      # Delete: look up (dp[i-1][j])
-                    dp[i][j - 1],      # Insert: look left (dp[i][j-1])
-                    dp[i - 1][j - 1]   # Replace: look top-left diagonal (dp[i-1][j-1])
+                    dp[i - 1][j],      # Delete from word1: look up (dp[i-1][j])
+                    dp[i][j - 1],      # Insert into word1: look left (dp[i][j-1])
+                    dp[i - 1][j - 1]   # Replace in word1: look top-left diagonal (dp[i-1][j-1])
                 )
 
     return dp[m][n]
@@ -208,9 +205,9 @@ def min_distance(word1: str, word2: str) -> int:
             else:
                 # Characters differ: 1 + min(delete, insert, replace)
                 dp[j] = 1 + min(
-                    dp[j],            # Delete (from previous row above)
-                    dp[j - 1],        # Insert (from current row left)
-                    prev_diagonal     # Replace (from previous row diagonal)
+                    dp[j],            # Delete from word1 (from previous row above)
+                    dp[j - 1],        # Insert into word1 (from current row left)
+                    prev_diagonal     # Replace in word1 (from previous row diagonal)
                 )
 
             # Update prev_diagonal for the next iteration
@@ -316,6 +313,31 @@ Find the minimum deletions (from *both* strings) to make them equal.
 *Insight*: The characters that *aren't* deleted form the Longest Common Subsequence (LCS). The shortest path to equality is leaving the LCS intact and deleting everything else.
 *Answer* = `Length(word1) + Length(word2) - 2 * Length(LCS)`
 
+#### Top-Down (Memoization)
+```python
+from functools import lru_cache
+
+def min_delete_distance_memo(word1: str, word2: str) -> int:
+    """
+    Finds minimum deletions using Top-Down Memoization.
+    Time: O(m * n), Space: O(m * n)
+    """
+    m, n = len(word1), len(word2)
+
+    @lru_cache(None)
+    def lcs(i: int, j: int) -> int:
+        if i == 0 or j == 0:
+            return 0
+            
+        if word1[i - 1] == word2[j - 1]:
+            return 1 + lcs(i - 1, j - 1)
+        else:
+            return max(lcs(i - 1, j), lcs(i, j - 1))
+
+    return m + n - 2 * lcs(m, n)
+```
+
+#### Bottom-Up (Space-Optimized Tabulation)
 ```python
 def min_delete_distance(word1: str, word2: str) -> int:
     """
@@ -417,6 +439,17 @@ When solving sequence alignment problems, mentally test your logic against these
 - **Mention the Space Optimization Immediately**: Start by writing or describing the 2D DP, but explicitly mention "we can optimize this to $O(\min(M, N))$ space because we only need the previous row." This shows foresight and system-level thinking.
 - **Understand the LCS Relationship**: Be prepared to answer follow-ups comparing Edit Distance to Longest Common Subsequence (they are closely related prefix-matching DP patterns).
 - **Explain the "Why"**: Don't just memorize the 3 operations formula. Explain to the interviewer *why* looking at `dp[i-1][j]` represents a delete operation on `word1`.
+
+## Progressive Problems
+
+To master Edit Distance and sequence alignment DP, work through these problems in order:
+
+1. **[Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)** (Medium) - The foundational 2D prefix matching DP pattern.
+2. **[Delete Operation for Two Strings](https://leetcode.com/problems/delete-operation-for-two-strings/)** (Medium) - Edit distance variant with only deletions allowed.
+3. **[Edit Distance](https://leetcode.com/problems/edit-distance/)** (Medium/Hard) - The core problem covered in this guide.
+4. **[One Edit Distance](https://leetcode.com/problems/one-edit-distance/)** (Medium) - Important two-pointer variant to recognize when *not* to use DP.
+5. **[Minimum ASCII Delete Sum for Two Strings](https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/)** (Medium) - DP where operations have different costs (ASCII values instead of +1).
+6. **[Wildcard Matching](https://leetcode.com/problems/wildcard-matching/)** (Hard) - Advanced DP sequence alignment with varying matching rules.
 
 ## Next: [10-knapsack-01.md](./10-knapsack-01.md)
 

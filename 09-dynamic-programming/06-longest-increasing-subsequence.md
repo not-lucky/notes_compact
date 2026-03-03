@@ -55,6 +55,92 @@ For a given index `i`, check all previous indices `j` where `0 ≤ j < i`. We ca
 **Result:**
 The length of the overall LIS is `max(dp)`. The global maximum can end at any index.
 
+
+
+### Top-Down (Memoization)
+
+While Tabulation and Binary Search are standard for LIS, a Top-Down approach helps understand the recursive nature. We need to track the current index `curr` and the index of the previous element `prev` to know if we can include `nums[curr]`.
+
+```python
+def length_of_lis_memo(nums: list[int]) -> int:
+    """
+    Top-Down Memoization DP (Include/Exclude approach).
+    
+    Time Complexity: O(n²)
+    Space Complexity: O(n²) for the memoization table and recursion stack
+    """
+    if not nums:
+        return 0
+        
+    n = len(nums)
+    # memo[curr][prev+1] stores the max LIS from index 'curr'
+    # where the previous included element was at index 'prev'.
+    # We use prev + 1 to handle the initial prev = -1 case.
+    memo = [[-1] * (n + 1) for _ in range(n)]
+    
+    def solve(curr: int, prev: int) -> int:
+        # Base case: out of bounds
+        if curr == n:
+            return 0
+            
+        # Check memo
+        if memo[curr][prev + 1] != -1:
+            return memo[curr][prev + 1]
+            
+        # Option 1: Skip the current element
+        skip = solve(curr + 1, prev)
+        
+        # Option 2: Include the current element (if valid)
+        take = 0
+        if prev == -1 or nums[curr] > nums[prev]:
+            take = 1 + solve(curr + 1, curr)
+            
+        # Store and return max of both options
+        memo[curr][prev + 1] = max(skip, take)
+        return memo[curr][prev + 1]
+        
+    return solve(0, -1)
+```
+
+Another more common (and space-efficient `O(n)`) Top-Down approach for LIS defines `solve(i)` as the max LIS **starting** exactly at index `i` (or ending at `i`). Here we implement ending at `i` to mirror our tabulation:
+
+```python
+def length_of_lis_memo_1d(nums: list[int]) -> int:
+    """
+    Top-Down Memoization DP (Ending at i approach).
+    
+    Time Complexity: O(n²)
+    Space Complexity: O(n) for memo array and recursion stack
+    """
+    if not nums:
+        return 0
+        
+    n = len(nums)
+    memo = [-1] * n
+    
+    def solve(i: int) -> int:
+        if memo[i] != -1:
+            return memo[i]
+            
+        # Base case: LIS ending at i is at least 1 (the element itself)
+        ans = 1
+        
+        # Try to extend from any previous element
+        for j in range(i):
+            if nums[j] < nums[i]:
+                ans = max(ans, 1 + solve(j))
+                
+        memo[i] = ans
+        return ans
+        
+    # We must try ending the LIS at every possible index
+    res = 1
+    for i in range(n):
+        res = max(res, solve(i))
+        
+    return res
+```
+
 ### Bottom-Up (Tabulation)
 
 ```python
@@ -173,6 +259,9 @@ def lis_with_path(nums: list[int]) -> list[int]:
     tails = []
     tails_indices = [] # Stores indices corresponding to the values in 'tails'
     parent = [-1] * len(nums) # parent[i] stores the index of the predecessor of nums[i]
+    
+    max_len = 0
+    end_idx = -1
 
     for i, num in enumerate(nums):
         pos = bisect.bisect_left(tails, num)
@@ -187,9 +276,14 @@ def lis_with_path(nums: list[int]) -> list[int]:
         # If pos > 0, this element extends a subsequence ending at tails_indices[pos - 1]
         if pos > 0:
             parent[i] = tails_indices[pos - 1]
+            
+        # Track the endpoint of the longest valid LIS seen so far
+        if pos + 1 > max_len:
+            max_len = pos + 1
+            end_idx = i
 
-    # Reconstruct the sequence starting from the last index in tails_indices
-    curr_idx = tails_indices[-1]
+    # Reconstruct the sequence starting from the tracked endpoint
+    curr_idx = end_idx
     lis_path = []
 
     while curr_idx != -1:
@@ -212,8 +306,61 @@ Allows equal elements. `[2, 2, 2]` has a non-decreasing length of 3, but strictl
 
 Instead of tracking just the length, we must also track the *count* of how many ways we can form an LIS up to index `i`.
 
+### Number of LIS: Top-Down Memoization
+
 ```python
-def find_number_of_lis(nums: list[int]) -> int:
+def find_number_of_lis_memo(nums: list[int]) -> int:
+    """
+    Top-Down Memoization for Number of LIS.
+    
+    Time Complexity: O(n²)
+    Space Complexity: O(n) for memo array and recursion stack
+    """
+    if not nums:
+        return 0
+        
+    n = len(nums)
+    # memo[i] stores (max_len_ending_at_i, count_ending_at_i)
+    memo = [None] * n
+    
+    def solve(i: int) -> tuple[int, int]:
+        if memo[i] is not None:
+            return memo[i]
+            
+        max_l = 1
+        count = 1
+        
+        for j in range(i):
+            if nums[j] < nums[i]:
+                prev_l, prev_count = solve(j)
+                if prev_l + 1 > max_l:
+                    max_l = prev_l + 1
+                    count = prev_count
+                elif prev_l + 1 == max_l:
+                    count += prev_count
+                    
+        memo[i] = (max_l, count)
+        return memo[i]
+        
+    # Calculate for all indices
+    max_len = 0
+    total_count = 0
+    
+    for i in range(n):
+        l, c = solve(i)
+        if l > max_len:
+            max_len = l
+            total_count = c
+        elif l == max_len:
+            total_count += c
+            
+    return total_count
+```
+
+### Number of LIS: Tabulation
+
+```python
+def find_number_of_lis_tabulation(nums: list[int]) -> int:
     """
     Finds the number of longest increasing subsequences.
 
@@ -239,8 +386,14 @@ def find_number_of_lis(nums: list[int]) -> int:
                     counts[i] += counts[j]
 
     max_len = max(lengths)
+    
     # Sum the counts for all indices where the LIS length equals the global max_len
-    return sum(count for length, count in zip(lengths, counts) if length == max_len)
+    ans = 0
+    for i in range(n):
+        if lengths[i] == max_len:
+            ans += counts[i]
+            
+    return ans
 ```
 
 ### 3. Russian Doll Envelopes (2D LIS)
@@ -251,10 +404,56 @@ Given a list of envelopes `[width, height]`, find the maximum number of envelope
 If widths are equal, sorting height descending prevents us from nesting envelopes of the same width inside each other (since strict increase is required).
 After sorting, run standard 1D LIS on the heights.
 
+
+### Russian Doll Envelopes: Top-Down Memoization
+
+While binary search is required for O(n log n) efficiency on large inputs, a top-down memoization approach works for smaller datasets and helps solidify the multi-dimensional intuition.
+
+```python
+def max_envelopes_memo(envelopes: list[list[int]]) -> int:
+    """
+    Top-Down Memoization for 2D LIS.
+    
+    Time Complexity: O(n²)
+    Space Complexity: O(n) for memo array and recursion stack
+    """
+    if not envelopes:
+        return 0
+        
+    # Sort first to ensure smaller envelopes are processed before larger ones
+    envelopes.sort(key=lambda x: (x[0], x[1]))
+    n = len(envelopes)
+    
+    # memo[i] stores max envelopes ending exactly at envelope i
+    memo = [-1] * n
+    
+    def solve(i: int) -> int:
+        if memo[i] != -1:
+            return memo[i]
+            
+        ans = 1
+        
+        # Check all previous envelopes that could fit inside envelope i
+        for j in range(i):
+            if envelopes[j][0] < envelopes[i][0] and envelopes[j][1] < envelopes[i][1]:
+                ans = max(ans, 1 + solve(j))
+                
+        memo[i] = ans
+        return ans
+        
+    res = 0
+    for i in range(n):
+        res = max(res, solve(i))
+        
+    return res
+```
+
+### Russian Doll Envelopes: Optimal Binary Search
+
 ```python
 import bisect
 
-def max_envelopes(envelopes: list[list[int]]) -> int:
+def max_envelopes_bs(envelopes: list[list[int]]) -> int:
     """
     Finds the maximum number of envelopes you can nest.
 
@@ -279,6 +478,53 @@ def max_envelopes(envelopes: list[list[int]]) -> int:
 ### 4. Increasing Triplet Subsequence
 
 Find if there exist indices `i < j < k` such that `nums[i] < nums[j] < nums[k]`. This is just LIS bounded to length 3.
+
+
+
+### Increasing Triplet: Top-Down Memoization
+
+While the O(n) approach is optimal, it's good to understand how this reduces to LIS bounded to length 3.
+
+```python
+def increasing_triplet_memo(nums: list[int]) -> bool:
+    """
+    Top-Down Memoization bounded to length 3.
+    
+    Time Complexity: O(n)
+    Space Complexity: O(n)
+    """
+    n = len(nums)
+    if n < 3:
+        return False
+        
+    # memo[i] = length of LIS starting from i
+    memo = [-1] * n
+    
+    def solve(i: int) -> int:
+        if memo[i] != -1:
+            return memo[i]
+            
+        ans = 1
+        for j in range(i + 1, n):
+            if nums[j] > nums[i]:
+                # If we found a valid next element, and it forms a sequence of length >= 2,
+                # then including nums[i] makes it length 3, so we can return immediately
+                length_from_j = solve(j)
+                if length_from_j >= 2:
+                    return 3
+                ans = max(ans, 1 + length_from_j)
+                
+        memo[i] = ans
+        return ans
+        
+    for i in range(n):
+        if solve(i) >= 3:
+            return True
+            
+    return False
+```
+
+### Increasing Triplet: Optimal O(n) Solution
 
 ```python
 def increasing_triplet(nums: list[int]) -> bool:
@@ -334,6 +580,22 @@ def increasing_triplet(nums: list[int]) -> bool:
 | **DP (Tabulation)** | $O(n^2)$ | $O(n)$ | Reconstructing, counting variations |
 | **Patience Sort (BS)** | $O(n \log n)$ | $O(n)$ | Finding length efficiently, FANG standard |
 | **Segment Tree / BIT** | $O(n \log n)$ | $O(n)$ | Complex variants with element updates |
+
+---
+
+
+## Progressive Problems
+
+Here is a recommended sequence of problems to master the LIS pattern:
+
+1. **[LeetCode 300 - Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)**: The fundamental problem. Implement both $O(n^2)$ and $O(n \log n)$ solutions.
+2. **[LeetCode 674 - Longest Continuous Increasing Subsequence](https://leetcode.com/problems/longest-continuous-increasing-subsequence/)**: A simpler $O(n)$ variant that helps distinguish between subarray and subsequence.
+3. **[LeetCode 673 - Number of Longest Increasing Subsequence](https://leetcode.com/problems/number-of-longest-increasing-subsequence/)**: Helps solidify the $O(n^2)$ DP understanding by requiring you to track additional state (counts).
+4. **[LeetCode 334 - Increasing Triplet Subsequence](https://leetcode.com/problems/increasing-triplet-subsequence/)**: An excellent conceptual check for understanding the binary search (`tails` array) approach, simplified to just 3 variables.
+5. **[LeetCode 354 - Russian Doll Envelopes](https://leetcode.com/problems/russian-doll-envelopes/)**: A masterclass in sorting multi-dimensional data to reduce it to a 1D LIS problem. Requires $O(n \log n)$.
+6. **[LeetCode 1048 - Longest String Chain](https://leetcode.com/problems/longest-string-chain/)**: A variation where the "increasing" condition is based on string length and character matching, often solved by sorting by length and using a HashMap.
+7. **[LeetCode 1626 - Best Team With No Conflicts](https://leetcode.com/problems/best-team-with-no-conflicts/)**: A great example of modifying LIS to track sum instead of length, after sorting properly.
+8. **[LeetCode 1964 - Find the Longest Valid Obstacle Course at Each Position](https://leetcode.com/problems/find-the-longest-valid-obstacle-course-at-each-position/)**: Tests the non-decreasing variation. Must use `bisect_right`.
 
 ---
 

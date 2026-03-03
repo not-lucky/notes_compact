@@ -20,11 +20,13 @@ Time 0:     Time 1:     Time 2:     Time 3:
 2. When we first reach a node, we've taken the minimum hops
 3. All edges have equal weight (1), so "minimum hops" = shortest path
 
-**Key insight - The Queue is Everything**:
+**Why level-by-level? The FIFO queue is everything**:
 
 - FIFO (First-In-First-Out) ensures we exhaust all distance-k nodes before distance-(k+1)
-- Using a stack would make it DFS (depth-first, not breadth-first)
-- Using a priority queue would make it Dijkstra (weighted shortest path)
+- Nodes discovered at distance k are enqueued *before* any distance-(k+1) nodes
+- So when we dequeue, we always finish the current "wave" before starting the next
+- Using a **stack** instead would make it DFS (depth-first, not breadth-first)
+- Using a **priority queue** instead would make it Dijkstra (weighted shortest path)
 
 **Visual proof of correctness**:
 
@@ -45,19 +47,19 @@ No! Because:
 - **Edges have different weights** → Use Dijkstra instead
 - **You need all paths, not just shortest** → Use DFS with backtracking
 - **Graph is very deep but narrow** → DFS uses less memory (O(depth) vs O(width))
-- **You're detecting cycles** → DFS with three colors is cleaner for directed graphs
+- **You're detecting cycles in a directed graph** → DFS with three colors is cleaner
 
 **BFS is overkill when:**
 
 - Simple reachability check → DFS is equally valid and often simpler
-- Tree traversal → Specialized tree algorithms may be cleaner
+- Tree traversal without level info → Specialized tree algorithms may be cleaner
 - Graph has special structure (DAG) → Topological sort may be better
 
 **Common mistake scenarios:**
 
-- Using BFS on weighted graphs expecting shortest path → Wrong answer
-- Using list instead of deque → O(n) popleft() kills performance
-- Marking visited when dequeuing → Duplicates in queue, TLE
+- Using BFS on weighted graphs expecting shortest path → **Wrong answer**
+- Using `list` instead of `deque` → `list.pop(0)` is O(n), kills performance
+- Marking visited when dequeuing instead of enqueueing → Duplicates flood the queue, TLE
 
 ---
 
@@ -82,8 +84,8 @@ BFS is essential because:
 
 BFS explores vertices level by level using a **queue**:
 
-1. Start from source, add to queue
-2. Process current vertex, add unvisited neighbors to queue
+1. Start from source, mark visited, add to queue
+2. Dequeue current vertex, process it, enqueue unvisited neighbors (mark them visited immediately)
 3. Repeat until queue is empty
 
 ```
@@ -103,7 +105,9 @@ When performing BFS on a connected, undirected graph, the edges can be classifie
 
 1. **Tree Edges**: Edges that discover new, unvisited vertices. These edges form the "BFS Tree" (a spanning tree of the graph).
 2. **Cross Edges**: Edges that connect two vertices that are already in the BFS Tree.
-   - Crucial property: In a standard BFS on an undirected graph, a cross edge only ever connects vertices at the same level (distance $d$) or at adjacent levels (distance $d$ and $d+1$). They never connect vertices skipping a level.
+   - Crucial property: In a standard BFS on an undirected graph, a cross edge only ever connects vertices at the same level (distance d) or at adjacent levels (distance d and d+1). They never connect vertices skipping a level.
+
+> **Note**: For *directed* graphs, BFS can also produce **back edges** (to an ancestor in the BFS tree). The two-type classification above is specific to undirected graphs.
 
 ### Theory: Grid Implicit Graphs
 
@@ -112,7 +116,7 @@ Many BFS problems don't give you an explicit `Graph = (V, E)` representation (li
 - **Vertices**: Each cell `(r, c)` in the grid is a vertex.
 - **Edges**: Implicitly defined by the valid moves. Typically, an edge exists between `(r, c)` and its 4-direction neighbors `(r+1, c)`, `(r-1, c)`, `(r, c+1)`, `(r, c-1)` if the neighbor is within bounds and not an obstacle.
 
-In these "implicit" graphs, you don't build an adjacency list. You compute the neighbors "on the fly" during the BFS loop.
+In these "implicit" graphs, you don't build an adjacency list. You compute the neighbors on the fly during the BFS loop.
 
 ---
 
@@ -123,24 +127,25 @@ In these "implicit" graphs, you don't build an adjacency list. You compute the n
 ```python
 from collections import deque
 
+
 def bfs(graph: dict[int, list[int]], start: int) -> list[int]:
     """
     Basic BFS traversal.
 
-    Time: O(V + E)
-    Space: O(V) for visited set and queue
+    Time:  O(V + E) — each vertex enqueued once, each edge examined once
+    Space: O(V) — for visited set and queue
     """
-    visited = set([start])
+    visited = {start}            # Mark source visited BEFORE enqueueing
     queue = deque([start])
-    order = []
+    order: list[int] = []
 
     while queue:
-        node = queue.popleft()
+        node = queue.popleft()   # FIFO: process oldest node first
         order.append(node)
 
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):  # .get() handles missing keys
             if neighbor not in visited:
-                visited.add(neighbor)
+                visited.add(neighbor)          # Mark visited NOW, not later
                 queue.append(neighbor)
 
     return order
@@ -158,12 +163,13 @@ print(bfs(graph, 0))  # [0, 1, 2, 3, 4]
 ```python
 from collections import deque
 
+
 def shortest_path(graph: dict[int, list[int]],
                   start: int, end: int) -> int:
     """
     Find shortest path length in unweighted graph.
 
-    Time: O(V + E)
+    Time:  O(V + E)
     Space: O(V)
 
     Returns -1 if no path exists.
@@ -171,15 +177,15 @@ def shortest_path(graph: dict[int, list[int]],
     if start == end:
         return 0
 
-    visited = set([start])
+    visited = {start}
     queue = deque([(start, 0)])  # (node, distance)
 
     while queue:
         node, dist = queue.popleft()
 
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):
             if neighbor == end:
-                return dist + 1
+                return dist + 1         # Found target — return immediately
 
             if neighbor not in visited:
                 visited.add(neighbor)
@@ -195,40 +201,42 @@ def shortest_path(graph: dict[int, list[int]],
 ```python
 from collections import deque
 
-def shortest_path_with_path(graph: dict[int, list[int]],
-                             start: int, end: int) -> list[int]:
-    """
-    Find shortest path and return the actual path.
 
-    Time: O(V + E)
+def shortest_path_with_path(graph: dict[int, list[int]],
+                            start: int, end: int) -> list[int]:
+    """
+    Find shortest path and return the actual path (not just length).
+    Uses a parent pointer map to reconstruct the path.
+
+    Time:  O(V + E)
     Space: O(V)
     """
     if start == end:
         return [start]
 
-    visited = set([start])
+    visited = {start}
     queue = deque([start])
-    parent = {start: None}  # Track path
+    parent: dict[int, int | None] = {start: None}  # child -> parent mapping
 
     while queue:
         node = queue.popleft()
 
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):
             if neighbor not in visited:
                 visited.add(neighbor)
                 parent[neighbor] = node
                 queue.append(neighbor)
 
                 if neighbor == end:
-                    # Reconstruct path
-                    path = []
-                    current = end
+                    # Reconstruct path by walking parent pointers backward
+                    path: list[int] = []
+                    current: int | None = end
                     while current is not None:
                         path.append(current)
                         current = parent[current]
-                    return path[::-1]
+                    return path[::-1]  # Reverse: start → end
 
-    return []  # No path
+    return []  # No path exists
 
 
 # Usage
@@ -240,31 +248,34 @@ print(shortest_path_with_path(graph, 0, 3))  # [0, 1, 3] or [0, 2, 3]
 
 ## Level-Order BFS (Track Levels)
 
+This pattern processes all nodes at the same distance together. The trick: snapshot `len(queue)` at the start of each level, then dequeue exactly that many nodes.
+
 ```python
 from collections import deque
 
+
 def bfs_by_level(graph: dict[int, list[int]],
-                  start: int) -> list[list[int]]:
+                 start: int) -> list[list[int]]:
     """
     BFS with explicit level tracking.
-    Returns nodes grouped by level.
+    Returns nodes grouped by their distance from start.
 
-    Time: O(V + E)
+    Time:  O(V + E)
     Space: O(V)
     """
-    visited = set([start])
+    visited = {start}
     queue = deque([start])
-    levels = []
+    levels: list[list[int]] = []
 
     while queue:
-        level_size = len(queue)
-        current_level = []
+        level_size = len(queue)    # Number of nodes at current distance
+        current_level: list[int] = []
 
         for _ in range(level_size):
             node = queue.popleft()
             current_level.append(node)
 
-            for neighbor in graph[node]:
+            for neighbor in graph.get(node, []):
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append(neighbor)
@@ -286,28 +297,32 @@ print(bfs_by_level(graph, 0))  # [[0], [1, 2], [3, 4]]
 ```python
 from collections import deque
 
+# 4-directional movement: right, left, down, up
+DIRECTIONS = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+
 def grid_bfs(grid: list[list[int]],
              start: tuple[int, int]) -> set[tuple[int, int]]:
     """
-    BFS on a grid.
+    BFS on a 2D grid. Visits all reachable cells with value 1.
 
-    Time: O(rows × cols)
-    Space: O(rows × cols)
+    Time:  O(rows × cols) — each cell visited at most once
+    Space: O(rows × cols) — worst case all cells in queue
     """
     rows, cols = len(grid), len(grid[0])
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-    visited = set([start])
+    visited = {start}
     queue = deque([start])
 
     while queue:
         r, c = queue.popleft()
 
-        for dr, dc in directions:
+        for dr, dc in DIRECTIONS:
             nr, nc = r + dr, c + dc
 
-            if (0 <= nr < rows and 0 <= nc < cols and
-                (nr, nc) not in visited and grid[nr][nc] == 1):
+            if (0 <= nr < rows and 0 <= nc < cols     # Within bounds
+                    and (nr, nc) not in visited        # Not yet seen
+                    and grid[nr][nc] == 1):            # Passable cell
                 visited.add((nr, nc))
                 queue.append((nr, nc))
 
@@ -316,31 +331,86 @@ def grid_bfs(grid: list[list[int]],
 
 ---
 
-## Multi-Source BFS
+## Grid Shortest Path
 
-Start from multiple sources simultaneously. All sources are at distance 0.
+Very common in FAANG: find the shortest path from start to end in a maze.
 
 ```python
 from collections import deque
 
-def multi_source_bfs(grid: list[list[int]],
-                      sources: list[tuple[int, int]]) -> list[list[int]]:
+DIRECTIONS = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+
+def grid_shortest_path(grid: list[list[int]],
+                       start: tuple[int, int], end: tuple[int, int]) -> int:
     """
-    BFS from multiple sources.
-    Returns distance grid where each cell has min distance to any source.
+    Find shortest path in a 2D grid from start to end.
+    Assuming 0 is empty space and 1 is a wall.
 
-    Time: O(rows × cols)
+    Time:  O(rows × cols)
     Space: O(rows × cols)
-
-    Example use: Rotting oranges, 01 Matrix
     """
     rows, cols = len(grid), len(grid[0])
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    
+    # Check if start or end is blocked
+    if grid[start[0]][start[1]] == 1 or grid[end[0]][end[1]] == 1:
+        return -1
+        
+    if start == end:
+        return 0
 
-    # Distance grid, -1 = unvisited
+    visited = {start}
+    queue = deque([(start[0], start[1], 0)])  # (row, col, distance)
+
+    while queue:
+        r, c, dist = queue.popleft()
+
+        for dr, dc in DIRECTIONS:
+            nr, nc = r + dr, c + dc
+
+            if (0 <= nr < rows and 0 <= nc < cols
+                    and (nr, nc) not in visited
+                    and grid[nr][nc] == 0):          # 0 is empty space
+                
+                if (nr, nc) == end:
+                    return dist + 1
+                    
+                visited.add((nr, nc))
+                queue.append((nr, nc, dist + 1))
+
+    return -1  # No path found
+```
+
+## Multi-Source BFS
+
+Start from multiple sources simultaneously. All sources begin at distance 0. The BFS "wave" expands from all sources in parallel.
+
+**When to use**: Any problem that asks for the minimum distance from *any* source to each cell (e.g., Rotting Oranges, 01 Matrix).
+
+```python
+from collections import deque
+
+DIRECTIONS = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+
+def multi_source_bfs(grid: list[list[int]],
+                     sources: list[tuple[int, int]]) -> list[list[int]]:
+    """
+    BFS from multiple sources simultaneously.
+    Returns distance grid where each cell has min distance to any source.
+
+    Time:  O(rows × cols)
+    Space: O(rows × cols)
+
+    Example use: LC 994 Rotting Oranges, LC 542 01 Matrix
+    """
+    rows, cols = len(grid), len(grid[0])
+
+    # Distance grid: -1 means unvisited/unreachable
     dist = [[-1] * cols for _ in range(rows)]
 
-    queue = deque()
+    # Seed the queue with ALL sources at distance 0
+    queue: deque[tuple[int, int]] = deque()
     for r, c in sources:
         dist[r][c] = 0
         queue.append((r, c))
@@ -348,11 +418,12 @@ def multi_source_bfs(grid: list[list[int]],
     while queue:
         r, c = queue.popleft()
 
-        for dr, dc in directions:
+        for dr, dc in DIRECTIONS:
             nr, nc = r + dr, c + dc
 
-            if (0 <= nr < rows and 0 <= nc < cols and
-                dist[nr][nc] == -1 and grid[nr][nc] == 1):
+            if (0 <= nr < rows and 0 <= nc < cols
+                    and dist[nr][nc] == -1              # Unvisited
+                    and grid[nr][nc] == 1):             # Passable
                 dist[nr][nc] = dist[r][c] + 1
                 queue.append((nr, nc))
 
@@ -366,21 +437,23 @@ def multi_source_bfs(grid: list[list[int]],
 ```python
 from collections import deque
 
+
 def bfs_all_components(graph: dict[int, list[int]],
-                        n: int) -> list[list[int]]:
+                       n: int) -> list[list[int]]:
     """
     BFS over all nodes, handling disconnected components.
+    Returns a list of components, each component is a list of nodes.
 
-    Time: O(V + E)
+    Time:  O(V + E)
     Space: O(V)
     """
-    visited = set()
-    components = []
+    visited: set[int] = set()
+    components: list[list[int]] = []
 
     for node in range(n):
         if node not in visited:
             # BFS for this component
-            component = []
+            component: list[int] = []
             queue = deque([node])
             visited.add(node)
 
@@ -388,7 +461,7 @@ def bfs_all_components(graph: dict[int, list[int]],
                 curr = queue.popleft()
                 component.append(curr)
 
-                for neighbor in graph[curr]:
+                for neighbor in graph.get(curr, []):
                     if neighbor not in visited:
                         visited.add(neighbor)
                         queue.append(neighbor)
@@ -406,25 +479,31 @@ def bfs_all_components(graph: dict[int, list[int]],
 | ------------------------------- | ---------- | ---------------------- |
 | Shortest path (unweighted)      | ✓          | ✗                      |
 | Level-order traversal           | ✓          | ✗                      |
+| Bipartite check                 | ✓          | ✓                      |
 | Closest node to source          | ✓          | ✗                      |
 | Explore all paths               | ✗          | ✓                      |
 | Cycle detection                 | Either     | ✓ (simpler)            |
 | Topological sort                | ✓ (Kahn's) | ✓ (reverse post-order) |
 | Memory constrained (deep graph) | ✗          | ✓                      |
+| Connected components            | Either     | Either                 |
+
+**Memory trade-off intuition**:
+- BFS queue holds all nodes at the current "frontier" (the widest level). In a balanced binary tree with N nodes, the last level has ~N/2 nodes → O(N) memory.
+- DFS stack holds nodes along a single root-to-leaf path → O(depth) memory. For a balanced tree, that's O(log N).
+- In a graph that's wide but shallow, BFS uses more memory. In a graph that's narrow but deep, DFS uses more memory.
 
 ---
 
 ## Complexity Analysis
 
 **Time Complexity: O(V + E)** for Adjacency List (Sparse Graph)
-- **O(V²)** for Adjacency Matrix (Dense Graph). When a graph is dense or we use an adjacency matrix, we must check all `V` possible neighbors for each of the `V` nodes, regardless of whether edges exist. This makes scanning neighbors an O(V) operation per node, resulting in total time complexity `V * O(V) = O(V²)`.
-- **O(rows × cols)** for Grid Implicit Graphs, assuming constant time checks of neighbors in 4 or 8 directions.
+- **O(V²)** for Adjacency Matrix (Dense Graph). When using an adjacency matrix, we must check all V possible neighbors for each of the V nodes, regardless of whether edges exist. This makes scanning neighbors an O(V) operation per node, resulting in total time `V × O(V) = O(V²)`.
+- **O(rows × cols)** for Grid Implicit Graphs, assuming constant-time neighbor checks in 4 or 8 directions. Here V = rows × cols and E = O(V) since each cell has at most 4 (or 8) neighbors.
 
 **Space Complexity: O(V)**
 Space is primarily used by the `visited` data structure and the BFS `queue`.
-- **Sparse vs. Dense Representations**:
-  - `Adjacency List`: We only track actual edges in memory, and iterating neighbors is optimal `O(E)`.
-  - `Adjacency Matrix`: This representation forces us to scan the entire row (all `V` columns) for a node to find neighbors. Space taken is strictly O(V²).
+- **Adjacency List**: We only track actual edges in memory, and iterating neighbors is optimal per-node.
+- **Adjacency Matrix**: This representation itself takes O(V²) space, separate from BFS's own O(V) space.
 
 | Operation        | Time           | Space          |
 | ---------------- | -------------- | -------------- |
@@ -440,44 +519,55 @@ Space includes both visited set and queue.
 ## Common Mistakes
 
 ```python
-# WRONG: Adding to visited when processing
+# ❌ WRONG: Marking visited when DEQUEUING (too late!)
+# Why it's wrong: Between enqueueing and dequeuing, the SAME node
+# can be added to the queue multiple times by different neighbors.
+# This wastes time (TLE) and can use O(E) queue space instead of O(V).
 while queue:
     node = queue.popleft()
-    visited.add(node)  # Too late! May add duplicates to queue
-    for neighbor in graph[node]:
+    visited.add(node)        # Too late! Duplicates already in queue
+    for neighbor in graph.get(node, []):
         if neighbor not in visited:
             queue.append(neighbor)
 
-# CORRECT: Add to visited when enqueueing
+# ✅ CORRECT: Mark visited when ENQUEUEING
 while queue:
     node = queue.popleft()
-    for neighbor in graph[node]:
+    for neighbor in graph.get(node, []):
         if neighbor not in visited:
-            visited.add(neighbor)  # Mark visited immediately
+            visited.add(neighbor)  # Mark visited IMMEDIATELY
             queue.append(neighbor)
 
 
-# WRONG: Using list as queue
+# ❌ WRONG: Using list as queue (O(n) pop from front)
 queue = [start]
 while queue:
-    node = queue.pop(0)  # O(n) operation!
+    node = queue.pop(0)  # O(n) — shifts all elements left!
 
-# CORRECT: Use deque
+# ✅ CORRECT: Use collections.deque
 from collections import deque
 queue = deque([start])
 while queue:
-    node = queue.popleft()  # O(1)
+    node = queue.popleft()  # O(1) — doubly-linked list
 
 
-# WRONG: Forgetting to handle disconnected graphs
+# ❌ WRONG: Forgetting to handle disconnected graphs
 def count_components(graph, n):
     visited = set()
-    bfs(graph, 0)  # Only visits component containing 0!
+    bfs(graph, 0)  # Only visits the component containing node 0!
 
-# CORRECT: Iterate all nodes
+# ✅ CORRECT: Iterate over all nodes
 for node in range(n):
     if node not in visited:
         bfs(graph, node)
+
+
+# ❌ WRONG: Not checking if start node exists / graph is empty
+# ✅ CORRECT: Guard against edge cases
+def bfs_safe(graph: dict[int, list[int]], start: int) -> list[int]:
+    if start not in graph:
+        return []
+    # ... rest of BFS
 ```
 
 ---
@@ -505,7 +595,7 @@ Visited: {0}
 Result: []
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 1: Dequeue 0                                           ║
+║ ITERATION 1: Dequeue 0                                         ║
 ╚══════════════════════════════════════════════════════════════════╝
   Processing: 0
   Neighbors of 0: [1, 2, 3]
@@ -519,7 +609,7 @@ Result: []
   Result: [0]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 2: Dequeue 1                                           ║
+║ ITERATION 2: Dequeue 1                                         ║
 ╚══════════════════════════════════════════════════════════════════╝
   Processing: 1
   Neighbors of 1: [0, 4, 5]
@@ -533,7 +623,7 @@ Result: []
   Result: [0, 1]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 3: Dequeue 2                                           ║
+║ ITERATION 3: Dequeue 2                                         ║
 ╚══════════════════════════════════════════════════════════════════╝
   Processing: 2
   Neighbors of 2: [0]
@@ -545,7 +635,7 @@ Result: []
   Result: [0, 1, 2]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 4: Dequeue 3                                           ║
+║ ITERATION 4: Dequeue 3                                         ║
 ╚══════════════════════════════════════════════════════════════════╝
   Processing: 3
   Neighbors of 3: [0, 6]
@@ -558,7 +648,7 @@ Result: []
   Result: [0, 1, 2, 3]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATIONS 5-7: Dequeue 4, 5, 6                                  ║
+║ ITERATIONS 5-7: Dequeue 4, 5, 6                                ║
 ╚══════════════════════════════════════════════════════════════════╝
   All neighbors already visited
   Queue becomes empty
@@ -610,7 +700,7 @@ Proof:
 1. Visited set: stores up to V vertices → O(V)
 2. Queue: at most all vertices at once → O(V)
    (worst case: star graph where center connects to all)
-3. No recursion, so no stack space
+3. No recursion, so no call-stack space
 4. Total: O(V) + O(V) = O(V)
 ```
 
@@ -643,41 +733,57 @@ By induction, all distances are correct. □
 graph = {0: []}
 bfs(graph, 0)  # [0]
 
-# 2. Disconnected graph
-# Must iterate over all nodes
+# 2. Disconnected graph — must iterate over all nodes (see bfs_all_components)
 
-# 3. Start node not in graph
-# Handle gracefully
+# 3. Start node not in graph — handle gracefully with `graph.get(node, [])` or check `if start not in graph`
 
-# 4. Cycle in graph
-# Visited set prevents infinite loop
+# 4. Cycle in graph — visited set prevents infinite loop
 
-# 5. Start equals end
-# Return immediately with distance 0
+# 5. Start equals end — return immediately with distance 0
+
+# 6. Empty graph / Start node not found
+# If using `graph[node]`, it raises KeyError. Our template uses `graph.get(node, [])`
+# which avoids the crash, but will return `[start]` even if `start` isn't in the graph.
+# If you want to strictly return `[]` for missing start nodes, add an explicit check:
+graph: dict[int, list[int]] = {}
+bfs_safe(graph, 0)  # []
+
+# 7. Self-loops — visited set handles these automatically
+graph = {0: [0, 1], 1: [0]}
+bfs(graph, 0)  # [0, 1] — node 0 is already visited, self-loop skipped
 ```
 
 ---
 
 ## Interview Tips
 
-1. **Always use deque**: `queue.popleft()` is O(1), `list.pop(0)` is O(n)
-2. **Mark visited when enqueueing**: Prevents duplicates in queue
+1. **Always use `deque`**: `queue.popleft()` is O(1), `list.pop(0)` is O(n)
+2. **Mark visited when enqueueing**: Prevents duplicates in queue — this is the #1 BFS bug
 3. **Handle disconnected graphs**: Iterate over all nodes
-4. **Know level-order pattern**: Process by level using size trick
-5. **Draw the traversal**: Show interviewer you understand the order
+4. **Know level-order pattern**: Process by level using the `len(queue)` snapshot trick
+5. **Draw the traversal**: Show the interviewer you understand the processing order
+6. **State assumptions**: Tell the interviewer whether the graph is directed/undirected, connected/disconnected, and whether it has cycles
+7. **Mention early termination**: For shortest-path problems, return as soon as you find the target (don't drain the entire queue)
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                        | Difficulty | Key Pattern         |
-| --- | ------------------------------ | ---------- | ------------------- |
-| 1   | Flood Fill                     | Easy       | Basic grid BFS      |
-| 2   | Number of Islands              | Medium     | Multi-component BFS |
-| 3   | Shortest Path in Binary Matrix | Medium     | Shortest path       |
-| 4   | Rotting Oranges                | Medium     | Multi-source BFS    |
-| 5   | Word Ladder                    | Hard       | Implicit graph BFS  |
-| 6   | 01 Matrix                      | Medium     | Multi-source BFS    |
+Problems are ordered easy → medium → hard. Master each level before moving on.
+
+| #   | Problem (LeetCode)                        | Difficulty | Key Pattern          | Hint                                                                                    |
+| --- | ----------------------------------------- | ---------- | -------------------- | --------------------------------------------------------------------------------------- |
+| 1   | **733. Flood Fill**                       | Easy       | Basic grid BFS       | Start BFS from the given pixel. Only spread to neighbors with the same original color.  |
+| 2   | **102. Binary Tree Level Order Traversal**| Medium     | Level-order BFS      | Tree traversal, use `len(queue)` to process level by level.                             |
+| 3   | **200. Number of Islands**                | Medium     | Multi-component BFS  | Iterate every cell; if it's `'1'` and unvisited, run BFS to mark the whole island.      |
+| 4   | **994. Rotting Oranges**                  | Medium     | Multi-source BFS     | Seed queue with ALL rotten oranges at time 0. Each BFS level = 1 minute.                |
+| 5   | **542. 01 Matrix**                        | Medium     | Multi-source BFS     | Reverse thinking: start BFS from all `0` cells simultaneously.                          |
+| 6   | **1091. Shortest Path in Binary Matrix**  | Medium     | Shortest path (grid) | 8-directional BFS. Track distance. Return -1 if blocked.                                |
+| 7   | **863. All Nodes Distance K in Binary Tree**| Medium   | Graph from Tree      | Build parent pointers to convert tree to graph, then BFS from target.                   |
+| 8   | **127. Word Ladder**                      | Hard       | Implicit graph BFS   | Each word is a node. Neighbors differ by 1 letter. Use wildcard patterns `h*t`.         |
+| 9   | **864. Shortest Path to Get All Keys**    | Hard       | BFS with State       | Queue stores `(r, c, keys_bitmask)`. Same cell can be visited with different keys.      |
+| 10  | **126. Word Ladder II**                   | Hard       | BFS + DFS            | BFS to find shortest path distances, then DFS to reconstruct all valid shortest paths.  |
+| 11  | **1368. Min Cost to Make Valid Path**     | Hard       | 0-1 BFS              | Use a `deque`. Cost 0 moves go to `appendleft`, cost 1 moves go to `append`.            |
 
 ---
 
@@ -685,9 +791,11 @@ bfs(graph, 0)  # [0]
 
 1. **BFS uses a queue**: FIFO ordering gives level-by-level traversal
 2. **Shortest path in unweighted**: BFS guarantees minimum hops
-3. **Mark visited when enqueueing**: Critical for correctness
-4. **Level-order trick**: Process `len(queue)` nodes per level
+3. **Mark visited when enqueueing**: Critical for correctness and performance
+4. **Level-order trick**: Snapshot `len(queue)` at each level, then dequeue exactly that many
 5. **Multi-source**: Initialize queue with all sources at distance 0
+6. **Use `deque`**: Never use `list.pop(0)` — it's O(n) per operation
+7. **BFS vs DFS**: BFS for shortest path and level-order; DFS for exhaustive search, cycle detection, and lower memory on deep graphs
 
 ---
 

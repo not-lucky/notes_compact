@@ -15,7 +15,7 @@ You are a professional robber planning to rob houses along a street. Each house 
 Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.
 
 **Example:**
-```text
+```python
 Input: nums = [2, 7, 9, 3, 1]
 Output: 12
 Explanation:
@@ -49,7 +49,44 @@ $$dp[i] = \max(nums[i] + dp[i-2], dp[i-1])$$
 - `dp[0] = nums[0]` (Only one house, you must rob it)
 - `dp[1] = \max(nums[0], nums[1])` (Two houses, rob the one with more money)
 
-### Approach 1: Dynamic Programming (O(n) Space)
+### Approach 1: Top-Down Memoization
+
+A great way to solve DP problems is to start top-down using recursion and memoization. We define a recursive function that asks "what is the maximum money we can rob from index `i` onwards?"
+
+```python
+def rob_memo(nums: list[int]) -> int:
+    """
+    Top-Down Recursion with Memoization.
+    
+    Time: O(n) - each index is evaluated once.
+    Space: O(n) - for the recursion stack and memo dictionary.
+    """
+    memo = {}
+
+    def dfs(i: int) -> int:
+        # Base case: out of bounds
+        if i >= len(nums):
+            return 0
+        
+        # Return cached result if we've computed it before
+        if i in memo:
+            return memo[i]
+
+        # Choice 1: Rob current house and skip next
+        rob = nums[i] + dfs(i + 2)
+        
+        # Choice 2: Skip current house and evaluate next
+        skip = dfs(i + 1)
+
+        memo[i] = max(rob, skip)
+        return memo[i]
+
+    return dfs(0)
+```
+
+### Approach 2: Dynamic Programming (Bottom-Up, O(n) Space)
+
+We can translate the top-down approach into a bottom-up iterative approach.
 
 ```python
 def rob(nums: list[int]) -> int:
@@ -75,12 +112,12 @@ def rob(nums: list[int]) -> int:
     return dp[-1]
 ```
 
-### Approach 2: Space-Optimized DP (O(1) Space)
+### Approach 3: Space-Optimized DP (O(1) Space)
 
-Notice that to calculate `dp[i]`, we only ever need `dp[i-1]` and `dp[i-2]`. We don't need the entire array. We can reduce the space complexity to $O(1)$ by using two variables to track the previous two results.
+Notice that to calculate `dp[i]`, we only ever need `dp[i-1]` and `dp[i-2]`. We don't need the entire array. We can reduce the space complexity to $O(1)$ by using two variables.
 
 ```python
-def rob(nums: list[int]) -> int:
+def rob_optimized(nums: list[int]) -> int:
     """
     Space-optimized dynamic programming.
 
@@ -97,16 +134,13 @@ def rob(nums: list[int]) -> int:
 
     for n in nums:
         # Calculate the max if we rob the current house vs if we skip it
-        current_max = max(rob1 + n, rob2)
-
-        # Shift variables forward for the next iteration
+        # and shift variables forward for the next iteration
+        temp = max(n + rob1, rob2)
         rob1 = rob2
-        rob2 = current_max
+        rob2 = temp
 
     return rob2
 ```
-
-*Note on the clean logic:* Using `rob1 = 0, rob2 = 0` allows us to avoid explicit `if len(nums) == 1` checks. On the first iteration (where `n = nums[0]`), `current_max = max(0 + n, 0) = n`. Thus, `rob2` naturally becomes `nums[0]`. On the second iteration, `current_max = max(0 + nums[1], nums[0]) = max(nums[1], nums[0])`. This cleanly mimics our base cases.
 
 ---
 
@@ -118,7 +152,38 @@ def rob(nums: list[int]) -> int:
 1. You rob from houses `0` to `n-2` (excluding the last house entirely).
 2. You rob from houses `1` to `n-1` (excluding the first house entirely).
 
-The answer is simply the maximum of these two scenarios!
+The answer is simply the maximum of these two scenarios.
+
+### Approach 1: Top-Down Memoization
+
+```python
+def rob_circular_memo(nums: list[int]) -> int:
+    """
+    Top-Down Memoization for Circular Array.
+    
+    Time: O(n)
+    Space: O(n)
+    """
+    if not nums: return 0
+    if len(nums) == 1: return nums[0]
+
+    def dfs(i: int, end: int, memo: dict) -> int:
+        if i > end:
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        rob = nums[i] + dfs(i + 2, end, memo)
+        skip = dfs(i + 1, end, memo)
+        
+        memo[i] = max(rob, skip)
+        return memo[i]
+
+    # Max of (omitting last house) and (omitting first house)
+    return max(dfs(0, len(nums) - 2, {}), dfs(1, len(nums) - 1, {}))
+```
+
+### Approach 2: Space-Optimized DP
 
 ```python
 def rob_circular(nums: list[int]) -> int:
@@ -128,24 +193,18 @@ def rob_circular(nums: list[int]) -> int:
     Time: O(n)
     Space: O(1)
     """
-    # Edge cases are important here because slicing nums[1:]
-    # when len(nums) == 1 would return an empty array
     if not nums:
         return 0
     if len(nums) == 1:
         return nums[0]
 
-    # Helper function using the space-optimized logic from House Robber I
     def rob_linear(houses: list[int]) -> int:
         rob1, rob2 = 0, 0
         for n in houses:
             rob1, rob2 = rob2, max(n + rob1, rob2)
         return rob2
 
-    # Case 1: Exclude the last house
     case1 = rob_linear(nums[:-1])
-
-    # Case 2: Exclude the first house
     case2 = rob_linear(nums[1:])
 
     return max(case1, case2)
@@ -157,13 +216,9 @@ def rob_circular(nums: list[int]) -> int:
 
 **Problem:** The houses form a binary tree. If two directly-linked houses are broken into on the same night, the police are alerted. (You cannot rob a node and its parent).
 
-**Insight:** This combines Tree Traversal (DFS/Post-order) with DP. For any given node, we want to return two values to its parent:
-1. The max money we can get if we **rob** this node.
-2. The max money we can get if we **skip** this node.
+### Approach 1: Top-Down Memoization
 
-At node `curr`:
-- If we **rob** `curr`, we cannot rob its children. Thus, `rob_curr = curr.val + skip_left + skip_right`.
-- If we **skip** `curr`, we are free to *either* rob or skip its children, whichever yields more money! Thus, `skip_curr = max(rob_left, skip_left) + max(rob_right, skip_right)`.
+We can memoize on the node and whether we are allowed to rob it or not (based on if its parent was robbed).
 
 ```python
 class TreeNode:
@@ -172,9 +227,51 @@ class TreeNode:
         self.left = left
         self.right = right
 
+def rob_tree_memo(root: TreeNode) -> int:
+    """
+    Top-Down Memoization on a Binary Tree.
+    
+    Time: O(n)
+    Space: O(n) for memoization and call stack
+    """
+    memo = {}
+
+    def dfs(node: TreeNode, can_rob: bool) -> int:
+        if not node:
+            return 0
+        
+        state = (node, can_rob)
+        if state in memo:
+            return memo[state]
+            
+        # We always have the option to skip the current node
+        skip = dfs(node.left, True) + dfs(node.right, True)
+        
+        rob = 0
+        if can_rob:
+            # If we rob this node, we cannot rob its children
+            rob = node.val + dfs(node.left, False) + dfs(node.right, False)
+            
+        memo[state] = max(rob, skip)
+        return memo[state]
+
+    return dfs(root, True)
+```
+
+### Approach 2: Optimized Tree DP (Post-order Traversal)
+
+**Insight:** For any given node, we want to return two values to its parent:
+1. The max money we can get if we **rob** this node.
+2. The max money we can get if we **skip** this node.
+
+At node `curr`:
+- If we **rob** `curr`, we cannot rob its children. `rob_curr = curr.val + skip_left + skip_right`.
+- If we **skip** `curr`, we are free to *either* rob or skip its children, whichever yields more! `skip_curr = max(rob_left, skip_left) + max(rob_right, skip_right)`.
+
+```python
 def rob_tree(root: TreeNode) -> int:
     """
-    Houses form a binary tree.
+    Optimized Tree DP returning (rob, skip) states.
 
     Time: O(n) where n is number of nodes
     Space: O(h) where h is height of tree (for recursion stack)
@@ -192,12 +289,10 @@ def rob_tree(root: TreeNode) -> int:
         rob_curr = node.val + skip_left + skip_right
 
         # Choice 2: Skip this node. Can either rob or skip children.
-        # We take the max of (rob, skip) for each child independently!
         skip_curr = max(rob_left, skip_left) + max(rob_right, skip_right)
 
         return (rob_curr, skip_curr)
 
-    # Return the max of robbing or not robbing the root
     return max(dfs(root))
 ```
 
@@ -212,12 +307,59 @@ def rob_tree(root: TreeNode) -> int:
 2. The "houses" are the unique numbers.
 3. Robbing house `x` means taking `x * count(x)` and skipping houses `x-1` and `x+1`.
 
+### Approach 1: Top-Down Memoization
+
+```python
+import collections
+
+def delete_and_earn_memo(nums: list[int]) -> int:
+    """
+    Top-Down Memoization for Delete and Earn.
+    
+    Time: O(n log n) for sorting unique numbers
+    Space: O(n) for hash map and memo
+    """
+    if not nums: return 0
+    
+    points = collections.Counter()
+    for num in nums:
+        points[num] += num
+        
+    unique_nums = sorted(points.keys())
+    memo = {}
+    
+    def dfs(i: int) -> int:
+        if i >= len(unique_nums):
+            return 0
+        if i in memo:
+            return memo[i]
+            
+        curr_val = unique_nums[i]
+        curr_points = points[curr_val]
+        
+        # If we rob this one, we must skip the next one if it's curr_val + 1
+        next_idx = i + 1
+        if next_idx < len(unique_nums) and unique_nums[next_idx] == curr_val + 1:
+            rob = curr_points + dfs(i + 2)
+        else:
+            rob = curr_points + dfs(i + 1)
+            
+        skip = dfs(i + 1)
+        
+        memo[i] = max(rob, skip)
+        return memo[i]
+        
+    return dfs(0)
+```
+
+### Approach 2: Space-Optimized DP
+
 ```python
 import collections
 
 def delete_and_earn(nums: list[int]) -> int:
     """
-    Transform array into a House Robber problem.
+    Space-Optimized Bottom-Up DP.
 
     Time: O(n log n) due to sorting unique keys
     Space: O(n) for the hash map
@@ -225,34 +367,26 @@ def delete_and_earn(nums: list[int]) -> int:
     if not nums:
         return 0
 
-    # Count how much points we can get for each specific number
     points = collections.Counter()
     for num in nums:
         points[num] += num
 
-    # Sort the unique numbers to process them in order
     unique_nums = sorted(points.keys())
 
-    earn1 = 0 # Similar to rob1
-    earn2 = 0 # Similar to rob2
+    earn1, earn2 = 0, 0
 
     for i in range(len(unique_nums)):
         curr_val = unique_nums[i]
         curr_points = points[curr_val]
 
-        # If this number is NOT strictly 1 greater than the previous,
-        # it's like a disconnected street segment. We can safely add
-        # it to our previous max without skipping anything.
+        # If not adjacent, we don't have to skip the previous value
         if i > 0 and unique_nums[i] == unique_nums[i-1] + 1:
-            earn1, earn2 = earn2, max(curr_points + earn1, earn2)
+            earn1, earn2 = earn2, max(earn1 + curr_points, earn2)
         else:
-            # Not adjacent, so we don't have to skip the previous value
-            earn1, earn2 = earn2, curr_points + earn2
+            earn1, earn2 = earn2, earn2 + curr_points
 
     return earn2
 ```
-
-*(Note: If the maximum value in `nums` is small, you can just iterate from `0` to `max(nums)`. However, the sorting approach shown above is safer for sparse arrays where `max(nums)` could be very large.)*
 
 ---
 
@@ -269,7 +403,6 @@ def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
     if len(nums) == 1:
         return nums[0], [0]
 
-    # Standard O(n) space DP
     dp = [0] * len(nums)
     dp[0] = nums[0]
     dp[1] = max(nums[0], nums[1])
@@ -282,24 +415,32 @@ def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
     i = len(nums) - 1
 
     while i >= 0:
-        # If we're at index 0, we must have taken it
         if i == 0:
             path.append(0)
             break
 
-        # If taking the current house + dp[i-2] equals our optimal dp[i]
-        # Then it was part of an optimal solution to take this house!
-        # (Handling i == 1 safely by treating dp[-1] as 0)
         prev_max = dp[i-2] if i >= 2 else 0
 
+        # If taking current house + dp[i-2] equals optimal dp[i],
+        # it was part of an optimal solution to take this house!
         if dp[i] == nums[i] + prev_max:
             path.append(i)
-            i -= 2 # We took house i, so we must skip house i-1
+            i -= 2
         else:
-            i -= 1 # We skipped house i
+            i -= 1
 
     return dp[-1], path[::-1] # Reverse path to be in ascending order
 ```
+
+## Progressive Problems to Master
+
+1. **House Robber I** - Standard 1D DP.
+2. **House Robber II** - Circular array logic.
+3. **House Robber III** - DP on a tree using post-order traversal.
+4. **Delete and Earn** - Transforming array values into frequencies.
+5. **Maximum Alternating Subsequence Sum** - A variation where the operation alternates (add, subtract). Similar constraints and state transitions.
+6. **Solving Questions With Brainpower** - Similar DP skipping logic, but instead of strictly skipping the next `1` element, you skip `brainpower[i]` elements. Good next step after House Robber.
+7. **Paint House** - Adds another dimension. Instead of binary (rob/skip), you have multiple choices (red/blue/green), with the constraint that adjacent houses can't have the same color.
 
 ---
 

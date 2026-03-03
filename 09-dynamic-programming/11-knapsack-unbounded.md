@@ -40,6 +40,10 @@ In 0/1 Knapsack, we iterate capacity **backward**. Why? To ensure that when we u
 
 In Unbounded Knapsack, we want to allow taking the same item multiple times! Therefore, we iterate capacity **forward**.
 
+Let's illustrate this with an example: an item with weight 2 and value 10.
+- If we iterate **backward** (0/1 Knapsack): `dp[4]` looks at `dp[2]`. Since `dp[2]` hasn't been updated yet in this inner loop, it represents the value *without* the current item. We add the item once.
+- If we iterate **forward** (Unbounded Knapsack): We update `dp[2] = dp[0] + 10 = 10`. Later, when we reach `dp[4]`, we look at `dp[2]`. Since `dp[2]` *has* been updated to include the item, we are now adding the item *again*: `dp[4] = dp[2] + 10 = 20`. This forward cascade effectively allows infinite uses of the item.
+
 1. When we calculate `dp[w]`, we look back at `dp[w - weight[i]]`.
 2. Because we are iterating forward, `dp[w - weight[i]]` was *already updated* in the current item's loop.
 3. If `dp[w - weight[i]]` already includes item $i$, our update `dp[w - weight[i]] + value[i]` means we are effectively taking item $i$ *again*. This perfectly models infinite supply.
@@ -173,7 +177,9 @@ def unbounded_knapsack_swapped(weights: list[int], values: list[int], capacity: 
     for w in range(1, capacity + 1):
         # Try every item
         for i in range(len(weights)):
-            if weights[i] <= w:
+            weight = weights[i]
+            value = values[i]
+            if weight <= w:
                 dp[w] = max(dp[w], dp[w - weight] + value)
 
     return dp[capacity]
@@ -218,58 +224,83 @@ Answer: `45`
 
 ---
 
-## Related Patterns: The Counting Variations
+## Classic Variations & Progressive Problems
 
-While Unbounded Knapsack is an optimization problem (finding the `max` value), the **forward-iteration structure** is heavily used in *counting* problems (finding the `sum` of ways).
+While Unbounded Knapsack is an optimization problem (finding the `max` value), the **forward-iteration structure** is heavily used in *counting* problems (finding the `sum` of ways) and other optimization variants.
 
-**CRITICAL WARNING:** For counting problems, the loop order (Items Outer vs. Capacity Outer) completely changes what you are counting!
+Here are the progressive problems to solidify your understanding. For each, we provide both the **Top-Down (Memoization)** and **Bottom-Up (Tabulation)** approaches.
 
-### 1. Coin Change II (Count Combinations)
-*Problem: Given unlimited coins, count the ways to make an amount. Order does NOT matter. ($1+2$ is the same as $2+1$)*
+### 1. Rod Cutting (Classic Unbounded Knapsack)
+*Problem: Given a rod of length $n$ and an array of prices for different lengths, find the maximum revenue by cutting the rod and selling the pieces. You can cut the rod into as many pieces as you want.*
 
-**Rule: Items MUST be the outer loop.**
-By locking the coin in the outer loop, you process all 1s, then all 2s. You can never go back to 1s after using a 2. Thus, you only generate combinations like `1+1+2`, preventing duplicates like `1+2+1`.
+This is the exact same problem as Unbounded Knapsack, where `weights` are the piece lengths, `values` are the piece prices, and `capacity` is the total rod length.
+
+<details>
+<summary>Implementation</summary>
 
 ```python
-def change(amount: int, coins: list[int]) -> int:
-    dp = [0] * (amount + 1)
-    dp[0] = 1  # 1 way to make 0: use no coins
+def cut_rod_memo(prices: list[int], n: int) -> int:
+    memo = {}
+    def dfs(rem_len: int) -> int:
+        if rem_len == 0:
+            return 0
+        if rem_len in memo:
+            return memo[rem_len]
 
-    # Outer loop = Items -> Combinations
-    for coin in coins:
-        for a in range(coin, amount + 1):
-            dp[a] += dp[a - coin]
+        max_val = 0
+        # Try cutting a piece of length i+1
+        for i in range(len(prices)):
+            length = i + 1
+            if length <= rem_len:
+                max_val = max(max_val, prices[i] + dfs(rem_len - length))
 
-    return dp[amount]
+        memo[rem_len] = max_val
+        return max_val
+
+    return dfs(n)
+
+def cut_rod_dp(prices: list[int], n: int) -> int:
+    dp = [0] * (n + 1)
+    for i in range(len(prices)):
+        length = i + 1
+        for w in range(length, n + 1):
+            dp[w] = max(dp[w], dp[w - length] + prices[i])
+    return dp[n]
 ```
+</details>
 
-### 2. Combination Sum IV (Count Permutations)
-*Problem: Given unlimited numbers, count the ways to make a target. Order DOES matter. ($1+2$ is different from $2+1$)*
+### 2. Coin Change (Min Elements)
+*Problem: Find the minimum number of coins to make a given amount. (LeetCode 322)*
 
-**Rule: Capacity MUST be the outer loop.**
-By locking the capacity in the outer loop, you try *every* item for a given capacity. To reach `capacity = 3`, you try adding `1` (from state 2) and adding `2` (from state 1). This allows generating both `1+2` and `2+1` as distinct paths.
+Since this is an optimization problem (min) and not a counting problem (sum), **loop order doesn't matter** for Tabulation. Either items outer or capacity outer will work.
 
-```python
-def combination_sum_4(nums: list[int], target: int) -> int:
-    dp = [0] * (target + 1)
-    dp[0] = 1
-
-    # Outer loop = Capacity -> Permutations
-    for a in range(1, target + 1):
-        for num in nums:
-            if num <= a:
-                dp[a] += dp[a - num]
-
-    return dp[target]
-```
-
-### 3. Coin Change (Min Elements)
-*Problem: Find the minimum number of coins to make an amount.*
-
-Since this is an optimization problem (min) and not a counting problem (sum), **loop order doesn't matter**. Either items outer or capacity outer will work.
+<details>
+<summary>Implementation</summary>
 
 ```python
-def coin_change(coins: list[int], amount: int) -> int:
+def coin_change_memo(coins: list[int], amount: int) -> int:
+    memo = {}
+    def dfs(rem: int) -> int:
+        if rem == 0:
+            return 0
+        if rem < 0:
+            return float('inf')
+        if rem in memo:
+            return memo[rem]
+
+        min_coins = float('inf')
+        for coin in coins:
+            res = dfs(rem - coin)
+            if res != float('inf'):
+                min_coins = min(min_coins, res + 1)
+
+        memo[rem] = min_coins
+        return min_coins
+
+    ans = dfs(amount)
+    return ans if ans != float('inf') else -1
+
+def coin_change_dp(coins: list[int], amount: int) -> int:
     # Initialize with infinity, since we want the minimum
     dp = [float('inf')] * (amount + 1)
     dp[0] = 0
@@ -281,6 +312,141 @@ def coin_change(coins: list[int], amount: int) -> int:
 
     return dp[amount] if dp[amount] != float('inf') else -1
 ```
+</details>
+
+### 3. Coin Change II (Count Combinations)
+*Problem: Given unlimited coins, count the ways to make an amount. Order does NOT matter. ($1+2$ is the same as $2+1$). (LeetCode 518)*
+
+**Rule: For Combinations, Items MUST be the outer loop.**
+By locking the coin in the outer loop, you process all 1s, then all 2s. You can never go back to 1s after using a 2. Thus, you only generate combinations like `1+1+2`, preventing duplicates like `1+2+1`.
+For Top-Down, this means we must track the `index` of the current coin to avoid going backwards in our choices.
+
+<details>
+<summary>Implementation</summary>
+
+```python
+def change_memo(amount: int, coins: list[int]) -> int:
+    memo = {}
+    def dfs(i: int, rem: int) -> int:
+        if rem == 0:
+            return 1
+        if rem < 0 or i == len(coins):
+            return 0
+        if (i, rem) in memo:
+            return memo[(i, rem)]
+
+        # 2 choices: skip the coin, or use the coin (and stay at same index)
+        res = dfs(i + 1, rem) + dfs(i, rem - coins[i])
+
+        memo[(i, rem)] = res
+        return res
+
+    return dfs(0, amount)
+
+def change_dp(amount: int, coins: list[int]) -> int:
+    dp = [0] * (amount + 1)
+    dp[0] = 1  # 1 way to make 0: use no coins
+
+    # Outer loop = Items -> Combinations
+    for coin in coins:
+        for a in range(coin, amount + 1):
+            dp[a] += dp[a - coin]
+
+    return dp[amount]
+```
+</details>
+
+### 4. Combination Sum IV (Count Permutations)
+*Problem: Given unlimited numbers, count the ways to make a target. Order DOES matter. ($1+2$ is different from $2+1$). (LeetCode 377)*
+
+**Rule: For Permutations, Capacity MUST be the outer loop.**
+By locking the capacity in the outer loop, you try *every* item for a given capacity. To reach `capacity = 3`, you try adding `1` (from state 2) and adding `2` (from state 1). This allows generating both `1+2` and `2+1` as distinct paths.
+For Top-Down, this means we don't need to track an `index` - we can try every number from the beginning for every remaining amount.
+
+<details>
+<summary>Implementation</summary>
+
+```python
+def combination_sum_4_memo(nums: list[int], target: int) -> int:
+    memo = {}
+    def dfs(rem: int) -> int:
+        if rem == 0:
+            return 1
+        if rem < 0:
+            return 0
+        if rem in memo:
+            return memo[rem]
+
+        ways = 0
+        # Try EVERY number again for permutations
+        for num in nums:
+            ways += dfs(rem - num)
+
+        memo[rem] = ways
+        return ways
+
+    return dfs(target)
+
+def combination_sum_4_dp(nums: list[int], target: int) -> int:
+    dp = [0] * (target + 1)
+    dp[0] = 1
+
+    # Outer loop = Capacity -> Permutations
+    for a in range(1, target + 1):
+        for num in nums:
+            if num <= a:
+                dp[a] += dp[a - num]
+
+    return dp[target]
+```
+</details>
+
+### 5. Perfect Squares
+*Problem: Find the least number of perfect square numbers that sum to $n$. (LeetCode 279)*
+
+This is exactly like Coin Change (Min Elements), but the "coins" (items) are generated dynamically (1, 4, 9, 16...).
+
+<details>
+<summary>Implementation</summary>
+
+```python
+def num_squares_memo(n: int) -> int:
+    memo = {}
+    def dfs(rem: int) -> int:
+        if rem == 0:
+            return 0
+        if rem < 0:
+            return float('inf')
+        if rem in memo:
+            return memo[rem]
+
+        min_sq = float('inf')
+        i = 1
+        # Dynamically generate "items"
+        while i * i <= rem:
+            res = dfs(rem - i * i)
+            if res != float('inf'):
+                min_sq = min(min_sq, res + 1)
+            i += 1
+
+        memo[rem] = min_sq
+        return min_sq
+
+    return dfs(n)
+
+def num_squares_dp(n: int) -> int:
+    dp = [float('inf')] * (n + 1)
+    dp[0] = 0
+
+    for i in range(1, n + 1):
+        j = 1
+        while j * j <= i:
+            dp[i] = min(dp[i], dp[i - j * j] + 1)
+            j += 1
+
+    return dp[n]
+```
+</details>
 
 ---
 

@@ -4,47 +4,41 @@
 
 ## Overview
 
-2D Dynamic Programming uses a two-dimensional state `dp[i][j]` to represent the answers to subproblems that depend on two distinct parameters. This is common when traversing grids, comparing two sequences, or dealing with multiple constraints (like items and capacity).
+2D Dynamic Programming uses a two-dimensional state `dp[i][j]` to represent the answers to subproblems that depend on two distinct parameters. This is common when traversing grids, comparing two sequences, or dealing with multiple constraints.
 
 ## Building Intuition
 
 **Why do we need 2D DP?**
 
-1. **Two Independent Dimensions**: When the state of a problem is defined by two independent variables—such as the positions in two different strings, the row and column in a 2D grid, or the current item index and remaining capacity in a knapsack—a single dimension isn't enough to track all combinations.
+1. **Two Independent Dimensions**: When the state of a problem is defined by two independent variables—such as the row and column in a 2D grid, or the current item index and remaining capacity in a knapsack—a single dimension isn't enough to track all combinations.
 2. **Grid Problems Are Natural 2D**: In a grid, reaching cell `(i, j)` usually depends on reaching adjacent cells like `(i-1, j)` and `(i, j-1)`. The state naturally maps to the grid coordinates.
-3. **Sequence Comparison Needs Pairs**: For problems like Longest Common Subsequence (LCS) or Edit Distance, we compare a prefix of the first string `s1[0..i]` with a prefix of the second string `s2[0..j]`. The answer for each `(i, j)` pair is unique.
-4. **The Dependency Insight**: In 2D DP, `dp[i][j]` typically depends on:
+3. **The Dependency Insight**: In 2D DP, `dp[i][j]` typically depends on:
    - `dp[i-1][j]` (the cell directly above)
    - `dp[i][j-1]` (the cell directly to the left)
    - `dp[i-1][j-1]` (the cell diagonally above-left)
    This predictable dependency structure dictates how we fill the DP table (usually row by row, left to right).
-5. **Space Optimization is Key**: Because `dp[i][j]` often only depends on the previous row `i-1` and the current row `i`, we can frequently optimize the space complexity from $O(M \times N)$ to $O(N)$ by only storing one or two rows at a time.
-6. **Mental Model**: Think of the DP table as a spreadsheet. Each cell `(i, j)` contains the answer for a specific subproblem defined by `i` and `j`. You fill it systematically, and each cell's formula references previously calculated cells (usually above, left, or diagonally above-left).
-
-## Interview Context
-
-2D DP problems are frequently asked because they test your ability to:
-1. **Model state**: Identify when two parameters are needed.
-2. **Find recurrence relations**: Connect `dp[i][j]` to its neighbors.
-3. **Handle boundaries**: Correctly initialize the first row and column.
-4. **Optimize space**: Demonstrate advanced understanding by reducing $O(M \times N)$ space to $O(N)$.
-
----
+4. **Mental Model**: Think of the DP table as a spreadsheet. Each cell `(i, j)` contains the answer for a specific subproblem defined by `i` and `j`. You fill it systematically, and each cell's formula references previously calculated cells.
 
 ## When NOT to Use 2D DP
 
 Before jumping to a 2D array, consider if it's the right tool:
 
 1. **State Is Actually 1D**: Don't force 2D when 1D suffices. Problems like Fibonacci, Climbing Stairs, or House Robber only need one index to represent the state.
-2. **State Requires 3+ Dimensions**: Some complex problems require tracking more parameters, leading to states like `dp[i][j][k]` (e.g., trading stocks with `k` transactions allowed, or pathfinding in a 3D grid).
-3. **General Graphs (Non-Grids)**: 2D DP works well for grids where transitions only go in specific directions (forming a Directed Acyclic Graph, or DAG). For general graphs with cycles or arbitrary edge weights, use shortest path algorithms like Dijkstra's or Bellman-Ford.
-4. **Sparse State Space**: If only a small fraction of all possible `(i, j)` pairs are ever visited or valid, an $O(M \times N)$ table wastes space and time. Use top-down memoization with a hash map (`dict` in Python) instead.
+2. **State Requires 3+ Dimensions**: Some complex problems require tracking more parameters, leading to states like `dp[i][j][k]`.
+3. **General Graphs (Non-Grids)**: 2D DP works well for grids where transitions only go in specific directions (forming a Directed Acyclic Graph). For general graphs with cycles, use shortest path algorithms like Dijkstra's or BFS.
 
-**Signs 2D DP is Appropriate:**
-- You are given a 2D matrix or grid and need to find a path, optimal sum, or pattern.
-- You are comparing or aligning two input sequences/strings/arrays.
-- You are choosing items with a capacity constraint (Knapsack pattern).
-- The problem constraints are small enough to allow $O(M \times N)$ time complexity.
+---
+
+## The Padding Trick (Dummy Cells)
+
+A common source of bugs in 2D DP is boundary handling (checking `if i == 0` or `j == 0`). We can elegantly bypass this by adding an extra column and row of "dummy" values—often referred to as **padding**.
+
+By making our DP array `(m + 1) x (n + 1)` instead of `m x n`, we let the `0`-th row and column act as out-of-bounds boundaries.
+- For finding sums or paths, pad with `0`.
+- For finding minimums, pad with `float('inf')`.
+- For finding maximums, pad with `float('-inf')`.
+
+Then, we carefully seed a single initial value that naturally flows into the `(1, 1)` cell calculation. This completely removes the need for boundary checks inside your loops, resulting in incredibly clean, readable code.
 
 ---
 
@@ -54,11 +48,11 @@ Grid path problems are the classic introduction to 2D DP. You are asked to find 
 
 ### Unique Paths (LeetCode 62)
 
-Count the number of unique paths from the top-left corner `(0, 0)` to the bottom-right corner `(m-1, n-1)`. You can only move down or right.
+Count the number of unique paths from the top-left corner to the bottom-right corner `(m-1, n-1)`. You can only move down or right.
 
 **Formal Recurrence Relation:**
-- **State:** Let $dp[i][j]$ be the number of unique paths to reach cell $(i, j)$.
-- **Recurrence:** $dp[i][j] = dp[i-1][j] + dp[i][j-1]$ (Paths from above + paths from left).
+- **State:** Let `dp[i][j]` be the number of unique paths to reach cell `(i, j)`.
+- **Recurrence:** `dp[i][j] = dp[i-1][j] + dp[i][j-1]` (Paths from above + paths from left).
 
 #### Top-Down (Memoization)
 
@@ -66,20 +60,15 @@ Count the number of unique paths from the top-left corner `(0, 0)` to the bottom
 def unique_paths_memo(m: int, n: int) -> int:
     """
     Top-Down Memoization approach.
-
-    Time: O(m * n) - each cell calculated once
-    Space: O(m * n) for memo dictionary and recursion stack
+    Time: O(m * n), Space: O(m * n)
     """
     memo = {}
 
     def dfs(r: int, c: int) -> int:
-        # Base case: reached the starting cell
         if r == 0 and c == 0:
             return 1
-        # Out of bounds
         if r < 0 or c < 0:
             return 0
-
         if (r, c) in memo:
             return memo[(r, c)]
 
@@ -90,370 +79,453 @@ def unique_paths_memo(m: int, n: int) -> int:
     return dfs(m - 1, n - 1)
 ```
 
-#### Bottom-Up (Tabulation) with Array Padding
+#### Bottom-Up (Tabulation) with 2D Padding
 
-Instead of writing `if/else` checks for the boundaries, we can pad the array to size `n + 1` and let the out-of-bounds cells be `0`.
+Instead of bounds checking, we use a `(m+1) x (n+1)` padded array.
 
 ```python
 def unique_paths(m: int, n: int) -> int:
     """
-    Count unique paths in m x n grid. Space optimized with padding.
-
-    Time: O(m * n)
-    Space: O(n) - using a 1D padded array
+    Count unique paths in m x n grid using a padded 2D array.
+    Time: O(m * n), Space: O(m * n)
     """
-    # Pad array with 0s. dp[1] will simulate the start point.
-    dp = [0] * (n + 1)
-    dp[1] = 1
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    # Seed value: ensures dp[1][1] becomes 1 (start cell)
+    dp[0][1] = 1 
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            # Paths to current = paths from above + paths from left
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
 
-    for _ in range(m):
-        for j in range(n):
-            # dp[j+1] (above) + dp[j] (left)
-            dp[j + 1] += dp[j]
-
-    return dp[n]
+    return dp[m][n]
 ```
 
 ### Unique Paths II (With Obstacles) (LeetCode 63)
 
-Similar to the previous problem, but the grid contains obstacles (`1` represents an obstacle, `0` is empty). Paths cannot pass through obstacles.
+Similar to the previous problem, but the grid contains obstacles (`1` represents an obstacle).
 
-Notice how easily the padding trick adapts to obstacles without any boundary-checking spaghetti code:
+#### Top-Down (Memoization)
+
+```python
+def unique_paths_with_obstacles_memo(obstacle_grid: list[list[int]]) -> int:
+    m, n = len(obstacle_grid), len(obstacle_grid[0])
+    memo = {}
+
+    def dfs(r: int, c: int) -> int:
+        if r < 0 or c < 0 or obstacle_grid[r][c] == 1:
+            return 0
+        if r == 0 and c == 0:
+            return 1
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        memo[(r, c)] = dfs(r - 1, c) + dfs(r, c - 1)
+        return memo[(r, c)]
+
+    return dfs(m - 1, n - 1)
+```
+
+#### Bottom-Up (Tabulation)
+
+Notice how easily the padding trick adapts to obstacles without any spaghetti code:
 
 ```python
 def unique_paths_with_obstacles(obstacle_grid: list[list[int]]) -> int:
     """
-    Count paths avoiding obstacles. Space optimized with padding.
-
-    Time: O(m * n)
-    Space: O(n)
+    Time: O(m * n), Space: O(m * n)
     """
     m, n = len(obstacle_grid), len(obstacle_grid[0])
-
-    # Pad with 0s. dp[1] represents paths to start cell.
-    dp = [0] * (n + 1)
-    dp[1] = 1
-
-    for i in range(m):
-        for j in range(n):
-            if obstacle_grid[i][j] == 1:
-                dp[j + 1] = 0 # Obstacle blocks all paths
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    dp[0][1] = 1 # Seed value
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if obstacle_grid[i - 1][j - 1] == 1:
+                dp[i][j] = 0 # Obstacle blocks all paths
             else:
-                dp[j + 1] += dp[j]
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
 
-    return dp[n]
+    return dp[m][n]
 ```
 
 ### Minimum Path Sum (LeetCode 64)
 
 Find a path from top-left to bottom-right that minimizes the sum of all numbers along its path.
 
+#### Top-Down (Memoization)
+
+```python
+def min_path_sum_memo(grid: list[list[int]]) -> int:
+    m, n = len(grid), len(grid[0])
+    memo = {}
+
+    def dfs(r: int, c: int) -> int:
+        if r < 0 or c < 0:
+            return float('inf')
+        if r == 0 and c == 0:
+            return grid[0][0]
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        memo[(r, c)] = grid[r][c] + min(dfs(r - 1, c), dfs(r, c - 1))
+        return memo[(r, c)]
+
+    return dfs(m - 1, n - 1)
+```
+
+#### Bottom-Up (Tabulation)
+
 ```python
 def min_path_sum(grid: list[list[int]]) -> int:
     """
-    Minimum sum path from top-left to bottom-right.
-
-    Time: O(m * n)
-    Space: O(n)
+    Time: O(m * n), Space: O(m * n)
     """
     m, n = len(grid), len(grid[0])
-
+    
     # Pad with infinity to handle boundaries cleanly
-    dp = [float('inf')] * (n + 1)
+    dp = [[float('inf')] * (n + 1) for _ in range(m + 1)]
+    
     # Dummy base case: reaching the start of the grid costs 0
-    dp[1] = 0
+    # This ensures dp[1][1] = grid[0][0] + min(inf, 0) = grid[0][0]
+    dp[0][1] = 0
 
-    for i in range(m):
-        for j in range(n):
-            # Take the min of coming from above (dp[j+1]) or left (dp[j])
-            dp[j + 1] = min(dp[j + 1], dp[j]) + grid[i][j]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + grid[i - 1][j - 1]
 
-    return dp[n]
+    return dp[m][n]
 ```
 
 ---
 
-## Pattern 2: Triangle (LeetCode 120)
+## Pattern 2: Bottom-Up Triangles & Grids
 
-Given a `triangle` array, find the minimum path sum from top to bottom. You can move to adjacent numbers on the row below (`(i+1, j)` or `(i+1, j+1)`).
+Sometimes problems dictate movement from top to bottom but let you start or end anywhere on a row. Working **bottom-up** is often mathematically cleaner.
 
-**Key Insight:** This problem is much easier to solve **bottom-up**, starting from the base of the triangle and moving towards the top. This avoids having to check boundaries on the sides of the triangle as it narrows.
+### Triangle (LeetCode 120)
+
+Find the minimum path sum from top to bottom of a triangle. You can move to adjacent numbers on the row below (`(i+1, j)` or `(i+1, j+1)`).
+
+#### Top-Down (Memoization)
+
+```python
+def minimum_total_memo(triangle: list[list[int]]) -> int:
+    n = len(triangle)
+    memo = {}
+
+    def dfs(r: int, c: int) -> int:
+        if r == n:
+            return 0
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        memo[(r, c)] = triangle[r][c] + min(dfs(r + 1, c), dfs(r + 1, c + 1))
+        return memo[(r, c)]
+
+    return dfs(0, 0)
+```
+
+#### Bottom-Up (Tabulation)
+
+**Key Insight for Bottom-Up:** Process bottom-up, starting from the base of the triangle.
 
 ```python
 def minimum_total(triangle: list[list[int]]) -> int:
     """
-    Minimum path sum from top to bottom of a triangle.
-    Process bottom-up for cleaner code and automatic boundary handling.
-
-    Time: O(n^2) where n is the number of rows
-    Space: O(n)
+    Time: O(N^2) where N is the number of rows
+    Space: O(N^2) for 2D DP
     """
     n = len(triangle)
+    dp = [[0] * len(row) for row in triangle]
+    
     # Initialize DP array with the bottom row of the triangle
-    dp = triangle[-1][:]
+    for j in range(len(triangle[-1])):
+        dp[-1][j] = triangle[-1][j]
 
     # Start from the second to last row, moving upwards
     for i in range(n - 2, -1, -1):
         for j in range(len(triangle[i])):
             # Current cell + min of the two possible choices below it
-            dp[j] = triangle[i][j] + min(dp[j], dp[j + 1])
+            dp[i][j] = triangle[i][j] + min(dp[i + 1][j], dp[i + 1][j + 1])
 
-    # The top element now holds the minimum path sum
-    return dp[0]
+    return dp[0][0]
 ```
 
 ---
 
-## Pattern 3: Maximum Square (LeetCode 221)
 
-Find the largest square containing only `1`s in a binary matrix and return its area.
+### Minimum Falling Path Sum (LeetCode 931)
+
+A natural progression from Triangle is `Minimum Falling Path Sum`. Given an `n x n` integer matrix, find the minimum sum of any falling path through the matrix. You can start anywhere in the first row and move to the element directly below or diagonally left/right.
+
+**State Definition:**
+Let `dp[i][j]` be the minimum path sum reaching cell `(i, j)`. It depends on the minimum of three adjacent cells from the row above: `dp[i-1][j-1]`, `dp[i-1][j]`, and `dp[i-1][j+1]`.
+
+#### Top-Down (Memoization)
+
+```python
+def min_falling_path_sum_memo(matrix: list[list[int]]) -> int:
+    n = len(matrix)
+    memo = {}
+
+    def dfs(r: int, c: int) -> int:
+        if c < 0 or c >= n:
+            return float('inf')
+        if r == 0:
+            return matrix[0][c]
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        # Current cell + min of 3 valid paths from the row above
+        memo[(r, c)] = matrix[r][c] + min(
+            dfs(r - 1, c - 1),
+            dfs(r - 1, c),
+            dfs(r - 1, c + 1)
+        )
+        return memo[(r, c)]
+
+    # Try starting from each column in the last row (working bottom-up conceptually for DP)
+    return min(dfs(n - 1, c) for c in range(n))
+```
+
+#### Bottom-Up (Tabulation)
+
+For the bottom-up approach, we can overwrite the matrix in place (or use an identical DP array), starting from the second row and working downwards.
+
+```python
+def min_falling_path_sum(matrix: list[list[int]]) -> int:
+    n = len(matrix)
+    
+    # We can modify the matrix in place to save space (O(1) extra space)
+    for r in range(1, n):
+        for c in range(n):
+            # Boundaries check for the 3 choices
+            left = matrix[r - 1][c - 1] if c > 0 else float('inf')
+            mid = matrix[r - 1][c]
+            right = matrix[r - 1][c + 1] if c < n - 1 else float('inf')
+            
+            matrix[r][c] += min(left, mid, right)
+            
+    return min(matrix[-1])
+```
+
+## Pattern 3: Square & Diagonal Dependencies
+
+### Maximal Square (LeetCode 221)
+
+Find the largest square containing only `1`s in a binary matrix.
 
 **State Definition Insight:**
-Let `dp[i][j]` be the side length of the largest square whose **bottom-right corner** is at `(i, j)`.
+Let `dp[i][j]` be the side length of the largest square whose **bottom-right corner** is at `(i-1, j-1)` in the original matrix.
+It is constrained by the smallest of its three neighboring squares (left, above, and diagonally above-left).
 
-If `matrix[i][j] == '1'`, it can only form a larger square if the cells to its left, above, and diagonally above-left *also* form squares. The size of the square ending at `(i, j)` is constrained by the smallest of those three neighboring squares.
+#### Top-Down (Memoization)
 
-**Recurrence:** `dp[i][j] = min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1`
+```python
+def maximal_square_memo(matrix: list[list[str]]) -> int:
+    if not matrix or not matrix[0]:
+        return 0
+        
+    m, n = len(matrix), len(matrix[0])
+    memo = {}
+    max_side = 0
 
-By using array padding, we eliminate boundary conditions completely:
+    def dfs(r: int, c: int) -> int:
+        nonlocal max_side
+        if r >= m or c >= n:
+            return 0
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        right = dfs(r, c + 1)
+        down = dfs(r + 1, c)
+        diag = dfs(r + 1, c + 1)
+        
+        if matrix[r][c] == '1':
+            memo[(r, c)] = 1 + min(right, down, diag)
+            max_side = max(max_side, memo[(r, c)])
+        else:
+            memo[(r, c)] = 0
+            
+        return memo[(r, c)]
+
+    dfs(0, 0) # Trigger calculation
+    return max_side * max_side
+```
+
+#### Bottom-Up (Tabulation)
 
 ```python
 def maximal_square(matrix: list[list[str]]) -> int:
     """
-    Find largest square of 1s using padded array.
-
-    Time: O(m * n)
-    Space: O(n)
+    Time: O(m * n), Space: O(m * n)
     """
     if not matrix or not matrix[0]:
         return 0
 
     m, n = len(matrix), len(matrix[0])
-    dp = [0] * (n + 1)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
     max_side = 0
 
-    for i in range(m):
-        # Reset diagonal for new row (represents out-of-bounds top-left)
-        prev_diagonal = 0
-        for j in range(n):
-            # Save top element before overwriting
-            temp = dp[j + 1]
-
-            if matrix[i][j] == '1':
-                # dp[j] is left, dp[j+1] is top, prev_diagonal is top-left
-                dp[j + 1] = min(dp[j], dp[j + 1], prev_diagonal) + 1
-                max_side = max(max_side, dp[j + 1])
-            else:
-                dp[j + 1] = 0
-
-            prev_diagonal = temp
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if matrix[i - 1][j - 1] == '1':
+                # Depends on left, top, and top-left diagonal
+                dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
+                max_side = max(max_side, dp[i][j])
 
     return max_side * max_side
 ```
 
 ---
 
-## Pattern 4: Backwards DP - Dungeon Game (LeetCode 174)
+## Pattern 4: Backwards State Modeling
 
-Find the minimum initial health needed to navigate a dungeon from top-left to bottom-right, keeping health `> 0` at all times. Cells can contain health potions (positive) or demons (negative).
+### Dungeon Game (LeetCode 174)
 
-**Key Insight:** If you process top-down (start to finish), your state depends on *two* variables: the minimum health required so far AND the current health. This is complex.
-If you process **bottom-up** (from the destination to the start), the state simplifies: "What is the minimum health I need at this cell to survive the rest of the journey?"
+Find the minimum initial health needed to navigate a dungeon from top-left to bottom-right, keeping health `> 0`. Cells contain potions (positive) or demons (negative).
+
+**Key Insight:** Processing top-down requires tracking *both* current health and minimum health seen so far. Processing **bottom-up** (from destination to start) simplifies the state: "What is the minimum health I need at this cell to survive?"
+
+#### Top-Down (Memoization)
+
+```python
+def calculate_minimum_hp_memo(dungeon: list[list[int]]) -> int:
+    m, n = len(dungeon), len(dungeon[0])
+    memo = {}
+
+    def dfs(r: int, c: int) -> int:
+        if r >= m or c >= n:
+            return float('inf')
+        
+        if r == m - 1 and c == n - 1:
+            return max(1, 1 - dungeon[r][c])
+            
+        if (r, c) in memo:
+            return memo[(r, c)]
+            
+        min_hp_on_exit = min(dfs(r + 1, c), dfs(r, c + 1))
+        memo[(r, c)] = max(1, min_hp_on_exit - dungeon[r][c])
+        return memo[(r, c)]
+
+    return dfs(0, 0)
+```
+
+#### Bottom-Up (Tabulation)
 
 ```python
 def calculate_minimum_hp(dungeon: list[list[int]]) -> int:
     """
-    Minimum initial HP to reach bottom-right. Process backwards.
-
-    Time: O(m * n)
-    Space: O(n)
+    Process backwards to simplify state.
+    Time: O(m * n), Space: O(m * n)
     """
     m, n = len(dungeon), len(dungeon[0])
-    # Pad with infinity
-    dp = [float('inf')] * (n + 1)
+    dp = [[float('inf')] * (n + 1) for _ in range(m + 1)]
 
-    # Iterate backwards from bottom-right to top-left
+    # Base cases: we need at least 1 HP after exiting the bottom-right room
+    dp[m][n - 1] = 1
+    dp[m - 1][n] = 1
+
+    # Iterate backwards
     for i in range(m - 1, -1, -1):
         for j in range(n - 1, -1, -1):
-            if i == m - 1 and j == n - 1:
-                # Base case: to survive after reaching the destination, we need at least 1 HP
-                min_hp_needed = 1
-            else:
-                # Minimum health needed to step to the next cell (either right or down)
-                min_hp_needed = min(dp[j], dp[j + 1])
+            min_hp_on_exit = min(dp[i + 1][j], dp[i][j + 1])
+            # We need enough HP to exit, minus what this room gives/takes.
+            # We also must ALWAYS have at least 1 HP to stay alive.
+            dp[i][j] = max(1, min_hp_on_exit - dungeon[i][j])
 
-            # The health we need at current cell = health needed for next steps - current cell's effect
-            current_needed = min_hp_needed - dungeon[i][j]
-
-            # We must ALWAYS have at least 1 HP at any given cell to stay alive
-            dp[j] = max(1, current_needed)
-
-    return dp[0]
+    return dp[0][0]
 ```
 
 ---
 
-## Pattern 5: Multi-dimensional State - Cherry Pickup (LeetCode 741)
+## Pattern 5: Multi-dimensional State Reduction
 
-Two robots start from opposite corners and collect cherries. Find the maximum cherries they can collect. This is equivalent to two robots moving simultaneously from top-left to bottom-right.
+### Cherry Pickup (LeetCode 741)
 
-**Key Insight:** We need to track the state of *both* robots. A naive state would be `dp[r1][c1][r2][c2]` (4D). Since they move simultaneously, they take the same number of steps. Thus, `r1 + c1 = r2 + c2 = steps`. We can deduce rows from columns and steps, reducing the required state to `dp[steps][c1][c2]`.
+Two robots start from opposite corners and collect cherries. Find the maximum cherries they can collect. This is mathematically equivalent to two robots starting at `(0,0)` and moving simultaneously to `(n-1, n-1)`.
 
-We can further optimize this to use a strict $O(N^2)$ space by updating the 2D array **in-place** while iterating backwards, ensuring we don't overwrite values needed for the current step.
+**Key Insight:** A naive state is `dp[r1][c1][r2][c2]` (4D). But since they move simultaneously, they take the same number of steps. Thus, `r1 + c1 = r2 + c2`. We can deduce `r2` from `r1`, `c1`, and `c2`, reducing the state to 3D. 
+
+Top-down memoization makes this much easier to reason about than a 3D/2D bottom-up loop.
 
 ```python
 def cherry_pickup(grid: list[list[int]]) -> int:
     """
-    Two robots moving simultaneously from top-left to bottom-right.
-    Fully space optimized in-place 2D DP.
-
-    Time: O(N^3)
-    Space: O(N^2)
+    Two robots moving simultaneously. Reduced from 4D to 3D State.
+    Time: O(N^3), Space: O(N^3) due to recursion stack & memo.
     """
     n = len(grid)
-    # State: dp[c1][c2] represents max cherries collected when
-    # robot 1 is at column c1 and robot 2 is at column c2.
-    dp = [[float('-inf')] * n for _ in range(n)]
-    dp[0][0] = grid[0][0]
+    memo = {}
 
-    # Total steps from (0,0) to (n-1, n-1) is 2 * (n - 1)
-    for step in range(1, 2 * n - 1):
-        # Iterate backwards to safely update in-place using values from the previous step
-        for c1 in range(min(n - 1, step), max(-1, step - n), -1):
-            for c2 in range(min(n - 1, step), max(-1, step - n), -1):
-                r1 = step - c1
-                r2 = step - c2
+    def dp(r1: int, c1: int, c2: int) -> int:
+        r2 = r1 + c1 - c2 # Deduce r2
+        
+        # Out of bounds or obstacle check
+        if (r1 == n or r2 == n or c1 == n or c2 == n or 
+            grid[r1][c1] == -1 or grid[r2][c2] == -1):
+            return float('-inf')
+            
+        # Base case: reached the end
+        if r1 == n - 1 and c1 == n - 1:
+            return grid[r1][c1]
+            
+        if (r1, c1, c2) in memo:
+            return memo[(r1, c1, c2)]
 
-                if grid[r1][c1] == -1 or grid[r2][c2] == -1: # Obstacle
-                    dp[c1][c2] = float('-inf')
-                    continue
+        # Collect cherries
+        if c1 == c2: # Both on the same cell, collect once
+            cherries = grid[r1][c1]
+        else:        # On different cells, collect both
+            cherries = grid[r1][c1] + grid[r2][c2]
 
-                cherries = grid[r1][c1]
-                if c1 != c2: # If they are on different cells, collect both
-                    cherries += grid[r2][c2]
+        # 4 Possible transitions:
+        # (Robot 1 moves Down/Right) x (Robot 2 moves Down/Right)
+        res = max(
+            dp(r1 + 1, c1, c2),     # R1 down, R2 down
+            dp(r1, c1 + 1, c2 + 1), # R1 right, R2 right
+            dp(r1 + 1, c1, c2 + 1), # R1 down, R2 right
+            dp(r1, c1 + 1, c2)      # R1 right, R2 down
+        )
+        
+        memo[(r1, c1, c2)] = res + cherries
+        return memo[(r1, c1, c2)]
 
-                # Transition: to reach (c1, c2), check 4 possible previous states
-                # dp[c1][c2] already holds the value for both coming from top
-                res = dp[c1][c2]
-                if c1 > 0:
-                    res = max(res, dp[c1 - 1][c2])     # R1 from left, R2 from top
-                if c2 > 0:
-                    res = max(res, dp[c1][c2 - 1])     # R1 from top, R2 from left
-                if c1 > 0 and c2 > 0:
-                    res = max(res, dp[c1 - 1][c2 - 1]) # Both came from left
-
-                if res != float('-inf'):
-                    dp[c1][c2] = res + cherries
-                else:
-                    dp[c1][c2] = float('-inf')
-
-    return max(0, dp[n - 1][n - 1])
+    return max(0, dp(0, 0, 0))
 ```
 
 ---
 
-## Deep Dive: DP Elegance
+## Deep Dive: Space Optimization (2D → 1D)
 
-### The Logic Behind 2D → 1D Reduction
+Once you understand 2D DP, the next level is optimizing the space complexity from $O(M \times N)$ to $O(N)$.
 
-Why does Space Optimization work in 2D problems?
-If we carefully analyze the recurrence relation:
-`dp[i][j] = dp[i-1][j] + dp[i][j-1]`
-
+If we analyze the standard recurrence: `dp[i][j] = dp[i-1][j] + dp[i][j-1]`
 To compute the values for the current row `i`, we **ONLY** need values from the *immediately preceding row* `i-1`. Any older rows are obsolete.
 
-Even better, we can achieve this with a **single 1D array** by overwriting values in-place as we iterate left-to-right:
-- When we evaluate `dp[j]`, its value is the result from the row above (`dp[i-1][j]`).
-- The value at `dp[j-1]` has *already* been updated in the current loop, representing the cell to the left (`dp[i][j-1]`).
+We can achieve this with a **single 1D array** by overwriting values in-place as we iterate left-to-right:
+- `dp[j]` represents the value from the row above (`dp[i-1][j]`).
+- `dp[j-1]` represents the freshly updated value from the left (`dp[i][j-1]`).
 
-### The Padding Trick (Dummy Cells)
+**Example: Minimum Path Sum (1D Optimized)**
 
-A common source of bugs and messy code in 2D DP is boundary handling (checking `if i == 0` or `j == 0`). We can elegantly bypass this by adding an extra column/row of "dummy" values—often referred to as padding.
+```python
+def min_path_sum_optimized(grid: list[list[int]]) -> int:
+    m, n = len(grid), len(grid[0])
+    dp = [float('inf')] * (n + 1)
+    dp[1] = 0 # Seed
 
-By shifting our 1D DP array 1-index to the right (making it size `n + 1`), we let `dp[0]` act as an out-of-bounds boundary.
-- For finding minimums, pad with `float('inf')`.
-- For finding maximums, pad with `float('-inf')`.
-- For finding sums or paths, pad with `0`.
+    for i in range(m):
+        for j in range(n):
+            # min(dp[j+1] -> above, dp[j] -> left)
+            dp[j + 1] = min(dp[j + 1], dp[j]) + grid[i][j]
 
-Then, we carefully seed a single initial value (e.g., `dp[1] = 1`) that naturally flows into the `(0, 0)` cell calculation. This completely removes the need for boundary checks inside your loops, resulting in incredibly clean, readable code.
-
-### When We Need `dp[i-1][j-1]` (The Diagonal Cache)
-
-For problems like Maximum Square or Longest Common Subsequence, the recurrence relies on the diagonal element. If we blindly overwrite `dp[j]`, we lose the diagonal value needed for the *next* calculation at `j+1`. We must cache this value in a temporary variable (`prev_diagonal`).
-
----
-
-## Common Mistakes
-
-1. **Incorrect Iteration Direction for Space Optimization**:
-   If a recurrence depends on `dp[i][j+1]` (the cell to the right), you **must** iterate backwards (right-to-left). If you iterate left-to-right, you will overwrite the old value before you need it.
-2. **Forgetting to Reset Variables**:
-   When using the Diagonal Cache trick (`prev_diagonal`), always remember to reset it to the appropriate boundary value at the start of every new row.
-3. **Over-complicating Boundaries**:
-   Using `if/else` inside the tight loop for `i==0` and `j==0` slows down logic and breeds errors. Prefer the array padding technique instead.
-
----
-
-## Visual: 2D DP State Transitions
-
-**Unique Paths:**
-```text
-      c=0   c=1   c=2   c=3
-    +-----+-----+-----+-----+
-r=0 |  1  |  1  |  1  |  1  |
-    +-----+-----+-----+-----+
-r=1 |  1  |  2  |  3  |  4  |
-    +-----+-----+-----+-----+
-r=2 |  1  |  3  |  6  |  10 |
-    +-----+-----+-----+-----+
+    return dp[n]
 ```
-
-Formula: $dp[i][j] = dp[i-1][j] + dp[i][j-1]$
-The value in any cell is the sum of the cell directly above (↑) and the cell directly to the left (←).
-
-**Minimum Path Sum:**
-Grid:
-```text
-  1   3   1
-  1   5   1
-  4   2   1
-```
-
-DP Table:
-```text
-      c=0   c=1   c=2
-    +-----+-----+-----+
-r=0 |  1  |  4  |  5  |
-    +-----+-----+-----+
-r=1 |  2  |  7  |  6  |
-    +-----+-----+-----+
-r=2 |  6  |  8  |  7  |  ← Answer: 7
-    +-----+-----+-----+
-```
-
----
-
-## Complexity Summary
-
-| Problem | Time Complexity | Original Space | Optimized Space |
-| :--- | :--- | :--- | :--- |
-| Unique Paths | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
-| Minimum Path Sum | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
-| Maximum Square | $O(M \times N)$ | $O(M \times N)$ | $O(N)$ |
-| Triangle | $O(N^2)$ | $O(N^2)$ | $O(N)$ |
-| Cherry Pickup | $O(N^3)$ | $O(N^3)$ | $O(N^2)$ |
-
-*(Where N is typically the number of columns, and M is the number of rows).*
-
----
-
-## Interview Tips
-
-1. **Draw the grid**: Always visualize the grid and manually trace the state transitions for a small example (e.g., 3x3).
-2. **Identify dependencies**: Clearly state to the interviewer: "To calculate cell `(i, j)`, I need the values from..." This proves you understand the recurrence.
-3. **Pad the array**: Inform your interviewer you will use a padded array to avoid messy boundary logic. It demonstrates high-level coding maturity.
-4. **Solve 2D first, then optimize**: It is usually safer to write the $O(M \times N)$ space solution first unless you are extremely comfortable with 1D optimization.
-5. **Consider processing backwards**: If the state feels overly complex or requires knowing the future, try defining the state as "cost to reach the end from here" instead of "cost to reach here from the start".
+*Warning: While impressive in interviews, write the 2D version first. 1D optimization makes code harder to debug and requires caching temporary variables if your recurrence uses diagonals (`dp[i-1][j-1]`).*
 
 ---
 
@@ -465,19 +537,20 @@ r=2 |  6  |  8  |  7  |  ← Answer: 7
 | 63 | Unique Paths II | Medium | Grid traversal with obstacles |
 | 64 | Minimum Path Sum | Medium | Path optimization |
 | 120 | Triangle | Medium | Bottom-up DP |
+| 931 | Minimum Falling Path Sum | Medium | Bottom-up DP (Square Grid) |
 | 221 | Maximal Square | Medium | Using diagonal dependencies |
 | 174 | Dungeon Game | Hard | Backwards state modeling |
-| 741 | Cherry Pickup | Hard | Multi-agent simultaneous movement |
+| 741 | Cherry Pickup | Hard | Multi-dimensional state reduction |
 
 ---
 
 ## Key Takeaways
 
 1. **Grid DP**: `dp[i][j]` generally depends on its immediate neighbors (above, left, diagonal).
-2. **Space optimization**: 2D DP arrays can almost always be reduced to 1D arrays by only keeping the active row.
-3. **The Padding Trick**: Pad your arrays with `0` or `infinity` to dramatically simplify your code and remove `if/else` boundaries.
-4. **Direction matters**: Sometimes it is significantly easier to process the state backwards (from destination to start).
-5. **Diagonal Cache**: If space-optimizing a recurrence that uses `dp[i-1][j-1]`, you must cache it in a temporary variable.
+2. **The Padding Trick**: Pad your 2D arrays with an extra row and column to completely eliminate `if/else` boundary logic inside your loops.
+3. **Direction Matters**: Sometimes it is significantly easier to process the state backwards (bottom-up or from destination to start).
+4. **State Reduction**: Multi-agent problems can often have their state dimensions reduced by finding constraints (like `steps = r1 + c1`).
+5. **Space Optimization**: 2D DP arrays can frequently be reduced to 1D arrays by overwriting the active row in place, but master the 2D version first!
 
 ---
 

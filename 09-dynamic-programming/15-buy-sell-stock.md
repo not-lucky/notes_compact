@@ -35,17 +35,14 @@ The foundation of almost all stock problems is this two-state machine:
   └<───────────────────┘
 ```
 
-### When NOT to Use State Machine DP
+### Top-Down vs Bottom-Up
 
-While powerful, full state machine DP is overkill for the simplest variants:
-1. **Stock I (One Transaction)**: Simple min-tracking suffices.
-2. **Stock II (Unlimited, No Restrictions)**: A greedy approach (summing all positive daily price differences) is $O(n)$ and simpler.
+For stock problems, it's highly recommended to understand the **top-down memoized DFS** approach first. It maps perfectly to the decisions you make on each day:
+1. What day is it? (`index`)
+2. Am I holding a stock? (`holding`)
+3. How many transactions do I have left? (`k`)
 
-**The Golden Rule:**
-- 1 transaction → Min-tracking
-- Unlimited, no constraints → Greedy (or DP)
-- Limited transactions ($k$) → State Machine DP
-- Cooldown or fees → State Machine DP
+From there, transitioning to the $O(1)$ space bottom-up State Machine DP becomes a mechanical translation.
 
 ---
 
@@ -54,7 +51,7 @@ While powerful, full state machine DP is overkill for the simplest variants:
 | Problem | Transactions | Cooldown | Fee | Optimal Approach | Time Complexity | Space Complexity |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **I** | 1 | No | No | Min-tracking | $O(n)$ | $O(1)$ |
-| **II** | Unlimited | No | No | Greedy or DP | $O(n)$ | $O(1)$ |
+| **II** | Unlimited | No | No | State Machine / Greedy | $O(n)$ | $O(1)$ |
 | **III** | 2 | No | No | State Machine | $O(n)$ | $O(1)$ |
 | **IV** | $k$ | No | No | State Machine | $O(nk)$ | $O(k)$ |
 | **Cooldown**| Unlimited | Yes | No | State Machine | $O(n)$ | $O(1)$ |
@@ -91,7 +88,62 @@ def maxProfit_1(prices: list[int]) -> int:
 
 **Constraint:** Unlimited transactions.
 
-### 1. Greedy Approach (Optimal)
+### 1. Top-Down Memoization
+Let's build the intuition using DP. At any day `i`, we are either holding a stock or not.
+If we hold a stock, we can sell it or do nothing.
+If we don't hold a stock, we can buy it or do nothing.
+
+```python
+def maxProfit_2_top_down(prices: list[int]) -> int:
+    """
+    Time: O(n) | Space: O(n) for memoization stack
+    """
+    memo = {}
+    
+    def dfs(i: int, holding: bool) -> int:
+        # Base case: we've reached the end of the days
+        if i == len(prices):
+            return 0
+            
+        if (i, holding) in memo:
+            return memo[(i, holding)]
+            
+        # Do nothing (skip to next day)
+        do_nothing = dfs(i + 1, holding)
+        
+        if holding:
+            # Sell the stock
+            do_something = prices[i] + dfs(i + 1, False)
+        else:
+            # Buy the stock
+            do_something = -prices[i] + dfs(i + 1, True)
+            
+        memo[(i, holding)] = max(do_nothing, do_something)
+        return memo[(i, holding)]
+        
+    return dfs(0, False)
+```
+
+### 2. Bottom-Up State Machine DP
+Translating the above into $O(1)$ space iterative DP. Let `hold` be the max profit ending today holding a stock, and `cash` be the max profit ending today without a stock.
+
+```python
+def maxProfit_2_dp(prices: list[int]) -> int:
+    """
+    Time: O(n) | Space: O(1)
+    """
+    hold = float('-inf') 
+    cash = 0             
+
+    for price in prices:
+        # hold: max(keep holding, buy today)
+        # cash: max(keep cash, sell today)
+        hold, cash = max(hold, cash - price), max(cash, hold + price)
+
+    return cash
+```
+
+### 3. Greedy Approach (Optimal)
 Since we can trade as much as we want, we should simply capture every single upward price movement.
 
 ```python
@@ -106,78 +158,65 @@ def maxProfit_2_greedy(prices: list[int]) -> int:
     return profit
 ```
 
-### 2. State Machine DP Approach
-We introduce the DP approach here as it serves as the foundation for the harder variants. We want to maximize our total profit.
-
-Let `hold[i]` be the max profit on day `i` if we end the day **holding** a stock.
-Let `cash[i]` be the max profit on day `i` if we end the day **without** a stock (cash in hand).
-
-**Transitions for day `i`:**
-- `hold[i] = max(hold[i-1], cash[i-1] - price[i])`  *(Keep holding OR Buy today using cash)*
-- `cash[i] = max(cash[i-1], hold[i-1] + price[i])`  *(Keep cash OR Sell today)*
-
-**Space Optimization:**
-Notice that to calculate `hold[i]` and `cash[i]`, we only need `hold[i-1]` and `cash[i-1]`. We don't need arrays of size $n$; we can just use two variables!
-
-```python
-def maxProfit_2_dp(prices: list[int]) -> int:
-    """
-    Time: O(n) | Space: O(1)
-    """
-    # Initial state on day 0 before trading
-    hold = float('-inf') # Impossible to hold a stock without buying
-    cash = 0             # We start with 0 profit in cash
-
-    for price in prices:
-        # We must use the PREVIOUS day's state to calculate TODAY'S state.
-        # Python's simultaneous assignment does this beautifully.
-        # old_hold is used to calculate new_cash, old_cash calculates new_hold.
-        hold, cash = max(hold, cash - price), max(cash, hold + price)
-
-    # We always want to end with cash (not holding a stock) to maximize profit
-    return cash
-```
-
-*(Note: Without simultaneous assignment, you would need temporary variables like `prev_hold = hold` to avoid "state pollution"—using today's updated `hold` to calculate today's `cash`.)*
-
 ---
 
 ## Best Time to Buy and Sell Stock III
 
 **Constraint:** At most TWO transactions.
 
-We expand our states to track the exact transaction we are on. The states are now:
-- `buy1`: Max profit after completing the first buy.
-- `sell1`: Max profit after completing the first sell.
-- `buy2`: Max profit after completing the second buy.
-- `sell2`: Max profit after completing the second sell.
-
-```text
-        -price        +price         -price         +price
- Start ────────> BUY1 ───────> SELL1 ────────> BUY2 ────────> SELL2
-```
-
-To avoid state pollution (using a value updated *during* the current day's iteration), we evaluate the transitions in **reverse order** of the state machine. `sell2` depends on `buy2`, `buy2` depends on `sell1`, and so on.
+### 1. Top-Down Memoization
+Now we add a third parameter to our state: `transactions_left`. A transaction is considered complete when we *sell*.
 
 ```python
-def maxProfit_3(prices: list[int]) -> int:
+def maxProfit_3_top_down(prices: list[int]) -> int:
+    """
+    Time: O(n) | Space: O(n)
+    """
+    memo = {}
+    
+    def dfs(i: int, holding: bool, transactions_left: int) -> int:
+        # Base case
+        if i == len(prices) or transactions_left == 0:
+            return 0
+            
+        if (i, holding, transactions_left) in memo:
+            return memo[(i, holding, transactions_left)]
+            
+        do_nothing = dfs(i + 1, holding, transactions_left)
+        
+        if holding:
+            # Sell stock -> transaction complete, decrement transactions_left
+            do_something = prices[i] + dfs(i + 1, False, transactions_left - 1)
+        else:
+            # Buy stock
+            do_something = -prices[i] + dfs(i + 1, True, transactions_left)
+            
+        memo[(i, holding, transactions_left)] = max(do_nothing, do_something)
+        return memo[(i, holding, transactions_left)]
+        
+    return dfs(0, False, 2)
+```
+
+### 2. Bottom-Up State Machine DP
+The states are: `buy1`, `sell1`, `buy2`, `sell2`.
+
+```python
+def maxProfit_3_dp(prices: list[int]) -> int:
     """
     Time: O(n) | Space: O(1)
     """
-    # Initial states
     buy1 = float('-inf')
     sell1 = 0
     buy2 = float('-inf')
     sell2 = 0
 
     for price in prices:
-        # Think backwards: update the latest states first.
-        # By updating sell2 first using the OLD buy2, we guarantee
-        # we only use states from the previous day.
+        # Note: In Python, simultaneous assignment or order matters.
+        # Think backwards to use the state from the *previous* day.
         sell2 = max(sell2, buy2 + price)
         buy2 = max(buy2, sell1 - price)
         sell1 = max(sell1, buy1 + price)
-        buy1 = max(buy1, -price) # First buy comes from 0 initial profit
+        buy1 = max(buy1, -price) 
 
     return sell2
 ```
@@ -188,15 +227,48 @@ def maxProfit_3(prices: list[int]) -> int:
 
 **Constraint:** At most $k$ transactions.
 
-This is a generalized version of Stock III. We use arrays of size $k+1$ to track the `buy` and `sell` states for each transaction limit $j$ from $1$ to $k$.
-
-- `buy[j]`: Max profit after completing the $j$-th buy.
-- `sell[j]`: Max profit after completing the $j$-th sell.
-
-**Crucial Optimization:** If $k \ge n/2$, we effectively have unlimited transactions because we can at most buy and sell on alternating days. We must fall back to the $O(n)$ greedy approach to avoid Time Limit Exceeded (TLE) errors.
+### 1. Top-Down Memoization
+Exactly the same as Stock III, but we pass `k` instead of `2` as the initial `transactions_left`.
 
 ```python
-def maxProfit_4(k: int, prices: list[int]) -> int:
+def maxProfit_4_top_down(k: int, prices: list[int]) -> int:
+    """
+    Time: O(n*k) | Space: O(n*k)
+    """
+    if not prices or k == 0:
+        return 0
+        
+    # Optimization: If k >= n/2, it's equivalent to unlimited transactions
+    if k >= len(prices) // 2:
+        return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)) if prices[i] > prices[i-1])
+
+    memo = {}
+    
+    def dfs(i: int, holding: bool, transactions_left: int) -> int:
+        if i == len(prices) or transactions_left == 0:
+            return 0
+            
+        if (i, holding, transactions_left) in memo:
+            return memo[(i, holding, transactions_left)]
+            
+        do_nothing = dfs(i + 1, holding, transactions_left)
+        
+        if holding:
+            do_something = prices[i] + dfs(i + 1, False, transactions_left - 1)
+        else:
+            do_something = -prices[i] + dfs(i + 1, True, transactions_left)
+            
+        memo[(i, holding, transactions_left)] = max(do_nothing, do_something)
+        return memo[(i, holding, transactions_left)]
+        
+    return dfs(0, False, k)
+```
+
+### 2. Bottom-Up State Machine DP
+We use arrays to track $k$ transactions.
+
+```python
+def maxProfit_4_dp(k: int, prices: list[int]) -> int:
     """
     Time: O(n*k) | Space: O(k)
     """
@@ -204,24 +276,18 @@ def maxProfit_4(k: int, prices: list[int]) -> int:
     if not prices or k == 0:
         return 0
 
-    # Optimization: If k >= n/2, it's equivalent to unlimited transactions.
-    # Without this, O(n*k) could TLE when k is massively large.
     if k >= n // 2:
-        return sum(max(0, prices[i] - prices[i-1]) for i in range(1, n))
+        return sum(max(0, prices[i] - prices[i-1]) for i in range(1, n) if prices[i] > prices[i-1])
 
-    # Initialize states. 1-indexed for transactions 1 to k.
     buy = [float('-inf')] * (k + 1)
     sell = [0] * (k + 1)
 
     for price in prices:
-        # Iterate backwards to safely use previous day's states (just like Stock III)
+        # Iterate backwards to safely use previous day's states
         for j in range(k, 0, -1):
-            # Sell today (using old buy[j]) or do nothing
             sell[j] = max(sell[j], buy[j] + price)
-            # Buy today (using old sell[j-1]) or do nothing
             buy[j] = max(buy[j], sell[j - 1] - price)
 
-    # Max profit will be found after up to k completed transactions (sells)
     return sell[k]
 ```
 
@@ -229,26 +295,45 @@ def maxProfit_4(k: int, prices: list[int]) -> int:
 
 ## With Cooldown
 
-**Constraint:** Unlimited transactions, but after selling, you must wait 1 day before buying again.
+**Constraint:** Unlimited transactions, 1 day cooldown after selling.
 
-We introduce a 3rd state to our basic DP machine to enforce the cooldown.
-- `hold`: Holding a stock.
-- `sold`: Just sold the stock today (triggers a forced cooldown tomorrow).
-- `rest`: Not holding a stock, and didn't sell today (free to buy).
-
-**State Diagram:**
-```text
-          buy (-price)
-  rest ————————————————→ hold
-   ↑ ↖                    |
-   |  rest                | sell (+price)
-   |                      ↓
-   └←─────────────────── sold
-    (forced wait/cooldown)
-```
+### 1. Top-Down Memoization
+The easiest way to implement cooldown in Top-Down DP is just to skip an extra day when you sell: `dfs(i + 2, False)`.
 
 ```python
-def maxProfit_cooldown(prices: list[int]) -> int:
+def maxProfit_cooldown_top_down(prices: list[int]) -> int:
+    """
+    Time: O(n) | Space: O(n)
+    """
+    memo = {}
+    
+    def dfs(i: int, holding: bool) -> int:
+        if i >= len(prices):
+            return 0
+            
+        if (i, holding) in memo:
+            return memo[(i, holding)]
+            
+        do_nothing = dfs(i + 1, holding)
+        
+        if holding:
+            # Sell stock -> skip a day for cooldown (i + 2)
+            do_something = prices[i] + dfs(i + 2, False)
+        else:
+            # Buy stock
+            do_something = -prices[i] + dfs(i + 1, True)
+            
+        memo[(i, holding)] = max(do_nothing, do_something)
+        return memo[(i, holding)]
+        
+    return dfs(0, False)
+```
+
+### 2. Bottom-Up State Machine DP
+Here we explicitly model the 3 states: `hold`, `sold` (just sold, now on cooldown), and `rest` (can buy).
+
+```python
+def maxProfit_cooldown_dp(prices: list[int]) -> int:
     """
     Time: O(n) | Space: O(1)
     """
@@ -257,15 +342,13 @@ def maxProfit_cooldown(prices: list[int]) -> int:
     rest = 0
 
     for price in prices:
-        # Simultaneous assignment elegantly handles state transitions
-        # without needing temporary variables like 'prev_sold'
+        # Simultaneous assignment handles transitions cleanly
         hold, sold, rest = (
             max(hold, rest - price), # Keep holding OR buy today (must come from rest!)
             hold + price,            # Sell today (moves to sold state)
             max(rest, sold)          # Keep resting OR just finished cooldown
         )
 
-    # We either end up resting or having just sold
     return max(sold, rest)
 ```
 
@@ -273,21 +356,43 @@ def maxProfit_cooldown(prices: list[int]) -> int:
 
 ## With Transaction Fee
 
-**Constraint:** Unlimited transactions, but you pay a fixed fee for every completed trade (buy + sell).
+**Constraint:** Unlimited transactions, pay a fee for every trade.
 
-We simply subtract the fee during the sell transition of our basic 2-state machine.
-
-```text
-         buy (-price)
- CASH ───────────────────> HOLD
-  ↑ ↖                        |
-  |  CASH                    | sell (+price - fee)
-  |                          ↓
-  └<─────────────────────────┘
-```
+### 1. Top-Down Memoization
 
 ```python
-def maxProfit_fee(prices: list[int], fee: int) -> int:
+def maxProfit_fee_top_down(prices: list[int], fee: int) -> int:
+    """
+    Time: O(n) | Space: O(n)
+    """
+    memo = {}
+    
+    def dfs(i: int, holding: bool) -> int:
+        if i == len(prices):
+            return 0
+            
+        if (i, holding) in memo:
+            return memo[(i, holding)]
+            
+        do_nothing = dfs(i + 1, holding)
+        
+        if holding:
+            # Sell stock, pay the fee
+            do_something = prices[i] - fee + dfs(i + 1, False)
+        else:
+            # Buy stock
+            do_something = -prices[i] + dfs(i + 1, True)
+            
+        memo[(i, holding)] = max(do_nothing, do_something)
+        return memo[(i, holding)]
+        
+    return dfs(0, False)
+```
+
+### 2. Bottom-Up State Machine DP
+
+```python
+def maxProfit_fee_dp(prices: list[int], fee: int) -> int:
     """
     Time: O(n) | Space: O(1)
     """
@@ -295,7 +400,7 @@ def maxProfit_fee(prices: list[int], fee: int) -> int:
     cash = 0
 
     for price in prices:
-        # Note: We subtract the fee when transitioning from hold to cash (selling)
+        # Subtract fee when selling
         hold, cash = max(hold, cash - price), max(cash, hold + price - fee)
 
     return cash
@@ -317,22 +422,22 @@ def maxProfit_fee(prices: list[int], fee: int) -> int:
 
 ## Interview Tips
 
-1. **Master the Progression**: Interviewers often start with Stock I or II and ask you to modify your code for Cooldown or a Fee. Start with the DP foundation for II to make extending it easy.
-2. **Draw the State Machine**: If you get a novel constraint (e.g., "you can hold at most 2 shares at once"), don't panic. Draw the states (0 shares, 1 share, 2 shares) and draw the arrows (buy, sell, rest). The code is just a literal translation of those arrows.
+1. **Top-Down First**: Always derive the transitions using Top-Down DFS with Memoization. It's much easier to explain to an interviewer: "At day $i$, I can either hold, buy, or sell. Let's explore all branches and cache the results."
+2. **Draw the State Machine**: If you are asked to optimize space to $O(1)$, draw the states (e.g. `rest`, `hold`, `sold`) and draw the arrows (buy, sell, rest). The bottom-up $O(1)$ code is just a literal translation of those arrows using simultaneous assignment.
 3. **Define Your States Clearly**: Say out loud: *"Let `hold` be the maximum profit I can have on day `i` if I go to sleep holding a stock."* This prevents off-by-one errors in your logic.
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Constraint |
-| --- | --- | --- | --- |
-| 1 | Best Time I | Easy | 1 transaction |
-| 2 | Best Time II | Medium | Unlimited |
-| 3 | Best Time III | Hard | 2 transactions |
-| 4 | Best Time IV | Hard | $k$ transactions |
-| 5 | With Cooldown | Medium | 1-day wait |
-| 6 | With Fee | Medium | Transaction fee |
+| # | Problem | Difficulty | Constraint | Description |
+| --- | --- | --- | --- | --- |
+| 1 | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Easy | 1 transaction | Simple min-tracking. Good for understanding the core problem. |
+| 2 | [Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/) | Medium | Unlimited | Introduces greedy approach and foundational DP. |
+| 3 | [Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) | Medium | 1-day wait | Adds a cooldown state. The `dfs(i + 2)` logic shines here. |
+| 4 | [Best Time to Buy and Sell Stock with Transaction Fee](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/) | Medium | Transaction fee | Simple modification to the standard machine. |
+| 5 | [Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/) | Hard | 2 transactions | Introduces multi-transaction tracking. |
+| 6 | [Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/) | Hard | $k$ transactions | Generalizes III to $k$ transactions. Teaches TLE avoidance. |
 
 ---
 

@@ -55,17 +55,17 @@ def union(x, y):
 **Why Union-Find Beats DFS for Dynamic Graphs**
 
 ```
-Scenario: Add 1000 edges, query count after each
+Scenario: n nodes, add 1000 edges, query count after each
 
 DFS approach:
-- After each edge: run full DFS to count components
-- Total: O(1000 × (V+E)) = O(1000 × 1000) = O(1,000,000)
+- After each edge: rebuild graph + run full DFS to count components
+- Total: O(1000 × (n + E))  — E grows with each edge
 
 Union-Find approach:
-- After each edge: one union operation + O(1) count read
+- After each edge: one union operation O(α(n)) + O(1) count read
 - Total: O(1000 × α(n)) ≈ O(1000)
 
-1000x faster!
+Orders of magnitude faster for dynamic graphs!
 ```
 
 **Visual: Tracking Component Count**
@@ -106,12 +106,30 @@ If you only need to count components once on a static graph, DFS is simpler:
 
 ```python
 # DFS: Simple, intuitive, O(V+E)
-def count_components_dfs(graph):
-    visited = set()
+def count_components_dfs(n: int, edges: list[list[int]]) -> int:
+    # Build adjacency list from edge list
+    graph: dict[int, list[int]] = {i: [] for i in range(n)}
+    for a, b in edges:
+        graph[a].append(b)
+        graph[b].append(a)
+
+    # NOTE: We initialize graph with all n nodes (not just those in edges)
+    # so isolated nodes with no edges are still counted as components.
+
+    visited: set[int] = set()
     count = 0
     for node in graph:
         if node not in visited:
-            dfs(node, visited)
+            # Stack-based DFS to explore the entire component
+            stack = [node]
+            while stack:
+                curr = stack.pop()
+                if curr in visited:
+                    continue
+                visited.add(curr)
+                for neighbor in graph[curr]:
+                    if neighbor not in visited:
+                        stack.append(neighbor)
             count += 1
     return count
 
@@ -181,6 +199,287 @@ class UnionFind:
 
 ---
 
+## Problem: Count Connected Components (Warm-Up)
+
+**LeetCode 323**: Given `n` nodes labeled `0` to `n-1` and a list of undirected edges, find the number of connected components.
+
+### Why Start Here?
+
+This is the simplest component-counting problem — no grid, no dynamics, just nodes and edges. It maps directly to the Union-Find component counting pattern.
+
+### Solution
+
+```python
+def countComponents(n: int, edges: list[list[int]]) -> int:
+    """
+    Count connected components in an undirected graph.
+
+    Time: O(n + e × α(n)) where e = len(edges)
+    Space: O(n)
+    """
+    parent = list(range(n))
+    rank = [0] * n
+    components = n
+
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])  # Path compression
+        return parent[x]
+
+    def union(x: int, y: int) -> bool:
+        nonlocal components
+        px, py = find(x), find(y)
+        if px == py:
+            return False  # Already in the same component
+
+        # Union by rank
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+
+        components -= 1  # Merged two components into one
+        return True
+
+    for a, b in edges:
+        union(a, b)
+
+    return components
+
+
+# Example
+n = 5
+edges = [[0, 1], [1, 2], [3, 4]]
+# Components: {0,1,2}, {3,4} → 2
+print(countComponents(n, edges))  # 2
+```
+
+---
+
+## Problem: Graph Valid Tree (Stepping Stone)
+
+**LeetCode 261**: Given `n` nodes labeled `0` to `n-1` and a list of undirected edges, determine if these edges form a valid tree. A valid tree has exactly one connected component and no cycles.
+
+### Why This Problem?
+
+This bridges basic component counting (LC 323) and dynamic problems. A tree with `n` nodes has exactly `n-1` edges and is fully connected. If `len(edges) != n-1`, it's immediately not a tree. Otherwise, process all edges with Union-Find: if any union returns `False`, there's a cycle (not a tree). This introduces **cycle detection via Union-Find** — a pattern used in redundant connection problems.
+
+### Solution
+
+```python
+def validTree(n: int, edges: list[list[int]]) -> bool:
+    """
+    Check if n nodes and given edges form a valid tree.
+
+    A valid tree has exactly n-1 edges and no cycles (single component).
+
+    Time: O(n + e × α(n)) where e = len(edges)
+    Space: O(n)
+    """
+    # A tree with n nodes must have exactly n-1 edges
+    if len(edges) != n - 1:
+        return False
+
+    parent = list(range(n))
+    rank = [0] * n
+
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])  # Path compression
+        return parent[x]
+
+    def union(x: int, y: int) -> bool:
+        px, py = find(x), find(y)
+        if px == py:
+            return False  # Cycle detected
+
+        # Union by rank
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+
+        return True
+
+    for a, b in edges:
+        if not union(a, b):
+            return False  # Cycle found — not a tree
+
+    # With n-1 edges and no cycles, must be a single connected tree
+    return True
+
+
+# Example 1: Valid tree
+n = 5
+edges = [[0, 1], [0, 2], [0, 3], [1, 4]]
+# 5 nodes, 4 edges (n-1), no cycles → valid tree
+print(validTree(n, edges))  # True
+
+# Example 2: Has a cycle
+n = 5
+edges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]
+# 5 nodes, 5 edges (not n-1) → immediately False
+print(validTree(n, edges))  # False
+
+# Example 3: Disconnected (forest)
+n = 4
+edges = [[0, 1], [2, 3]]
+# 4 nodes, 2 edges (not n-1) → immediately False
+print(validTree(n, edges))  # False
+```
+
+---
+
+## Problem: Earliest Time Everyone Becomes Friends
+
+**LeetCode 1101**: Given `n` people and a list of `logs` where `logs[i] = [timestamp, x, y]` means person `x` and person `y` become friends at `timestamp`. Friendship is transitive. Return the earliest time at which all `n` people are connected (single component), or `-1` if impossible.
+
+### Why This Problem?
+
+This is the cleanest example of the "start high, decrement on merge" pattern with a twist: you stop as soon as `count == 1`. It also introduces sorting edges by a criterion (timestamp) before processing — a technique that reappears in harder problems.
+
+### Solution
+
+```python
+def earliestAcq(logs: list[list[int]], n: int) -> int:
+    """
+    Find the earliest timestamp when all n people are connected.
+
+    Time: O(L log L + L × α(n)) where L = len(logs)
+    Space: O(n)
+    """
+    parent = list(range(n))
+    rank = [0] * n
+    components = n
+
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x: int, y: int) -> bool:
+        nonlocal components
+        px, py = find(x), find(y)
+        if px == py:
+            return False
+
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+
+        components -= 1
+        return True
+
+    # Process friendships in chronological order
+    logs.sort(key=lambda log: log[0])
+
+    for timestamp, x, y in logs:
+        union(x, y)
+        if components == 1:
+            return timestamp  # Everyone is connected!
+
+    return -1  # Not all people became connected
+
+
+# Example
+logs = [[0,2,0], [1,0,1], [3,0,3], [4,1,2], [7,3,1]]
+n = 4
+
+# Sorted by timestamp (already sorted here):
+#   t=0: union(2,0) → {0,2}, {1}, {3}       components=3
+#   t=1: union(0,1) → {0,1,2}, {3}           components=2
+#   t=3: union(0,3) → {0,1,2,3}              components=1 → return 3
+#
+# We never even process t=4 or t=7.
+
+print(earliestAcq(logs, n))  # 3
+```
+
+---
+
+## Problem: Number of Islands (Grid Components)
+
+**LeetCode 200**: Given a 2D grid of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and formed by connecting adjacent lands horizontally or vertically.
+
+### Why This Problem?
+
+This bridges the gap between graph-based component counting (LC 323) and the dynamic version (LC 305). Here you learn to map a 2D grid to Union-Find by converting `(row, col)` into a flat index. DFS is simpler for this static problem, but solving it with Union-Find prepares you for the dynamic variant.
+
+### Solution
+
+```python
+def numIslands(grid: list[list[str]]) -> int:
+    """
+    Count connected components of '1's in a grid.
+
+    Time: O(m × n × α(m × n))
+    Space: O(m × n)
+    """
+    if not grid or not grid[0]:
+        return 0
+
+    rows, cols = len(grid), len(grid[0])
+    parent = list(range(rows * cols))
+    rank = [0] * (rows * cols)
+    components = 0
+
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x: int, y: int) -> bool:
+        nonlocal components
+        px, py = find(x), find(y)
+        if px == py:
+            return False
+
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+
+        components -= 1
+        return True
+
+    # Count land cells and initialize components
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '1':
+                components += 1
+
+    # Connect adjacent land cells
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '1':
+                idx = r * cols + c
+                # Only check right and down to avoid duplicate unions
+                if c + 1 < cols and grid[r][c + 1] == '1':
+                    union(idx, idx + 1)
+                if r + 1 < rows and grid[r + 1][c] == '1':
+                    union(idx, idx + cols)
+
+    return components
+
+
+# Example
+grid = [
+    ['1', '1', '0', '0', '0'],
+    ['1', '1', '0', '0', '0'],
+    ['0', '0', '1', '0', '0'],
+    ['0', '0', '0', '1', '1'],
+]
+# Three islands: top-left 2×2, center, bottom-right 1×2
+print(numIslands(grid))  # 3
+```
+
+---
+
 ## Problem: Number of Islands II
 
 **LeetCode 305**: You're given a 2D grid initialized with water. We add land one by one at positions given in `positions`. After each addition, return the number of islands.
@@ -203,19 +502,19 @@ def numIslands2(m: int, n: int, positions: list[list[int]]) -> list[int]:
     Dynamically add land and count islands.
 
     Time: O(k × α(m×n)) where k = len(positions)
-    Space: O(m × n)
+    Space: O(k) for the hash maps (at most k land cells)
     """
     parent = {}
     rank = {}
     count = 0
     result = []
 
-    def find(x: tuple) -> tuple:
+    def find(x: tuple[int, int]) -> tuple[int, int]:
         if parent[x] != x:
             parent[x] = find(parent[x])
         return parent[x]
 
-    def union(x: tuple, y: tuple) -> bool:
+    def union(x: tuple[int, int], y: tuple[int, int]) -> bool:
         nonlocal count
         px, py = find(x), find(y)
         if px == py:
@@ -298,11 +597,12 @@ print(numIslands2(m, n, positions))  # [1, 1, 2, 3]
 - Redundant = edges that don't decrease component count
 
 ```
-n computers, e edges:
-- Minimum edges needed: n-1 (tree)
-- Spare cables: e - (n - k) where k = components
-- Can connect k components with k-1 spare cables
-- If spare < k-1: impossible
+n computers, e edges, k components after processing all edges:
+- A spanning forest of k components uses exactly (n - k) edges
+- Redundant (spare) cables: e - (n - k)
+- Need (k - 1) cables to connect k components into one
+- If spare >= k-1: answer is k-1
+- If e < n-1: impossible (not enough cables total)
 ```
 
 ### Solution
@@ -356,8 +656,9 @@ n = 6
 connections = [[0,1], [0,2], [0,3], [1,2], [1,3]]
 # Computers: 0-1-2-3 are connected, 4 and 5 are isolated
 # Components: 3 ({0,1,2,3}, {4}, {5})
-# Need 2 operations
-# Have 5 edges, need 5 for tree of 6 → 0 spare, but we have redundant edges
+# Need components - 1 = 2 operations
+# Have 5 edges for 4 connected nodes → 2 are redundant (cycles within {0,1,2,3}).
+# 2 redundant cables >= 2 needed → possible.
 print(makeConnected(n, connections))  # 2
 ```
 
@@ -416,9 +717,10 @@ def smallestStringWithSwaps(s: str, pairs: list[list[int]]) -> str:
     # Build result
     result = list(s)
     for indices in groups.values():
-        # Get characters at these indices
-        chars = [s[i] for i in indices]
-        chars.sort()
+        # Get characters at these indices, sort them
+        chars = sorted(s[i] for i in indices)
+        # indices are already in order since we iterated range(n),
+        # but sort defensively in case grouping logic changes
         indices.sort()
 
         # Assign sorted characters to sorted indices
@@ -438,6 +740,81 @@ pairs = [[0,3], [1,2]]
 # Result: "bacd"
 
 print(smallestStringWithSwaps(s, pairs))  # "bacd"
+```
+
+---
+
+## Problem: Satisfiability of Equality Equations
+
+**LeetCode 990**: Given an array of strings `equations` where each equation is a 4-character string like `"a==b"` or `"a!=b"`, determine if it's possible to assign integers to variables such that all equations are satisfied simultaneously.
+
+### Key Insight
+
+- Process all `==` equations first: union the two variables together
+- Then check all `!=` equations: if two variables that must be unequal are in the same component, return `False`
+- This is a two-pass approach: build components, then validate constraints
+
+### Solution
+
+```python
+def equationsPossible(equations: list[str]) -> bool:
+    """
+    Check if equality/inequality constraints are satisfiable.
+
+    Time: O(e × α(26)) = O(e) where e = len(equations)
+    Space: O(1) — at most 26 lowercase letters
+    """
+    parent = list(range(26))
+    rank = [0] * 26
+
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x: int, y: int) -> None:
+        px, py = find(x), find(y)
+        if px == py:
+            return
+        if rank[px] < rank[py]:
+            px, py = py, px
+        parent[py] = px
+        if rank[px] == rank[py]:
+            rank[px] += 1
+
+    # Pass 1: Process all equalities — union connected variables
+    for eq in equations:
+        if eq[1] == '=':
+            x = ord(eq[0]) - ord('a')
+            y = ord(eq[3]) - ord('a')
+            union(x, y)
+
+    # Pass 2: Check all inequalities — must be in different components
+    for eq in equations:
+        if eq[1] == '!':
+            x = ord(eq[0]) - ord('a')
+            y = ord(eq[3]) - ord('a')
+            if find(x) == find(y):
+                return False  # Contradiction: equal but must be unequal
+
+    return True
+
+
+# Example 1
+equations = ["a==b", "b!=a"]
+# Union a and b, then check a != b → a and b are in the same component → False
+print(equationsPossible(equations))  # False
+
+# Example 2
+equations = ["a==b", "b==c", "a==c"]
+# All in one component, no inequality constraints → True
+print(equationsPossible(equations))  # True
+
+# Example 3
+equations = ["a==b", "b!=c", "c==a"]
+# Union a-b, union c-a → {a,b,c} all connected
+# Check b != c → both in same component → False
+print(equationsPossible(equations))  # False
 ```
 
 ---
@@ -481,11 +858,22 @@ groups = get_all_groups(uf, 6)
 Track the size of the largest component.
 
 ```python
-class UnionFind:
+class UnionFindWithSize:
+    """
+    Union-Find using union-by-size (not rank) to track component sizes.
+
+    This variant merges smaller trees into larger ones and maintains
+    the size of each component at its root.
+
+    Time: O(α(n)) per operation
+    Space: O(n)
+    """
+
     def __init__(self, n: int):
         self.parent = list(range(n))
         self.size = [1] * n
-        self.max_size = 1
+        self.count = n  # Number of components
+        self.max_size = 1 if n > 0 else 0
 
     def find(self, x: int) -> int:
         if self.parent[x] != x:
@@ -497,16 +885,22 @@ class UnionFind:
         if px == py:
             return False
 
+        # Union by size: attach smaller tree under larger tree
         if self.size[px] < self.size[py]:
             px, py = py, px
 
         self.parent[py] = px
         self.size[px] += self.size[py]
         self.max_size = max(self.max_size, self.size[px])
+        self.count -= 1
         return True
 
     def get_max_size(self) -> int:
         return self.max_size
+
+    def get_size(self, x: int) -> int:
+        """Return the size of the component containing x."""
+        return self.size[self.find(x)]
 ```
 
 ---
@@ -548,13 +942,18 @@ Union-Find wins when:
 
 ## Practice Problems
 
-| #   | Problem                                         | Difficulty | Key Concept            |
-| --- | ----------------------------------------------- | ---------- | ---------------------- |
-| 1   | Number of Islands II                            | Hard       | Dynamic land addition  |
-| 2   | Number of Operations to Make Network Connected  | Medium     | Spare cable counting   |
-| 3   | Smallest String With Swaps                      | Medium     | Group and sort         |
-| 4   | Lexicographically Smallest Equivalent String    | Medium     | Character groups       |
-| 5   | Checking Existence of Edge Length Limited Paths | Hard       | Sort queries and edges |
+| #   | Problem                                                  | Difficulty | Key Concept              |
+| --- | -------------------------------------------------------- | ---------- | ------------------------ |
+| 1   | Count Connected Components (LC 323)                      | Medium     | Basic component count    |
+| 2   | Graph Valid Tree (LC 261)                                | Medium     | Components + cycle check |
+| 3   | Earliest Moment Everyone Becomes Friends (LC 1101)       | Medium     | Sort + early exit        |
+| 4   | Number of Islands (LC 200)                               | Medium     | Grid to Union-Find       |
+| 5   | Number of Islands II (LC 305)                            | Hard       | Dynamic land addition    |
+| 6   | Number of Operations to Make Network Connected (LC 1319) | Medium     | Spare cable counting     |
+| 7   | Smallest String With Swaps (LC 1202)                     | Medium     | Group and sort           |
+| 8   | Satisfiability of Equality Equations (LC 990)            | Medium     | Two-pass constraint check|
+| 9   | Lexicographically Smallest Equivalent String (LC 1061)   | Medium     | Character groups         |
+| 10  | Checking Existence of Edge Length Limited Paths (LC 1697) | Hard      | Sort queries and edges   |
 
 ---
 

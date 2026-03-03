@@ -109,29 +109,29 @@ This chapter is structured progressively. Master the early concepts before tackl
 | :--- | :--- | :--- |
 | [03-1d-dp-basics.md](./03-1d-dp-basics.md) | **1D DP Basics** | Fibonacci, Climbing Stairs, State transitions |
 | [04-house-robber.md](./04-house-robber.md) | **House Robber** | Adjacent element constraints, Circular arrays |
+| [06-longest-increasing-subsequence.md](./06-longest-increasing-subsequence.md) | **LIS** | $O(N^2)$ DP, optimized $O(N \log N)$ with Binary Search |
 | [07-2d-dp-basics.md](./07-2d-dp-basics.md) | **2D DP Basics** | Grid traversal, Obstacles, Array padding |
 | [15-buy-sell-stock.md](./15-buy-sell-stock.md) | **State Machine DP** | Modeling multiple states (Buy, Sell, Cooldown) |
 
 ### Knapsack & Combinatorics
 | File | Topic | Focus |
 | :--- | :--- | :--- |
+| [05-coin-change.md](./05-coin-change.md) | **Coin Change** | Minimization knapsack, Combinations vs Permutations |
 | [10-knapsack-01.md](./10-knapsack-01.md) | **0/1 Knapsack** | Include/exclude pattern, Target Sum |
 | [11-knapsack-unbounded.md](./11-knapsack-unbounded.md) | **Unbounded Knapsack** | Unlimited item usage, Coin Change II |
-| [05-coin-change.md](./05-coin-change.md) | **Coin Change** | Minimization knapsack, Combinations vs Permutations |
 
 ### String & Sequence Patterns
 | File | Topic | Focus |
 | :--- | :--- | :--- |
 | [08-longest-common-subsequence.md](./08-longest-common-subsequence.md) | **LCS** | Subsequence comparison, 2D to 1D space opt |
 | [09-edit-distance.md](./09-edit-distance.md) | **Edit Distance** | Insert/delete/replace operations |
-| [18-dp-on-strings.md](./18-dp-on-strings.md) | **DP on Strings** | Decodings, Distinct Subsequences, Interleaving |
 | [13-word-break.md](./13-word-break.md) | **Word Break** | Dictionary partitioning, Recursion with Memo |
 | [14-regex-matching.md](./14-regex-matching.md) | **Regex Matching** | Branching decisions, handling `*` and `?` |
+| [18-dp-on-strings.md](./18-dp-on-strings.md) | **DP on Strings** | Decodings, Distinct Subsequences, Interleaving |
 
 ### Advanced Interval DP
 | File | Topic | Focus |
 | :--- | :--- | :--- |
-| [06-longest-increasing-subsequence.md](./06-longest-increasing-subsequence.md) | **LIS** | $O(N^2)$ DP, optimized $O(N \log N)$ with Binary Search |
 | [12-palindrome-dp.md](./12-palindrome-dp.md) | **Palindrome DP** | Interval expanding, LPS vs Longest Substring |
 | [16-matrix-chain.md](./16-matrix-chain.md) | **Matrix Chain** | Splitting intervals, the $O(N^3)$ pattern |
 | [17-burst-balloons.md](./17-burst-balloons.md) | **Burst Balloons** | Reverse interval thinking, Virtual boundaries |

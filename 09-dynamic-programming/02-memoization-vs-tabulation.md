@@ -226,6 +226,24 @@ def unique_paths_tab(m: int, n: int) -> int:
     return dp[m - 1][n - 1]
 ```
 
+### Space-Optimized Tabulation
+Since `dp[r][c]` only depends on `dp[r-1][c]` (the cell directly above) and `dp[r][c-1]` (the cell directly to the left), we only need to keep the previous row's values. We can optimize the $O(m \times n)$ space to $O(n)$ by using a 1D array.
+
+```python
+def unique_paths_optimized(m: int, n: int) -> int:
+    # Initialize a 1D array to represent the current row
+    # The first row is all 1s
+    dp = [1] * n
+
+    for r in range(1, m):
+        for c in range(1, n):
+            # dp[c] is currently the value from the row above (dp[r-1][c])
+            # dp[c-1] is the value from the current row, just computed (dp[r][c-1])
+            dp[c] = dp[c] + dp[c - 1]
+
+    return dp[n - 1]
+```
+
 ---
 
 ## 5. Summary Cheat Sheet
@@ -253,9 +271,21 @@ def unique_paths_tab(m: int, n: int) -> int:
 
 ## Common Pitfalls & Mistakes
 
-- **Python Default Arguments for Memo:** Never use `def dp(n, memo={}):`. Default mutable arguments in Python persist across completely separate function calls! Always initialize `memo = {}` *inside* the outer wrapper function.
+- **Python Default Arguments for Memo:** Never use `def dp(n, memo={}):`. Default mutable arguments in Python persist across completely separate function calls! If you must pass it as an argument, use `def dp(n, memo=None):` and then initialize `if memo is None: memo = {}`. Or better yet, initialize `memo = {}` *inside* the outer wrapper function.
 - **Index Out of Bounds in Tabulation:** When writing tabulation loops, pay close attention to `range(n)` vs `range(n + 1)`. Often, DP arrays are sized `n + 1` to account for a base case at index 0 or similar boundary conditions.
 - **Cache Initialization:** When using arrays for memoization, make sure to initialize them with a value that cannot be a valid answer (like `-1` or `float('inf')`), not `0` (if `0` can be a valid answer).
+
+---
+
+
+## Recommended Progressive Problems
+
+To practice recognizing when to use Memoization vs Tabulation and space optimization, try these:
+
+1. [Fibonacci Number](https://leetcode.com/problems/fibonacci-number/) (Easy) - Write it both top-down and bottom-up.
+2. [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) (Easy) - Optimize bottom-up to O(1) space.
+3. [N-th Tribonacci Number](https://leetcode.com/problems/n-th-tribonacci-number/) (Easy) - Good practice for tracking 3 previous states instead of 2.
+4. [Unique Paths](https://leetcode.com/problems/unique-paths/) (Medium) - Practice 2D tabulation and converting it to O(n) space.
 
 ---
 

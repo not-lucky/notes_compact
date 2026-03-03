@@ -1,6 +1,21 @@
 # Rate Limiter
 
-> **Prerequisites:** Understanding of queues and sliding window concept
+> **Prerequisites:** Understanding of queues, sliding window concept, and basic distributed systems
+
+## Quick Reference (Interview Cheat Sheet)
+
+```
+Token Bucket     → Allows bursts, O(1)/O(1), use for API gateways
+Leaky Bucket     → Smooths output, O(1)/O(1), use for streaming/traffic shaping
+Fixed Window     → Simplest, O(1)/O(1), boundary problem (2x burst)
+Sliding Log      → Exact, O(1)*/O(n), use for low-volume accuracy-critical
+Sliding Counter  → Approximate, O(1)/O(1), use for high-volume APIs
+
+Key question: "How many requests in the last N seconds?"
+Key trade-off: Accuracy vs Memory vs Complexity
+Distributed: Redis + Lua scripts for atomicity
+HTTP: 429 status, X-RateLimit-*, Retry-After headers
+```
 
 ## Building Intuition
 
@@ -43,16 +58,20 @@ Imagine an arcade that gives you 10 tokens per hour, max 10 at a time.
 - No tokens? Wait or leave
 
 Key insight: Allows BURSTS (if you saved tokens)
+Real-world: AWS API Gateway, Stripe API (allows short bursts of requests)
 ```
 
 **2. Leaky Bucket** - "The Water Tank with a Hole"
 
 ```
 Water (requests) pours in at any rate.
-Water leaks out at a fixed rate.
+Water leaks out at a fixed rate through a hole at the bottom.
 If tank overflows, excess water is rejected.
 
 Key insight: SMOOTHS output (constant rate out, regardless of input pattern)
+Difference from Token Bucket: Token Bucket controls ADMISSION (do you have tokens?),
+Leaky Bucket controls OUTPUT RATE (requests drain at a fixed pace).
+Real-world: Network traffic shaping (NGINX limit_req), video streaming bitrate
 ```
 
 **3. Fixed Window** - "The Hourly Counter"
@@ -63,6 +82,25 @@ Count resets every hour on the hour.
 
 Key insight: SIMPLE but has boundary problem
 (200 requests in 2 seconds: 100 at 12:59:59, 100 at 13:00:00)
+Real-world: GitHub API (5000 requests/hour, resets on the hour)
+```
+
+**Why the boundary problem matters:**
+
+```
+Limit: 100 requests per minute
+
+Timeline:
+  12:00:00 ─────────────────── 12:01:00 ─────────────────── 12:02:00
+                    |← 100 reqs →|← 100 reqs →|
+                   12:00:50      12:01:00     12:01:10
+
+A user sends 100 requests at 12:00:50 (end of window 1)
+and 100 more at 12:01:10 (start of window 2).
+Both windows pass: each has exactly 100.
+
+But in a 20-second span, 200 requests went through — 2x the intended limit!
+This is why "fixed window" can allow double the rate at boundaries.
 ```
 
 **4. Sliding Window Log** - "The Receipt Box"
@@ -73,6 +111,7 @@ To check limit: count receipts from last N seconds.
 Remove old receipts as you go.
 
 Key insight: ACCURATE but memory-intensive
+Real-world: Financial transaction monitoring, audit-heavy compliance APIs
 ```
 
 **5. Sliding Window Counter** - "The Smart Estimator"
@@ -82,6 +121,7 @@ Keep counts for current and previous window.
 Estimate current window using weighted average.
 
 Key insight: MEMORY-EFFICIENT approximation
+Real-world: Cloudflare rate limiting, high-volume public APIs (millions of users)
 ```
 
 ### Visual Comparison: Same Scenario, Different Results
@@ -92,17 +132,53 @@ Limit: 4 requests per 10 seconds
 Time:     0s   2s   4s   6s   8s   10s  12s  14s  16s
 Requests: R    R    R    R    R    R    R    -    R
 
-Token Bucket (4 tokens, 0.4/sec refill):
-R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (allows burst, then throttles)
+Token Bucket (4 tokens, refill 0.4/sec):
+R✓   R✓   R✓   R✓   R✓   R✓   R✓   -    R✓
+tokens: 3.0  2.8  2.6  2.4  2.2  2.0  1.8       2.4
+(refill outpaces consumption at 1 req/2s — never runs out)
 
-Leaky Bucket (4 capacity, 0.4/sec leak):
-R✓ R✓ R✓ R✓ R✗ R✗ R✓ - R✓  (smoothest output)
+Leaky Bucket (4 capacity, leak 0.4/sec):
+R✓   R✓   R✓   R✓   R✓   R✓   R✓   -    R✓
+water: 1.0  1.2  1.4  1.6  1.8  2.0  2.2       1.6
+(leak rate keeps up with arrivals — bucket never fills)
 
 Fixed Window (resets at 0s, 10s, 20s):
-R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (boundary allows extra)
+R✓   R✓   R✓   R✓   R✗   R✓   R✓   -    R✓
+(window [0,10): 5 requests, 5th rejected; window [10,20): 3 requests, all pass)
 
-Sliding Window Log:
-R✓ R✓ R✓ R✓ R✗ R✓ R✓ - R✓  (most accurate)
+Sliding Window Log (exact sliding 10s window):
+R✓   R✓   R✓   R✓   R✗   R✓   R✓   -    R✓
+(at t=8: 4 requests in [0,8], limit hit; at t=10: t=0 expires, count=3)
+```
+
+> **Key insight:** Token Bucket and Leaky Bucket both allow all requests here because
+> the arrival rate (1 req/2s = 0.5/s) is close to the refill/leak rate (0.4/s).
+> They only reject when requests arrive in a burst that exceeds capacity.
+> Fixed Window and Sliding Window Log both reject at t=8 because
+> 5 requests in one window exceeds the limit of 4.
+
+### Token Bucket vs Leaky Bucket: The Key Difference
+
+These two are frequently confused. The critical distinction:
+
+```
+Token Bucket:
+  - Controls ADMISSION: "Do you have enough tokens to enter?"
+  - Allows BURSTS: If tokens have accumulated, many requests pass at once
+  - Output rate varies: can be bursty up to capacity, then rate-limited
+  - Think: prepaid phone minutes — use them whenever, but they accumulate
+
+Leaky Bucket:
+  - Controls OUTPUT RATE: "Requests drain at a fixed pace"
+  - SMOOTHS traffic: output is always at a constant rate
+  - Input can be bursty (just fills the bucket), output is steady
+  - Think: funnel — pour water in fast, it drips out slowly
+
+Same scenario, different behavior:
+  10 requests arrive simultaneously, limit = 5/sec, capacity = 5
+
+  Token Bucket: All 5 pass immediately (burst), remaining 5 rejected
+  Leaky Bucket: All 5 accepted into queue, processed at 1/sec over 5 seconds
 ```
 
 ## Interview Context
@@ -157,6 +233,7 @@ Time 2:          [●○○○○] 1 token (1 added)
 ```python
 import time
 
+
 class TokenBucket:
     """
     Token Bucket rate limiter.
@@ -167,20 +244,20 @@ class TokenBucket:
     Space: O(1)
     """
 
-    def __init__(self, capacity: int, refill_rate: float):
+    def __init__(self, capacity: int, refill_rate: float) -> None:
         """
         Args:
             capacity: Maximum tokens in bucket
             refill_rate: Tokens added per second
         """
-        self.capacity = capacity
-        self.refill_rate = refill_rate
-        self.tokens = capacity
-        self.last_refill = time.time()
+        self.capacity: int = capacity
+        self.refill_rate: float = refill_rate
+        self.tokens: float = float(capacity)
+        self.last_refill: float = time.monotonic()
 
     def _refill(self) -> None:
         """Add tokens based on time elapsed."""
-        now = time.time()
+        now = time.monotonic()
         elapsed = now - self.last_refill
         tokens_to_add = elapsed * self.refill_rate
         self.tokens = min(self.capacity, self.tokens + tokens_to_add)
@@ -213,7 +290,7 @@ print(f"Request 6: {limiter.allow_request()}")  # False
 
 # Wait and try again
 time.sleep(2)
-print(f"After 2s: {limiter.allow_request()}")  # True (got 2 tokens back)
+print(f"After 2s: {limiter.allow_request()}")  # True (got ~2 tokens back)
 ```
 
 ---
@@ -245,6 +322,7 @@ At time 71:
 from collections import deque
 import time
 
+
 class SlidingWindowLog:
     """
     Sliding Window Log rate limiter.
@@ -252,19 +330,19 @@ class SlidingWindowLog:
     Stores timestamp of each request.
     Most accurate but memory-intensive.
 
-    Time: O(1) amortized (cleanup is distributed)
-    Space: O(limit) in worst case
+    Time: O(1) amortized (cleanup is distributed across requests)
+    Space: O(limit) in worst case — at most 'limit' timestamps stored
     """
 
-    def __init__(self, limit: int, window_seconds: float):
+    def __init__(self, limit: int, window_seconds: float) -> None:
         """
         Args:
             limit: Maximum requests per window
             window_seconds: Window size in seconds
         """
-        self.limit = limit
-        self.window = window_seconds
-        self.requests = deque()  # Timestamps of requests
+        self.limit: int = limit
+        self.window: float = window_seconds
+        self.requests: deque[float] = deque()  # Timestamps of requests
 
     def allow_request(self) -> bool:
         """
@@ -273,11 +351,12 @@ class SlidingWindowLog:
         Returns:
             True if allowed, False if rate limited
         """
-        now = time.time()
+        now = time.monotonic()
         cutoff = now - self.window
 
-        # Remove expired timestamps
-        while self.requests and self.requests[0] < cutoff:
+        # Remove expired timestamps — O(1) amortized because each
+        # timestamp is added once and removed once across its lifetime
+        while self.requests and self.requests[0] <= cutoff:
             self.requests.popleft()
 
         if len(self.requests) < self.limit:
@@ -326,6 +405,7 @@ Request at 12:01:00: counter[2] = 1 (allowed)
 ```python
 import time
 
+
 class FixedWindowCounter:
     """
     Fixed Window Counter rate limiter.
@@ -339,15 +419,15 @@ class FixedWindowCounter:
     Space: O(1)
     """
 
-    def __init__(self, limit: int, window_seconds: int):
-        self.limit = limit
-        self.window = window_seconds
-        self.current_window = 0
-        self.counter = 0
+    def __init__(self, limit: int, window_seconds: int) -> None:
+        self.limit: int = limit
+        self.window: int = window_seconds
+        self.current_window: int = 0
+        self.counter: int = 0
 
     def _get_window(self) -> int:
         """Get current window ID."""
-        return int(time.time() // self.window)
+        return int(time.monotonic() // self.window)
 
     def allow_request(self) -> bool:
         window = self._get_window()
@@ -401,6 +481,7 @@ If estimate >= 100, reject
 ```python
 import time
 
+
 class SlidingWindowCounter:
     """
     Sliding Window Counter rate limiter.
@@ -412,16 +493,16 @@ class SlidingWindowCounter:
     Space: O(1)
     """
 
-    def __init__(self, limit: int, window_seconds: int):
-        self.limit = limit
-        self.window = window_seconds
-        self.prev_window = 0
-        self.prev_count = 0
-        self.curr_window = 0
-        self.curr_count = 0
+    def __init__(self, limit: int, window_seconds: int) -> None:
+        self.limit: int = limit
+        self.window: int = window_seconds
+        self.prev_window: int = 0
+        self.prev_count: int = 0
+        self.curr_window: int = 0
+        self.curr_count: int = 0
 
     def allow_request(self) -> bool:
-        now = time.time()
+        now = time.monotonic()
         curr_window = int(now // self.window)
 
         # Update windows
@@ -441,8 +522,12 @@ class SlidingWindowCounter:
         # Calculate weighted count
         window_start = curr_window * self.window
         elapsed_ratio = (now - window_start) / self.window
-        prev_weight = 1 - elapsed_ratio
+        prev_weight = 1.0 - elapsed_ratio
 
+        # Weighted estimate of requests in the sliding window.
+        # We compare the raw float against the limit — no rounding needed.
+        # This avoids both over-rejection (from rounding up) and
+        # under-rejection (from rounding down).
         estimated_count = self.prev_count * prev_weight + self.curr_count
 
         if estimated_count < self.limit:
@@ -467,8 +552,29 @@ print(f"Request 11: {limiter.allow_request()}")  # Likely False
 
 Requests enter a bucket and "leak" out at a fixed rate. If bucket is full, reject.
 
+### Visualization
+
+```
+Bucket capacity: 3, Leak rate: 1/sec
+
+Time 0: [○○○] water = 0
+        Request → [█○○] water = 1
+        Request → [██○] water = 2
+        Request → [███] water = 3
+        Request → REJECTED (bucket full)
+
+Time 1:          [██○] water = 2 (leaked 1)
+        Request → [███] water = 3
+
+Time 2:          [██○] water = 2 (leaked 1)
+        Request → [███] water = 3
+```
+
+### Implementation
+
 ```python
 import time
+
 
 class LeakyBucket:
     """
@@ -481,23 +587,23 @@ class LeakyBucket:
     Space: O(1)
     """
 
-    def __init__(self, capacity: int, leak_rate: float):
+    def __init__(self, capacity: int, leak_rate: float) -> None:
         """
         Args:
             capacity: Maximum queue size
             leak_rate: Requests processed per second
         """
-        self.capacity = capacity
-        self.leak_rate = leak_rate
-        self.water = 0.0  # Current queue size
-        self.last_leak = time.time()
+        self.capacity: int = capacity
+        self.leak_rate: float = leak_rate
+        self.water: float = 0.0  # Current queue size
+        self.last_leak: float = time.monotonic()
 
     def _leak(self) -> None:
         """Remove processed requests from bucket."""
-        now = time.time()
+        now = time.monotonic()
         elapsed = now - self.last_leak
         leaked = elapsed * self.leak_rate
-        self.water = max(0, self.water - leaked)
+        self.water = max(0.0, self.water - leaked)
         self.last_leak = now
 
     def allow_request(self) -> bool:
@@ -508,7 +614,131 @@ class LeakyBucket:
             return True
 
         return False
+
+
+# Test
+limiter = LeakyBucket(capacity=3, leak_rate=1)  # 3 capacity, 1/sec leak
+
+for i in range(3):
+    print(f"Request {i+1}: {limiter.allow_request()}")  # All True
+
+print(f"Request 4: {limiter.allow_request()}")  # False (bucket full)
+
+time.sleep(2)
+print(f"After 2s: {limiter.allow_request()}")  # True (leaked ~2)
 ```
+
+---
+
+## Practical Pattern: Rate Limiter as a Decorator
+
+In real codebases, rate limiting is often applied as a decorator or middleware.
+This pattern shows up frequently in interviews when discussing API design.
+
+```python
+import functools
+import time
+from typing import Any, Callable
+
+
+class RateLimitExceeded(Exception):
+    """Raised when a rate limit is exceeded."""
+
+    def __init__(self, retry_after: float) -> None:
+        self.retry_after = retry_after
+        super().__init__(f"Rate limit exceeded. Retry after {retry_after:.1f}s")
+
+
+def rate_limit(
+    max_calls: int, period: float
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """
+    Decorator that rate-limits a function using the token bucket algorithm.
+
+    Args:
+        max_calls: Maximum calls allowed per period
+        period: Time period in seconds
+
+    Usage:
+        @rate_limit(max_calls=5, period=60)
+        def call_external_api(query: str) -> dict:
+            ...
+    """
+
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        # Token bucket state — closed over by the wrapper
+        tokens = float(max_calls)
+        last_refill = time.monotonic()
+        refill_rate = max_calls / period
+
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            nonlocal tokens, last_refill
+
+            # Refill tokens
+            now = time.monotonic()
+            elapsed = now - last_refill
+            tokens = min(max_calls, tokens + elapsed * refill_rate)
+            last_refill = now
+
+            if tokens >= 1:
+                tokens -= 1
+                return func(*args, **kwargs)
+
+            # Calculate when next token will be available
+            wait_time = (1 - tokens) / refill_rate
+            raise RateLimitExceeded(retry_after=wait_time)
+
+        return wrapper
+
+    return decorator
+
+
+# Usage example
+@rate_limit(max_calls=3, period=10)
+def send_notification(user_id: str, message: str) -> str:
+    return f"Sent '{message}' to {user_id}"
+
+
+# Test
+for i in range(4):
+    try:
+        result = send_notification("user123", f"msg_{i}")
+        print(f"Call {i+1}: {result}")
+    except RateLimitExceeded as e:
+        print(f"Call {i+1}: {e}")
+```
+
+---
+
+## Real-World: HTTP Rate Limit Headers
+
+Production rate limiters communicate status through HTTP headers. Knowing these
+shows interviewers you understand how rate limiting works end-to-end.
+
+```
+HTTP/1.1 429 Too Many Requests
+X-RateLimit-Limit: 100            ← Max requests allowed per window
+X-RateLimit-Remaining: 0          ← Requests left in current window
+X-RateLimit-Reset: 1672531260     ← Unix timestamp when window resets
+Retry-After: 30                   ← Seconds to wait before retrying
+```
+
+**Why this matters in interviews:**
+
+- Clients can self-throttle using `Retry-After` (reduces wasted requests)
+- `X-RateLimit-Remaining` lets clients pace themselves proactively
+- The `429` status code is specifically designated for rate limiting (RFC 6585)
+- Some APIs also include `X-RateLimit-Policy` to describe the limit tier
+
+**Examples in the wild:**
+
+| Service        | Limit Header Style             | Limit                 |
+| -------------- | ------------------------------ | --------------------- |
+| GitHub API     | `X-RateLimit-*`                | 5000 req/hour (auth)  |
+| Stripe API     | `RateLimit-*` + `Retry-After`  | 100 req/sec (live)    |
+| Twitter/X API  | `x-rate-limit-*`               | Varies by endpoint    |
+| Cloudflare     | Returns `429` + `Retry-After`  | Configurable per zone |
 
 ---
 
@@ -519,46 +749,66 @@ For distributed systems, rate limiting needs coordination:
 ### Redis-Based Implementation
 
 ```python
-import redis
 import time
+import uuid
+
+import redis
+
 
 class DistributedRateLimiter:
     """
-    Distributed rate limiter using Redis.
+    Distributed rate limiter using Redis sorted sets.
 
-    Uses atomic operations for consistency.
+    Uses a Lua script for true atomicity. A Redis pipeline alone is NOT
+    atomic — it batches commands but another client can interleave between
+    them. Lua scripts execute atomically on the Redis server.
     """
 
-    def __init__(self, redis_client: redis.Redis, key_prefix: str,
-                 limit: int, window_seconds: int):
-        self.redis = redis_client
-        self.prefix = key_prefix
-        self.limit = limit
-        self.window = window_seconds
+    # Lua script ensures all operations execute atomically on the Redis server.
+    # KEYS[1] = rate limit key (e.g., "ratelimit:user123")
+    # ARGV[1] = window_start (oldest allowed timestamp)
+    # ARGV[2] = now (current timestamp, used as score)
+    # ARGV[3] = limit (max requests per window)
+    # ARGV[4] = window_seconds (TTL for the key)
+    # ARGV[5] = unique request ID (member — must be unique per request)
+    LUA_SCRIPT = """
+    redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1])
+    local count = redis.call('ZCARD', KEYS[1])
+    if count < tonumber(ARGV[3]) then
+        redis.call('ZADD', KEYS[1], ARGV[2], ARGV[5])
+        redis.call('EXPIRE', KEYS[1], tonumber(ARGV[4]))
+        return 1
+    end
+    return 0
+    """
+
+    def __init__(
+        self,
+        redis_client: redis.Redis,  # type: ignore[type-arg]
+        key_prefix: str,
+        limit: int,
+        window_seconds: int,
+    ) -> None:
+        self.redis: redis.Redis = redis_client  # type: ignore[type-arg]
+        self.prefix: str = key_prefix
+        self.limit: int = limit
+        self.window: int = window_seconds
+        self._script = self.redis.register_script(self.LUA_SCRIPT)
 
     def allow_request(self, user_id: str) -> bool:
+        """Check if a request from user_id is allowed."""
         key = f"{self.prefix}:{user_id}"
-        now = int(time.time())
+        now = time.time()
         window_start = now - self.window
+        # Unique member prevents two same-timestamp requests from colliding
+        # in the sorted set (sorted sets have unique members).
+        request_id = f"{now}:{uuid.uuid4()}"
 
-        pipe = self.redis.pipeline()
-
-        # Remove old entries
-        pipe.zremrangebyscore(key, 0, window_start)
-
-        # Count current entries
-        pipe.zcard(key)
-
-        # Add current request
-        pipe.zadd(key, {str(now): now})
-
-        # Set TTL
-        pipe.expire(key, self.window)
-
-        results = pipe.execute()
-        current_count = results[1]
-
-        return current_count < self.limit
+        result = self._script(
+            keys=[key],
+            args=[window_start, now, self.limit, self.window, request_id],
+        )
+        return bool(result)
 
 
 # Usage with Redis
@@ -567,17 +817,27 @@ class DistributedRateLimiter:
 # limiter.allow_request("user123")
 ```
 
+> **Why Lua instead of pipeline?** A Redis pipeline sends commands in a batch
+> but does NOT guarantee atomicity — another client's commands can execute between
+> yours. A Lua script runs entirely on the Redis server as a single atomic operation,
+> preventing race conditions where two requests both read count < limit and both add.
+
+> **Why unique member IDs?** Redis sorted sets require unique members. If two requests
+> arrive at the exact same `time.time()` value and you use the timestamp as the member,
+> the second ZADD silently overwrites the first — effectively losing a request from the
+> count. Using `uuid4()` ensures every request gets its own entry.
+
 ---
 
 ## Complexity Analysis
 
-| Algorithm              | Time   | Space    | Accuracy                 |
-| ---------------------- | ------ | -------- | ------------------------ |
-| Token Bucket           | O(1)   | O(1)     | Exact for burst control  |
-| Leaky Bucket           | O(1)   | O(1)     | Exact for rate smoothing |
-| Fixed Window           | O(1)   | O(1)     | Boundary issues          |
-| Sliding Window Log     | O(1)\* | O(limit) | Exact                    |
-| Sliding Window Counter | O(1)   | O(1)     | Approximate              |
+| Algorithm              | Time   | Space    | Accuracy                 | Burst Handling           |
+| ---------------------- | ------ | -------- | ------------------------ | ------------------------ |
+| Token Bucket           | O(1)   | O(1)     | Exact for burst control  | Allows bursts up to cap  |
+| Leaky Bucket           | O(1)   | O(1)     | Exact for rate smoothing | Smooths bursts to fixed  |
+| Fixed Window           | O(1)   | O(1)     | Boundary issues (2x)     | No burst control         |
+| Sliding Window Log     | O(1)\* | O(limit) | Exact                    | Hard limit per window    |
+| Sliding Window Counter | O(1)   | O(1)     | Approximate              | Approximated at boundary |
 
 \*Amortized O(1), cleanup is O(n) but distributed over requests
 
@@ -622,7 +882,7 @@ Rate limiting isn't always the answer. Here's when to skip it or use alternative
 ### When Rate Limiting is Overkill
 
 ```
-❌ DON'T add rate limiting when:
+DON'T add rate limiting when:
 
 1. Internal service-to-service calls
    Problem: You control both ends, add latency for no benefit
@@ -673,16 +933,16 @@ Better: Tiered limits, quotas, or reservation systems
 ### Algorithm Selection Pitfalls
 
 ```
-❌ Token Bucket when you need smooth output
+Token Bucket when you need smooth output
    → Use Leaky Bucket instead
 
-❌ Fixed Window when accuracy matters
+Fixed Window when accuracy matters
    → Use Sliding Window instead
 
-❌ Sliding Window Log for high-volume APIs
+Sliding Window Log for high-volume APIs
    → Memory explodes; use Counter instead
 
-❌ Any single algorithm for distributed systems
+Any single algorithm for distributed systems
    → Need coordination (Redis, consensus)
 ```
 
@@ -734,23 +994,30 @@ Need to allow bursts?
     ├── Yes → Leaky Bucket
     │         - Good for streaming, packet shaping
     │
-    └── No → How much memory?
-        ├── Minimal → Sliding Window Counter
-        │             - Approximate but efficient
+    └── No → Accuracy vs simplicity?
+        ├── Simple is fine → Fixed Window Counter
+        │                     - Easiest to implement
+        │                     - Boundary problem (up to 2x burst)
         │
-        └── More OK → Sliding Window Log
-                      - Exact but stores all timestamps
+        └── Need accuracy → How much memory?
+            ├── Minimal → Sliding Window Counter
+            │             - Approximate but efficient
+            │
+            └── More OK → Sliding Window Log
+                          - Exact but stores all timestamps
 ```
 
 ---
 
 ## Edge Cases
 
-1. **Time going backwards**: Handle clock skew (use monotonic time)
-2. **Very high request rate**: Cleanup overhead in log-based approaches
-3. **Distributed systems**: Need atomic operations (Redis, etc.)
-4. **Per-user vs global**: Different keys for different limits
-5. **Different limits**: Premium users get higher limits
+1. **Time going backwards**: Use `time.monotonic()` instead of `time.time()` — monotonic clocks never go backwards, even during NTP adjustments or daylight saving changes. Exception: distributed systems where you need wall-clock time for cross-server coordination (use `time.time()` with Redis, since all servers must agree on "now").
+2. **Very high request rate**: Cleanup overhead in log-based approaches — consider amortizing cleanup or switching to counter-based approaches.
+3. **Distributed systems**: Need truly atomic operations (Redis Lua scripts, not just pipelines). Race conditions are the #1 source of rate limiter bugs in production.
+4. **Per-user vs global**: Different keys for different limits. Global limits protect the system; per-user limits ensure fairness.
+5. **Different limits per endpoint**: `GET /users` (cheap) vs `POST /analyze-video` (expensive) should have different limits. Consider cost-based token deduction.
+6. **Floating point precision**: Weighted estimates can suffer from floating point errors at boundary values. Compare the raw float against the limit (`estimated < limit`) rather than rounding — this avoids subtle off-by-one rejections from rounding schemes.
+7. **Cold start**: When a rate limiter restarts, all state is lost. Consider persisting state to Redis or accepting a brief window of no limiting after restart.
 
 ---
 
@@ -782,13 +1049,468 @@ A: Store limits in a config service, look up per request,
 
 ## Practice Problems
 
-| #   | Problem                | Difficulty | Key Concept                    |
-| --- | ---------------------- | ---------- | ------------------------------ |
-| 1   | Design Hit Counter     | Medium     | Sliding window basics          |
-| 2   | Logger Rate Limiter    | Easy       | Simple timestamp tracking      |
-| 3   | Design Rate Limiter    | Medium     | System design question         |
-| 4   | API Rate Limiter       | Medium     | Token bucket implementation    |
-| 5   | Sliding Window Maximum | Hard       | Related sliding window concept |
+| #   | Problem                              | Difficulty | Key Concept                    |
+| --- | ------------------------------------ | ---------- | ------------------------------ |
+| 1   | Design Hit Counter (LC 362)          | Medium     | Sliding window basics          |
+| 2   | Logger Rate Limiter (LC 359)         | Easy       | Simple timestamp tracking      |
+| 3   | Design Rate Limiter (system design)  | Medium     | Full system design question    |
+| 4   | API Rate Limiter                     | Medium     | Token bucket implementation    |
+| 5   | Sliding Window Maximum (LC 239)      | Hard       | Related sliding window concept |
+
+---
+
+## Coding Exercises (Progressive)
+
+### Exercise 1: Simple Counter Rate Limiter (Easy)
+
+**Problem:** Implement a rate limiter that allows at most `limit` calls to `allow_request()`
+within any contiguous `window_seconds` period. Use a simple list of timestamps.
+
+Focus on correctness, not efficiency.
+
+```python
+import time
+
+
+class SimpleRateLimiter:
+    """
+    Simplest possible rate limiter using a list of timestamps.
+
+    This is the brute-force approach: store every request timestamp,
+    filter out expired ones on each check.
+
+    Time: O(n) per request (scanning the list)
+    Space: O(n) where n = number of requests in window
+    """
+
+    def __init__(self, limit: int, window_seconds: float) -> None:
+        self.limit: int = limit
+        self.window: float = window_seconds
+        self.timestamps: list[float] = []
+
+    def allow_request(self) -> bool:
+        """Return True if request is allowed, False otherwise."""
+        now = time.monotonic()
+        cutoff = now - self.window
+
+        # Remove expired timestamps
+        self.timestamps = [t for t in self.timestamps if t > cutoff]
+
+        if len(self.timestamps) < self.limit:
+            self.timestamps.append(now)
+            return True
+
+        return False
+
+
+# ── Tests ──
+def test_simple_rate_limiter() -> None:
+    limiter = SimpleRateLimiter(limit=3, window_seconds=1.0)
+
+    # 3 requests should all pass
+    assert limiter.allow_request() is True   # 1st
+    assert limiter.allow_request() is True   # 2nd
+    assert limiter.allow_request() is True   # 3rd
+
+    # 4th request should fail (limit = 3)
+    assert limiter.allow_request() is False
+
+    # Wait for window to expire, then it should pass again
+    time.sleep(1.1)
+    assert limiter.allow_request() is True
+
+    print("All tests passed!")
+
+
+test_simple_rate_limiter()
+```
+
+**Key takeaway:** This works but is O(n) per request. The `deque`-based
+SlidingWindowLog (Pattern 2) improves this to amortized O(1) by using
+`popleft()` instead of rebuilding the list.
+
+---
+
+### Exercise 2: Sliding Window Counter with Testable Clock (Medium)
+
+**Problem:** Implement a SlidingWindowCounter where you can inject a custom clock
+function. This makes it testable without `time.sleep()` — critical for reliable
+unit tests and interview demonstrations.
+
+```python
+import time
+from typing import Callable
+
+
+class TestableWindowCounter:
+    """
+    Sliding Window Counter with injectable clock for testing.
+
+    In interviews, injecting a clock function shows understanding of:
+    - Dependency injection for testability
+    - Avoiding time.sleep() in tests (flaky, slow)
+    - Separation of concerns
+
+    Time: O(1)
+    Space: O(1)
+    """
+
+    def __init__(
+        self,
+        limit: int,
+        window_seconds: int,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.limit: int = limit
+        self.window: int = window_seconds
+        self.clock: Callable[[], float] = clock
+        self.prev_count: int = 0
+        self.curr_count: int = 0
+        self.curr_window: int = 0
+
+    def allow_request(self) -> bool:
+        now = self.clock()
+        window_id = int(now // self.window)
+
+        if window_id != self.curr_window:
+            if window_id == self.curr_window + 1:
+                self.prev_count = self.curr_count
+            else:
+                self.prev_count = 0
+            self.curr_window = window_id
+            self.curr_count = 0
+
+        window_start = window_id * self.window
+        elapsed_ratio = (now - window_start) / self.window
+        prev_weight = 1.0 - elapsed_ratio
+
+        estimated = self.prev_count * prev_weight + self.curr_count
+
+        if estimated < self.limit:
+            self.curr_count += 1
+            return True
+        return False
+
+
+# ── Tests using a fake clock (no time.sleep!) ──
+def test_testable_window_counter() -> None:
+    fake_time = 0.0
+
+    def fake_clock() -> float:
+        return fake_time
+
+    limiter = TestableWindowCounter(limit=5, window_seconds=10, clock=fake_clock)
+
+    # Fill up within first window
+    for _ in range(5):
+        assert limiter.allow_request() is True
+    assert limiter.allow_request() is False  # 6th request rejected
+
+    # Move to next window (10s later) — previous count carries over partially
+    fake_time = 15.0  # 50% into second window (window_id=1, window_start=10)
+    # Estimated = prev_count * prev_weight + curr_count
+    #           = 5 * 0.5 + 0 = 2.5
+    assert limiter.allow_request() is True   # 2.5 < 5, allowed; curr_count becomes 1
+
+    # Estimated = 5 * 0.5 + 1 = 3.5
+    assert limiter.allow_request() is True   # 3.5 < 5, allowed; curr_count becomes 2
+    # Estimated = 5 * 0.5 + 2 = 4.5
+    assert limiter.allow_request() is True   # 4.5 < 5, allowed; curr_count becomes 3
+    # Estimated = 5 * 0.5 + 3 = 5.5
+    assert limiter.allow_request() is False  # 5.5 >= 5, rejected
+
+    # Move far ahead — previous window should be fully expired
+    fake_time = 100.0
+    for _ in range(5):
+        assert limiter.allow_request() is True
+    assert limiter.allow_request() is False
+
+    print("All tests passed!")
+
+
+test_testable_window_counter()
+```
+
+**Key takeaway:** Injecting a clock function eliminates `time.sleep()` from tests,
+making them fast, deterministic, and non-flaky. This is a technique interviewers
+love to see.
+
+---
+
+### Exercise 3: Per-User Rate Limiter with Multiple Tiers (Medium-Hard)
+
+**Problem:** Build a rate limiter that supports different rate limits for different
+user tiers (free, pro, enterprise). Each user gets their own independent limit.
+
+```python
+import time
+from collections import deque
+from dataclasses import dataclass
+from enum import Enum
+
+
+class Tier(Enum):
+    FREE = "free"
+    PRO = "pro"
+    ENTERPRISE = "enterprise"
+
+
+@dataclass(frozen=True)
+class RateLimit:
+    """Immutable rate limit configuration."""
+    requests: int
+    window_seconds: float
+
+
+# Default tier configurations
+TIER_LIMITS: dict[Tier, RateLimit] = {
+    Tier.FREE:       RateLimit(requests=10,   window_seconds=60),
+    Tier.PRO:        RateLimit(requests=100,  window_seconds=60),
+    Tier.ENTERPRISE: RateLimit(requests=1000, window_seconds=60),
+}
+
+
+class PerUserRateLimiter:
+    """
+    Per-user rate limiter with tiered limits.
+
+    Each user gets their own sliding window log, sized according
+    to their tier. Unknown users default to FREE tier.
+
+    Time: O(1) amortized per request
+    Space: O(users * max_limit) worst case
+    """
+
+    def __init__(
+        self,
+        tier_limits: dict[Tier, RateLimit] | None = None,
+    ) -> None:
+        self.tier_limits: dict[Tier, RateLimit] = tier_limits or TIER_LIMITS
+        # user_id -> deque of timestamps
+        self._user_logs: dict[str, deque[float]] = {}
+        # user_id -> tier
+        self._user_tiers: dict[str, Tier] = {}
+
+    def register_user(self, user_id: str, tier: Tier) -> None:
+        """Register or update a user's tier."""
+        self._user_tiers[user_id] = tier
+
+    def allow_request(self, user_id: str) -> bool:
+        """Check if a request from user_id is allowed."""
+        tier = self._user_tiers.get(user_id, Tier.FREE)
+        limit_config = self.tier_limits[tier]
+
+        now = time.monotonic()
+        cutoff = now - limit_config.window_seconds
+
+        # Get or create the user's request log
+        if user_id not in self._user_logs:
+            self._user_logs[user_id] = deque()
+
+        log = self._user_logs[user_id]
+
+        # Remove expired timestamps
+        while log and log[0] <= cutoff:
+            log.popleft()
+
+        if len(log) < limit_config.requests:
+            log.append(now)
+            return True
+
+        return False
+
+    def get_remaining(self, user_id: str) -> int:
+        """Return how many requests the user has left in current window."""
+        tier = self._user_tiers.get(user_id, Tier.FREE)
+        limit_config = self.tier_limits[tier]
+
+        now = time.monotonic()
+        cutoff = now - limit_config.window_seconds
+
+        log = self._user_logs.get(user_id, deque())
+
+        # Count only non-expired entries
+        active = sum(1 for t in log if t > cutoff)
+        return max(0, limit_config.requests - active)
+
+
+# ── Tests ──
+def test_per_user_rate_limiter() -> None:
+    limiter = PerUserRateLimiter(tier_limits={
+        Tier.FREE: RateLimit(requests=2, window_seconds=1.0),
+        Tier.PRO:  RateLimit(requests=5, window_seconds=1.0),
+    })
+
+    # Free user (default tier)
+    assert limiter.allow_request("alice") is True
+    assert limiter.allow_request("alice") is True
+    assert limiter.allow_request("alice") is False  # Free limit = 2
+
+    # Pro user
+    limiter.register_user("bob", Tier.PRO)
+    for _ in range(5):
+        assert limiter.allow_request("bob") is True
+    assert limiter.allow_request("bob") is False  # Pro limit = 5
+
+    # Users are independent — charlie (free) is unaffected by alice/bob
+    assert limiter.allow_request("charlie") is True
+    assert limiter.allow_request("charlie") is True
+    assert limiter.allow_request("charlie") is False
+
+    # Check remaining
+    assert limiter.get_remaining("alice") == 0
+    assert limiter.get_remaining("bob") == 0
+
+    # Wait for window to expire
+    time.sleep(1.1)
+    assert limiter.allow_request("alice") is True
+    assert limiter.get_remaining("alice") == 1  # Used 1 of 2
+
+    print("All tests passed!")
+
+
+test_per_user_rate_limiter()
+```
+
+**Key takeaway:** In production systems, rate limits are almost never one-size-fits-all.
+This exercise demonstrates per-user isolation, tier-based configuration, and
+the sliding window log pattern — all common FANG interview discussion points.
+
+---
+
+### Exercise 4: Multi-Key Rate Limiter (Hard)
+
+**Problem:** Build a rate limiter that enforces **multiple simultaneous limits** per
+user — for example, 10 requests per second AND 100 requests per minute AND 1000
+requests per hour. A request is only allowed if ALL limits pass. This is how
+production APIs (e.g., Discord, Twitter) actually work.
+
+```python
+import time
+from collections import deque
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Limit:
+    """A single rate limit rule."""
+    max_requests: int
+    window_seconds: float
+
+
+class MultiKeyRateLimiter:
+    """
+    Enforces multiple rate limits simultaneously.
+
+    A request is allowed only if it passes ALL configured limits.
+    Uses sliding window log per limit per user.
+
+    Example: 10/sec AND 100/min AND 1000/hour
+
+    Time: O(L) per request where L = number of limits
+    Space: O(users * L * max_limit) worst case
+    """
+
+    def __init__(self, limits: list[Limit]) -> None:
+        if not limits:
+            raise ValueError("At least one limit must be provided")
+        self.limits: list[Limit] = limits
+        # user_id -> list of deques (one per limit)
+        self._logs: dict[str, list[deque[float]]] = {}
+
+    def _get_user_logs(self, user_id: str) -> list[deque[float]]:
+        """Get or create per-limit logs for a user."""
+        if user_id not in self._logs:
+            self._logs[user_id] = [deque() for _ in self.limits]
+        return self._logs[user_id]
+
+    def allow_request(self, user_id: str) -> bool:
+        """
+        Check if request passes ALL limits.
+
+        Important: We check all limits BEFORE adding the timestamp to any.
+        This prevents partial state corruption if a later limit rejects.
+        """
+        now = time.monotonic()
+        logs = self._get_user_logs(user_id)
+
+        # Phase 1: Clean up expired entries and check all limits
+        for i, limit in enumerate(self.limits):
+            log = logs[i]
+            cutoff = now - limit.window_seconds
+
+            while log and log[0] <= cutoff:
+                log.popleft()
+
+            if len(log) >= limit.max_requests:
+                return False  # At least one limit exceeded
+
+        # Phase 2: All limits passed — record the request in all logs
+        for log in logs:
+            log.append(now)
+
+        return True
+
+    def get_status(self, user_id: str) -> list[dict[str, int | float]]:
+        """Return remaining capacity for each limit (for HTTP headers)."""
+        now = time.monotonic()
+        logs = self._get_user_logs(user_id)
+        status = []
+
+        for i, limit in enumerate(self.limits):
+            log = logs[i]
+            cutoff = now - limit.window_seconds
+            active = sum(1 for t in log if t > cutoff)
+            remaining = max(0, limit.max_requests - active)
+            status.append({
+                "window_seconds": limit.window_seconds,
+                "limit": limit.max_requests,
+                "remaining": remaining,
+            })
+
+        return status
+
+
+# ── Tests ──
+def test_multi_key_rate_limiter() -> None:
+    limiter = MultiKeyRateLimiter(limits=[
+        Limit(max_requests=3, window_seconds=1.0),   # 3 per second
+        Limit(max_requests=5, window_seconds=10.0),   # 5 per 10 seconds
+    ])
+
+    # First 3 requests pass both limits
+    for i in range(3):
+        assert limiter.allow_request("alice") is True, f"Request {i+1} failed"
+
+    # 4th request fails the per-second limit (3/sec)
+    assert limiter.allow_request("alice") is False
+
+    # Wait for per-second window to expire
+    time.sleep(1.1)
+
+    # 5th and 6th requests: per-second limit resets, but per-10s limit is at 3
+    assert limiter.allow_request("alice") is True   # 4th in 10s window
+    assert limiter.allow_request("alice") is True   # 5th in 10s window
+    assert limiter.allow_request("alice") is False  # 6th hits 10s limit (5/10s)
+
+    # Check status
+    status = limiter.get_status("alice")
+    print(f"Per-second: {status[0]['remaining']}/{status[0]['limit']}")
+    print(f"Per-10-sec: {status[1]['remaining']}/{status[1]['limit']}")
+
+    # Different user is unaffected
+    assert limiter.allow_request("bob") is True
+
+    print("All tests passed!")
+
+
+test_multi_key_rate_limiter()
+```
+
+**Key takeaway:** Real-world APIs enforce multiple overlapping limits. The critical
+implementation detail is the **two-phase check-then-write**: check all limits first,
+only then record the request. This prevents partial state corruption where one log
+records a request but a later limit rejects it.
 
 ---
 

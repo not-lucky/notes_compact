@@ -29,14 +29,26 @@ Step 3: D is closest (2), no outgoing
 Step 4: B unreachable (directed graph)
 ```
 
-**Why the greedy choice works (Optimal Substructure)**:
+**Why the greedy choice works**:
 
 - We always process the node with smallest known distance
 - All edge weights are non-negative
 - Therefore, no later path through unprocessed nodes can be shorter
-- This is the **optimal substructure** that makes Dijkstra correct
+- This is the **greedy choice property** that makes Dijkstra correct
+- Dijkstra also relies on **optimal substructure**: every subpath of a shortest path is itself a shortest path
 
-### The Formal Proof of Optimal Substructure
+**What is "relaxation"?**
+
+Relaxation is the core operation in Dijkstra's. When we process a node `u` and look at an edge `u → v` with weight `w`, we ask: "Is the path through `u` shorter than what we currently know for `v`?"
+
+```
+if dist[u] + w < dist[v]:
+    dist[v] = dist[u] + w    # "relax" the edge — tighten the upper bound
+```
+
+The name comes from the idea that `dist[v]` starts as a loose upper bound (infinity) and we progressively *relax* (tighten) it until it equals the true shortest distance.
+
+### The Formal Proof of Greedy Correctness
 
 **Theorem**: When Dijkstra's algorithm extracts a vertex $u$ from the min-heap, its shortest path distance from the source $s$ is finalized. The distance value `dist[u]` equals the true shortest distance $\delta(s, u)$.
 
@@ -92,7 +104,7 @@ Why log V? Heap operations on V elements.
 - Not skipping outdated heap entries → Correctness issue or TLE
 - Using visited set incorrectly → May skip better paths for variants
 
-**The negative weight trap - why Dijkstra fails:**
+**The negative weight trap — why Dijkstra fails:**
 
 ```
     0 ──1──→ 1
@@ -148,6 +160,58 @@ Shortest from 0:
 
 ### Python
 
+```python
+import heapq
+from collections import defaultdict
+
+
+def dijkstra(n: int, edges: list[list[int]], source: int) -> list[float]:
+    """
+    Standard Dijkstra's shortest path from source to all nodes.
+
+    Args:
+        n: number of nodes (0-indexed)
+        edges: list of [u, v, weight] (undirected)
+        source: starting node
+
+    Returns:
+        dist: list where dist[i] = shortest distance from source to i
+              (float('inf') if unreachable)
+
+    Time:  O((V + E) log V)
+    Space: O(V + E)
+    """
+    # Build adjacency list
+    graph: dict[int, list[tuple[int, int]]] = defaultdict(list)
+    for u, v, w in edges:
+        graph[u].append((v, w))
+        graph[v].append((u, w))  # remove for directed graphs
+
+    # Initialize distances to infinity, source to 0
+    dist = [float('inf')] * n
+    dist[source] = 0
+
+    # Min-heap of (distance, node)
+    heap: list[tuple[float, int]] = [(0, source)]
+
+    while heap:
+        d, node = heapq.heappop(heap)
+
+        # Skip outdated entries: if we already found a shorter path
+        # to this node, this heap entry is stale
+        if d > dist[node]:
+            continue
+
+        # Relax all edges from this node
+        for neighbor, weight in graph[node]:
+            new_dist = d + weight
+            if new_dist < dist[neighbor]:
+                dist[neighbor] = new_dist
+                heapq.heappush(heap, (new_dist, neighbor))
+
+    return dist
+```
+
 ---
 
 ## Visual Walkthrough
@@ -195,27 +259,37 @@ Final: dist = [0, 2, 4, 3]
 ## Path Reconstruction
 
 ```python
-def dijkstra_with_path(n: int, edges: list[list[int]],
-                        source: int, target: int) -> tuple[int, list[int]]:
+import heapq
+from collections import defaultdict
+
+
+def dijkstra_with_path(
+    n: int,
+    edges: list[list[int]],
+    source: int,
+    target: int,
+) -> tuple[float, list[int]]:
     """
     Dijkstra's with path reconstruction.
 
-    Returns: (distance, path)
+    Returns:
+        (distance, path) — path is [] and distance is -1 if unreachable.
     """
-    graph = defaultdict(list)
+    graph: dict[int, list[tuple[int, int]]] = defaultdict(list)
     for u, v, w in edges:
         graph[u].append((v, w))
         graph[v].append((u, w))
 
     dist = [float('inf')] * n
     dist[source] = 0
-    parent = {source: None}
+    parent: dict[int, int | None] = {source: None}
 
-    heap = [(0, source)]
+    heap: list[tuple[float, int]] = [(0, source)]
 
     while heap:
         d, node = heapq.heappop(heap)
 
+        # Early termination: target found
         if node == target:
             break
 
@@ -223,7 +297,7 @@ def dijkstra_with_path(n: int, edges: list[list[int]],
             continue
 
         for neighbor, weight in graph[node]:
-            new_dist = dist[node] + weight
+            new_dist = d + weight
 
             if new_dist < dist[neighbor]:
                 dist[neighbor] = new_dist
@@ -233,9 +307,9 @@ def dijkstra_with_path(n: int, edges: list[list[int]],
     if dist[target] == float('inf'):
         return -1, []
 
-    # Reconstruct path
-    path = []
-    current = target
+    # Reconstruct path by walking parent pointers backward
+    path: list[int] = []
+    current: int | None = target
     while current is not None:
         path.append(current)
         current = parent[current]
@@ -250,30 +324,38 @@ def dijkstra_with_path(n: int, edges: list[list[int]],
 **FANG Context**: This is practically the "Hello World" of weighted graphs for FANG interviews. Often asked as a warm-up or screening question because it perfectly maps to standard Dijkstra. Usually dressed up as network packets, disease spread, or messages propagating across servers.
 
 ```python
+import heapq
+from collections import defaultdict
+
+
 def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
     """
     Find time for signal to reach all nodes from node k.
+    LeetCode 743: Network Delay Time.
 
-    times[i] = [u, v, w]: edge from u to v with time w
+    times[i] = [u, v, w]: directed edge from u to v with time w
     n: number of nodes (1-indexed)
     k: starting node
 
     Returns: minimum time to reach all nodes, or -1 if impossible
 
-    Time: O((V + E) log V)
+    Time:  O((V + E) log V)
+    Space: O(V + E)
     """
-    graph = defaultdict(list)
+    graph: dict[int, list[tuple[int, int]]] = defaultdict(list)
     for u, v, w in times:
         graph[u].append((v, w))
 
-    dist = {i: float('inf') for i in range(1, n + 1)}
+    # Use dict for 1-indexed nodes
+    dist: dict[int, float] = {i: float('inf') for i in range(1, n + 1)}
     dist[k] = 0
 
-    heap = [(0, k)]
+    heap: list[tuple[float, int]] = [(0, k)]
 
     while heap:
         d, node = heapq.heappop(heap)
 
+        # Skip stale entries
         if d > dist[node]:
             continue
 
@@ -285,53 +367,131 @@ def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
                 heapq.heappush(heap, (new_dist, neighbor))
 
     max_dist = max(dist.values())
-    return max_dist if max_dist < float('inf') else -1
+    return int(max_dist) if max_dist < float('inf') else -1
+```
+
+---
+
+## Path With Minimum Effort (Grid Dijkstra)
+
+Dijkstra isn't just for sum of weights! In this variation, the "cost" of a path is the **maximum absolute difference** in heights between two consecutive cells along the path. We want to find the path that minimizes this maximum effort.
+
+This is a classic "Min-Max Path" problem. We can still use Dijkstra because the cost of a path only monotonically increases (or stays the same) as we add edges.
+
+```python
+import heapq
+
+def minimum_effort_path(heights: list[list[int]]) -> int:
+    """
+    Find path from top-left to bottom-right minimizing max effort.
+    LeetCode 1631: Path With Minimum Effort.
+    
+    Effort of edge (u, v) = abs(heights[u] - heights[v])
+    Effort of path = max(effort of all edges on path)
+    
+    Time: O(R*C log(R*C)) where R, C are grid dimensions
+    Space: O(R*C)
+    """
+    ROWS, COLS = len(heights), len(heights[0])
+    
+    # max_effort[r][c] = min effort needed to reach (r, c)
+    max_effort = [[float('inf')] * COLS for _ in range(ROWS)]
+    max_effort[0][0] = 0
+    
+    # Min-heap of (current_max_effort, r, c)
+    heap: list[tuple[float, int, int]] = [(0, 0, 0)]
+    
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    
+    while heap:
+        effort, r, c = heapq.heappop(heap)
+        
+        # Reached destination! Because it's a min-heap, this is the 
+        # optimal (minimum possible maximum effort) path.
+        if r == ROWS - 1 and c == COLS - 1:
+            return int(effort)
+            
+        # Skip stale entries
+        if effort > max_effort[r][c]:
+            continue
+            
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            
+            if 0 <= nr < ROWS and 0 <= nc < COLS:
+                # Effort for this specific step
+                step_effort = abs(heights[r][c] - heights[nr][nc])
+                
+                # New max effort for the path ending at (nr, nc)
+                new_max_effort = max(effort, step_effort)
+                
+                # Relaxation: if we found a path with a smaller max effort
+                if new_max_effort < max_effort[nr][nc]:
+                    max_effort[nr][nc] = new_max_effort
+                    heapq.heappush(heap, (new_max_effort, nr, nc))
+                    
+    return -1
 ```
 
 ---
 
 ## Cheapest Flights Within K Stops
 
-Modified Dijkstra with stop constraint:
+Modified Dijkstra with stop constraint. This is **not** standard Dijkstra — the greedy property doesn't hold because a costlier path with fewer stops may lead to a cheaper final answer. We must allow revisiting nodes if we arrive with fewer stops.
 
 ```python
-def find_cheapest_price(n: int, flights: list[list[int]],
-                        src: int, dst: int, k: int) -> int:
+import heapq
+from collections import defaultdict
+
+
+def find_cheapest_price(
+    n: int,
+    flights: list[list[int]],
+    src: int,
+    dst: int,
+    k: int,
+) -> int:
     """
     Find cheapest price from src to dst with at most k stops.
+    LeetCode 787: Cheapest Flights Within K Stops.
 
-    Time: O(E × K)
-    Space: O(V)
+    Time:  O(E * K * log(E * K)) worst case
+    Space: O(V * K)
 
     Note: Regular Dijkstra doesn't work here because we need
     to track the number of stops, not just minimum distance.
+    A more expensive path with fewer stops might lead to a
+    cheaper overall route.
     """
-    graph = defaultdict(list)
+    graph: dict[int, list[tuple[int, int]]] = defaultdict(list)
     for u, v, price in flights:
         graph[u].append((v, price))
 
-    # (cost, node, stops)
-    heap = [(0, src, 0)]
-    # Best cost to reach node with certain number of stops
-    best = defaultdict(lambda: float('inf'))
+    # (cost, node, stops_used)
+    heap: list[tuple[int, int, int]] = [(0, src, 0)]
+
+    # best[node] = fewest stops used to reach node with acceptable cost
+    # We only skip if we've reached this node with fewer-or-equal stops
+    best_stops: dict[int, int] = {}
 
     while heap:
         cost, node, stops = heapq.heappop(heap)
 
+        # Reached destination — first pop is cheapest due to min-heap
         if node == dst:
             return cost
 
+        # Skip if we've already visited this node with fewer stops
+        if node in best_stops and best_stops[node] <= stops:
+            continue
+        best_stops[node] = stops
+
+        # Can't take any more flights
         if stops > k:
             continue
 
-        if cost > best[(node, stops)]:
-            continue
-        best[(node, stops)] = cost
-
         for neighbor, price in graph[node]:
-            new_cost = cost + price
-            if new_cost < best[(neighbor, stops + 1)]:
-                heapq.heappush(heap, (new_cost, neighbor, stops + 1))
+            heapq.heappush(heap, (cost + price, neighbor, stops + 1))
 
     return -1
 ```
@@ -340,35 +500,37 @@ def find_cheapest_price(n: int, flights: list[list[int]],
 
 ## Why Dijkstra Fails with Negative Weights
 
-```
-Graph with negative edge:
-    0 --1-- 1
-     \     /
-      3  -2
+In theory, Dijkstra's algorithm assumes that once a node is popped from the min-heap, its shortest path is final. Negative edges break this assumption.
+
+```text
+Directed Graph:
+    0 --1-→ 1
+     \     ↗
+      3  -5
        \ /
         2
-
-Dijkstra from 0:
-  Step 1: Process 0, update dist[1]=1, dist[2]=3
-  Step 2: Process 1 (dist=1), no improvements
-  Step 3: Process 2 (dist=3), can't go back
-
-But: 0→2→1 costs 3+(-2)=1, same as direct!
-     If edge 0→2 was 4: 0→2→1 = 4+(-2)=2 < 1
-     Dijkstra would miss this.
-
-Use Bellman-Ford for negative edges.
 ```
+
+**Trace from node 0:**
+1. **Pop 0**: Updates `dist[1]=1`, `dist[2]=3`.
+2. **Pop 1** (dist=1): Since 1 is the smallest in the heap, the greedy property states `dist[1]=1` is final.
+3. **Pop 2** (dist=3): Edge 2→1 has weight -5. The new path 0→2→1 costs `3 + (-5) = -2`.
+
+**What happens next depends on the implementation:**
+- **Strict Dijkstra (with `visited` set)**: Ignores the update to node 1 because it has already been visited/finalized. The algorithm finishes and returns `dist[1]=1`, which is **wrong**.
+- **Modern Queue Template (checking `new_dist < dist[neighbor]`)**: Updates `dist[1]=-2` and pushes node 1 back into the heap. It eventually finds the correct answer, BUT it re-evaluates a "finalized" node. In a graph with many negative edges, this causes a cascade of re-evaluations, degrading time complexity to an **exponential $O(2^V)$ worst-case**. Moreover, if there is a negative cycle, it loops infinitely!
+
+**The rule**: The greedy assumption — "once popped, it's final" — is violated because negative edges can retroactively create shorter paths. Always use **Bellman-Ford** if negative weights exist.
 
 ---
 
 ## Complexity Analysis
 
-| Implementation   | Time             | Space | Notes                                 |
-| ---------------- | ---------------- | ----- | ------------------------------------- |
-| Binary heap      | O((V + E) log V) | O(V)  | Standard for interviews, most common. |
-| Fibonacci heap   | O(E + V log V)   | O(V)  | Theoretically faster for dense graphs.|
-| Adjacency matrix | O(V²)            | O(V)  | Good for very dense graphs (E ≈ V²).  |
+| Implementation   | Time             | Space  | Notes                                 |
+| ---------------- | ---------------- | ------ | ------------------------------------- |
+| Binary heap      | O((V + E) log V) | O(V+E) | Standard for interviews, most common. |
+| Fibonacci heap   | O(E + V log V)   | O(V+E) | Theoretically faster for dense graphs.|
+| Adjacency matrix | O(V²)            | O(V²)  | Good for very dense graphs (E ≈ V²).  |
 
 **Deep Dive: Binary Heap vs Fibonacci Heap**
 
@@ -383,18 +545,18 @@ Use Bellman-Ford for negative edges.
 # WRONG: Not skipping outdated entries
 while heap:
     d, node = heapq.heappop(heap)
-    # Process without checking if d > dist[node]
-    # This processes the same node multiple times!
+    # Processing without checking if d > dist[node] means
+    # we process the same node multiple times with stale distances!
 
-# CORRECT: Skip if we found a better path
+# CORRECT: Skip if we already found a better path
 while heap:
     d, node = heapq.heappop(heap)
     if d > dist[node]:
-        continue  # Already found better path
+        continue  # Stale entry — already found shorter path
     # Process...
 
 
-# WRONG: Using visited set (may skip better paths in some cases)
+# WRONG: Using visited set (may skip better paths in some variants)
 visited = set()
 while heap:
     d, node = heapq.heappop(heap)
@@ -402,14 +564,16 @@ while heap:
         continue
     visited.add(node)
     # This works for basic Dijkstra but fails for variations
+    # like "K stops" where you may need to revisit a node
 
-# For basic Dijkstra, both work, but distance check is more general
+# For basic Dijkstra, both approaches work.
+# The distance-check pattern is more general and idiomatic.
 
 
 # WRONG: Not handling unreachable nodes
 return max(dist)  # May return infinity!
 
-# CORRECT
+# CORRECT: Check for infinity
 max_dist = max(dist)
 return max_dist if max_dist < float('inf') else -1
 ```
@@ -443,7 +607,7 @@ Min-Heap: [(0, node 0)]
 Processed: {}
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 1: Pop (0, node 0) - smallest distance                 ║
+║ ITERATION 1: Pop (0, node 0) — smallest distance               ║
 ╚══════════════════════════════════════════════════════════════════╝
   dist[0] = 0 (final, because smallest in heap)
 
@@ -456,7 +620,7 @@ Processed: {}
   Min-Heap: [(1, 3), (2, 2), (4, 1)]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 2: Pop (1, node 3) - smallest distance                 ║
+║ ITERATION 2: Pop (1, node 3) — smallest distance               ║
 ╚══════════════════════════════════════════════════════════════════╝
   dist[3] = 1 (final)
 
@@ -467,7 +631,7 @@ Processed: {}
   Min-Heap: [(2, 2), (3, 4), (4, 1)]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 3: Pop (2, node 2) - smallest distance                 ║
+║ ITERATION 3: Pop (2, node 2) — smallest distance               ║
 ╚══════════════════════════════════════════════════════════════════╝
   dist[2] = 2 (final)
 
@@ -478,7 +642,7 @@ Processed: {}
   Min-Heap: [(3, 4), (4, 1)]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 4: Pop (3, node 4) - smallest distance                 ║
+║ ITERATION 4: Pop (3, node 4) — smallest distance               ║
 ╚══════════════════════════════════════════════════════════════════╝
   dist[4] = 3 (final)
 
@@ -488,7 +652,7 @@ Processed: {}
   Min-Heap: [(4, 1)]
 
 ╔══════════════════════════════════════════════════════════════════╗
-║ ITERATION 5: Pop (4, node 1)                                     ║
+║ ITERATION 5: Pop (4, node 1)                                    ║
 ╚══════════════════════════════════════════════════════════════════╝
   dist[1] = 4 (final)
 
@@ -535,7 +699,7 @@ but Python's heapq uses binary heap.
 Proof:
 1. Distance array/dict: O(V)
 2. Adjacency list: O(V + E)
-3. Priority queue: O(V) or O(E) with duplicates
+3. Priority queue: O(V) in theory, O(E) worst case with duplicates
 4. Total: O(V + E)
 ```
 
@@ -549,56 +713,61 @@ See the formal proof in the **Building Intuition** section.
 
 ```python
 # 1. Source equals target
-dijkstra(n, edges, 0) with target 0
-# Distance = 0
+dijkstra(n, edges, source=0)  # dist[0] = 0
 
-# 2. Unreachable node
-# Disconnected graph
-# Return infinity or -1
+# 2. Unreachable node (disconnected graph)
+# dist[node] remains float('inf') — return -1 or handle accordingly
 
 # 3. No edges
-# Only source has distance 0
+# Only source has distance 0, everything else is unreachable
 
 # 4. Self-loop
 edges = [[0, 0, 5]]
-# Ignore, doesn't help shortest path
+# 0 + 5 = 5 > 0, so self-loop is never beneficial — handled naturally
 
-# 5. Multiple edges between same nodes
+# 5. Multiple edges between same nodes (parallel edges)
 edges = [[0, 1, 5], [0, 1, 3]]
-# Keep both, algorithm handles naturally
+# Both are added to adjacency list; the cheaper one wins during relaxation
+
+# 6. Very large graph with 0-weight edges
+# Still correct! Dijkstra requires non-negative, not strictly positive
 ```
 
 ---
 
 ## Interview Tips
 
-1. **Know the template**: Heap-based implementation
-2. **Explain the greedy choice**: Always process minimum distance
+1. **Know the template**: Heap-based implementation cold
+2. **Explain the greedy choice**: "We always process the minimum distance node because non-negative weights guarantee no shorter path can appear later"
 3. **State the constraint**: Non-negative weights only
 4. **Know when it fails**: Negative weights → Bellman-Ford
 5. **Handle unreachable**: Check for infinity in result
+6. **Explain relaxation**: "We check if going through the current node offers a shorter path to its neighbor"
 
 ---
 
 ## Practice Problems
 
-| #   | Problem                         | Difficulty | Key Variation            |
-| --- | ------------------------------- | ---------- | ------------------------ |
-| 1   | Network Delay Time              | Medium     | Basic Dijkstra           |
-| 2   | Path with Minimum Effort        | Medium     | Binary search + Dijkstra |
-| 3   | Cheapest Flights Within K Stops | Medium     | With stop constraint     |
-| 4   | Swim in Rising Water            | Hard       | Binary search + BFS      |
-| 5   | Path with Maximum Probability   | Medium     | Product instead of sum   |
+| #   | Problem                                       | Difficulty | Key Variation                     | Hint                                                               |
+| --- | --------------------------------------------- | ---------- | --------------------------------- | ------------------------------------------------------------------ |
+| 1   | Network Delay Time (LC 743)                   | Medium     | Basic Dijkstra                    | Standard template. Answer is `max(dist)`.                          |
+| 2   | Path with Minimum Effort (LC 1631)            | Medium     | Min-max path (Dijkstra on max)    | Dijkstra where "distance" = max absolute height diff along path.   |
+| 3   | Cheapest Flights Within K Stops (LC 787)      | Medium     | With stop constraint              | Modified Dijkstra tracking stops; allow revisits with fewer stops.  |
+| 4   | Swim in Rising Water (LC 778)                 | Hard       | Min-max path on grid              | Like #2: Dijkstra where cost = max cell value along path.          |
+| 5   | Path with Maximum Probability (LC 1514)       | Medium     | Max product instead of min sum    | Use max-heap (negate log-probabilities, or negate probabilities).   |
+
+**Progression**: Start with #1 (pure template), then #2/#5 (modified cost functions), then #3 (extra state dimension), then #4 (grid + modified cost).
 
 ---
 
 ## Key Takeaways
 
-1. **Greedy on minimum distance**: Always process closest unvisited
-2. **Priority queue**: Essential for efficiency
-3. **Non-negative weights only**: Otherwise use Bellman-Ford
-4. **Skip outdated heap entries**: Check `d > dist[node]`
-5. **O((V + E) log V)**: Standard complexity with binary heap
+1. **Greedy on minimum distance**: Always process closest unvisited node
+2. **Relaxation**: Core operation — tighten upper bounds on distances
+3. **Priority queue**: Essential for efficient greedy selection
+4. **Non-negative weights only**: Negative weights break the greedy proof
+5. **Skip stale entries**: Check `d > dist[node]` after every pop
+6. **O((V + E) log V)**: Standard complexity with binary heap
 
 ---
 

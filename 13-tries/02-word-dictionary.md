@@ -10,7 +10,8 @@
 | :--- | :--- | :--- |
 | **`addWord(word)`** | `O(L)` | Insert a word of length `L` into the Trie normally. |
 | **`search(word)` (No wildcards)** | `O(L)` | Navigate the Trie following exact character matches. |
-| **`search(word)` (With `k` wildcards)** | `O(M^k \cdot L)` | For `k` wildcards, branch up to `M` (e.g., 26) times. `L` is word length. |
+| **`search(word)` (With `k` wildcards)** | `O(26^k)` | At each of `k` wildcard positions, branch up to 26 paths. Non-wildcard chars follow single paths (no extra factor). |
+| **`search(word)` (All wildcards)** | `O(26^L)` | Every position branches — explores entire trie. |
 | **Space Complexity** | `O(N \cdot L)` | Where `N` is the number of words, each of length `L`. Storage for all characters. |
 
 ## Interview Context
@@ -166,15 +167,15 @@ Design a data structure that supports:
 - `addWord(word)` - Adds a word to the structure
 - `search(word)` - Returns true if word is in the structure; `.` matches any letter
 
-```java
-WordDictionary wd = new WordDictionary();
-wd.addWord("bad");
-wd.addWord("dad");
-wd.addWord("mad");
-wd.search("pad");  // false
-wd.search("bad");  // true
-wd.search(".ad");  // true (matches "bad", "dad", "mad")
-wd.search("b..");  // true (matches "bad")
+```python
+wd = WordDictionary()
+wd.addWord("bad")
+wd.addWord("dad")
+wd.addWord("mad")
+wd.search("pad")   # False
+wd.search("bad")   # True
+wd.search(".ad")   # True  (matches "bad", "dad", "mad")
+wd.search("b..")   # True  (matches "bad")
 ```
 
 ---
@@ -221,9 +222,9 @@ Search "b..":
 ### Standard Solution
 
 ```python
-from typing import Any
-
 class TrieNode:
+    __slots__ = ('children', 'is_end')
+
     def __init__(self):
         self.children: dict[str, 'TrieNode'] = {}
         self.is_end: bool = False
@@ -234,7 +235,8 @@ class WordDictionary:
 
     Time:
     - addWord: O(L) where L = word length
-    - search: O(26^k * L) worst case where k = number of wildcards
+    - search: O(26^k) worst case where k = number of wildcards
+      (non-wildcard chars follow single paths, wildcards branch up to 26)
 
     Space: O(N * L) for trie storage, O(L) for recursion stack
     """
@@ -285,7 +287,7 @@ class WordDictionary:
     """Iterative approach using explicit stack."""
 
     def __init__(self):
-        self.root: dict[str, 'Any'] = {}
+        self.root: dict = {}
 
     def addWord(self, word: str) -> None:
         node = self.root
@@ -297,7 +299,7 @@ class WordDictionary:
 
     def search(self, word: str) -> bool:
         # Stack: (node, index)
-        stack: list[tuple[dict[str, 'Any'], int]] = [(self.root, 0)]
+        stack: list[tuple[dict, int]] = [(self.root, 0)]
 
         while stack:
             node, i = stack.pop()
@@ -331,7 +333,7 @@ class WordDictionary:
     """
 
     def __init__(self):
-        self.root: dict[str, 'Any'] = {}
+        self.root: dict = {}
         self.word_lengths: set[int] = set()  # Track valid lengths
 
     def addWord(self, word: str) -> None:
@@ -350,7 +352,7 @@ class WordDictionary:
 
         return self._search(self.root, word, 0)
 
-    def _search(self, node: dict[str, 'Any'], word: str, i: int) -> bool:
+    def _search(self, node: dict, word: str, i: int) -> bool:
         if i == len(word):
             return '$' in node
 
@@ -375,7 +377,7 @@ class WordDictionary:
 | :--------------------- | :-------- | :---------- | :------------------- |
 | **`addWord`**          | `O(L)`    | `O(L)`      | `L` = word length      |
 | **`search` (no wildcard)** | `O(L)`    | `O(L)`      | Standard trie search |
-| **`search` (`k` wildcards)** | `O(L)`    | `O(26^k \cdot L)`| Branch up to 26 paths at each `.` |
+| **`search` (`k` wildcards)** | `O(L)`    | `O(26^k)`  | Branch up to 26 paths at each `.`; non-wildcard chars are single-path (no extra `× L` factor) |
 | **`search` (all wildcards)** | `O(26^L)` | `O(26^L)`   | Explores entire trie |
 
 ### Space Complexity
@@ -404,20 +406,24 @@ def search_with_star(self, word: str) -> bool:
         char = word[i]
 
         if char == '*':
-            # Try matching zero characters (skip *)
+            # Option 1: Match zero characters (skip '*')
             if dfs(node, i + 1):
                 return True
-            # Try matching one or more characters
+            # Option 2: Match one+ characters (consume a child, stay at '*')
+            # Terminates because the trie is finite and acyclic — each
+            # recursive call moves deeper in the trie even though i stays.
             for child in node.children.values():
-                if dfs(child, i):  # Stay at '*'
+                if dfs(child, i):
                     return True
             return False
         elif char == '.':
+            # Single-char wildcard: try all children
             for child in node.children.values():
                 if dfs(child, i + 1):
                     return True
             return False
         else:
+            # Exact character match
             if char not in node.children:
                 return False
             return dfs(node.children[char], i + 1)
@@ -435,10 +441,12 @@ def match_pattern(self, pattern: str) -> list[str]:
     '*' = previous char zero or more times
 
     Example: "a*b.c" matches "bc", "abc", "aaaabc"
+
+    ⚠️ Exercise: Implement using NFA simulation or DP.
+    This requires converting the regex pattern into states and
+    simulating transitions — beyond simple trie DFS.
     """
-    # This becomes similar to regex matching
-    # Use DP or NFA simulation
-    pass
+    raise NotImplementedError("Exercise: use NFA simulation or DP")
 ```
 
 ### Magic Dictionary (LeetCode 676)
@@ -450,10 +458,13 @@ class MagicDictionary:
     """
     Search returns true if modifying exactly one character
     would make it match a dictionary word.
+
+    Time: O(26 * L) per search — at each position, try all 26 branches
+    Space: O(N * L) for trie storage
     """
 
     def __init__(self):
-        self.root: dict[str, 'Any'] = {}
+        self.root: dict = {}
 
     def buildDict(self, dictionary: list[str]) -> None:
         for word in dictionary:
@@ -468,7 +479,7 @@ class MagicDictionary:
         """Return true if word can match with exactly one modification."""
         return self._search(self.root, word, 0, False)
 
-    def _search(self, node: dict[str, 'Any'], word: str, i: int, modified: bool) -> bool:
+    def _search(self, node: dict, word: str, i: int, modified: bool) -> bool:
         if i == len(word):
             return modified and '$' in node
 
@@ -502,25 +513,26 @@ class WordFilter:
     """
     Search for word with given prefix and suffix.
 
-    Trick: Store "suffix#prefix" in trie.
-    Query: Search for "suffix#prefix"
+    Trick: For each word, insert all rotations "suffix#word" into the trie.
+    Query: Search for "suffix#prefix" as a prefix in the trie.
+
+    Time: O(L^2) per word insertion, O(L) per query
+    Space: O(N * L^2) for all rotations
     """
 
     def __init__(self, words: list[str]):
-        self.root: dict[str, 'Any'] = {}
+        self.root: dict = {}
 
         for weight, word in enumerate(words):
-            # Insert all combinations of suffix#word
-            word_with_sep = word + '#'
+            # Insert all suffix rotations: word[i:]#word for each i
             for i in range(len(word) + 1):
-                # suffix is word[i:]
                 key = word[i:] + '#' + word
                 node = self.root
                 for char in key:
                     if char not in node:
                         node[char] = {}
                     node = node[char]
-                    node['weight'] = weight  # Update weight at each node
+                    node['weight'] = weight  # Latest weight at each prefix node
 
     def f(self, prefix: str, suffix: str) -> int:
         """Return index of word with given prefix and suffix."""
@@ -589,23 +601,40 @@ Result: True
 
 | Pattern | Time Complexity | Example             |
 | :------ | :-------------- | :------------------ |
-| `"hello"` | `O(L)`          | Exact match         |
-| `".ello"` | `O(26 \cdot L)` | Wildcard at start   |
-| `"h.llo"` | `O(1 + 26 \cdot L)` | Wildcard in middle  |
-| `"....."` | `O(26^L)`       | All wildcards       |
-| `".e.l."` | `O(26^2 \cdot L)` | Scattered wildcards |
+| `"hello"` | `O(L)`          | Exact match — single path |
+| `".ello"` | `O(26)`         | 1 wildcard — branch once, then follow single paths |
+| `"h.llo"` | `O(26)`         | 1 wildcard in middle — same branching cost |
+| `".e.l."` | `O(26^3)`       | 3 wildcards — branch at each `.` position |
+| `"....."` | `O(26^L)`       | All wildcards — explores entire trie |
 
 ---
 
 ## Practice Problems
 
-| # | Problem | Difficulty | Key Concept |
-| :--- | :--- | :--- | :--- |
-| 1 | Add and Search Word | Medium | Wildcard trie search |
-| 2 | Implement Magic Dictionary | Medium | Single char modification |
-| 3 | Prefix and Suffix Search | Hard | Combined prefix/suffix trie |
-| 4 | Camelcase Matching | Medium | Pattern matching variant |
-| 5 | Concatenated Words | Hard | DFS + Trie |
+### Warm-Up (Easy)
+
+| # | Problem | Key Concept |
+| :--- | :--- | :--- |
+| 1 | [Longest Common Prefix (LC 14)](https://leetcode.com/problems/longest-common-prefix/) | Basic trie traversal — follow shared path until branching |
+| 2 | [Implement Trie (LC 208)](https://leetcode.com/problems/implement-trie-prefix-tree/) | Foundation: insert, search, startsWith before adding wildcards |
+
+### Core (Medium)
+
+| # | Problem | Key Concept |
+| :--- | :--- | :--- |
+| 3 | [Add and Search Word (LC 211)](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | **This problem** — wildcard trie search with DFS |
+| 4 | [Implement Magic Dictionary (LC 676)](https://leetcode.com/problems/implement-magic-dictionary/) | Single char modification — controlled branching |
+| 5 | [Camelcase Matching (LC 1023)](https://leetcode.com/problems/camelcase-matching/) | Pattern matching variant with uppercase constraints |
+| 6 | [Map Sum Pairs (LC 677)](https://leetcode.com/problems/map-sum-pairs/) | Trie with values — DFS aggregation at wildcard-like prefix |
+
+### Advanced (Hard)
+
+| # | Problem | Key Concept |
+| :--- | :--- | :--- |
+| 7 | [Prefix and Suffix Search (LC 745)](https://leetcode.com/problems/prefix-and-suffix-search/) | Combined prefix/suffix trie with suffix rotation trick |
+| 8 | [Word Search II (LC 212)](https://leetcode.com/problems/word-search-ii/) | Trie + backtracking on 2D grid |
+| 9 | [Concatenated Words (LC 472)](https://leetcode.com/problems/concatenated-words/) | DFS + Trie — check if word is composed of other words |
+| 10 | [Stream of Characters (LC 1032)](https://leetcode.com/problems/stream-of-characters/) | Reverse trie — match suffix of stream against dictionary |
 
 ---
 
