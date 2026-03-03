@@ -146,7 +146,7 @@ def rob_optimized(nums: list[int]) -> int:
 
 ## 2. House Robber II: Circular Array
 
-**Problem:** Houses are arranged in a circle. That means the first house is adjacent to the last house.
+**Problem Statement:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are **arranged in a circle**. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night. Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
 
 **Insight:** Because the first and last houses are adjacent, you cannot rob both of them. Therefore, the optimal solution must fall into one of two scenarios:
 1. You rob from houses `0` to `n-2` (excluding the last house entirely).
@@ -214,7 +214,7 @@ def rob_circular(nums: list[int]) -> int:
 
 ## 3. House Robber III: Binary Tree
 
-**Problem:** The houses form a binary tree. If two directly-linked houses are broken into on the same night, the police are alerted. (You cannot rob a node and its parent).
+**Problem Statement:** The thief has found himself a new place for his thievery again. There is only one entrance to this area, called `root`. Besides the `root`, each house has one and only one parent house. After a tour, the smart thief realized that all houses in this place form a binary tree. It will automatically contact the police if two directly-linked houses were broken into on the same night. Given the `root` of the binary tree, return the maximum amount of money the thief can rob without alerting the police.
 
 ### Approach 1: Top-Down Memoization
 
@@ -300,7 +300,7 @@ def rob_tree(root: TreeNode) -> int:
 
 ## 4. Related Problem: Delete and Earn
 
-**Problem:** Given an array of integers `nums`, you can perform operations. In each operation, you pick any `nums[i]`, earn `nums[i]` points, and must delete **every** element equal to `nums[i] - 1` or `nums[i] + 1`. Maximize your points.
+**Problem Statement:** You are given an integer array `nums`. You want to maximize the number of points you get by performing the following operation any number of times: Pick any `nums[i]` and delete it to earn `nums[i]` points. Afterwards, you must delete every element equal to `nums[i] - 1` and every element equal to `nums[i] + 1`. Return the maximum number of points you can earn by applying the above operation some number of times.
 
 **Insight:** If you take a number `x`, you get points equal to `x * count(x)`. But you are forbidden from taking `x - 1` and `x + 1`. This is exactly House Robber!
 1. Group the numbers by frequency/total value.

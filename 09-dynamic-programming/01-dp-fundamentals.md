@@ -272,7 +272,11 @@ These problems depend only on 1 or 2 previous states.
 #### Min Cost Climbing Stairs (Easy)
 Introduces choosing between costs at each step. You can start at step 0 or 1.
 ```python
-def minCostClimbingStairs(cost: list[int]) -> int:
+**Problem:** You are given an integer array `cost` where `cost[i]` is the cost of `i`th step on a staircase. Once you pay the cost, you can either climb one or two steps. You can either start from the step with index 0, or the step with index 1. Return the minimum cost to reach the top of the floor.
+
+**Top-Down Memoization:**
+```python
+def minCostClimbingStairsMemo(cost: list[int]) -> int:
     memo = {}
     
     def dp(i: int) -> int:
@@ -290,10 +294,31 @@ def minCostClimbingStairs(cost: list[int]) -> int:
     return min(dp(0), dp(1))
 ```
 
+**Bottom-Up Tabulation:**
+```python
+def minCostClimbingStairsTab(cost: list[int]) -> int:
+    n = len(cost)
+    if n == 0:
+        return 0
+    if n == 1:
+        return cost[0]
+
+    dp = [0] * (n + 1)
+
+    for i in range(2, n + 1):
+        dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2])
+
+    return dp[n]
+```
+
 #### House Robber (Medium)
 Classic DP. You can't take adjacent items. `dp(i) = max(dp(i+1), nums[i] + dp(i+2))`
 ```python
-def rob(nums: list[int]) -> int:
+**Problem:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+**Top-Down Memoization:**
+```python
+def robMemo(nums: list[int]) -> int:
     memo = {}
     
     def dp(i: int) -> int:
@@ -313,13 +338,35 @@ def rob(nums: list[int]) -> int:
     return dp(0)
 ```
 
+**Bottom-Up Tabulation:**
+```python
+def robTab(nums: list[int]) -> int:
+    if not nums:
+        return 0
+    if len(nums) == 1:
+        return nums[0]
+
+    dp = [0] * len(nums)
+    dp[0] = nums[0]
+    dp[1] = max(nums[0], nums[1])
+
+    for i in range(2, len(nums)):
+        dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
+
+    return dp[-1]
+```
+
 ### 2. 1D Array (Longest Increasing Subsequence Style)
 These problems depend on *all* previous states, not just the last few.
 
 #### Longest Increasing Subsequence (Medium)
 Core pattern. `dp(i)` finds the longest increasing subsequence starting at index `i`.
 ```python
-def lengthOfLIS(nums: list[int]) -> int:
+**Problem:** Given an integer array `nums`, return the length of the longest strictly increasing subsequence. A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.
+
+**Top-Down Memoization:**
+```python
+def lengthOfLISMemo(nums: list[int]) -> int:
     memo = {}
     
     def dp(i: int) -> int:
@@ -338,7 +385,24 @@ def lengthOfLIS(nums: list[int]) -> int:
         return memo[i]
         
     # We can start the LIS from any index
+    if not nums: return 0
     return max(dp(i) for i in range(len(nums)))
+```
+
+**Bottom-Up Tabulation:**
+```python
+def lengthOfLISTab(nums: list[int]) -> int:
+    if not nums:
+        return 0
+
+    dp = [1] * len(nums)
+
+    for i in range(1, len(nums)):
+        for j in range(i):
+            if nums[i] > nums[j]:
+                dp[i] = max(dp[i], dp[j] + 1)
+
+    return max(dp)
 ```
 
 ### 3. 2D DP (Grid Style)
@@ -347,7 +411,11 @@ The state depends on coordinates `(r, c)` and transitions usually involve moving
 #### Unique Paths (Medium)
 Count ways to reach bottom-right.
 ```python
-def uniquePaths(m: int, n: int) -> int:
+**Problem:** There is a robot on an `m x n` grid. The robot is initially located at the top-left corner (i.e., `grid[0][0]`). The robot tries to move to the bottom-right corner (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time. Given the two integers `m` and `n`, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+**Top-Down Memoization:**
+```python
+def uniquePathsMemo(m: int, n: int) -> int:
     memo = {}
     
     def dp(r: int, c: int) -> int:
@@ -369,13 +437,29 @@ def uniquePaths(m: int, n: int) -> int:
     return dp(0, 0)
 ```
 
+**Bottom-Up Tabulation:**
+```python
+def uniquePathsTab(m: int, n: int) -> int:
+    dp = [[1] * n for _ in range(m)]
+
+    for r in range(1, m):
+        for c in range(1, n):
+            dp[r][c] = dp[r - 1][c] + dp[r][c - 1]
+
+    return dp[m - 1][n - 1]
+```
+
 ### 4. 2D DP (Knapsack Style)
 The state depends on an `index` in the array and a `capacity` constraint.
 
 #### Coin Change (Medium)
 Unbounded Knapsack problem. You can reuse the same coin multiple times.
 ```python
-def coinChange(coins: list[int], amount: int) -> int:
+**Problem:** You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`. You may assume that you have an infinite number of each kind of coin.
+
+**Top-Down Memoization:**
+```python
+def coinChangeMemo(coins: list[int], amount: int) -> int:
     memo = {}
     
     def dp(rem: int) -> int:
@@ -398,6 +482,21 @@ def coinChange(coins: list[int], amount: int) -> int:
         return memo[rem]
         
     return dp(amount)
+```
+
+**Bottom-Up Tabulation:**
+```python
+def coinChangeTab(coins: list[int], amount: int) -> int:
+    # dp[i] represents the minimum number of coins to make amount i
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+
+    for i in range(1, amount + 1):
+        for coin in coins:
+            if i - coin >= 0:
+                dp[i] = min(dp[i], dp[i - coin] + 1)
+
+    return dp[amount] if dp[amount] != float('inf') else -1
 ```
 
 ## Summary
