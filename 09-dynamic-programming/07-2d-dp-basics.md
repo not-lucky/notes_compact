@@ -533,14 +533,14 @@ def min_path_sum_optimized(grid: list[list[int]]) -> int:
 
 | # | Problem | Difficulty | Pattern / Focus |
 | :--- | :--- | :--- | :--- |
-| 62 | Unique Paths | Medium | Basic 2D grid traversal |
-| 63 | Unique Paths II | Medium | Grid traversal with obstacles |
-| 64 | Minimum Path Sum | Medium | Path optimization |
-| 120 | Triangle | Medium | Bottom-up DP |
-| 931 | Minimum Falling Path Sum | Medium | Bottom-up DP (Square Grid) |
-| 221 | Maximal Square | Medium | Using diagonal dependencies |
-| 174 | Dungeon Game | Hard | Backwards state modeling |
-| 741 | Cherry Pickup | Hard | Multi-dimensional state reduction |
+| [62](https://leetcode.com/problems/unique-paths/) | Unique Paths | Medium | Basic 2D grid traversal |
+| [63](https://leetcode.com/problems/unique-paths-ii/) | Unique Paths II | Medium | Grid traversal with obstacles |
+| [64](https://leetcode.com/problems/minimum-path-sum/) | Minimum Path Sum | Medium | Path optimization |
+| [120](https://leetcode.com/problems/triangle/) | Triangle | Medium | Bottom-up DP |
+| [931](https://leetcode.com/problems/minimum-falling-path-sum/) | Minimum Falling Path Sum | Medium | Bottom-up DP (Square Grid) |
+| [221](https://leetcode.com/problems/maximal-square/) | Maximal Square | Medium | Using diagonal dependencies |
+| [174](https://leetcode.com/problems/dungeon-game/) | Dungeon Game | Hard | Backwards state modeling |
+| [741](https://leetcode.com/problems/cherry-pickup/) | Cherry Pickup | Hard | Multi-dimensional state reduction |
 
 ---
 

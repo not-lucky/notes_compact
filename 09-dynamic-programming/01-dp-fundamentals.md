@@ -271,7 +271,6 @@ These problems depend only on 1 or 2 previous states.
 
 #### Min Cost Climbing Stairs (Easy)
 Introduces choosing between costs at each step. You can start at step 0 or 1.
-```python
 **Problem:** You are given an integer array `cost` where `cost[i]` is the cost of `i`th step on a staircase. Once you pay the cost, you can either climb one or two steps. You can either start from the step with index 0, or the step with index 1. Return the minimum cost to reach the top of the floor.
 
 **Top-Down Memoization:**
@@ -313,7 +312,6 @@ def minCostClimbingStairsTab(cost: list[int]) -> int:
 
 #### House Robber (Medium)
 Classic DP. You can't take adjacent items. `dp(i) = max(dp(i+1), nums[i] + dp(i+2))`
-```python
 **Problem:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
 
 **Top-Down Memoization:**
@@ -361,7 +359,6 @@ These problems depend on *all* previous states, not just the last few.
 
 #### Longest Increasing Subsequence (Medium)
 Core pattern. `dp(i)` finds the longest increasing subsequence starting at index `i`.
-```python
 **Problem:** Given an integer array `nums`, return the length of the longest strictly increasing subsequence. A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.
 
 **Top-Down Memoization:**
@@ -410,7 +407,6 @@ The state depends on coordinates `(r, c)` and transitions usually involve moving
 
 #### Unique Paths (Medium)
 Count ways to reach bottom-right.
-```python
 **Problem:** There is a robot on an `m x n` grid. The robot is initially located at the top-left corner (i.e., `grid[0][0]`). The robot tries to move to the bottom-right corner (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time. Given the two integers `m` and `n`, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
 
 **Top-Down Memoization:**
@@ -454,7 +450,6 @@ The state depends on an `index` in the array and a `capacity` constraint.
 
 #### Coin Change (Medium)
 Unbounded Knapsack problem. You can reuse the same coin multiple times.
-```python
 **Problem:** You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`. You may assume that you have an infinite number of each kind of coin.
 
 **Top-Down Memoization:**

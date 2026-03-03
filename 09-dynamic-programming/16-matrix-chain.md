@@ -319,26 +319,26 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
 
 To truly master interval DP, solve these problems in order:
 
-1. **Matrix Chain Multiplication (GeeksforGeeks/Classic)**: The canonical problem. Implements the exact algorithm above.
-2. **Minimum Score Triangulation of Polygon (LeetCode 1039)**: Visually different, mathematically identical to Matrix Chain.
-3. **Minimum Cost Tree From Leaf Values (LeetCode 1130)**: Similar structure but finding maximums in subranges.
-4. **Burst Balloons (LeetCode 312)**: The trick is to think in reverse (which balloon is popped *last* in the interval).
-5. **Minimum Cost to Merge Stones (LeetCode 1000)**: Introduces the $K$-way merge and step-size optimizations.
-6. **Remove Boxes (LeetCode 546)**: Adds a third dimension to track state across split intervals.
+1. **[Matrix Chain Multiplication](https://practice.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1)**: The canonical problem. Implements the exact algorithm above.
+2. **[Minimum Score Triangulation of Polygon](https://leetcode.com/problems/minimum-score-triangulation-of-polygon/)** (LeetCode 1039): Visually different, mathematically identical to Matrix Chain.
+3. **[Minimum Cost Tree From Leaf Values](https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/)** (LeetCode 1130): Similar structure but finding maximums in subranges.
+4. **[Burst Balloons](https://leetcode.com/problems/burst-balloons/)** (LeetCode 312): The trick is to think in reverse (which balloon is popped *last* in the interval).
+5. **[Minimum Cost to Merge Stones](https://leetcode.com/problems/minimum-cost-to-merge-stones/)** (LeetCode 1000): Introduces the $K$-way merge and step-size optimizations.
+6. **[Remove Boxes](https://leetcode.com/problems/remove-boxes/)** (LeetCode 546): Adds a third dimension to track state across split intervals.
 
 ## Common Mistakes
 
 1. **Iterating by end indices instead of length**:
    ```python
-   # WRONG: Will read dp[k+1][j] before it's computed!
-   for i in range(n):
-       for j in range(i + 1, n):
-           for k in range(i, j): ...
+# WRONG: Will read dp[k+1][j] before it's computed!
+for i in range(n):
+    for j in range(i + 1, n):
+        for k in range(i, j): ...
 
-   # CORRECT: Iterate by length
-   for length in range(2, n + 1):
-       for i in range(n - length + 1):
-           j = i + length - 1
+# CORRECT: Iterate by length
+for length in range(2, n + 1):
+    for i in range(n - length + 1):
+        j = i + length - 1
    ```
 2. **Indexing errors with dimensions**:
    If using 0-indexed matrices, matrix `i` has size `p[i] x p[i+1]`. The cost to merge `i..k` and `k+1..j` is `p[i] * p[k+1] * p[j+1]`. Off-by-one errors here are very common.

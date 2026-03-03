@@ -282,10 +282,10 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
 
 1. **Forgetting to check the previous state (`dp[j]`):**
    ```python
-   # WRONG
-   for j in range(i):
-       if s[j:i] in word_set:
-           dp[i] = True
+# WRONG
+for j in range(i):
+    if s[j:i] in word_set:
+        dp[i] = True
    ```
    This only checks if the *last* chunk is a valid word. It completely ignores whether the prefix before it was valid. It would incorrectly say `"catsdog"` is valid for `dict=["dog"]` simply because `"dog"` is at the end.
 
@@ -294,13 +294,14 @@ def word_break_ii(s: str, word_dict: list[str]) -> list[str]:
 
 3. **Optimizing length without handling empty dictionaries:**
    ```python
-   # WRONG: max() throws an error on an empty sequence
-   max_len = max(len(w) for w in word_dict)
+# WRONG: max() throws an error on an empty sequence
+max_len = max(len(w) for w in word_dict)
 
-   # CORRECT
-   max_len = max((len(w) for w in word_dict), default=0)
-   # Or handle early:
-   if not word_dict: return False
+# CORRECT
+max_len = max((len(w) for w in word_dict), default=0)
+# Or handle early:
+if not word_dict:
+    pass # return False
    ```
 
 4. **Iterating the inner loop forward instead of backward:**

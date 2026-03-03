@@ -560,11 +560,11 @@ def increasing_triplet(nums: list[int]) -> bool:
 ### Common Mistakes
 1. **Initializing DP Table to 0:**
    ```python
-   # WRONG
-   dp = [0] * n
+# WRONG
+dp = [0] * n
 
-   # CORRECT - Every single element is an LIS of length 1
-   dp = [1] * n
+# CORRECT - Every single element is an LIS of length 1
+dp = [1] * n
    ```
 2. **Returning `tails` as the answer sequence:**
    The `tails` array in the binary search solution tracks smallest possible tails, NOT the actual sequence. If the sequence is required, you must track parent pointers as shown in the "Reconstructing the LIS" section.

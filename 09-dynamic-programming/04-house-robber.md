@@ -15,7 +15,7 @@ You are a professional robber planning to rob houses along a street. Each house 
 Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.
 
 **Example:**
-```python
+```text
 Input: nums = [2, 7, 9, 3, 1]
 Output: 12
 Explanation:
