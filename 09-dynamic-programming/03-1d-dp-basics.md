@@ -216,7 +216,7 @@ def rob(nums: list[int]) -> int:
 ```
 
 ### Delete and Earn
-Given an integer array `nums`, you can pick an element `x`, earn `x` points, but you must delete *all* occurrences of `x - 1` and `x + 1`. Maximize points.
+**Problem Statement:** You are given an integer array `nums`. You want to maximize the number of points you get by performing the following operation any number of times: Pick any `nums[i]` and delete it to earn `nums[i]` points. Afterwards, you must delete every element equal to `nums[i] - 1` and every element equal to `nums[i] + 1`. Return the maximum number of points you can earn by applying the above operation some number of times.
 
 **Insight:** This is House Robber in disguise! If we transform the input into an array where the index is the number itself and the value is the total sum of that number in `nums`, the rule "deleting `x-1` and `x+1`" is identical to the House Robber rule "cannot rob adjacent houses".
 
@@ -288,7 +288,7 @@ def delete_and_earn(nums: list[int]) -> int:
 Used for contiguous subarrays. The state `dp[i]` represents the optimal subarray that *must end exactly at index `i`*.
 
 ### Maximum Subarray
-Given an integer array `nums`, find the contiguous subarray with the largest sum.
+**Problem Statement:** Given an integer array `nums`, find the subarray with the largest sum, and return its sum.
 
 **State Definition:**
 Let `dp[i]` be the maximum subarray sum ending at index `i`.
@@ -350,7 +350,7 @@ def max_subarray(nums: list[int]) -> int:
 ```
 
 ### Maximum Product Subarray
-Like max subarray, but tracking the largest product.
+**Problem Statement:** Given an integer array `nums`, find a subarray that has the largest product, and return the product. The test cases are generated so that the answer will fit in a 32-bit integer.
 
 **Insight:** Because multiplying two negative numbers yields a positive number, a very small (negative) product can instantly become the largest product if the current number is negative. Therefore, we must track *both* the **maximum** and **minimum** products ending at `i`.
 
@@ -425,7 +425,7 @@ def max_product(nums: list[int]) -> int:
 Counting the total number of ways to reach a state.
 
 ### Decode Ways
-A message containing letters 'A'-'Z' is encoded as '1'-'26'. Given a string `s` of digits, return the number of ways to decode it.
+**Problem Statement:** A message containing letters from A-Z can be encoded into numbers using the following mapping: 'A' -> "1", 'B' -> "2", ..., 'Z' -> "26". To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into: "AAJF" with the grouping (1 1 10 6), "KJF" with the grouping (11 10 6). Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06". Given a string s containing only digits, return the number of ways to decode it.
 
 **State Definition:**
 Let `dp[i]` be the number of ways to decode the prefix of `s` of length `i` (i.e., `s[0...i-1]`).
@@ -502,7 +502,7 @@ def num_decodings(s: str) -> int:
 Sometimes `dp[i]` depends on all previous states `dp[0]...dp[i-1]`, not just a constant number. This means $O(n)$ space is required, and time complexity is usually $O(n^2)$ or $O(n\sqrt{n})$.
 
 ### Perfect Squares
-Given `n`, return the least number of perfect square numbers that sum to `n`.
+**Problem Statement:** Given an integer `n`, return the least number of perfect square numbers that sum to `n`. A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself. For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
 
 **State Definition:**
 Let `dp[i]` be the minimum number of perfect squares that sum to `i`.
