@@ -4,33 +4,16 @@
 
 ## Overview
 
-The 0/1 Knapsack problem is the undisputed king of Dynamic Programming optimization problems. If you understand 0/1 Knapsack deeply, a massive chunk of DP interview questions will suddenly look like trivial variations of the exact same code.
+The 0/1 Knapsack is the foundation for many DP optimization problems.
 
-**The Setup:**
-Imagine you are a thief in a jewelry store. You have a knapsack (backpack) that can hold a maximum weight $W$. There are $n$ items in the store, each with a specific `weight` and a `value`. Your goal is to maximize the total value of the items you put in your knapsack without exceeding its weight capacity.
-
-**The "0/1" Constraint:**
-For every single item, you face a binary choice:
-- **0 (Exclude):** You leave the item behind.
-- **1 (Include):** You put the entire item in your knapsack.
-
-You *cannot* take a fraction of an item (like taking half a gold bar), and you *cannot* take an item multiple times.
-
----
+**Setup:** You have a knapsack of capacity `W` and `n` items, each with a `weight` and a `value`. Maximize the total value without exceeding capacity.
+**Constraint (0/1):** For each item, you must either exclude it (0) or include it entirely (1). No fractions, no multiple uses.
 
 ## Building Intuition
 
-**Why is 0/1 Knapsack solved with DP?**
+A brute force approach checks all $2^n$ combinations. DP optimizes this because combinations of items often leave us with the exact same remaining capacity and remaining items to consider (overlapping subproblems).
 
-A brute-force approach would try every possible combination of items. For $n$ items, there are $2^n$ possible subsets. This exponential time complexity $O(2^n)$ is far too slow for even small values of $n$.
-
-However, the problem exhibits the two hallmarks of DP:
-
-1. **Optimal Substructure:** The best way to pack a knapsack of capacity $W$ using $n$ items relies on the best way to pack smaller capacities using fewer items. If we decide to include the $n$-th item, the remaining problem is finding the optimal way to pack the remaining capacity $W - \text{weight}[n]$ using the first $n-1$ items.
-2. **Overlapping Subproblems:** Different combinations of items might leave us with the exact same remaining capacity and the same set of items left to consider. DP prevents us from recalculating these identical states.
-
-**Mental Model:**
-Process the items one by one. For the current item, ask yourself: *"If I have $w$ capacity available right now, does adding this item give me a better total value than if I just completely ignored it and stuck with whatever optimal combination I already found for the previous items using this exact same capacity $w$?"*
+**Mental Model:** Process items one by one. For the current item and a given capacity `w`, ask: *"Is it better to ignore this item and keep my previous best value for `w`, or include it (if it fits) and add its value to the best I could do with the remaining capacity `w - weight`?"*
 
 ---
 
@@ -193,24 +176,11 @@ def knapsack_1d(weights: list[int], values: list[int], capacity: int) -> int:
 
 #### Why Iterate Backwards in 1D DP?
 
-This is the most common pitfall in 1D Knapsack implementations.
+This is the most critical detail in 1D Knapsack. We must calculate `dp[w]` using the `dp[w - wt]` from the *previous* item's iteration.
 
-When updating `dp[w]` for the current item $i$, we need to read `dp[w - wt]`. According to our 2D recurrence, this read *must* come from the previous item's state ($i-1$).
-
-Because `w - wt < w`, the index we read from is always to the **left** of the index we are writing to.
-
-**If we iterate Left-to-Right (FORWARD):**
-Imagine an item with weight $2$, value $10$.
-1.  `w=2`: `dp[2] = max(dp[2], dp[0] + 10) = 10`. (We included the item).
-2.  `w=4`: `dp[4] = max(dp[4], dp[2] + 10) = max(0, 10 + 10) = 20`.
-
-Wait! We just used `dp[2]` to calculate `dp[4]`. But `dp[2]` was *already updated* in this same loop to include the item. By reading it again, we effectively put the item in the knapsack twice! **Iterating forward solves the Unbounded Knapsack problem, where you have infinite copies of each item.**
-
-**If we iterate Right-to-Left (BACKWARD):**
-1.  `w=4`: `dp[4] = max(dp[4], dp[2] + 10) = 10`. (Reads the `dp[2]` from the *previous* item iteration).
-2.  `w=2`: `dp[2] = max(dp[2], dp[0] + 10) = 10`. (Reads the `dp[0]` from the *previous* item iteration).
-
-Iterating backward guarantees that when we evaluate `dp[w]`, the cells to its left have not yet been touched by the current item. They safely represent the state from $i-1$.
+Since `w - wt < w`, the read index is to the left of the write index.
+*   **Iterating Forward:** We might read a `dp[w - wt]` that was *already updated* during the current item's loop. This effectively uses the item multiple times, solving the **Unbounded Knapsack** problem.
+*   **Iterating Backward:** `dp[w - wt]` is guaranteed to be untouched by the current item, safely representing the state from `i-1`.
 
 ---
 
@@ -218,7 +188,7 @@ Iterating backward guarantees that when we evaluate `dp[w]`, the cells to its le
 
 Many popular DP problems don't explicitly mention "items" or "capacity," but they reduce exactly to 0/1 Knapsack once you translate the terminology.
 
-### Progressive Problem Set
+## Progressive Problems
 
 Here is a recommended progression of problems to solidify your understanding:
 

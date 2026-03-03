@@ -1,30 +1,17 @@
-# Buy and Sell Stock
+# Buy and Sell Stock (State Machine DP)
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
 ## Overview
 
-Stock problems are a classic family of interview questions that perfectly illustrate **State Machine Dynamic Programming**. In standard DP, the "state" is usually just an index (e.g., $i$ for the $i$-th element). In **State Machine DP**, the state has an *additional* dimension representing the categorical "status" or "condition" we are in at that index (e.g., "holding stock", "having cash", "on cooldown").
-
-By defining these clear states and mapping out the transitions between them, we can gracefully handle complex trading constraints.
+Stock problems illustrate **State Machine DP**. The state isn't just an index `i`, but an *additional* categorical status: e.g., "holding stock" or "having cash".
 
 ## Building Intuition
 
-**Why does State Machine DP work so well here?**
-
-1. **Finite States**: On any given day, you are in a specific state. For basic problems, it's binary: you either `HOLD` a stock, or you have `CASH` (no stock).
-2. **State Encapsulates History**: The core DP insight is that "how I got here" doesn't matter. Whether you bought yesterday or last year, your maximum profit achieved so far depends *only* on your current state and today's price.
-3. **Daily Transitions**: Each day, you make a choice that determines your state for the next day.
-   - If in `HOLD`: Do nothing (stay in `HOLD`), or Sell (transition to `CASH`).
-   - If in `CASH`: Do nothing (stay in `CASH`), or Buy (transition to `HOLD`).
-4. **Constraints Add Dimensions**:
-   - *k transactions* → add a "transactions used" dimension.
-   - *Cooldown* → add a "just sold" state to delay buying.
-   - *Fee* → subtract a fee during the sell transition.
-
-### The Standard State Machine
-
-The foundation of almost all stock problems is this two-state machine:
+1. **State Encapsulates History**: The max profit depends *only* on your current state and today's price, not when you bought.
+2. **Daily Transitions**: Each day, a choice dictates the next state.
+   - `HOLD`: Do nothing (stay in `HOLD`) or Sell (transition to `CASH`).
+   - `CASH`: Do nothing (stay in `CASH`) or Buy (transition to `HOLD`).
 
 ```text
         buy (-price)
@@ -35,14 +22,10 @@ The foundation of almost all stock problems is this two-state machine:
   └<───────────────────┘
 ```
 
-### Top-Down vs Bottom-Up
-
-For stock problems, it's highly recommended to understand the **top-down memoized DFS** approach first. It maps perfectly to the decisions you make on each day:
-1. What day is it? (`index`)
-2. Am I holding a stock? (`holding`)
-3. How many transactions do I have left? (`k`)
-
-From there, transitioning to the $O(1)$ space bottom-up State Machine DP becomes a mechanical translation.
+**Constraints Add Dimensions:**
+- *k transactions* → track "transactions used".
+- *Cooldown* → add a "just sold" state.
+- *Fee* → subtract fee on "sell" transition.
 
 ---
 
@@ -59,26 +42,17 @@ From there, transitioning to the $O(1)$ space bottom-up State Machine DP becomes
 
 ---
 
-## Best Time to Buy and Sell Stock I
+## Buy and Sell Stock I (One Transaction)
 
-**Constraint:** At most ONE transaction.
-
-We don't need DP here. Just track the lowest price seen so far, and the maximum profit we could get if we sold today.
+Track the lowest price seen so far, and the max profit if we sell today. No DP needed.
 
 ```python
 def maxProfit_1(prices: list[int]) -> int:
-    """
-    Time: O(n) | Space: O(1)
-    """
     min_price = float('inf')
     max_profit = 0
-
     for price in prices:
-        # What is the lowest price we could have bought at?
         min_price = min(min_price, price)
-        # What is the max profit if we sell today?
         max_profit = max(max_profit, price - min_price)
-
     return max_profit
 ```
 
@@ -428,7 +402,7 @@ def maxProfit_fee_dp(prices: list[int], fee: int) -> int:
 
 ---
 
-## Practice Problems
+## Progressive Problems
 
 | # | Problem | Difficulty | Constraint | Description |
 | --- | --- | --- | --- | --- |

@@ -10,28 +10,20 @@ Understanding when and how to use each approach is critical for technical interv
 
 ---
 
-## 1. Memoization (Top-Down DP)
+## 1. Memoization (Top-Down)
 
-### Mental Model: "Lazy Evaluation with Caching"
-Memoization starts with the original, large problem and recursively breaks it down into smaller subproblems. Whenever a subproblem is solved, its result is stored in a cache (usually a hash map or an array). Before computing any subproblem, we check the cache; if the result is already there, we return it immediately.
+### "Lazy Evaluation with Caching"
+Start from the "top" (target problem) and recursively break it down. Solve subproblems only as needed and store results in a cache (array or dict). Return cached results to avoid re-computation.
 
-It is called **"top-down"** because we start from the "top" (the target state we want to solve) and move down towards the base cases recursively. It uses **"lazy evaluation"** because it only computes the specific subproblems that are strictly necessary to solve the target problem.
-
-### How It Works
-1. Write a standard recursive solution.
-2. Add a cache data structure (array or hash map) to store results.
-3. Before doing any computation in the recursive function, check if the state's result is in the cache.
-4. After computing a result, save it in the cache before returning.
-
-### When to Use Memoization
-- **Sparse State Space:** When you don't need to evaluate all possible subproblems to find the answer. Memoization only computes exactly what is needed.
-- **Complex Transitions/Dependencies:** When the sequence of subproblems is hard to define iteratively (e.g., recursive operations on trees, graphs, or complicated game states).
-- **Prototyping & Interviews:** It is usually much faster to write and debug because it closely follows the natural recursive mathematical definition of the problem.
-
-### Drawbacks
-- **Recursion Overhead:** Function calls add overhead to the call stack, making it slightly slower than iteration by a constant factor.
-- **Stack Overflow:** Deep recursion can exceed the maximum recursion depth limits in languages like Python (which defaults to exactly 1000 frames).
-- **Harder to Space-Optimize:** Because the recursion stack and cache persist throughout the execution, it's very difficult to reduce the memory complexity below $O(n)$.
+### Use Cases & Tradeoffs
+*   **Pros**:
+    *   **Sparse State Spaces**: Computes only necessary subproblems.
+    *   **Complex Dependencies**: Easier for trees, graphs, and complex state transitions.
+    *   **Interview Velocity**: Faster to write and debug since it mirrors the mathematical recurrence directly.
+*   **Cons**:
+    *   **Overhead**: Recursion call stack overhead.
+    *   **Stack Overflow**: Risk of hitting recursion limits (e.g., Python's 1000 frame limit).
+    *   **Space Limits**: Difficult to space-optimize below $O(n)$ due to the call stack.
 
 ### Example: Fibonacci Sequence
 
@@ -76,29 +68,20 @@ def fib_memo(n: int) -> int:
 
 ---
 
-## 2. Tabulation (Bottom-Up DP)
+## 2. Tabulation (Bottom-Up)
 
-### Mental Model: "Eager Evaluation"
-Tabulation starts at the base cases and systematically builds up to the target problem. It uses an iterative approach (loops) to fill a table (array or matrix) with solutions to subproblems, ensuring that by the time you need to compute a state, all its dependencies have already been computed.
+### "Eager Evaluation"
+Start from the "bottom" (base cases) and build up iteratively to the target state. Fill an array/matrix systematically so all dependencies are computed before they are needed.
 
-It is called **"bottom-up"** because we start at the "bottom" (base cases) and work our way up to the target state. It uses **"eager evaluation"** because it computes the answer for *every single subproblem* along the way, whether it ends up being part of the final optimal path or not.
-
-### How It Works
-1. Initialize a table (array/matrix) to hold the results of all subproblems.
-2. Initialize the base cases directly in the table.
-3. Use loops to iterate through the remaining states in the correct topological order.
-4. Compute the current state using the previously computed values in the table.
-5. Return the final answer, usually located at the end of the table.
-
-### When to Use Tabulation
-- **Dense State Space:** When you know you will have to compute almost all subproblems anyway (which is true for most array/string DP problems).
-- **Strict Performance Limits:** Iteration is generally faster than recursion because there is no function call overhead.
-- **Avoiding Stack Overflow:** Iteration does not use the call stack, allowing it to handle massive inputs safely.
-- **Space Optimization:** Tabulation often allows for dramatic space optimization (e.g., reducing $O(n)$ space to $O(1)$) by discarding old states that are no longer needed.
-
-### Drawbacks
-- **Computes Unnecessary States:** Tabulation evaluates *every* state up to the target. If the problem space is sparse, this wastes time.
-- **Harder to Formulate:** Determining the correct loop order to fill the table (especially for multi-dimensional DP) can be tricky. You must ensure dependencies are solved before they are needed.
+### Use Cases & Tradeoffs
+*   **Pros**:
+    *   **Dense State Spaces**: Optimal when almost all subproblems must be computed (common in arrays/strings).
+    *   **Performance**: Iteration is faster than recursion.
+    *   **Safety**: No call stack, so no stack overflow risk.
+    *   **Space Optimization**: Allows massive space savings (e.g., $O(n) \rightarrow O(1)$).
+*   **Cons**:
+    *   **Computes Everything**: May evaluate unnecessary states if the space is sparse.
+    *   **Harder to Formulate**: Loop order and state dependencies can be tricky to define initially.
 
 ### Example: Fibonacci Sequence
 
@@ -131,37 +114,17 @@ def fib_tab(n: int) -> int:
 
 ---
 
-## 3. The Power of Tabulation: Space Optimization
+## 3. The Power of Space Optimization
 
-One of the biggest advantages of tabulation is the ability to optimize space.
-
-**The Core Concept:** If calculating the current state `dp[i]` only requires looking back a fixed number of steps (e.g., `dp[i-1]` and `dp[i-2]`), we don't need to store the entire `dp` array. We only need to keep track of a "sliding window" of the most recent steps.
-
-### Fibonacci: $O(n)$ Space $\rightarrow$ $O(1)$ Space
-
-In Fibonacci, `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. Once `dp[i]` is computed, `dp[i-2]` is never needed again. We can replace the $O(n)$ array with just two variables that update as we iterate.
+If computing state `i` only requires states `i-1` and `i-2`, we don't need an array of size $N$. We can use a sliding window of constant variables.
 
 ```python
 def fib_optimized(n: int) -> int:
-    """
-    Space-Optimized Bottom-Up DP.
-    Time: O(n) | Space: O(1)
-    """
-    if n <= 1:
-        return n
-
-    # We only need to track the last two states
-    prev2 = 0  # represents dp[i-2] initially dp[0]
-    prev1 = 1  # represents dp[i-1] initially dp[1]
-
-    for i in range(2, n + 1):
-        # Calculate current state
-        curr = prev1 + prev2
-
-        # Shift our window forward for the next iteration
-        prev2 = prev1
-        prev1 = curr
-
+    # Time: O(n) | Space: O(1)
+    if n <= 1: return n
+    prev2, prev1 = 0, 1
+    for _ in range(2, n + 1):
+        prev2, prev1 = prev1, prev1 + prev2
     return prev1
 ```
 
@@ -278,7 +241,7 @@ def unique_paths_optimized(m: int, n: int) -> int:
 ---
 
 
-## Recommended Progressive Problems
+## Progressive Problems
 
 To practice recognizing when to use Memoization vs Tabulation and space optimization, try these:
 

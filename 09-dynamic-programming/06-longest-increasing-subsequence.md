@@ -1,32 +1,24 @@
-# Longest Increasing Subsequence
+# Longest Increasing Subsequence (LIS)
 
 > **Prerequisites:** [03-1d-dp-basics](./03-1d-dp-basics.md)
 
 ## Overview
 
-Longest Increasing Subsequence (LIS) is a fundamental sequence Dynamic Programming problem. The goal is to find the longest strictly increasing subsequence in an array. A subsequence is derived from the array by deleting some or no elements without changing the order of the remaining elements.
+The LIS pattern asks for the longest strictly increasing subsequence in an array.
 
-## Problem Statement
+## The Two Core Intuitions
 
-**Problem Statement:** Given an integer array `nums`, return the length of the longest strictly increasing subsequence. A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.
+### 1. The $O(n^2)$ DP Approach ("Ending At")
+Let `dp[i]` be the longest increasing subsequence **ending exactly at** index `i`.
+*Why track the ending element?* Because to know if `nums[i]` can extend a previous sequence, we must know what that previous sequence ended with.
+For each element, we look back at all previous elements `j < i`. If `nums[j] < nums[i]`, we can extend the sequence: `dp[i] = max(dp[i], dp[j] + 1)`.
 
-```
-Input: [10, 9, 2, 5, 3, 7, 101, 18]
-Output: 4
-Explanation: [2, 3, 7, 101] or [2, 3, 7, 18] or [2, 5, 7, 101]
-```
-
-## Building Intuition
-
-**Why does LIS have both O(n²) and O(n log n) solutions?**
-
-1. **O(n²) DP Insight**: For each position `i`, we ask: *"What's the longest increasing subsequence ending exactly at `i`?"* To find this, we check all previous positions `j < i`. If `nums[j] < nums[i]`, we can extend the LIS ending at `j`. We take the maximum of these valid extensions (`dp[j] + 1`). This exhaustive pairwise search gives O(n²).
-2. **Why We Track "Ending At"**: If we only tracked "LIS in the first `i` elements," we couldn't extend it—we wouldn't know the final value of that LIS, making it impossible to check if `nums[i]` can legally extend it.
-3. **The Binary Search Insight (Patience Sorting)**: Instead of tracking lengths, we track *"the smallest ending value for a subsequence of each length."* If we have subsequences of lengths 1, 2, 3 with smallest endings `[2, 5, 8]`, and we encounter `6`, we can:
-   - Extend the length-2 sequence (ending in 5) to create a length-3 sequence ending at `6`.
-   - Replace the previous length-3 ending (`8 → 6`), which makes future extensions easier because `6` is a more favorable (smaller) tail than `8`.
-4. **Why Binary Search Works**: The "smallest endings" array (`tails`) is strictly increasing by definition. Proof: If we have a length-2 sequence ending at X and a length-3 sequence ending at Y, then Y > X. The length-3 sequence must include a valid length-2 prefix. Since we track the *smallest* possible endings, Y must be strictly greater than X.
-5. **Mental Model**: Imagine sorting playing cards into piles (Patience Sorting). Each pile represents sequences of a certain length. When a new card comes, place it on the leftmost pile whose top card is `≥` the new card. If no such pile exists, create a new pile to the right. The total number of piles is the LIS length.
+### 2. The $O(n \log n)$ Binary Search Approach (Patience Sort)
+Instead of tracking lengths, track the **smallest possible tail element** for an LIS of each length.
+Maintain an array `tails` where `tails[i]` stores the smallest ending element of an increasing subsequence of length `i + 1`.
+Because `tails` is naturally strictly increasing, we can use binary search (`bisect_left`) to quickly find where a new element `nums[i]` belongs:
+*   If it's larger than everything, it extends the longest sequence.
+*   If it falls in the middle, it *replaces* an existing tail, creating a more favorable (smaller) ending for that length to build upon later.
 
 ---
 

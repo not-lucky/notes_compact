@@ -4,53 +4,28 @@
 
 ## Overview
 
-The Longest Common Subsequence (LCS) problem is a cornerstone of string algorithms and dynamic programming. It forms the foundation for many real-world applications.
-
-### Real-World Motivation
-
-Why do we care about finding the longest common subsequence?
-*   **Version Control (`git diff`)**: When comparing two versions of a file, `diff` algorithms use LCS to find the longest sequence of lines that haven't changed. Everything else is treated as an insertion or deletion.
-*   **Bioinformatics (Sequence Alignment)**: DNA is just a long string of characters (`A`, `C`, `G`, `T`). Comparing two DNA sequences to find their longest common subsequence helps scientists determine how closely related two species are, or identify genetic mutations.
-*   **Spell Checking & Plagiarism Detection**: Comparing a misspelled word against a dictionary, or checking a student's essay against known sources, relies on finding how much of the sequences overlap in the same relative order.
+The Longest Common Subsequence (LCS) problem is a cornerstone of string algorithms and dynamic programming.
 
 ### Subsequence vs. Substring
+*   **Substring**: Contiguous (e.g., `"abc"` in `"abcde"`).
+*   **Subsequence**: Characters can be skipped, but relative order must be maintained (e.g., `"ace"` in `"abcde"`).
 
-It is crucial to understand the difference between these two concepts:
-
-*   **Substring**: Must be **contiguous** (no gaps allowed).
-    *   For the string `"abcde"`, valid substrings are `"abc"`, `"cde"`, `"b"`.
-    *   `"ace"` is *not* a substring.
-*   **Subsequence**: Characters can be skipped, but the **relative order must be maintained**.
-    *   For the string `"abcde"`, `"ace"` *is* a valid subsequence.
-    *   `"ca"` is *not* a valid subsequence (order is wrong).
-
-**The Problem:** Given two strings, `text1` and `text2`, what is the length of the longest sequence that appears in both strings in the same relative order?
+**The Problem:** Given two strings, `text1` and `text2`, find the length of the longest subsequence present in both.
 
 ---
 
 ## Building Intuition
 
-**Why does LCS require 2D DP?**
-
-Because we are dealing with two distinct sequences, we need to track our progress through both of them simultaneously. A 1D array isn't enough to capture the state of "where we are in `text1`" *and* "where we are in `text2`".
-
-Therefore, we use a 2D array where `dp[i][j]` represents the length of the LCS for the prefix `text1[0...i-1]` and the prefix `text2[0...j-1]`.
+To track progress through two sequences simultaneously, we use a 2D state: `dp[i][j]` represents the LCS length for prefixes `text1[0...i-1]` and `text2[0...j-1]`.
 
 ### The Core Insight
 
-Imagine you are looking at the last characters of the prefixes you are currently considering: `text1[i-1]` and `text2[j-1]`.
+Compare `text1[i-1]` and `text2[j-1]`:
 
-1.  **If the characters match (`text1[i-1] == text2[j-1]`):**
-    You've found a piece of the common subsequence! Because these characters match, the longest common subsequence up to these points *must* include this character. The length of the LCS is simply 1 plus the LCS of the prefixes *before* these matching characters.
-    *   **Transition:** `dp[i][j] = 1 + dp[i-1][j-1]` (Move diagonally up-left)
-
-2.  **If they don't match (`text1[i-1] != text2[j-1]`):**
-    These two characters cannot both be the end of the common subsequence. The LCS might end with `text1[i-1]`, or it might end with `text2[j-1]`, or neither. But it *cannot* end with both. So, we must drop one of the characters and see which option gives us a better result.
-    *   **Option A:** Drop `text1[i-1]` and look at `(text1[0...i-2], text2[0...j-1])` -> `dp[i-1][j]`
-    *   **Option B:** Drop `text2[j-1]` and look at `(text1[0...i-1], text2[0...j-2])` -> `dp[i][j-1]`
-    *   **Transition:** We take the best of these two paths: `dp[i][j] = max(dp[i-1][j], dp[i][j-1])` (Max of cell above or cell to the left)
-
-    Because LCS is a *subsequence* (gaps allowed), we "carry forward" the best score we've seen so far when there is a mismatch. We do *not* reset the score to `0`.
+1.  **Match:** If `text1[i-1] == text2[j-1]`, this character must be in the LCS. The length is `1 + dp[i-1][j-1]` (1 + LCS of prefixes before this match).
+    *   *Transition:* Move diagonally up-left.
+2.  **Mismatch:** If `text1[i-1] != text2[j-1]`, they can't both be at the end of the LCS. We must drop one and take the max of the remaining prefixes.
+    *   *Transition:* `dp[i][j] = max(dp[i-1][j], dp[i][j-1])` (Max of cell above or left). We carry the best score forward.
 
 ## Formal Recurrence Relation
 
@@ -279,7 +254,7 @@ def get_lcs_string(text1: str, text2: str) -> str:
 
 ---
 
-## Progressive Problems to Master LCS
+## Progressive Problems
 
 To truly internalize the LCS pattern, work through these problems in order:
 

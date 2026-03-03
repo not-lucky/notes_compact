@@ -4,41 +4,23 @@
 
 ## Overview
 
-2D Dynamic Programming uses a two-dimensional state `dp[i][j]` to represent the answers to subproblems that depend on two distinct parameters. This is common when traversing grids, comparing two sequences, or dealing with multiple constraints.
+2D DP uses a two-dimensional state `dp[i][j]` for subproblems depending on two distinct variables (e.g., row and column in a grid, or item index and remaining capacity in a knapsack).
 
 ## Building Intuition
 
-**Why do we need 2D DP?**
+**Why 2D DP?**
+When the state is defined by two independent variables, 1D is insufficient. In grids, cell `(i, j)` usually depends on adjacent cells like `(i-1, j)` (above) and `(i, j-1)` (left). This predictable dependency structure dictates how we fill the DP table (usually row by row).
 
-1. **Two Independent Dimensions**: When the state of a problem is defined by two independent variables—such as the row and column in a 2D grid, or the current item index and remaining capacity in a knapsack—a single dimension isn't enough to track all combinations.
-2. **Grid Problems Are Natural 2D**: In a grid, reaching cell `(i, j)` usually depends on reaching adjacent cells like `(i-1, j)` and `(i, j-1)`. The state naturally maps to the grid coordinates.
-3. **The Dependency Insight**: In 2D DP, `dp[i][j]` typically depends on:
-   - `dp[i-1][j]` (the cell directly above)
-   - `dp[i][j-1]` (the cell directly to the left)
-   - `dp[i-1][j-1]` (the cell diagonally above-left)
-   This predictable dependency structure dictates how we fill the DP table (usually row by row, left to right).
-4. **Mental Model**: Think of the DP table as a spreadsheet. Each cell `(i, j)` contains the answer for a specific subproblem defined by `i` and `j`. You fill it systematically, and each cell's formula references previously calculated cells.
-
-## When NOT to Use 2D DP
-
-Before jumping to a 2D array, consider if it's the right tool:
-
-1. **State Is Actually 1D**: Don't force 2D when 1D suffices. Problems like Fibonacci, Climbing Stairs, or House Robber only need one index to represent the state.
-2. **State Requires 3+ Dimensions**: Some complex problems require tracking more parameters, leading to states like `dp[i][j][k]`.
-3. **General Graphs (Non-Grids)**: 2D DP works well for grids where transitions only go in specific directions (forming a Directed Acyclic Graph). For general graphs with cycles, use shortest path algorithms like Dijkstra's or BFS.
-
----
+**Mental Model:** Think of the DP table as a spreadsheet. Each cell `(i, j)` contains the optimal answer for that specific subproblem, calculated using formulas referencing previously calculated cells.
 
 ## The Padding Trick (Dummy Cells)
 
-A common source of bugs in 2D DP is boundary handling (checking `if i == 0` or `j == 0`). We can elegantly bypass this by adding an extra column and row of "dummy" values—often referred to as **padding**.
+A common source of bugs in 2D DP is boundary handling (`if i == 0` or `j == 0`). Bypass this by creating an `(m + 1) x (n + 1)` padded array. Let the `0`-th row and column act as out-of-bounds boundaries:
+- Pad with `0` for sums/paths.
+- Pad with `float('inf')` for minimums.
+- Pad with `float('-inf')` for maximums.
 
-By making our DP array `(m + 1) x (n + 1)` instead of `m x n`, we let the `0`-th row and column act as out-of-bounds boundaries.
-- For finding sums or paths, pad with `0`.
-- For finding minimums, pad with `float('inf')`.
-- For finding maximums, pad with `float('-inf')`.
-
-Then, we carefully seed a single initial value that naturally flows into the `(1, 1)` cell calculation. This completely removes the need for boundary checks inside your loops, resulting in incredibly clean, readable code.
+Seed a single initial value to flow into the `(1, 1)` cell, completely eliminating boundary checks inside your loops.
 
 ---
 
@@ -529,7 +511,7 @@ def min_path_sum_optimized(grid: list[list[int]]) -> int:
 
 ---
 
-## Practice Problems
+## Progressive Problems
 
 | # | Problem | Difficulty | Pattern / Focus |
 | :--- | :--- | :--- | :--- |

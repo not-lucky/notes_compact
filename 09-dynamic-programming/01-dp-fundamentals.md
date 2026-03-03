@@ -2,104 +2,50 @@
 
 ## Overview
 
-Dynamic Programming (DP) is a powerful algorithmic technique that solves complex problems by breaking them down into simpler, overlapping subproblems. It stores the solutions to these subproblems to avoid redundant computation, effectively trading space for time.
+Dynamic Programming (DP) is **"smart recursion with memory."** It trades space for time by storing the solutions to overlapping subproblems to avoid redundant computation.
 
-Think of DP as **"smart recursion with memory."**
+## The Core Concept
 
-## The Core Problem DP Solves
+### Redundancy vs Memory
+Naive recursion solves the exact same subproblems exponentially many times (e.g. `Fibonacci(50)` calculates `Fibonacci(25)` >75,000 times, $O(2^n)$). By storing (memoizing) answers to subproblems, subsequent lookups take $O(1)$ time, reducing time complexity to polynomial time (e.g. $O(n)$ or $O(n^2)$).
 
-### The Redundancy Problem
-In naive recursion, we often solve the exact same subproblems exponentially many times.
-For example, computing `Fibonacci(50)` naively would calculate `Fibonacci(25)` over 75,000 times! The time complexity becomes $O(2^n)$.
+## The Two Essential Properties
 
-### The Memory Solution
-If we store (memoize) the answer to each subproblem the *first* time we compute it, subsequent lookups take $O(1)$ time. This "state compression" transforms exponential-time algorithms into polynomial-time ones (like $O(n)$ or $O(n^2)$).
+A problem must have these two properties to be solvable with DP:
 
-## The Two Essential Properties of DP
-
-A problem must have these two properties to be solvable with Dynamic Programming:
-
-### 1. Optimal Substructure
-The optimal solution to the main problem can be constructed from the optimal solutions of its subproblems.
-
-*Example (Shortest Path):* If the shortest path from city A to city C goes through city B, then the path from A to B must be the shortest possible path from A to B, and the path from B to C must be the shortest possible path from B to C.
-
-### 2. Overlapping Subproblems
-The problem can be broken down into subproblems which are reused multiple times.
-
-*Example (Fibonacci):*
-```text
-           fib(5)
-         /        \
-    fib(4)        fib(3)
-    /    \        /    \
-fib(3)  fib(2)  fib(2) fib(1)
-```
-Notice how `fib(3)` and `fib(2)` are evaluated multiple times. This is where DP shines by caching the results.
+1. **Optimal Substructure**: The optimal solution to the main problem can be constructed from the optimal solutions of its subproblems. (e.g., Shortest Path A->C through B = Shortest Path A->B + Shortest Path B->C)
+2. **Overlapping Subproblems**: The problem breaks down into subproblems which are reused multiple times. DP caches these results.
 
 ---
 
 ## When NOT to Use DP
 
-DP is powerful but not a silver bullet. Avoid it when:
-
-1. **No Overlapping Subproblems (Use Divide & Conquer):**
-   If subproblems are completely independent, caching doesn't help.
-   *Example:* Merge Sort splits an array in half, but sorting the left half shares no work with sorting the right half.
-
-2. **Greedy is Optimal:**
-   If making the locally optimal choice at each step guarantees a globally optimal solution, a Greedy algorithm is simpler and often faster ($O(n)$ or $O(n \log n)$ vs DP's $O(n^2)$).
-   *Example:* Activity selection (finding max non-overlapping intervals) can be solved optimally in $O(n \log n)$ by sorting by end times and picking greedily.
-
-3. **State Space Explodes:**
-   If tracking the state requires exponential memory (e.g., tracking subsets, bitmasks, or permutations of large sets), standard DP might become unfeasible without advanced techniques or might not be the right approach.
-   *Example:* Traveling Salesperson Problem on 100 cities. Tracking the set of visited cities requires $2^{100}$ states, which is computationally impossible to store.
-
-4. **No Optimal Substructure:**
-   If combining optimal subproblem solutions doesn't yield the global optimal.
-   *Example:* Finding the *longest simple path* in a graph. The longest path from A to B and B to C might share vertices, making them impossible to combine into a valid simple path.
+1. **No Overlapping Subproblems**: Use **Divide & Conquer** (e.g., Merge Sort).
+2. **Greedy is Optimal**: If a locally optimal choice guarantees a globally optimal solution, **Greedy** algorithms are faster ($O(n)$ or $O(n \log n)$ vs DP's $O(n^2)$).
+3. **State Space Explodes**: If tracking the state requires exponential memory (e.g., $2^{100}$ states for a 100-city TSP), standard DP is unfeasible.
+4. **No Optimal Substructure**: Combining optimal subproblem solutions doesn't yield the global optimal (e.g., longest simple path in a graph).
 
 ---
 
-## The DP Problem-Solving Template (The FAST Method)
+## DP Template (The FAST Method)
 
-When tackling a DP problem, follow this structured framework:
+When tackling a DP problem, follow this framework:
 
-### 1. **F**ind the State
-What variables define a specific subproblem? How do you uniquely identify a subproblem?
-*   **1D Array:** `dp[i]` represents the answer for the subarray `arr[0...i]`.
-*   **2D Array:** `dp[i][j]` represents the answer using the first `i` items with capacity `j` (e.g., Knapsack).
-
-### 2. **A**nalyze the Recurrence (The Transition)
-How does the current state depend on previously computed states? What choices are available at this step?
-*   *Example (Climbing Stairs):* To reach step `i`, you either came from step `i-1` or step `i-2`.
-*   `dp[i] = dp[i-1] + dp[i-2]`
-
-### 3. **S**et the Base Cases
-What are the trivial subproblems that can be answered immediately without further calculation?
-*   *Example (Fibonacci):* `dp[0] = 0`, `dp[1] = 1`.
-
-### 4. **T**hink about the Answer
-Where will the final answer be stored once the computation is complete?
-*   Usually `dp[n]`, `dp[n][m]`, or `max(dp)`.
+1. **F**ind the State: What variables define a subproblem? (e.g., `dp[i]` for 1D, `dp[i][j]` for 2D).
+2. **A**nalyze the Recurrence: How does the current state depend on past states? (e.g., `dp[i] = dp[i-1] + dp[i-2]`).
+3. **S**et the Base Cases: What are the trivial subproblems? (e.g., `dp[0] = 0`).
+4. **T**hink about the Answer: Where is the final answer stored? (e.g., `dp[n]`, `max(dp)`).
 
 ---
 
 
-## Example Walkthrough: Climbing Stairs
+## Walkthrough: Climbing Stairs
 
-**Problem:** You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+**Problem:** How many distinct ways can you climb an `n` step staircase taking 1 or 2 steps at a time?
 
-### 1. Identify the State
-`dp(i)` will represent the total number of distinct ways to reach step `i`.
-
-### 2. Recurrence Relation
-To reach step `i`, you must have come from either step `i-1` (by taking 1 step) or step `i-2` (by taking 2 steps).
-Therefore, `dp(i) = dp(i-1) + dp(i-2)`.
-
-### 3. Base Cases
-- `dp(0) = 1` (1 way to stay at the ground: do nothing)
-- `dp(1) = 1` (1 way to reach the first step: take 1 step)
+1. **State**: `dp(i)` = total distinct ways to reach step `i`.
+2. **Recurrence**: `dp(i) = dp(i-1) + dp(i-2)`.
+3. **Base Cases**: `dp(0) = 1`, `dp(1) = 1`.
 
 ### Solution: Top-Down Memoization
 This is the required approach that solves the problem efficiently using recursion and caching.
@@ -262,7 +208,7 @@ If your DP solution is failing, check these common mistakes:
 4. **Initialization Values:** Is your DP array initialized with `0`, `-1`, `float('inf')`, or `float('-inf')`? Choosing the wrong initial value (e.g., initializing with `0` when looking for a minimum) will break the logic. For minimums, use `float('inf')`; for maximums, use `float('-inf')`.
 
 
-## Progressive Problems to Master DP Fundamentals
+## Progressive Problems
 
 To build a solid intuition for Dynamic Programming, solve these problems in order. They gradually introduce new concepts.
 
@@ -271,7 +217,6 @@ These problems depend only on 1 or 2 previous states.
 
 #### Min Cost Climbing Stairs (Easy)
 Introduces choosing between costs at each step. You can start at step 0 or 1.
-```python
 **Problem:** You are given an integer array `cost` where `cost[i]` is the cost of `i`th step on a staircase. Once you pay the cost, you can either climb one or two steps. You can either start from the step with index 0, or the step with index 1. Return the minimum cost to reach the top of the floor.
 
 **Top-Down Memoization:**
@@ -313,7 +258,6 @@ def minCostClimbingStairsTab(cost: list[int]) -> int:
 
 #### House Robber (Medium)
 Classic DP. You can't take adjacent items. `dp(i) = max(dp(i+1), nums[i] + dp(i+2))`
-```python
 **Problem:** You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
 
 **Top-Down Memoization:**
@@ -361,7 +305,6 @@ These problems depend on *all* previous states, not just the last few.
 
 #### Longest Increasing Subsequence (Medium)
 Core pattern. `dp(i)` finds the longest increasing subsequence starting at index `i`.
-```python
 **Problem:** Given an integer array `nums`, return the length of the longest strictly increasing subsequence. A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.
 
 **Top-Down Memoization:**
@@ -410,7 +353,6 @@ The state depends on coordinates `(r, c)` and transitions usually involve moving
 
 #### Unique Paths (Medium)
 Count ways to reach bottom-right.
-```python
 **Problem:** There is a robot on an `m x n` grid. The robot is initially located at the top-left corner (i.e., `grid[0][0]`). The robot tries to move to the bottom-right corner (i.e., `grid[m - 1][n - 1]`). The robot can only move either down or right at any point in time. Given the two integers `m` and `n`, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
 
 **Top-Down Memoization:**
@@ -454,7 +396,6 @@ The state depends on an `index` in the array and a `capacity` constraint.
 
 #### Coin Change (Medium)
 Unbounded Knapsack problem. You can reuse the same coin multiple times.
-```python
 **Problem:** You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`. You may assume that you have an infinite number of each kind of coin.
 
 **Top-Down Memoization:**

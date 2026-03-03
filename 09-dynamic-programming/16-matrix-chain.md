@@ -1,20 +1,20 @@
-# Matrix Chain Multiplication & Interval DP
+# Matrix Chain Multiplication (Interval DP)
 
 > **Prerequisites:** [07-2d-dp-basics](./07-2d-dp-basics.md)
 
 ## Overview
 
-Matrix Chain Multiplication is the canonical **interval DP** problem. The goal is to find the optimal way to parenthesize a sequence of operations to minimize the total cost. Interval DP is used when a problem asks you to combine adjacent elements or split an array into pieces optimally.
+Interval DP is used when combining **adjacent** elements or splitting an array optimally into pieces. Matrix Chain Multiplication is the canonical problem.
 
 ## Building Intuition
 
-**Why is interval DP needed for matrix chain?**
+**Why Interval DP?**
+We are choosing a binary tree of operations, not a linear sequence. `dp[i][j]` is the optimal cost for the subchain `i` through `j`.
+To combine matrices `i` through `j`, we must make ONE final multiplication combining a left group `(i..k)` and a right group `(k+1..j)`. We try all split points `k` and take the minimum.
 
-1. **Order Matters, But Not Linearly**: Matrix multiplication is associative (the final matrix is the same regardless of parenthesization), but the computational COST depends heavily on the parenthesization. We are not choosing a sequence—we are choosing a STRUCTURE (a binary tree of operations).
-2. **Interval = Subchain**: `dp[i][j]` represents the optimal cost to multiply the sequence of matrices from index `i` through index `j` inclusive. Every subchain can be split at some point `k`, creating two smaller subchains: `(i..k)` and `(k+1..j)`.
-3. **The Split Point Insight**: To combine the matrices `i` to `j`, we must eventually perform ONE final multiplication that combines the optimal result of the left group with the right group. That multiplication has dimensions $p_i \times p_{k+1} \times p_{j+1}$. We try all possible split points `k` and take the minimum.
-4. **Why Iterate by Length**: `dp[i][j]` depends on `dp[i][k]` and `dp[k+1][j]`, which represent *shorter* chains. To ensure we have the answers for smaller subproblems before we need them, we must iterate over the **length of the interval**, building up from length 1, to 2, to 3, etc.
-5. **O(n³) Breakdown**: There are $O(n^2)$ subproblems (all `i, j` pairs), and each takes $O(n)$ time to solve because we try all split points `k` between `i` and `j`. Total time: $O(n^3)$.
+Because `dp[i][j]` depends on strictly shorter subchains, we must iterate by the **length of the interval** (length 1, then 2, then 3).
+
+Time Complexity: $O(n^2)$ subproblems $\times O(n)$ for the `k` loop = $O(n^3)$.
 
 ---
 
@@ -315,7 +315,7 @@ def optimal_bst(keys: list[int], freq: list[int]) -> int:
 ---
 
 
-## Progressive Problems to Solve
+## Progressive Problems
 
 To truly master interval DP, solve these problems in order:
 

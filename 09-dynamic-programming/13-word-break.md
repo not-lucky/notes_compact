@@ -4,30 +4,18 @@
 
 ## Overview
 
-The **Word Break** problem (LeetCode 139) asks whether a given string `s` can be completely segmented into a space-separated sequence of one or more dictionary words. It is a classic example of using Dynamic Programming (DP) to avoid redundant computation when exploring combinations.
-
-If you can break a string `s[0:i]` into valid words, it implies there exists some split point `j` such that `s[0:j]` can be broken into valid words, and the remaining suffix `s[j:i]` is itself a valid dictionary word.
+The **Word Break** problem (LeetCode 139) asks whether a string `s` can be completely segmented into dictionary words.
 
 ## Building Intuition
 
-Consider a string `s = "catsanddog"` and a dictionary `word_dict = ["cat", "cats", "and", "sand", "dog"]`.
+**Why Greedy Fails:**
+If `s = "catsanddog"` and dict is `["cats", "dog", "sand", "cat"]`, picking the longest match `"cats"` leaves `"anddog"`, which fails. The correct path is `"cat" + "sand" + "dog"`. Greedy paths get stuck in dead ends.
 
-**Why does a Greedy approach fail?**
-If we greedily match the longest word, we might pick `"cats"`. The remaining string is `"anddog"`. We match `"and"`, leaving `"dog"`. We match `"dog"`, leaving `""`. This works!
+**Why Plain Recursion Fails:**
+Testing all prefixes leads to overlapping subproblems (e.g., reaching the remainder `"ode"` in `"leetcode"` via `"l"+"eet"` or `"le"+"et"`). This results in exponential time.
 
-But what if the dictionary was `["cats", "dog", "sand", "and", "cat"]` and the string was `"catsanddog"`?
-If we greedily pick `"cats"`, the remainder is `"anddog"`. If we didn't have `"and"` in our dictionary, but only `"sand"`, the greedy approach fails. However, picking `"cat" + "sand" + "dog"` would work perfectly.
-
-A greedy choice commits to a path that might lead to a dead end, failing to explore valid alternatives.
-
-**Why does plain recursion fail?**
-We can try all possible prefixes: `"c"`, `"ca"`, `"cat"`... If `"cat"` is a word, we recursively check the remainder `"sanddog"`. The problem is **overlapping subproblems**.
-
-Imagine trying to segment `"leetcode"`. We might reach the remainder `"ode"` via multiple paths if the dictionary contained `"l"`, `"le"`, `"eet"`, `"et"`, `"c"`. Computing whether `"ode"` can be segmented is identical regardless of how we got there. Recomputing it leads to an exponential $O(2^n)$ time complexity.
-
-**The DP Solution:**
-Instead of re-evaluating the same suffixes or prefixes, we can build the solution incrementally. We ask: "Can the prefix of length `i` be segmented?"
-To answer this, we look at all possible lengths `j` of the *last word* in that prefix. If the prefix of length `j` is segmentable, and the last `i-j` characters form a valid word, then the prefix of length `i` is segmentable.
+**The DP Insight:**
+To know if prefix `s[0:i]` is valid, check if there's *some* valid previous prefix `s[0:j]` where the remaining suffix `s[j:i]` is a dictionary word.
 
 ## Formal Recurrence
 
@@ -210,6 +198,7 @@ def word_break_trie(s: str, word_dict: list[str]) -> bool:
 ```
 
 ---
+
 
 ## DP Table Visualization
 

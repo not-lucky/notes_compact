@@ -1,33 +1,20 @@
-# Regex and Wildcard Matching
+# Regex & Wildcard Matching
 
 > **Prerequisites:** [08-longest-common-subsequence](./08-longest-common-subsequence.md)
 
 ## Overview
 
-Regex and Wildcard Matching are classic 2D Dynamic Programming string problems. Given a string and a pattern, the task is to determine if the string fully matches the pattern.
+These are classic 2D String DP problems. The difficulty comes entirely from the `*` character, which introduces **branching choices** (match zero, match one, match many) and **overlapping subproblems**. DP caches the results of `(string_index, pattern_index)`.
 
-If we only had literal characters and a single-character wildcard (like `.`), we could just use two pointers and scan left-to-right in $O(n)$ time. The difficulty—and the reason we need DP—comes entirely from the `*` character.
+## Wildcard vs. Regex
 
-The `*` symbol introduces **branching choices** and **overlapping subproblems**:
-- Should this `*` match zero characters so we can move on?
-- Should this `*` match one character and then we move on?
-- Should this `*` match multiple characters, consuming the string while keeping the `*` active?
+Understand which you are solving immediately.
 
-Because multiple choices might lead to a valid match, we must explore the decision tree. DP saves us by caching the results of `(string_index, pattern_index)` states.
-
-## Wildcard vs. Regular Expression
-
-The most critical first step in an interview is understanding which variation you are solving.
-
-| Feature | Wildcard Matching | Regular Expression Matching |
+| Feature | Wildcard Matching | Regex Matching |
 | :--- | :--- | :--- |
-| **Any single char** | `?` | `.` |
-| **The `*` symbol** | Matches **any sequence** of characters (including empty). It is a standalone token. | Matches **zero or more** of the **preceding** element. It modifies the character before it. |
-| **Valid `*` Usage** | `*a`, `a**b`, `*` | `a*`, `.*`, `c*a*b` (Cannot have leading `*`) |
-
-**Example of `*` difference:**
-* In **Wildcard**, `a*b` matches `aXYZb`. The `*` became the sequence `XYZ`.
-* In **Regex**, `a*b` matches `aaab` or `b`. The `*` means "repeat the preceding `a` zero or more times".
+| **Single Char** | `?` | `.` |
+| **The `*`** | Matches **any sequence** (standalone token). | Matches **0 or more** of the **preceding** element. |
+| **Example** | `a*b` matches `aXYZb` | `a*b` matches `aaab` or `b` |
 
 ---
 
@@ -417,7 +404,7 @@ Where $m$ is the length of string `s` and $n$ is the length of pattern `p`.
 
 ---
 
-## Recommended Progressive Practice
+## Progressive Problems
 
 To build an intuition for 2D string DP, solve these in order:
 

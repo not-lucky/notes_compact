@@ -4,20 +4,12 @@
 
 ## Overview
 
-String Dynamic Programming encompasses problems involving subsequences, interleavings, decodings, and pattern matching across one or more strings. While they share similarities with general DP problems (like 0/1 Knapsack or Interval DP), string problems explicitly leverage the linear, character-by-character nature of text.
+String DP problems process text character-by-character, often asking: "use this character or skip it?"
 
-## Building Intuition
-
-**Why do strings need specialized DP patterns?**
-
-1. **Character-by-Character Decisions**: Most string DP processes text one character at a time. The core question is usually: "How does this current character contribute to our goal?" (e.g., match it, delete it, replace it, use it as a split point).
-2. **Common State Definitions**:
-   - `dp[i]` = Answer for prefix `s[0..i-1]`. (1D DP, Single String)
-   - `dp[i][j]` = Answer for prefixes `s1[0..i-1]` and `s2[0..j-1]`. (2D DP, Two Strings)
-   - `dp[i][j]` = Answer for the substring `s[i..j]`. (Interval DP, Palindromes/Splits)
-3. **Use vs. Skip**: Many problems ask "use this character or skip it?" This is conceptually identical to the 0/1 Knapsack problem, but applied sequentially to characters.
-4. **Counting vs. Optimization**: String problems frequently involve *counting* (distinct subsequences, valid decodings) rather than optimization (max/min). The recurrence relation usually sums possibilities instead of taking a `max()`.
-5. **The Interleaving Insight**: When dealing with multiple strings forming a single result, DP tracks positions in multiple strings simultaneously. "Did this target character come from string A or string B?"
+**Common State Definitions:**
+- `dp[i]`: Answer for prefix `s[0..i-1]`. (1D DP, Single String)
+- `dp[i][j]`: Answer for prefixes `s1[0..i-1]` and `s2[0..j-1]`. (2D DP, Two Strings)
+- `dp[i][j]`: Answer for the substring `s[i..j]`. (Interval DP)
 
 ---
 
@@ -183,42 +175,41 @@ While passing indices is more standard for DP to avoid $O(n)$ string slicing ove
 from functools import lru_cache
 from collections import Counter
 
-class Solution:
-    def isScramble(self, s1: str, s2: str) -> bool:
-        """
-        Time Complexity: O(n^4) bounds (O(n^3) subproblems * O(n) for slicing/Counter)
-        Space Complexity: O(n^3) for the memoization cache
-        """
-        if len(s1) != len(s2):
+def is_scramble(s1: str, s2: str) -> bool:
+    """
+    Time Complexity: O(n^4) bounds (O(n^3) subproblems * O(n) for slicing/Counter)
+    Space Complexity: O(n^3) for the memoization cache
+    """
+    if len(s1) != len(s2):
+        return False
+
+    @lru_cache(maxsize=None)
+    def dfs(s1: str, s2: str) -> bool:
+        # Base cases
+        if s1 == s2:
+            return True
+
+        # Pruning: Frequency check. If anagrams don't match, scrambles can't match.
+        # Counter is O(n), much faster than sorted() which is O(n log n)
+        if Counter(s1) != Counter(s2):
             return False
 
-        @lru_cache(maxsize=None)
-        def dfs(s1: str, s2: str) -> bool:
-            # Base cases
-            if s1 == s2:
+        n = len(s1)
+        # Try all possible split points
+        for i in range(1, n):
+            # Option 1: Try Without Swap
+            # Check if left matches left, and right matches right
+            if dfs(s1[:i], s2[:i]) and dfs(s1[i:], s2[i:]):
                 return True
 
-            # Pruning: Frequency check. If anagrams don't match, scrambles can't match.
-            # Counter is O(n), much faster than sorted() which is O(n log n)
-            if Counter(s1) != Counter(s2):
-                return False
+            # Option 2: Try With Swap
+            # Check if left of s1 matches right of s2, and right of s1 matches left of s2
+            if dfs(s1[:i], s2[-i:]) and dfs(s1[i:], s2[:-i]):
+                return True
 
-            n = len(s1)
-            # Try all possible split points
-            for i in range(1, n):
-                # Option 1: Try Without Swap
-                # Check if left matches left, and right matches right
-                if dfs(s1[:i], s2[:i]) and dfs(s1[i:], s2[i:]):
-                    return True
+        return False
 
-                # Option 2: Try With Swap
-                # Check if left of s1 matches right of s2, and right of s1 matches left of s2
-                if dfs(s1[:i], s2[-i:]) and dfs(s1[i:], s2[:-i]):
-                    return True
-
-            return False
-
-        return dfs(s1, s2)
+    return dfs(s1, s2)
 ```
 
 ---
@@ -279,7 +270,7 @@ def longest_valid_parentheses(s: str) -> int:
 ---
 
 
-## Progressive Problems to Master String DP
+## Progressive Problems
 
 To solidify your understanding of String DP, work through these problems in order. They naturally build upon the concepts of 1D state decodings, 2D sequence alignments, and Interval/State Machine string parsing.
 

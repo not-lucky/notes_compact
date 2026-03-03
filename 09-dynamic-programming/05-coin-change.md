@@ -4,36 +4,18 @@
 
 ## Overview
 
-Coin Change is the canonical **unbounded knapsack** problem. In this pattern, you are given a target amount and a set of item sizes (coin denominations). Unlike the standard 0/1 Knapsack where each item can be used at most once, here you have an **unlimited supply** of each item.
+Coin Change introduces the **unbounded knapsack** pattern: you have an **unlimited supply** of each item (coin).
 
-Your goal is typically to find either:
-1. The **minimum number of coins** to reach the target amount.
-2. The **total number of combinations** (or permutations) to reach the target amount.
+Goals are usually to find:
+1. The **minimum coins** to reach a target amount.
+2. The **number of combinations** to reach a target amount.
 
-## Problem 1: Minimum Coins (Coin Change)
+## Problem 1: Minimum Coins
 
-Given an array of integer `coins` and a target `amount`, return the **fewest number of coins** needed to make up that amount. If it cannot be made, return `-1`.
+Given integer `coins` and a target `amount`, return the **fewest coins** needed. Return `-1` if impossible.
 
 ### Why Greedy Fails
-
-A greedy approach (always picking the largest possible coin first) feels natural because it works for canonical currency systems (like US coins: 1, 5, 10, 25). However, it fails for arbitrary denominations.
-
-```text
-coins = [1, 3, 4], amount = 6
-
-Greedy approach:
-- Pick 4 (remaining: 2)
-- Pick 1 (remaining: 1)
-- Pick 1 (remaining: 0)
-Total coins: 3 (4 + 1 + 1)
-
-Optimal DP approach:
-- Pick 3 (remaining: 3)
-- Pick 3 (remaining: 0)
-Total coins: 2 (3 + 3)
-```
-
-**Rule of Thumb:** You *must* use Dynamic Programming (or BFS) when coin denominations are arbitrary.
+Greedy works for standard currency (e.g. US coins) but fails for arbitrary denominations. For `coins=[1, 3, 4]` and `amount=6`, greedy picks `4, 1, 1` (3 coins), but optimal is `3, 3` (2 coins).
 
 ### State and Recurrence
 
@@ -178,17 +160,17 @@ This problem is infamous for a very specific implementation detail: **the order 
 - **Recurrence:** `dp(i) = sum(dp(i - coin))` for valid coins.
 - **Base Case:** `dp(0) = 1`. There is exactly 1 way to make the amount 0 (by selecting no coins). If initialized to 0, all subsequent additions would remain 0.
 
-### The Loop Order Mystery: Combinations vs Permutations
+### Combinations vs Permutations (Loop Order)
 
-If we want to count the number of ways to make `3` using `[1, 2]`, what is the answer?
-- If we count **combinations** (order doesn't matter), the ways are `{1, 1, 1}` and `{1, 2}`. The answer is **2**.
-- If we count **permutations** (order matters), the ways are `(1, 1, 1)`, `(1, 2)`, and `(2, 1)`. The answer is **3**.
+To make `3` using `[1, 2]`:
+*   **Combinations** (order doesn't matter): `{1, 1, 1}`, `{1, 2}` $\rightarrow$ **2 ways**.
+*   **Permutations** (order matters): `(1, 1, 1)`, `(1, 2)`, `(2, 1)` $\rightarrow$ **3 ways**.
 
-How do we control which one our DP calculates?
+How we nest loops determines which one we compute.
 
 ### 1. Combinations (Coin Change II)
 
-To count combinations, order doesn't matter. To enforce this, we process one coin type completely before moving to the next.
+To count combinations, **process one coin completely before the next**.
 
 #### Top-Down DP (Memoization)
 
@@ -250,7 +232,7 @@ Because we fully process coin `1` before even looking at coin `2`, we can **neve
 
 ### 2. Permutations (Combination Sum IV)
 
-To count permutations, order matters. A `1` then `2` is different from a `2` then `1`.
+To count permutations, **build the amount step-by-step using any coin**.
 
 #### Top-Down DP (Memoization)
 
@@ -467,7 +449,7 @@ This is a clean optimization. We don't need to check `if i - coin >= 0` because 
 
 ---
 
-## Practice Problems
+## Progressive Problems
 
 | Problem | Difficulty | Variant | Key Insight |
 | :--- | :--- | :--- | :--- |

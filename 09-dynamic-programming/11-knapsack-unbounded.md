@@ -4,11 +4,7 @@
 
 ## Overview
 
-Unbounded Knapsack is a variation of the classic 0/1 Knapsack problem. The core difference? **Infinite supply**.
-
-In 0/1 Knapsack, you can either take an item once or leave it. In Unbounded Knapsack, you can pick an item zero, one, or **multiple times**, limited only by the total capacity of the knapsack.
-
-Imagine you're robbing a bank vault. 0/1 Knapsack is when there's exactly one of each item (one diamond, one gold bar, one watch). Unbounded Knapsack is when the vault is a warehouse with giant bins full of identical diamonds, identical gold bars, and identical watches. You can grab as many from a single bin as you want, provided you can carry the weight.
+Unbounded Knapsack is identical to 0/1 Knapsack, except for one rule: **Infinite supply**. You can pick an item zero, one, or multiple times.
 
 ---
 
@@ -32,21 +28,13 @@ $$
 
 ---
 
-## Building Intuition: Forward vs. Backward Iteration
+## Building Intuition: Forward Iteration
 
-The most elegant part of Unbounded Knapsack is how it translates to a 1D space-optimized array.
+The core difference lies in the 1D space-optimized implementation.
+In 0/1 Knapsack, we iterate capacity **backward** to prevent reusing the same item.
+In Unbounded Knapsack, we iterate capacity **forward**.
 
-In 0/1 Knapsack, we iterate capacity **backward**. Why? To ensure that when we update `dp[w] = max(dp[w], dp[w - weight] + value)`, the value we pull from `dp[w - weight]` represents the state *before* we considered the current item. This prevents us from taking the same item twice.
-
-In Unbounded Knapsack, we want to allow taking the same item multiple times! Therefore, we iterate capacity **forward**.
-
-Let's illustrate this with an example: an item with weight 2 and value 10.
-- If we iterate **backward** (0/1 Knapsack): `dp[4]` looks at `dp[2]`. Since `dp[2]` hasn't been updated yet in this inner loop, it represents the value *without* the current item. We add the item once.
-- If we iterate **forward** (Unbounded Knapsack): We update `dp[2] = dp[0] + 10 = 10`. Later, when we reach `dp[4]`, we look at `dp[2]`. Since `dp[2]` *has* been updated to include the item, we are now adding the item *again*: `dp[4] = dp[2] + 10 = 20`. This forward cascade effectively allows infinite uses of the item.
-
-1. When we calculate `dp[w]`, we look back at `dp[w - weight[i]]`.
-2. Because we are iterating forward, `dp[w - weight[i]]` was *already updated* in the current item's loop.
-3. If `dp[w - weight[i]]` already includes item $i$, our update `dp[w - weight[i]] + value[i]` means we are effectively taking item $i$ *again*. This perfectly models infinite supply.
+Why forward? Because when we calculate `dp[w]`, we look back at `dp[w - weight]`. If we iterate forward, `dp[w - weight]` was *already updated* during the current item's loop. By building on that updated value, we are effectively adding the same item multiple times.
 
 ---
 
@@ -224,7 +212,7 @@ Answer: `45`
 
 ---
 
-## Classic Variations & Progressive Problems
+## Progressive Problems
 
 While Unbounded Knapsack is an optimization problem (finding the `max` value), the **forward-iteration structure** is heavily used in *counting* problems (finding the `sum` of ways) and other optimization variants.
 

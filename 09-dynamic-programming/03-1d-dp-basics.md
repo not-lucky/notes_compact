@@ -4,34 +4,22 @@
 
 ## Overview
 
-1D Dynamic Programming involves solving problems where the state can be represented by a single variable, typically an index `i`. This state, `dp[i]`, usually represents the optimal solution up to index `i`, the solution starting at index `i`, or the solution specifically ending at index `i`.
+1D Dynamic Programming solves problems where the state is defined by a single variable, usually an index `i`. The value `dp[i]` represents the optimal solution up to, starting at, or ending at index `i`.
 
 ## Building Intuition
 
-**Why does 1D DP work for so many problems?**
+1D DP is used when problems involve **sequential decision making** (processing elements left-to-right). The state compresses the history of decisions into a single optimal value at position `i`.
 
-1. **Sequential Decision Making**: Many problems involve processing elements one at a time from left to right, making a decision at each step. The state only needs to track "where we are" (index `i`), not the entire history of "how we got here."
-2. **State Compression (Optimal Substructure)**: Even if multiple paths or combinations lead to position `i`, we only care about the *best* result at `i`. We discard suboptimal paths. This allows us to build global optimums from local optimums.
-3. **Overlapping Subproblems**: Calculating the answer for `i` requires the answers for `i-1`, `i-2`, etc. We store these smaller answers to avoid redundant work.
-4. **Pattern Recognition**: Most 1D DP problems fall into recognizable patterns:
-   - **Fibonacci-style**: `dp[i]` depends strictly on a fixed number of previous states (like `dp[i-1]` and `dp[i-2]`).
-   - **Take/Skip (Include/Exclude)**: At each position, decide whether to include the current element in the optimal solution or skip it.
-   - **Best Ending Here**: The state *must* include the element at index `i`. Used for contiguous subarrays.
-5. **Space Optimization**: If `dp[i]` only depends on a constant number of previous states (e.g., just `i-1` and `i-2`), we don't need an array of size $O(N)$. We can maintain just a few variables, reducing space complexity from $O(N)$ to $O(1)$.
+**Common Patterns:**
+- **Constant Lookback (Fibonacci)**: `dp[i]` depends on a fixed number of previous states (e.g., `dp[i-1]` and `dp[i-2]`). easily space-optimized to $O(1)$.
+- **Take/Skip**: Decide whether to include the current element or skip it.
+- **Best Ending Here (Kadane's)**: State *must* include the element at index `i` (contiguous subarrays).
+- **Combinatorics**: Counting the total ways to reach a state.
 
-## When NOT to Use 1D DP
-
-Recognizing when 1D DP will fail saves a lot of time:
-
-1. **Multiple Constraining Variables**: If your decision depends on the current position *and* another factor (like remaining capacity in a knapsack, or a secondary string), you need 2D DP.
-2. **All Pairs/Substrings Required**: Problems asking about palindromes within a string or comparing two strings (Longest Common Subsequence) inherently need to track a start and end point, requiring `dp[i][j]` (2D).
-3. **Graph/Tree Structures**: If the problem involves moving through a grid, a tree, or an arbitrary graph, a simple 1D array isn't enough to capture the state transitions.
-
-**Signs 1D DP is Appropriate:**
-- The input is a single array, string, or integer $N$.
-- You process the input linearly (left-to-right or right-to-left).
-- There is no secondary capacity constraint.
-- The problem asks for a maximum, minimum, or total number of ways.
+**When NOT to Use 1D DP:**
+- Multiple constraining variables (needs 2D DP, like Knapsack capacity).
+- Need to evaluate all pairs/substrings (needs 2D DP, like Palindromes or LCS).
+- Graph/Tree structures (needs specialized traversal/state).
 
 ---
 
@@ -561,7 +549,7 @@ def num_squares(n: int) -> int:
 
 
 
-## Recommended Progressive Problems
+## Progressive Problems
 
 To master 1D DP, practice these problems in this recommended order:
 
@@ -583,14 +571,11 @@ To master 1D DP, practice these problems in this recommended order:
 
 ## Key Takeaways
 
-1. **State Definition is King**: Clearly define what `dp[i]` represents in plain English before writing code. (e.g., "The max profit robbing houses up to index i").
-2. **Find the Recurrence**: Ask yourself, "If I already knew the answers for smaller subproblems, how would I calculate the answer for the current step?"
-3. **Check Space Optimization**: If your `for` loop only looks at `dp[i-1]` and `dp[i-2]`, throw away the array and use variables to achieve $O(1)$ space.
-4. **Identify the Base Cases**: What are the trivial answers for `n=0`, `n=1`, etc.? Remember to initialize DP arrays with `float('inf')` for "minimum" problems.
-5. **Beware "Best Ending Here"**: For contiguous subarrays, the state *must* include the current element, and you track a separate global variable for the overall best answer.
+1. **State Definition is King**: Clearly define what `dp[i]` represents in plain English (e.g., "The max profit robbing houses up to index i").
+2. **Find the Recurrence**: Ask: "If I already knew the answers for smaller subproblems, how would I calculate the answer for the current step?"
+3. **Check Space Optimization**: If the recurrence only looks at `dp[i-1]` and `dp[i-2]`, use variables for $O(1)$ space.
+4. **Beware "Best Ending Here"**: For contiguous subarrays, the state *must* include the current element, and you track a separate global variable for the overall best answer.
 
 ---
 
 ## Next: [04-house-robber.md](./04-house-robber.md)
-
-Deep dive into House Robber variants.

@@ -183,10 +183,10 @@ def longest_palindrome_substring(s: str) -> str:
 
 ```python3
 def count_substrings_memo(s: str) -> int:
-    \"\"\"
+    """
     Time: O(n^2)
     Space: O(n^2)
-    \"\"\"
+    """
     n = len(s)
     memo = {}
     
@@ -431,10 +431,10 @@ Problems like Minimum Cuts (Palindrome Partitioning II) require breaking the str
 
 ```python3
 def min_cut_memo(s: str) -> int:
-    \"\"\"
+    """
     Time: O(n^2)
     Space: O(n^2) for memo and recursion stack
-    \"\"\"
+    """
     n = len(s)
     
     # Precompute palindromes for O(1) checks

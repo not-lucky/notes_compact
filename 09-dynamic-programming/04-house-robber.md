@@ -4,24 +4,11 @@
 
 ## Overview
 
-The House Robber problem is the canonical "take or skip" Dynamic Programming (DP) problem. The goal is to maximize the sum of elements chosen from an array while respecting a constraint: **you cannot pick adjacent elements.**
-
-It is an essential pattern because it introduces the concept of making decisions that have localized consequences. Choosing an element at index `i` only affects your ability to choose elements at `i-1` and `i+1`.
+The House Robber problem introduces the "take or skip" DP pattern. The goal is to maximize the sum of elements from an array under the constraint: **you cannot pick adjacent elements.**
 
 ## Problem Statement
 
-You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. The only constraint stopping you from robbing each of them is that adjacent houses have security systems connected, and **it will automatically contact the police if two adjacent houses were broken into on the same night.**
-
-Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight **without alerting the police**.
-
-**Example:**
-```python
-Input: nums = [2, 7, 9, 3, 1]
-Output: 12
-Explanation:
-Rob house 0 (money = 2), rob house 2 (money = 9) and rob house 4 (money = 1).
-Total amount you can rob = 2 + 9 + 1 = 12.
-```
+You are a robber planning to rob houses along a street. Adjacent houses have security systems connected. Return the maximum amount of money you can rob without robbing adjacent houses.
 
 ---
 
@@ -432,7 +419,7 @@ def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
     return dp[-1], path[::-1] # Reverse path to be in ascending order
 ```
 
-## Progressive Problems to Master
+## Progressive Problems
 
 1. **House Robber I** - Standard 1D DP.
 2. **House Robber II** - Circular array logic.
@@ -451,10 +438,4 @@ def rob_with_path(nums: list[int]) -> tuple[int, list[int]]:
 - Choosing an element strictly forbids choosing its immediate neighbors (adjacent constraint).
 - Goal is to maximize or minimize a sum.
 
-**When NOT to use this exact recurrence:**
-- Constraint is "no three consecutive" (you need to track more state: `dp[i] = max(dp[i-1], nums[i]+dp[i-2], nums[i]+nums[i-1]+dp[i-3]...)`).
-- Elements can be picked multiple times (this moves into Unbounded Knapsack territory).
-
 ## Next: [05-coin-change.md](./05-coin-change.md)
-
-Learn the classic unbounded knapsack pattern with Coin Change.

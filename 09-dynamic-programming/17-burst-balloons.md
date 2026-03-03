@@ -2,23 +2,17 @@
 
 > **Prerequisites:** [16-matrix-chain](./16-matrix-chain.md)
 
-## Problem Statement
-
-You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted with a number on it represented by an array `nums`. You are asked to burst all the balloons.
-
-If you burst the $i$-th balloon, you will get `nums[i - 1] * nums[i] * nums[i + 1]` coins. If `i - 1` or `i + 1` goes out of bounds of the array, then treat it as if there is a balloon with a `1` painted on it.
-
-Return the maximum coins you can collect by bursting the balloons wisely.
-
 ## Overview
 
-Burst Balloons (LeetCode 312) is a classic and notoriously difficult Interval DP problem. It requires a counterintuitive insight: **thinking about the LAST element to process rather than the first**.
+Burst Balloons (LeetCode 312) is a notoriously difficult Interval DP problem. It requires a counterintuitive insight: **thinking about the LAST element to process rather than the first**.
 
-When dealing with arrays where removing an element changes the adjacency (neighbors) of the remaining elements, standard DP approaches often fail due to chaotic state dependencies. The Burst Balloons pattern solves this by working backwards.
+## Problem Statement
+
+Burst `n` balloons to get `nums[i - 1] * nums[i] * nums[i + 1]` coins. Out-of-bounds indices are treated as `1`s. Return max coins.
 
 ---
 
-## Progressive Problems for Better Understanding
+## Progressive Problems
 
 Before jumping into the full complexity of Burst Balloons, it helps to understand simpler interval DP problems that build the foundation.
 
@@ -31,28 +25,13 @@ Before jumping into the full complexity of Burst Balloons, it helps to understan
 
 Burst Balloons takes the MCM pattern and turns it inside out: instead of merging adjacent groups, we are *removing* elements, which causes formerly separated elements to become adjacent.
 
----
-
 ## Building Intuition: Why Think Backwards?
 
-Imagine we have balloons `[A, B, C, D]`.
+**Forward Thinking (Fails):** If you burst `B` first from `[A, B, C]`, `A` and `C` become adjacent. The score for the next burst depends on the exact sequence of previous bursts. Subproblems aren't independent ($O(2^n)$ states).
 
-### The Problem with "First Burst" (Forward Thinking)
-If we burst `B` first, its neighbors `A` and `C` are involved in the score. After `B` pops, `A` and `C` become adjacent.
-The new array is `[A, C, D]`.
-
-If we then burst `C`, its neighbors are now `A` and `D`. The score for bursting `C` depends on the fact that `B` was already burst. This means our subproblems are not independent—they depend on the exact sequence of previous bursts. Tracking all possible remaining configurations requires $O(2^n)$ states, which is far too slow for $n=300$.
-
-### The "Last Burst" Insight (Backward Thinking)
-Instead of asking "Which balloon should I burst first?", ask: **"Which balloon should I burst LAST?"**
-
-Suppose we decide `C` will be the **very last** balloon we burst in the range `[A, B, C, D]`.
-What do we know at the exact moment we burst `C`?
-1. All other balloons in the range (`A`, `B`, and `D`) have **already been burst**.
-2. Therefore, `C` is completely isolated within this range.
-3. When `C` is finally burst, its neighbors will be whatever balloons are strictly **outside** our current range (in this case, the virtual `1`s at the boundaries).
-
-This incredibly clever insight completely decouples the left side of `C` from the right side. The subproblem of bursting `[A, B]` is now completely independent of the subproblem of bursting `[D]`.
+**Backward Thinking (The Insight):** Ask: *"Which balloon should I burst LAST?"*
+If `C` is the *very last* balloon burst in `[A, B, C, D]`, it means `A, B, D` are already gone. Therefore, when `C` bursts, its neighbors are the boundaries strictly *outside* our current range.
+This completely decouples the left subproblem `[A, B]` from the right subproblem `[D]`.
 
 ---
 
