@@ -287,6 +287,143 @@ def can_partition(nums: list[int], target: int) -> bool:
 
 Call `can_partition(nums, sum(nums) // 2)`.
 
+```python
+# Example
+nums = [1, 5, 11, 5]
+# Output: True
+# Explanation: Can be partitioned into [1, 5, 5] and [11], both sum to 11.
+
+nums = [1, 2, 3, 5]
+# Output: False
+# Explanation: Total sum is 11 (odd), cannot partition into two equal subsets.
+```
+
+#### Solution 1: Top-Down Memoization
+
+```python
+from functools import cache
+
+def can_partition_memo(nums: list[int]) -> bool:
+    """
+    Top-Down DP with Memoization
+    Time: O(N * S) where N is length of nums, S is sum(nums) // 2
+    Space: O(N * S) for memoization cache and recursion stack
+    """
+    total = sum(nums)
+    
+    # If total sum is odd, we cannot partition into two equal subsets
+    if total % 2 != 0:
+        return False
+    
+    target = total // 2
+    n = len(nums)
+
+    @cache
+    def dfs(i: int, current_sum: int) -> bool:
+        # Found a subset that sums to target
+        if current_sum == target:
+            return True
+        # Exceeded target or no more items to consider
+        if i == n or current_sum > target:
+            return False
+
+        # Choice 1: Include nums[i] in the subset
+        # Choice 2: Exclude nums[i] from the subset
+        return dfs(i + 1, current_sum + nums[i]) or dfs(i + 1, current_sum)
+
+    return dfs(0, 0)
+```
+
+#### Solution 2: Bottom-Up 1D Tabulation (Optimal)
+
+```python
+def can_partition(nums: list[int]) -> bool:
+    """
+    Bottom-Up DP with 1D Space Optimization
+    Time: O(N * S) where N is length of nums, S is sum(nums) // 2
+    Space: O(S)
+    """
+    total = sum(nums)
+    
+    # If total sum is odd, we cannot partition into two equal subsets
+    if total % 2 != 0:
+        return False
+    
+    target = total // 2
+    dp = [False] * (target + 1)
+    dp[0] = True  # A sum of 0 is always possible (empty subset)
+
+    for num in nums:
+        # Backward iteration to avoid using the same element twice
+        for t in range(target, num - 1, -1):
+            # We can make sum `t` if:
+            # - We could already make it without `num` (dp[t]), OR
+            # - We could make `t - num` previously (dp[t - num])
+            dp[t] = dp[t] or dp[t - num]
+
+    return dp[target]
+```
+
+#### DP Table Visualization
+
+For `nums = [1, 5, 11, 5]`, `target = 11`:
+
+| num \ t | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **init** | `T` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` |
+| **1** | `T` | `T` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` | `F` |
+| **5** | `T` | `T` | `F` | `F` | `F` | `T` | `T` | `F` | `F` | `F` | `F` | `F` |
+| **11** | `T` | `T` | `F` | `F` | `F` | `T` | `T` | `F` | `F` | `F` | `F` | `T` |
+
+After processing `11`, `dp[11] = True`, so we can return early.
+
+#### Early Termination Optimization
+
+We can optimize by checking if `dp[target]` becomes `True` after processing each number:
+
+```python
+def can_partition_optimized(nums: list[int]) -> bool:
+    """
+    Bottom-Up DP with early termination
+    Time: O(N * S) worst case, but often faster in practice
+    Space: O(S)
+    """
+    total = sum(nums)
+    
+    if total % 2 != 0:
+        return False
+    
+    target = total // 2
+    dp = [False] * (target + 1)
+    dp[0] = True
+
+    for num in nums:
+        for t in range(target, num - 1, -1):
+            dp[t] = dp[t] or dp[t - num]
+        
+        # Early termination: if we can already form the target, no need to continue
+        if dp[target]:
+            return True
+
+    return dp[target]
+```
+
+#### Edge Cases
+
+```python
+# Single element - always False (can't split into two non-empty subsets)
+can_partition([5])  # False
+
+# Two equal elements
+can_partition([3, 3])  # True
+
+# Contains zeros (zeros don't affect the sum but can be in either subset)
+can_partition([0, 0, 0, 1, 1])  # True (partition: [0, 0, 1] and [0, 1])
+
+# Large numbers
+can_partition([100, 100, 100, 300])  # True (partition: [100, 100, 100] and [300])
+```
+
 ### 3. Target Sum (LeetCode 494)
 
 **Problem:** Given an array of integers, assign a `+` or `-` sign to each number to achieve a specific `target` sum. Return the number of valid ways to do this.
