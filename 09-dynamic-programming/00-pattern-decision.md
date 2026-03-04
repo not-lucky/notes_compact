@@ -2,31 +2,31 @@
 
 ```mermaid
 flowchart TD
-    START([Is this DP?]) --> Q1{Optimal Substructure<br/>+ Overlapping Subproblems?}
-    Q1 -->|No| NOT_DP[Not DP<br/>Greedy/Divide & Conquer]
+    START([Is this DP?]) --> Q1{Optimal Substructure<br/>Overlapping Subproblems?}
+    Q1 -->|No| NOT_DP[Not DP<br/>Greedy or Divide]
     Q1 -->|Yes| INPUT{What is INPUT?}
     
-    INPUT -->|Single Array/String| Q2{Constraint/GOAL?}
-    Q2 -->|Can't pick adjacent| HOUSE_ROBBER[House Robber<br/>dp[i]=max(dp[i-1],dp[i-2]+val)]
-    Q2 -->|Contiguous subarray| KADANE[Kadane's<br/>dp[i]=max(nums[i],dp[i-1]+nums[i])]
+    INPUT -->|Single Array or String| Q2{Constraint or Goal?}
+    Q2 -->|Cant pick adjacent| HOUSE_ROBBER[House Robber<br/>dp[i]=max(dp[i-1],dp[i-2]+val)]
+    Q2 -->|Contiguous subarray| KADANE[Kadane<br/>dp[i]=max(nums[i],dp[i-1]+nums[i])]
     Q2 -->|Count ways| FIB[1D Linear Fibonacci<br/>dp[i]=dp[i-1]+dp[i-2]]
     Q2 -->|Unlimited items| UNBOUNDED[Unbounded Knapsack<br/>Coin Change]
-    Q2 -->|Multiple states| STATE_MACHINE[State Machine<br/>Stock Buy/Sell]
-    Q2 -->|Palindrome/Interval| INTERVAL[Interval DP<br/>Palindrome problems]
-    Q2 -->|Split at any point| ADV_INTERVAL[Advanced Interval<br/>Matrix Chain, Burst]
+    Q2 -->|Multiple states| STATE_MACHINE[State Machine<br/>Stock Buy Sell]
+    Q2 -->|Palindrome or Interval| INTERVAL[Interval DP<br/>Palindrome problems]
+    Q2 -->|Split at any point| ADV_INTERVAL[Advanced Interval<br/>Matrix Chain Burst]
     
-    INPUT -->|Two Strings| Q3{What is GOAL?}
+    INPUT -->|Two Strings| Q3{What is Goal?}
     Q3 -->|Longest common|LCS[LCS<br/>dp[i][j]=dp[i-1][j-1]+1 or max]
-    Q3 -->|Edit operations| EDIT[Edit Distance<br/>Insert/Delete/Replace]
+    Q3 -->|Edit operations| EDIT[Edit Distance<br/>Insert Delete Replace]
     Q3 -->|Pattern matching| REGEX[Regex Matching]
     
-    INPUT -->|Grid/Matrix| Q4{Movement?}
-    Q4 -->|Down/Right| GRID_BASIC[2D Grid<br/>Unique Paths]
+    INPUT -->|Grid or Matrix| Q4{Movement?}
+    Q4 -->|Down Right only| GRID_BASIC[2D Grid<br/>Unique Paths]
     Q4 -->|3 directions| FALLING[Min Falling Path<br/>dp from 3 above]
     Q4 -->|Diagonal| SQUARE[Maximal Square<br/>min(left,top,diag)+1]
     
-    INPUT -->|Items+Capacity| Q5{Usage?}
-    Q5 -->|Once| K01[0/1 Knapsack<br/>Iterate backwards]
+    INPUT -->|Items plus Capacity| Q5{Usage?}
+    Q5 -->|Once| K01[0 1 Knapsack<br/>Iterate backwards]
     Q5 -->|Multiple| KUNBOUND[Unbounded<br/>Iterate forwards]
 ```
 
