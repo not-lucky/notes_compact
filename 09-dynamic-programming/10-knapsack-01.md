@@ -223,10 +223,10 @@ Many popular DP problems don't explicitly mention "items" or "capacity," but the
 Here is a recommended progression of problems to solidify your understanding:
 
 1.  **Subset Sum** (Base Pattern)
-2.  **Partition Equal Subset Sum** (LeetCode 416) - Direct application of Subset Sum.
-3.  **Target Sum** (LeetCode 494) - Requires algebraic manipulation to reach Subset Sum.
-4.  **Last Stone Weight II** (LeetCode 1049) - Requires realizing the problem is finding two subsets with a minimal difference.
-5.  **Ones and Zeroes** (LeetCode 474) - Introduces multi-dimensional (2D) Knapsack capacity.
+2.  **[Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)** (LeetCode 416) - Direct application of Subset Sum.
+3.  **[Target Sum](https://leetcode.com/problems/target-sum/)** (LeetCode 494) - Requires algebraic manipulation to reach Subset Sum.
+4.  **[Last Stone Weight II](https://leetcode.com/problems/last-stone-weight-ii/)** (LeetCode 1049) - Requires realizing the problem is finding two subsets with a minimal difference.
+5.  **[Ones and Zeroes](https://leetcode.com/problems/ones-and-zeroes/)** (LeetCode 474) - Introduces multi-dimensional (2D) Knapsack capacity.
 
 ---
 

@@ -448,7 +448,9 @@ Conversely, for "Counting Ways", you must initialize with `0`, but explicitly se
 ### 2. Inner Loop Optimization
 Notice in the Combinations bottom-up code, the inner loop starts at `coin`:
 ```python
+# inner loop starts at `coin`
 for i in range(coin, amount + 1):
+    pass
 ```
 This is a clean optimization. We don't need to check `if i - coin >= 0` because the loop bounds guarantee it. Any amount strictly less than `coin` obviously cannot be made using `coin`.
 
